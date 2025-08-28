@@ -3,3 +3,17 @@
     align-items: center;
     justify-content: space-between;
 }
+.mlap-home-header-bar {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 12px;
+}
+button.btn-nb {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+    display: grid;
+    place-content: center;
+}

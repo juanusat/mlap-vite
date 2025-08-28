@@ -7,14 +7,14 @@ import '../App.css';
 
 export default function MyHeaderAdm() {
   return (
-    <header className="mlap-home-header" style={{ background: 'var(--color-a-500)' }}>
+    <header className="mlap-home-header py-1" style={{ background: 'var(--color-a-500)' }}>
       <div className="maxWCont">
         <div className="mlap-home-header-logo">
           <img src={logoWhite} alt="MLAP Logo" style={{ height: 36 }} />
         </div>
         <div className="mlap-home-header-bar" style={{ color: '#fff' }}>
-          <button role="button" aria-label="notificaciones"><MdNotificationsNone /></button>
-          <button role="button" aria-label="usuario"><MdAccountCircle /></button>
+          <button role="button" className='btn-nb' aria-label="notificaciones"><MdNotificationsNone /></button>
+          <button role="button" className='btn-nb' aria-label="usuario"><MdAccountCircle /></button>
         </div>
       </div>
     </header>

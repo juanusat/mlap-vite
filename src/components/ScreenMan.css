@@ -1,0 +1,29 @@
+.screenman-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.screenman-main {
+  display: flex;
+  flex: 1;
+  background: var(--background, #f5f5f5);
+}
+
+.screenman-aside {
+  min-width: 220px;
+  background: var(--aside-bg, #fff);
+  border-right: 1px solid #e0e0e0;
+  box-shadow: 0 0 4px rgba(0,0,0,0.04);
+}
+
+.screenman-article {
+  flex: 1;
+  padding: 2rem;
+  background: var(--article-bg, #f9f9f9);
+}
+.mlap-home-sidebar-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
