@@ -1,29 +1,50 @@
 .screenman-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .screenman-main {
-  display: flex;
-  flex: 1;
-  background: var(--background, #f5f5f5);
-}
-
-.screenman-aside {
-  min-width: 220px;
-  background: var(--aside-bg, #fff);
-  border-right: 1px solid #e0e0e0;
-  box-shadow: 0 0 4px rgba(0,0,0,0.04);
+    display: flex;
+    flex: 1;
+    background: var(--background, #f5f5f5);
 }
 
 .screenman-article {
-  flex: 1;
-  padding: 2rem;
-  background: var(--article-bg, #f9f9f9);
-}
-.mlap-home-sidebar-nav {
+    flex: 1;
+    background: var(--article-bg, #f9f9f9);
     display: grid;
+    grid-template-columns: 1fr 380px;
+    overflow: hidden;
+}
+
+.screenman-article:not(:has(.panel-lateral-config)) {
     grid-template-columns: 1fr;
-    gap: 12px;
+}
+
+.screenman-article .content-module,
+.screenman-article .panel-lateral-config {
+    height: 100%;
+    overflow: auto;
+}
+
+.screenman-article h2.title-screen {
+    margin-block-start: 0;
+    padding-block-end: 10px;
+    border-bottom: 1px solid black;
+}
+
+.screenman-article .content-module {
+    padding: 2rem;
+}
+
+.screenman-article .panel-lateral-config {
+    padding: 2rem;
+    border-inline-start-width: 1px;
+    border-inline-start-style: solid;
+    border-inline-start-color: #cccccc;
+    background-color: #f0f0f0;
+}
+.content-module .my-list-1 {
+    margin-block-start: 24px;
 }

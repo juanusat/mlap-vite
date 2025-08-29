@@ -1,0 +1,9 @@
+.button-centered-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.mlap-button-centered {
+  display: inline-block;
+}

@@ -1,0 +1,23 @@
+.screenman-aside {
+    color: white;
+    min-width: 220px;
+    background: var(--color-b-500, #fff);
+    border-right: 1px solid #e0e0e0;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.04);
+}
+.titleModule {
+    font-size: 14px;
+    padding-inline: 12px;
+    font-weight: bold;
+}
+hr {
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.2);
+    border-width: 0px;
+    border-block-start-width: 2px;;
+}
+.mlap-home-sidebar-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0px;
+}

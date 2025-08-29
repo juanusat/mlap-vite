@@ -3,11 +3,30 @@
     align-items: center;
     justify-content: space-between;
 }
+
 .mlap-home-header-bar {
-    display: grid;
-    grid-template-columns: auto auto;
-    gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
+
+.parroquia-actual {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 8px;
+    color: white;
+}
+
+.parroquia-actual span {
+    font-size: 14px;
+}
+
+.parroquia-actual .rol-actual {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
 button.btn-nb {
     background-color: transparent;
     border: none;
@@ -16,4 +35,176 @@ button.btn-nb {
     font-size: 24px;
     display: grid;
     place-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+button.btn-nb:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.perfil-btn {
+    padding: 0 !important;
+    overflow: hidden;
+    width: 36px;
+    height: 36px;
+}
+
+.perfil-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Estilos del modal de perfil */
+.modal-perfil {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-perfil-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.modal-perfil-header h2 {
+    margin: 0;
+    color: var(--color-n-900);
+    font-size: 1.5rem;
+}
+
+.perfil-info {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--color-n-50);
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.perfil-foto-grande {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.perfil-datos, .perfil-datos-rol {
+    display: flex;
+    flex-direction: column;
+}
+.perfil-datos {
+    gap: 4px;
+}
+
+.perfil-datos h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--color-n-900);
+}
+
+.perfil-datos p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-n-600);
+}
+
+.selector-parroquia-rol {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.selector-parroquia-rol h4 {
+    margin: 0;
+    color: var(--color-n-700);
+}
+
+.lista-parroquias, .lista-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.parroquia-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: white;
+    border: 1px solid var(--color-n-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    color: var(--color-n-900);
+}
+
+.parroquia-item:hover {
+    background-color: var(--color-n-50);
+    border-color: var(--color-n-300);
+}
+
+.rol-item {
+    padding: 12px 16px;
+    background-color: white;
+    border: 1px solid var(--color-n-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    color: var(--color-n-900);
+}
+
+.rol-item:hover {
+    background-color: var(--color-n-50);
+    border-color: var(--color-n-300);
+}
+
+.btn-volver {
+    padding: 8px 16px;
+    background-color: var(--color-n-50);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-n-700);
+    margin-top: 8px;
+}
+
+.btn-volver:hover {
+    background-color: var(--color-n-100);
+}
+
+.perfil-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-n-100);
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: transparent;
+    border: 1px solid var(--color-error-200);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-error-600);
+    width: 100%;
+}
+
+.btn-logout:hover {
+    background-color: var(--color-error-50);
 }
