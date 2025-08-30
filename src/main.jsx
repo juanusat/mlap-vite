@@ -12,7 +12,6 @@ import Seguridad from './screensMans/Seguridad.jsx';
 import Reservas from './screensMans/Reservas.jsx';
 import AprobarParroquia from './screensMans/AprobarParroquia.jsx';
 import './index.css';
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
