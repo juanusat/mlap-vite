@@ -1,23 +1,23 @@
 .screenman-aside {
-    color: white;
-    min-width: 220px;
-    background: var(--color-b-500, #fff);
-    border-right: 1px solid #e0e0e0;
+    color: var(--color-n-0);
+    min-width:var(--min-width-small);
+    background: var(--color-b-500,var(--color-n-0));
+    border-right: var(--border-width-s) solid var(--color-n-50);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.04);
 }
 .titleModule {
-    font-size: 14px;
-    padding-inline: 12px;
+    font-size: var(--font-size-body);
+    padding-inline: var(--space-s);
     font-weight: bold;
 }
 hr {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.2);
-    border-width: 0px;
-    border-block-start-width: 2px;;
+    border-width: var(--space-0);
+    border-block-start-width: var(--border-width-m);
 }
 .mlap-home-sidebar-nav {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 0px;
+    grid-template-columns: var(--grid-t-col);
+    gap: var(--space-0);
 }

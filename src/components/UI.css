@@ -3,8 +3,8 @@
 }
 
 .maxWCont {
-    width: 100%;
+    width: var(--width-estandar);
     margin-inline: auto;
     max-width: var(--maxWCont);
-    padding: 0 1rem;
+    padding: 0 var(--font-size-base);
 }

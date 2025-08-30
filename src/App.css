@@ -1,150 +1,159 @@
 @import './colors.css';
 
 .mlap-login-container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 32px 24px 0 24px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  max-width:var(--max-width);
+  margin: var(--space-xxl) auto;
+  padding: var(--space-xl) var(--space-l) var(--space-0) var(--space-l);
+  background: var(--color-n-0);
+  border-radius: var(--border-radius-s);
+  box-shadow: var(--box-shadow-light);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .mlap-login-logo {
-  height: 36px;
-  margin-bottom: 8px;
+  height: var(--space-xl);
+  margin-bottom: var(--space-xs);
 }
 
 .mlap-login-title {
   color: var(--color-a-500);
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: 2px;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: var(--size-0);
+  letter-spacing: var(--letter-spacing-m);
 }
 
 .mlap-login-subtitle {
   color: var(--color-a-500);
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: var(--font-size-l);
+  font-weight: var(--font-weight-bold);
   text-align: center;
-  margin: 12px 0 24px 0;
+  margin: var(--space-s) var(--space-0) var(--space-l) var(--space-0);
 }
 
 .mlap-login-form {
-  width: 100%;
+  width: var(--width-estandar);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-m);
 }
 
 .mlap-input {
-  width: 100%;
-  padding: 10px 12px;
-  font-size: 1rem;
-  border: 2px solid var(--color-a-300);
-  border-radius: 4px;
-  margin-bottom: 0;
+  width: var(--width-estandar);
+  padding: var(--space-body) var(--space-s);
+  font-size: var(--font-size-base);
+  border: var(--border-width-m) solid var(--color-a-300);
+  border-radius: var(--border-radius-xs);
+  margin-bottom: var(--size-0);
   outline: none;
   transition: border-color 0.2s;
-  background-color: white;
-  color: black;
+  background-color: var(--color-n-0);
+  color: var(--color-n-1000);
 }
+
 .mlap-input:focus {
   border-color: var(--color-a-500);
 }
 
 .mlap-main-btn {
-  width: 100%;
+  width: var(--width-estandar);
   background: var(--color-a-500);
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
+  color: var(--color-n-0);
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-bold);
   border: none;
-  border-radius: 4px;
-  padding: 10px 0;
-  margin-top: 8px;
+  border-radius: var(--border-radius-xs);
+  padding: var(--space-body) var(--space-0);
+  margin-top: var(--border-radius-s);
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .mlap-main-btn:hover {
   background: var(--color-a-400);
 }
 
 .mlap-login-links {
-  width: 100%;
+  width: var(--width-estandar);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin: 18px 0 0 0;
+  gap: var(--space-s);
+  margin: var(--space-m) var(--size-0) var(--size-0) var(--size-0);
 }
+
 .mlap-login-link {
   color: var(--color-a-500);
-  font-weight: 500;
+  font-weight: var(--font-weight-estandar);
   text-decoration: none;
-  font-size: 1rem;
-  margin-bottom: 0;
+  font-size:var(--font-size-base) ;
+  margin-bottom: var(--size-0);
 }
+
 .mlap-login-link:hover {
   text-decoration: underline;
 }
 
 .mlap-secondary-btn {
-  width: 100%;
+  width: var(--width-estandar);
   background: var(--color-b-500);
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
+  color: var(--color-n-0);
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-big);
   border: none;
-  border-radius: 4px;
-  padding: 10px 0;
+  border-radius: var(--border-radius-xs);
+  padding: var(--space-body) var(--space-0);
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .mlap-secondary-btn:hover {
   background: var(--color-b-400);
 }
 
 .mlap-login-divider {
-  width: 100%;
-  margin: 32px 0 16px 0;
+  width: var(--width-estandar);
+  margin:var(--space-xl) var(--size-0) var(--space-m) var(--size-0);;
   border: none;
-  border-top: 2px solid var(--color-a-200);
+  border-top: var(--border-width-m) solid var(--color-a-200);
 }
 
 .mlap-login-info {
-  color: #555;
-  font-size: 1rem;
+  color: var(--color-n-400);
+  font-size: var(--font-size-base);
   text-align: center;
-  margin-bottom: 0;
 }
+
 .mlap-login-info b {
-  color: #222;
+  color: var(--color-n-800);
 }
+
 #root {
-  padding: 0px;
+  padding: var(--space-0);
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: var(--height-header);
+  padding: var(--space-l);
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em var(--color-a-300));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em var(--color-b-300));
 }
 
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -157,9 +166,9 @@
 }
 
 .card {
-  padding: 2em;
+  padding: var(--space-xl);
 }
 
 .read-the-docs {
-  color: #888;
+  color: var(--color-n-100);
 }

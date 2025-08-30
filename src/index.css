@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+@import './colors.css';
 
 body, html, * {
   font-family: 'Roboto', Arial, Helvetica, sans-serif;
@@ -8,12 +9,12 @@ body, html, * {
 }
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  line-height: var(--line-height-xl);
+  font-weight: var(--font-weight-small);
 
   color-scheme: light dark;
-  color: black;
-  background-color: #e6e6e6;
+  color: var(--color-n-1000);
+  background-color: var(--color-n-50);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,11 +24,11 @@ body, html, * {
 
 body {
   margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  min-width: var(--min-width);
+  min-height: var(--min-height);
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: var(--font-size-big);
+  line-height: var(--line-height-xs);
 }
