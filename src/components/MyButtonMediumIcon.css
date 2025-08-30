@@ -1,21 +1,21 @@
 .my-button-medium-icon {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: var(--space-xs) var(--font-size-base);
     border: none;
-    border-radius: 4px;
-    background-color: var(--button-bg, #007bff);
-    color: var(--button-color, #fff);
+    border-radius: var(--border-radius-xs);
+    background-color: var(--button-bg, --color-b-400);
+    color: var(--button-color, --color-n-0);
     cursor: pointer;
     transition: background-color 0.2s;
-    gap: 8px;
-    font-size: 16px;
+    gap: var(--space-xs);
+    font-size: var(--font-size-s);
 }
 
 .my-button-medium-icon:hover {
-    background-color: var(--button-bg-hover, #0056b3);
+    background-color: var(--button-bg-hover, --color-b-600);
 }
 .my-button-medium-icon svg {
-    height: 22px;
-    width: 22px;
+    height: var(--font-size-l);
+    width:var(--font-size-l);
 }

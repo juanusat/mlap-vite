@@ -7,23 +7,23 @@
 .mlap-home-header-bar {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-m);
 }
 
 .parroquia-actual {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin-right: 8px;
-    color: white;
+    margin-right: var(--space-xs);
+    color: var(--color-n-0);
 }
 
 .parroquia-actual span {
-    font-size: 14px;
+    font-size: var(--font-size-body);
 }
 
 .parroquia-actual .rol-actual {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     opacity: 0.8;
 }
 
@@ -31,42 +31,42 @@ button.btn-nb {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    color: white;
-    font-size: 24px;
+    color: var(--color-n-0);
+    font-size: var(--font-size-xl);
     display: grid;
     place-content: center;
-    padding: 4px;
-    border-radius: 50%;
+    padding: var(--space-xxs);
+    border-radius: var(--border-radius-p);
     transition: background-color 0.2s;
 }
 
 button.btn-nb:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--color-semi-trans);
 }
 
 .perfil-btn {
-    padding: 0 !important;
+    padding: var(--size-0) !important;
     overflow: hidden;
-    width: 36px;
-    height: 36px;
+    width: var(--space-xxl);
+    height: var(--space-xxl);
 }
 
 .perfil-foto {
-    width: 100%;
-    height: 100%;
+    width: var(--width-estandar);
+    height: var(--width-estandar);
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: var(--border-radius-p);
 }
 
 /* Estilos del modal de perfil */
 .modal-perfil {
-    background: white;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 480px;
-    padding: 24px;
+    background: var(--color-n-0);
+    border-radius: var(--border-radius-body);
+    width: var(--width-estandar);
+    max-width: var(--max-width-small);
+    padding: var(--space-l);
     position: relative;
-    max-height: 90vh;
+    max-height: var(--max-height-medium);
     overflow-y: auto;
 }
 
@@ -74,28 +74,28 @@ button.btn-nb:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: var(--font-size-xl);
 }
 
 .modal-perfil-header h2 {
-    margin: 0;
+    margin: var(--size-0);
     color: var(--color-n-900);
-    font-size: 1.5rem;
+    font-size: var(--border-radius-xl);
 }
 
 .perfil-info {
     display: flex;
-    gap: 16px;
-    padding: 16px;
+    gap: var(--space-m);
+    padding: var(--space-m);
     background-color: var(--color-n-50);
-    border-radius: 8px;
-    margin-bottom: 24px;
+    border-radius: var(--border-radius-s);
+    margin-bottom: var(--font-size-xl);
 }
 
 .perfil-foto-grande {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
+    width: var(--space-big);
+    height: var(--space-big);
+    border-radius: var(--border-radius-p);
     object-fit: cover;
 }
 
@@ -104,49 +104,49 @@ button.btn-nb:hover {
     flex-direction: column;
 }
 .perfil-datos {
-    gap: 4px;
+    gap: var(--space-xxs);
 }
 
 .perfil-datos h3 {
-    margin: 0;
-    font-size: 1.2rem;
+    margin: var(--size-0);
+    font-size: var(--font-size-l);
     color: var(--color-n-900);
 }
 
 .perfil-datos p {
-    margin: 0;
-    font-size: 0.9rem;
+    margin: var(--size-0);
+    font-size: var(--font-size-body);
     color: var(--color-n-600);
 }
 
 .selector-parroquia-rol {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-m);
 }
 
 .selector-parroquia-rol h4 {
-    margin: 0;
+    margin: var(--size-0);
     color: var(--color-n-700);
 }
 
 .lista-parroquias, .lista-roles {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-xs);
 }
 
 .parroquia-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
-    background-color: white;
-    border: 1px solid var(--color-n-200);
-    border-radius: 8px;
+    padding: var(--space-s) var(--space-m);
+    background-color: var(--color-n-0);
+    border: var(--border-width-s) solid var(--color-n-200);
+    border-radius: var(--border-radius-s);
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
+    width: var(--width-estandar);
     color: var(--color-n-900);
 }
 
@@ -156,13 +156,13 @@ button.btn-nb:hover {
 }
 
 .rol-item {
-    padding: 12px 16px;
-    background-color: white;
-    border: 1px solid var(--color-n-200);
-    border-radius: 8px;
+    padding: var(--space-s) var(--space-m);
+    background-color: var(--color-n-0);
+    border: var(--border-width-s) solid var(--color-n-200);
+    border-radius: var(--border-radius-s);
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
+    width: var(--width-estandar);
     text-align: left;
     color: var(--color-n-900);
 }
@@ -173,13 +173,13 @@ button.btn-nb:hover {
 }
 
 .btn-volver {
-    padding: 8px 16px;
+    padding: var(--space-xs) var(--space-m);
     background-color: var(--color-n-50);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius-body);
     cursor: pointer;
     color: var(--color-n-700);
-    margin-top: 8px;
+    margin-top: var(--space-xs);
 }
 
 .btn-volver:hover {
@@ -187,22 +187,22 @@ button.btn-nb:hover {
 }
 
 .perfil-footer {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-n-100);
+    margin-top: var(--space-l);
+    padding-top: var(--space-m);
+    border-top: var(--border-width-s) solid var(--color-n-100);
 }
 
 .btn-logout {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-m);
     background-color: transparent;
-    border: 1px solid var(--color-error-200);
-    border-radius: 6px;
+    border: var(--border-width-s) solid var(--color-error-200);
+    border-radius: var(--border-radius-body);
     cursor: pointer;
     color: var(--color-error-600);
-    width: 100%;
+    width: var(--width-estandar);
 }
 
 .btn-logout:hover {

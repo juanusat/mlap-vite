@@ -1,24 +1,24 @@
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1rem;
+    margin-bottom: var(--font-size-base);
 }
 
 .form-group label {
-    font-weight: 500;
-    margin-bottom: 0.4rem;
-    color: #333;
+    font-weight: var(--font-weight-estandar);
+    margin-bottom: var(--border-radius-body);
+    color: var(--color-n-700);
 }
 
 .form-group input,
 .form-group textarea {
     padding: 0.5rem 0.75rem;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: #fafbfc;
+    border: 2px solid var(--color-grey-50);
+    border-radius: var(--border-radius-body);
+    font-size: var(--font-size-base);
+    background: var(--color-n-50);
     transition: border-color 0.2s;
-    color: black;
+    color: var(--color-n-1000);
 }
 
 .form-group textarea {
@@ -27,13 +27,13 @@
 
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: #1976d2;
+    border-color: var(--color-b-500);
     outline: none;
 }
 
 .form-group input[disabled],
 .form-group textarea[disabled] {
-    background: #f0f0f0;
-    color: #888;
-    border-color: #e0e0e0;
+    background: var(--color-n-50);
+    color: var( --color-n-100);
+    border-color: var(--color-grey-50);
 }

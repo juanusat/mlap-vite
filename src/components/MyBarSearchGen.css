@@ -1,12 +1,12 @@
 .mlap-home-search {
   display: flex;
   align-items: center;
-  background-color: white;
-  border-radius: 25px;
-  border: 2px solid #cecece;
-  padding: 8px 16px;
+  background-color: var(--color-n-0);
+  border-radius: var(--border-radius-xl);
+  border: var(--border-width-m) solid #cecece;
+  padding: var(--space-xs) var(--space-m);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  width:var(--width-estandar) ;
   max-width: 600px;
   margin-inline: auto;
 }
@@ -16,25 +16,25 @@
   border: none;
   outline: none;
   background: transparent;
-  padding: 8px;
-  font-size: 17px;
-  color: #666;
+  padding: var(--space-xs);
+  font-size:var(--font-size-m);
+  color: var(--color-n-300);
 }
 
 .mlap-home-search-input::placeholder {
-  color: #999;
+  color: var(--color-n-100);
 }
 
 .mlap-home-search-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: var(--space-xs);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .mlap-home-search-btn svg {
-  color: #666;
+  color:  var(--color-n-300);
 }

@@ -1,31 +1,31 @@
 .btn-short-view {
-  color: #388e3c;
+  color: var(  --color-green-confirm);
 }
 .btn-short-view:hover {
-  background: #e8f5e9;
+  background: var(--color-n-50);
 }
 .my-btn-short-action {
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 1.3rem;
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
+  font-size: var(--font-size-l);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: var(--border-radius-body);
   transition: background 0.2s;
-  margin-left: 6px;
+  margin-left: var(--border-radius-body);
   background-color: rgba(0, 0, 0, 0.03);
   display: grid;
   place-items: center;
 }
 .btn-short-edit {
-  color: #1976d2;
+  color: var(--color-b-500);
 }
 .btn-short-edit:hover {
-  background: #e3f2fd;
+  background: var(--color-b-100);
 }
 .btn-short-delete {
-  color: #d32f2f;
+  color: var(--color-error-600);
 }
 .btn-short-delete:hover {
-  background: #ffebee;
+  background: var(--color-error-50);
 }

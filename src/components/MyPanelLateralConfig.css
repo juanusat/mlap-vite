@@ -1,4 +1,4 @@
 .panel-config-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-s);
 }
