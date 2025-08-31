@@ -4,18 +4,36 @@
     padding: var(--space-xs) var(--font-size-base);
     border: none;
     border-radius: var(--border-radius-xs);
-    background-color: var(--button-bg, --color-b-400);
-    color: var(--button-color, --color-n-0);
+    color: var(--color-n-0);
     cursor: pointer;
     transition: background-color 0.2s;
     gap: var(--space-xs);
     font-size: var(--font-size-s);
 }
 
-.my-button-medium-icon:hover {
-    background-color: var(--button-bg-hover, --color-b-600);
-}
 .my-button-medium-icon svg {
     height: var(--font-size-l);
-    width:var(--font-size-l);
+    width: var(--font-size-l);
+}
+
+.my-button-medium-icon[data-color="blue"] {
+    background-color: var(--color-blue-btn);
+}
+.my-button-medium-icon[data-color="blue"]:hover {
+    background-color: var(--color-blue-btn-hover);
+}
+.my-button-medium-icon[data-color="green"] {
+    background-color: var(--color-green-btn);
+}
+
+.my-button-medium-icon[data-color="green"]:hover {
+    background-color: var(--color-green-btn-hover);
+}
+
+.my-button-medium-icon[data-color="red"] {
+    background-color: var( --color-error-500);
+}
+
+.my-button-medium-icon[data-color="red"]:hover {
+    background-color: var( --color-error-700);
 }

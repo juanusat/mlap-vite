@@ -24,7 +24,7 @@
 }
 
 .switch-toggle-doc input:checked+.slider-doc {
-  background-color: var(--color-confirm-btn);
+  background-color: var(--color-green-btn);
 }
 
 .slider-doc:before {

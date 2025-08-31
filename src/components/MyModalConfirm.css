@@ -31,7 +31,7 @@
   justify-content: center;
 }
 .modal-confirm-btn {
-  background: var(--color-confirm-btn);
+  background: var(--color-green-btn);
   color: var(--color-n-0);
   border: none;
   padding: var(--space-body) var(--space-m);
@@ -49,7 +49,7 @@
   font-weight: var(--font-weight-estandar);
 }
 .modal-confirm-btn:hover {
-  background: var(--color-green-confirm-hover);
+  background: var(--color-green-btn-hover);
 }
 .modal-cancel-btn:hover {
   background: var(--color-error-700);

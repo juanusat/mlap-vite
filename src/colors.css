@@ -41,13 +41,14 @@
   --color-n-0: #ffffff;
   --color-n-1000: #000000;
   --color-grey-50: #cccccc;
-  --color-green-confirm-hover: #388e3c;
-  --color-confirm-btn: #4caf50;
+  --color-blue-btn: #0056b3;
+  --color-blue-btn-hover: #0f447c;
+  --color-green-btn: #4caf50;
+  --color-green-btn-hover: #388e3c;
   --color-semi-trans: rgba(255, 255, 255, 0.1);
 
-  /* sin tamaño */
-  --size-0: 0;
   /* espaciado */
+  --size-0: 0;
   --space-0: 0px;
   --space-small: 2px;
   --space-xxs: 4px;

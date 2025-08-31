@@ -1,5 +1,5 @@
 .btn-short-view {
-  color: var(  --color-green-confirm-hover);
+  color: var(  --color-green-btn-hover);
 }
 .btn-short-view:hover {
   background: rgba(0, 0, 0, 0.14);
@@ -17,13 +17,13 @@
   place-items: center;
 }
 .btn-short-edit {
-  color: #1976d2;
+  color: var(--color-blue-btn);
 }
 .btn-short-edit:hover {
   background: #e3f2fd;
 }
 .btn-short-delete {
-  color: #d32f2f;
+  color: var(--color-error-600);
 }
 .btn-short-delete:hover {
   background: var(--color-error-200);
