@@ -10,7 +10,7 @@
     gap:var(--space-sl);
     background-color: var(--color-a-400);
     color: var(--color-n-0);
-    padding: var(--font-size-sl);
+    padding: var(--font-size-xxl);
     border-radius: var(--border-radius-xl);
 }
 .title-banner {

@@ -6,7 +6,7 @@
 
 .form-group label {
     font-weight: var(--font-weight-estandar);
-    margin-bottom: var(--border-radius-body);
+    margin-bottom: var(--border-radius-s);
     color: var(--color-n-700);
 }
 
@@ -14,7 +14,7 @@
 .form-group textarea {
     padding: 0.5rem 0.75rem;
     border: 2px solid var(--color-grey-50);
-    border-radius: var(--border-radius-body);
+    border-radius: var(--border-radius-s);
     font-size: var(--font-size-base);
     background: var(--color-n-50);
     transition: border-color 0.2s;

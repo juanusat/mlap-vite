@@ -6,7 +6,7 @@
   padding:var(--font-size-xl) ;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: var(--border-radius-body);
+  border-radius: var(--border-radius-l);
   width: var(--width-estandar);
   background-color: var(--color-n-0);
   border: var(--border-width-s) solid var(--color-n-50);
@@ -21,7 +21,6 @@
 .mlap-module-access-icon {
   width: var(--space-big);
   height: var(--space-big);
-  border-radius: var(--border-radius-body);
   display: flex;
   align-items: center;
   justify-content: center;

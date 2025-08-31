@@ -35,22 +35,22 @@
   color: var(--color-n-0);
   border: none;
   padding: var(--space-body) var(--space-m);
-  border-radius: var(--border-radius-body);
+  border-radius: var(--border-radius-s);
   cursor: pointer;
   font-weight: var(--font-weight-estandar);
 }
 .modal-cancel-btn {
-  background: var( --color-grey-50);
-  color: var(--color-n-700);
+  background: var( --color-error-500);
+  color: var(--color-n-0);
   border: none;
   padding: var(--space-body) var(--space-m);
-  border-radius: var(--border-radius-body);
+  border-radius: var(--border-radius-s);
   cursor: pointer;
   font-weight: var(--font-weight-estandar);
 }
 .modal-confirm-btn:hover {
-  background: var(  --color-green-confirm-hover);
+  background: var(--color-green-confirm-hover);
 }
 .modal-cancel-btn:hover {
-  background: var(--color-grey-50);
+  background: var(--color-error-700);
 }

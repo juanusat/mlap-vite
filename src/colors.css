@@ -46,19 +46,7 @@
   --color-semi-trans: rgba(255, 255, 255, 0.1);
 
   /* sin tamaño */
-  --size-0:0;
-
-  /* tamaños de letras*/
-  --font-size-xs: 12px;
-  --font-size-body: 14px;
-  --font-size-s: 16px;
-  --font-size-m: 18px;
-  --font-size-l: 20px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
-  --font-size-header: 42px;
-  --font-size-big: 51px;
-
+  --size-0: 0;
   /* espaciado */
   --space-0: 0px;
   --space-small: 2px;
@@ -72,7 +60,7 @@
   --space-xl: 32px;
   --space-xxl: 36px;
   --space-3xl: 40px;
-  --space-big:64px;
+  --space-big: 64px;
 
   /* altura de línea */
   --line-height-xs: 1.1;
@@ -81,7 +69,6 @@
   /* estilo */
   --box-shadow-light: 0 2px 16px rgba(0, 0, 0, 0.06);
   --border-radius-xs: 4px;
-  --border-radius-body: 6px;
   --border-radius-s: 8px;
   --border-radius-m: 10px;
   --border-radius-body: 12px;
@@ -89,21 +76,27 @@
   --border-radius-xl: 24px;
   --border-width-s: 1px;
   --border-width-m: 2px;
-  --border-radius-p:50%;
+  --border-radius-p: 50%;
 
   /* tipografía */
+  --font-size-2xl: 32px;
   --font-size-base: 1rem;
-  --font-size-s: 1.1rem;
-  --font-size-l: 1.3rem;
-  --font-size-sl: 2rem;
-  --font-size-xl: 2.2rem;
-  --font-weight-regular: 500;
-  --font-weight-bold: 700;
-  --letter-spacing-s: 1px;
-  --letter-spacing-m: 2px;
-  --font-weight-small: 400;
-  --font-weight-estandar: 500;
+  --font-size-big: 51px;
+  --font-size-body: 14px;
+  --font-size-header: 42px;
+  --font-size-l: 20px;
+  --font-size-m: 18px;
+  --font-size-s: 16px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  --font-size-xs: 12px;
   --font-weight-big: 700;
+  --font-weight-bold: 700;
+  --font-weight-estandar: 500;
+  --font-weight-regular: 500;
+  --font-weight-small: 400;
+  --letter-spacing-m: 2px;
+  --letter-spacing-s: 1px;
 
 
   /* ancho y alto */
@@ -111,9 +104,9 @@
   --max-width-small: 480px;
   --max-width-1: 500px;
   --min-width: 320px;
-  --min-width-small:220px;
+  --min-width-small: 220px;
   --min-height: 100vh;
-  --max-height-small:80vh;
+  --max-height-small: 80vh;
   --max-height-medium: 90vh;
   --width-estandar: 100%;
   --height-estandar: 100%;
@@ -123,7 +116,6 @@
   --grid-t-col-1: 100px;
   --grid-t-col-2: 200px;
   --grid-t-col-3: 300px;
-  --grid-t-col-4:380px;
+  --grid-t-col-4: 380px;
   --grid-t-col: 1fr;
-
 }

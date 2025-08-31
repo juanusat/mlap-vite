@@ -2,7 +2,7 @@
   color: var(  --color-green-confirm);
 }
 .btn-short-view:hover {
-  background: var(--color-n-50);
+  background: rgba(0, 0, 0, 0.14);
 }
 .my-btn-short-action {
   border: none;
@@ -10,9 +10,9 @@
   cursor: pointer;
   font-size: var(--font-size-l);
   padding: var(--space-xxs) var(--space-xs);
-  border-radius: var(--border-radius-body-small);
+  border-radius: var(--border-radius-s);
   transition: background 0.2s;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0, 0, 0, 0.06);
   display: grid;
   place-items: center;
 }
@@ -26,5 +26,5 @@
   color: var(--color-error-600);
 }
 .btn-short-delete:hover {
-  background: var(--color-error-50);
+  background: var(--color-error-200);
 }

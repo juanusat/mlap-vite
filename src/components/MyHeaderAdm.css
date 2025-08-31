@@ -196,10 +196,10 @@ button.btn-nb:hover {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-m);
+    padding: var(--space-s) var(--space-m);
     background-color: transparent;
     border: var(--border-width-s) solid var(--color-error-200);
-    border-radius: var(--border-radius-body);
+    border-radius: var(--border-radius-s);
     cursor: pointer;
     color: var(--color-error-600);
     width: var(--width-estandar);

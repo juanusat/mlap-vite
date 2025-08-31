@@ -1,8 +1,8 @@
 .switch-toggle-doc {
   position: relative;
   display: inline-block;
-  width: var(--space-xl);
-  height: var(--font-size-m);
+  width: var(--space-xxl);
+  height: calc(var(--space-xxs) * 5);
 }
 
 .switch-toggle-doc input {
@@ -19,7 +19,7 @@
   right: var(--size-0);
   bottom: var(--size-0);
   background-color: var(--color-grey-50);
-  transition: .4s;
+  transition: .3s;
   border-radius: var(--font-size-m);
 }
 
@@ -33,12 +33,12 @@
   height: var(--space-s);
   width: var(--space-s);
   left: var(--space-xxs);
-  bottom: var(--border-radius-xs);
+  bottom: var(--space-xxs);
   background-color: var(--color-n-0);
-  transition: .4s;
+  transition: .3s;
   border-radius: var(--border-radius-p);
 }
 
 .switch-toggle-doc input:checked+.slider-doc:before {
-  transform: translateX(var(--font-size-body));
+  transform: translateX(calc(var(--space-s) * 1.3));
 }
