@@ -10,9 +10,8 @@
   cursor: pointer;
   font-size: var(--font-size-l);
   padding: var(--space-xxs) var(--space-xs);
-  border-radius: var(--border-radius-body);
+  border-radius: var(--border-radius-body-small);
   transition: background 0.2s;
-  margin-left: var(--border-radius-body);
   background-color: rgba(0, 0, 0, 0.03);
   display: grid;
   place-items: center;

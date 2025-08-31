@@ -3,7 +3,7 @@
   align-items: center;
   background-color: var(--color-n-0);
   border-radius: var(--border-radius-xl);
-  border: var(--border-width-m) solid #cecece;
+  border: var(--border-width-m) solid var(--color-grey-50);
   padding: var(--space-xs) var(--space-m);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width:var(--width-estandar) ;
