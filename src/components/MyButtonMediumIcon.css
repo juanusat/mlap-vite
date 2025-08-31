@@ -4,8 +4,8 @@
     padding: var(--space-xs) var(--font-size-base);
     border: none;
     border-radius: var(--border-radius-xs);
-    background-color: var(--button-bg, --color-b-400);
-    color: var(--button-color, --color-n-0);
+    background-color: var(--button-bg, #007bff);
+    color: var(--button-color, #fff);
     cursor: pointer;
     transition: background-color 0.2s;
     gap: var(--space-xs);
@@ -13,9 +13,28 @@
 }
 
 .my-button-medium-icon:hover {
-    background-color: var(--button-bg-hover, --color-b-600);
+    background-color: var(--button-bg-hover, #0056b3);
 }
+
 .my-button-medium-icon svg {
     height: var(--font-size-l);
-    width:var(--font-size-l);
+    width: var(--font-size-l);
+}
+
+.my-button-medium-icon[type="submit"] {
+    background-color: var(--color-green-save, #28a745);
+    color: white;
+}
+
+.my-button-medium-icon[type="button"] {
+    background-color: var(--color-red-cancel, #dc3545);
+    color: white;
+}
+
+.my-button-medium-icon[type="submit"]:hover {
+    background-color: var(--color-green-save-hover, #218838);
+}
+
+.my-button-medium-icon[type="button"]:hover {
+    background-color: var(--color-red-cancel-hover, #c82333);
 }

@@ -70,6 +70,7 @@
   --space-l: 24px;
   --space-sl: 26px;
   --space-xl: 32px;
+  --space-2xl: 34px;
   --space-xxl: 36px;
   --space-3xl: 40px;
   --space-big:64px;
@@ -80,6 +81,7 @@
 
   /* estilo */
   --box-shadow-light: 0 2px 16px rgba(0, 0, 0, 0.06);
+  --border-radius-small: 3px;
   --border-radius-xs: 4px;
   --border-radius-body: 6px;
   --border-radius-s: 8px;
