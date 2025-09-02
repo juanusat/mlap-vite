@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -13,7 +13,13 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'view') {
     icon = <MdRemoveRedEye />;
     className = 'btn-short-view';
-  } else {
+  } else if (type === 'refresh') {
+    icon = <MdRefresh />; 
+    className = 'btn-short-refresh';
+  } else if (type === 'add'){
+    icon = <MdAdd />;
+    className = 'btn-short-add';
+  }else {
     icon = null;
     className = '';
   }

@@ -28,3 +28,18 @@
 .btn-short-delete:hover {
   background: var(--color-error-200);
 }
+
+.btn-short-refresh {
+  color: var(--color-blue-btn);
+}
+.btn-short-refresh:hover {
+  background: #e3f2fd;
+}
+
+.btn-short-add{
+  color: var(--color-a-600);
+}
+
+.btn-short-add:hover {
+  background-color: #e3f2fd ;
+}
