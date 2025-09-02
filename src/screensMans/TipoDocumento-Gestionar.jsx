@@ -85,43 +85,80 @@ export default function TipoDocumentoGestionar() {
     setPanelMode('add');
     setPanelOpen(true);
   };
-const handlePanelSave = () => {
-  if (panelMode === 'add') {
-    if (formValues.nombre.trim()) {
-      setDocs([...docs, {
-        id: Date.now(),
+  const handlePanelSave = () => {
+    if (panelMode === 'add') {
+      if (formValues.nombre.trim()) {
+        setDocs([...docs, {
+          id: Date.now(),
+          nombre: formValues.nombre,
+          descripcion: formValues.descripcion,
+          nombreCorto: formValues.nombreCorto,
+          estado: 'Activo',
+        }]);
+        setPanelOpen(false);
+      }
+    } else if (panelMode === 'edit' && editDoc) {
+      setDocs(docs.map(doc => doc.id === editDoc.id ? {
+        ...doc,
         nombre: formValues.nombre,
         descripcion: formValues.descripcion,
         nombreCorto: formValues.nombreCorto,
-        estado: 'Activo',
-      }]);
+      } : doc));
       setPanelOpen(false);
+      setEditDoc(null);
     }
-  } else if (panelMode === 'edit' && editDoc) {
-    setDocs(docs.map(doc => doc.id === editDoc.id ? {
-      ...doc,
-      nombre: formValues.nombre,
-      descripcion: formValues.descripcion,
-      nombreCorto: formValues.nombreCorto,
-    } : doc));
+  };
+
+  const handlePanelCancel = () => {
     setPanelOpen(false);
     setEditDoc(null);
-  }
-};
+  };
 
-const handlePanelCancel = () => {
-  setPanelOpen(false);
-  setEditDoc(null);
-};
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues(prev => ({ ...prev, [name]: value }));
+  };
 
-const handleFormChange = (e) => {
-  const { name, value } = e.target;
-  setFormValues(prev => ({ ...prev, [name]: value }));
-};
-
-return (
+  return (
     <>
-    <MyPanelLateralConfig
+      <div className="content-module">
+        <h2 className='title-screen'>Tipos de Documentos</h2>
+        <MyButtonMediumIcon text="Agregar" icon="MdAdd" onClick={handleAdd} />
+        <div style={{ width: '100%' }}>
+          <MyList1>
+            {docs.map(doc => (
+              <MyListItem1 key={doc.id} baja={doc.estado === 'Baja'}>
+                <SwitchToggleDoc
+                  checked={doc.estado === 'Activo'}
+                  onChange={() => handleToggleConfirm(doc.id, doc.estado === 'Activo' ? 'baja' : 'alta')}
+                />
+                <span style={{ marginLeft: '12px', marginRight: 'auto' }}>{doc.nombre}</span>
+                <MyGroupButtonsActions>
+                  <MyButtonShortAction type="view" onClick={() => handleView(doc.id)} title="Visualizar" />
+                  <MyButtonShortAction type="edit" onClick={() => handleEdit(doc.id)} title="Editar" />
+                  <MyButtonShortAction type="delete" onClick={() => handleDelete(doc.id)} title="Eliminar" />
+                </MyGroupButtonsActions>
+              </MyListItem1>
+            ))}
+            <MyModalConfirm
+              open={modalOpen}
+              message={
+                modalAction === 'baja'
+                  ? '¿Desea dar de baja este tipo de documento?'
+                  : modalAction === 'alta'
+                    ? '¿Desea dar de alta este tipo de documento?'
+                    : modalAction === 'delete'
+                      ? '¿Seguro que quieres borrar este tipo de documento?'
+                      : ''
+              }
+              onConfirm={handleModalConfirm}
+              onCancel={handleModalCancel}
+            />
+          </MyList1>
+        </div>
+      </div>
+
+      <MyPanelLateralConfig
         title={panelMode === 'add' ? 'Agregar Tipo de Documento' : panelMode === 'edit' ? 'Editar Tipo de Documento' : 'Visualizar Tipo de Documento'}
         doc={editDoc}
         mode={panelMode}
@@ -160,40 +197,6 @@ return (
           </div>
         </form>
       </MyPanelLateralConfig>
-    <h2 className='title-screen'>Tipos de Documentos</h2>
-    <MyButtonMediumIcon text="Agregar" icon="MdAdd" onClick={handleAdd} />
-    <div style={{ width: '100%' }}>
-      <MyList1>
-        {docs.map(doc => (
-          <MyListItem1 key={doc.id} baja={doc.estado === 'Baja'}>
-            <SwitchToggleDoc
-              checked={doc.estado === 'Activo'}
-              onChange={() => handleToggleConfirm(doc.id, doc.estado === 'Activo' ? 'baja' : 'alta')}
-            />
-            <span style={{ marginLeft: '12px', marginRight: 'auto' }}>{doc.nombre}</span>
-            <MyGroupButtonsActions>
-              <MyButtonShortAction type="view" onClick={() => handleView(doc.id)} title="Visualizar" />
-              <MyButtonShortAction type="edit" onClick={() => handleEdit(doc.id)} title="Editar" />
-              <MyButtonShortAction type="delete" onClick={() => handleDelete(doc.id)} title="Eliminar" />
-            </MyGroupButtonsActions>
-          </MyListItem1>
-        ))}
-        <MyModalConfirm
-          open={modalOpen}
-          message={
-            modalAction === 'baja'
-              ? '¿Desea dar de baja este tipo de documento?'
-              : modalAction === 'alta'
-              ? '¿Desea dar de alta este tipo de documento?'
-              : modalAction === 'delete'
-              ? '¿Seguro que quieres borrar este tipo de documento?'
-              : ''
-          }
-          onConfirm={handleModalConfirm}
-          onCancel={handleModalCancel}
-        />
-      </MyList1>
-    </div>
     </>
-);
+  );
 }

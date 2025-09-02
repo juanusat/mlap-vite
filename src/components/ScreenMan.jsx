@@ -4,18 +4,14 @@ import MyAsideGen from "./MyAsideGen";
 import MyPanelLateralConfig from "./MyPanelLateralConfig";
 import "./ScreenMan.css";
 
-const ScreenMan = ({ children, panelLateral, title, options }) => {
+const ScreenMan = ({ children, title, options }) => {
   return (
     <div className="screenman-container">
       <MyHeaderAdm />
       <div className="screenman-main">
         <MyAsideGen title={title} options={options} />
         <article className="screenman-article">
-          <div className="content-module">
-            {children}
-          </div>
-          {/* Panel lateral global, fuera del contenido principal */}
-          {panelLateral}
+          {children}
         </article>
       </div>
     </div>
