@@ -20,13 +20,6 @@ const initialDocs = [
 
 export default function TipoDocumentoGestionar() {
   // Visualiza el panel lateral en modo solo lectura
-  const handleView = (id) => {
-    const doc = docs.find(d => d.id === id);
-    setEditDoc(doc);
-    setFormValues({ nombre: doc.nombre, descripcion: doc.descripcion || '', nombreCorto: doc.nombreCorto || '' });
-    setPanelMode('view');
-    setPanelOpen(true);
-  };
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState('add'); // 'add' o 'edit'
   const [editDoc, setEditDoc] = useState(null);
@@ -36,7 +29,14 @@ export default function TipoDocumentoGestionar() {
   const [modalDocId, setModalDocId] = useState(null);
   const [modalAction, setModalAction] = useState('');
 
-  // Edita el panel lateral en vez de abrir modal
+  const handleView = (id) => {
+    const doc = docs.find(d => d.id === id);
+    setEditDoc(doc);
+    setFormValues({ nombre: doc.nombre, descripcion: doc.descripcion || '', nombreCorto: doc.nombreCorto || '' });
+    setPanelMode('view');
+    setPanelOpen(true);
+  };
+
   const handleEdit = (id) => {
     const doc = docs.find(d => d.id === id);
     setEditDoc(doc);
