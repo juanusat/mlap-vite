@@ -1,10 +1,16 @@
 import React from 'react';
-import './MyAsideButton1.css'
+import { NavLink } from 'react-router-dom';
+import './MyAsideButton1.css';
 
 export default function MyAsideButton1({ href, icon, children }) {
   return (
-    <a href={href} className="mlap-home-sidebar-link">
+    <NavLink
+      to={href}
+      className={({ isActive }) =>
+        `mlap-home-sidebar-link ${isActive ? 'active' : ''}`
+      }
+    >
       <span role="img" aria-label="icono">{icon}</span> {children}
-    </a>
+    </NavLink>
   );
 }
