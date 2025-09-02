@@ -2,6 +2,7 @@ import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdDescription } from "react-icons/md";
 import { Outlet, Link } from 'react-router-dom';
+import './TipoDocumento-access.css';
 
 export default function TipoDocumento() {
   const options = [

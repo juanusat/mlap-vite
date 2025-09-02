@@ -1,0 +1,57 @@
+.content-module{
+    width: 100%;
+    height: auto;
+}
+.main-container {
+    display: flex;
+    width: 90%;
+    padding: 24px;
+    gap: 20px;
+}
+
+.list-container {
+    width: 100%;
+    transition: width 0.3s ease-in-out;
+}
+
+.list-container.has-panel-open {
+    width: 65%; /* Ajusta el ancho de la lista cuando el panel está abierto */
+}
+
+.panel-container {
+    width: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+
+}
+
+.panel-container.is-open {
+    width: 35%; /* Ancho que tendrá el panel cuando esté visible */
+    visibility: visible;
+    opacity: 1;
+}
+
+.title-screen {
+    color: var(--color-text-title);
+    font-family: var(--font-family-title);
+    font-size: var(--font-size-xxlarge);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 20px;
+}
+
+.panel-config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    width: auto;
+}
+
+.panel-config-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    width: auto;
+}
