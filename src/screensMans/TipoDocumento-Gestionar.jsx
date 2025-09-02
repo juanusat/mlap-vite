@@ -121,7 +121,7 @@ export default function TipoDocumentoGestionar() {
 
   return (
     <>
-      <div className="content-module">
+      <div className="content-module only-this">
         <h2 className='title-screen'>Tipos de Documentos</h2>
         <MyButtonMediumIcon text="Agregar" icon="MdAdd" onClick={handleAdd} />
         <div style={{ width: '100%' }}>
@@ -158,45 +158,43 @@ export default function TipoDocumentoGestionar() {
         </div>
       </div>
 
-      <MyPanelLateralConfig
-        title={panelMode === 'add' ? 'Agregar Tipo de Documento' : panelMode === 'edit' ? 'Editar Tipo de Documento' : 'Visualizar Tipo de Documento'}
-        doc={editDoc}
-        mode={panelMode}
-        onClose={handlePanelCancel}
-        isOpen={panelOpen}
-      >
-        <form className="panel-config-form" onSubmit={e => { e.preventDefault(); handlePanelSave(); }}>
-          <TextInput
-            label="Nombre"
-            name="nombre"
-            value={formValues.nombre}
-            onChange={handleFormChange}
-            required
-            disabled={panelMode === 'view'}
-          />
-          <Textarea
-            label="Descripción"
-            name="descripcion"
-            value={formValues.descripcion}
-            onChange={handleFormChange}
-            disabled={panelMode === 'view'}
-            rows={3}
-          />
-          <TextInput
-            label="Nombre Corto"
-            name="nombreCorto"
-            value={formValues.nombreCorto}
-            onChange={handleFormChange}
-            disabled={panelMode === 'view'}
-          />
-          <div className="panel-config-actions">
-            {panelMode !== 'view' && (
-              <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
-            )}
-            <MyButtonMediumIcon text="Cancelar" icon="MdClose" type="button" onClick={handlePanelCancel} />
-          </div>
-        </form>
-      </MyPanelLateralConfig>
+      {panelOpen && (
+        <MyPanelLateralConfig
+          title={panelMode === 'add' ? 'Agregar Tipo de Documento' : panelMode === 'edit' ? 'Editar Tipo de Documento' : 'Visualizar Tipo de Documento'}
+        >
+          <form className="panel-config-form" onSubmit={e => { e.preventDefault(); handlePanelSave(); }}>
+            <TextInput
+              label="Nombre"
+              name="nombre"
+              value={formValues.nombre}
+              onChange={handleFormChange}
+              required
+              disabled={panelMode === 'view'}
+            />
+            <Textarea
+              label="Descripción"
+              name="descripcion"
+              value={formValues.descripcion}
+              onChange={handleFormChange}
+              disabled={panelMode === 'view'}
+              rows={3}
+            />
+            <TextInput
+              label="Nombre Corto"
+              name="nombreCorto"
+              value={formValues.nombreCorto}
+              onChange={handleFormChange}
+              disabled={panelMode === 'view'}
+            />
+            <div className="panel-config-actions">
+              {panelMode !== 'view' && (
+                <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
+              )}
+              <MyButtonMediumIcon text="Cancelar" icon="MdClose" type="button" onClick={() => { setPanelOpen(false); setEditDoc(null); }} />
+            </div>
+          </form>
+        </MyPanelLateralConfig>
+      )}
     </>
   );
 }
