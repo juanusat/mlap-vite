@@ -1,16 +1,4 @@
-/* Estilos generales reutilizables */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5;
-    min-height: 100vh;
-    padding: 2em;
-}
 
-.container {
-    width: 95%;
-    max-width: 1400px;
-    margin: auto;
-}
 
 .card {
     background-color: #fff;
@@ -247,4 +235,355 @@ input:checked + .slider:before {
 
 .close-btn:hover {
     color: black;
+}
+
+/* Estilos para el modal genérico cuando contiene permisos */
+.modal-content.permissions-modal-wide {
+    max-width: 95% !important;
+    width: 95% !important;
+    max-height: 90vh !important;
+    padding: 0 !important;
+}
+
+.permissions-modal-content {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 1.5em !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+.permissions-matrix-container {
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    margin-top: 1em !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+}
+
+.permissions-matrix-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+}
+
+.permissions-matrix-table thead {
+    position: sticky !important;
+    top: 0 !important;
+    background-color: #f8f9fa !important;
+    z-index: 10 !important;
+}
+
+.permissions-matrix-table th {
+    border: 1px solid #e0e0e0 !important;
+    padding: 12px 16px !important;
+    text-align: center !important;
+    background-color: #f8f9fa !important;
+    color: #555 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+.permissions-matrix-table th:first-child {
+    text-align: left !important;
+    min-width: 200px !important;
+}
+
+.permissions-matrix-table td {
+    border: 1px solid #e0e0e0 !important;
+    padding: 12px 16px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.permissions-matrix-table td:first-child {
+    text-align: left !important;
+    font-weight: 500 !important;
+    background-color: #f9f9f9 !important;
+}
+
+.permissions-matrix-table tbody tr:hover {
+    background-color: #f0f8ff !important;
+}
+
+.permissions-matrix-table tbody tr:nth-child(even) td:not(:first-child) {
+    background-color: #f9f9f9 !important;
+}
+
+.permissions-matrix-table tbody tr:nth-child(even):hover td {
+    background-color: #f0f8ff !important;
+}
+
+/* Estilos para los toggle switches en la matriz */
+.permissions-matrix-table .toggle-container {
+    position: relative !important;
+    display: inline-block !important;
+    width: 48px !important;
+    height: 24px !important;
+    margin: 0 !important;
+}
+
+.permissions-matrix-table .toggle-container input {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.permissions-matrix-table .slider {
+    position: absolute !important;
+    cursor: pointer !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: #ccc !important;
+    transition: .4s !important;
+    border-radius: 34px !important;
+}
+
+.permissions-matrix-table .slider:before {
+    position: absolute !important;
+    content: "" !important;
+    height: 16px !important;
+    width: 16px !important;
+    left: 4px !important;
+    bottom: 4px !important;
+    background-color: white !important;
+    transition: .4s !important;
+    border-radius: 50% !important;
+}
+
+.permissions-matrix-table input:checked + .slider {
+    background-color: #4CAF50 !important;
+}
+
+.permissions-matrix-table input:checked + .slider:before {
+    transform: translateX(24px) !important;
+}
+
+/* Búsqueda dentro del modal de permisos */
+.permissions-modal-content .search-container {
+    margin-bottom: 1.5em !important;
+}
+
+.permissions-modal-content .search-container input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    transition: border-color 0.3s ease !important;
+}
+
+.permissions-modal-content .search-container input:focus {
+    border-color: #2196F3 !important;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3) !important;
+}
+
+/* Scrollbar personalizada para la matriz */
+.permissions-matrix-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.permissions-matrix-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.permissions-matrix-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.permissions-matrix-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+.permissions-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+}
+
+.permissions-modal-content {
+    background-color: #fff !important;
+    border-radius: 10px !important;
+    width: 95% !important;
+    max-width: 1200px !important;
+    max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+.permissions-modal-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 20px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    flex-shrink: 0 !important;
+}
+
+.permissions-modal-body {
+    padding: 20px !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.permissions-search input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.3s ease !important;
+}
+
+.permissions-search input:focus {
+    border-color: #2196F3 !important;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3) !important;
+}
+
+.permissions-matrix-wrapper {
+    flex: 1 !important;
+    overflow: auto !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+}
+
+.permissions-matrix-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 14px !important;
+}
+
+.permissions-matrix-table thead {
+    position: sticky !important;
+    top: 0 !important;
+    background-color: #f8f9fa !important;
+    z-index: 10 !important;
+}
+
+.permissions-matrix-table th {
+    padding: 16px !important;
+    border-bottom: 2px solid #e0e0e0 !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    background-color: #f8f9fa !important;
+}
+
+.permissions-matrix-table td {
+    padding: 16px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.permissions-matrix-table tbody tr:hover {
+    background-color: #f0f8ff !important;
+}
+
+.permissions-matrix-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
+}
+
+.permissions-matrix-table tbody tr:nth-child(even):hover {
+    background-color: #f0f8ff !important;
+}
+
+/* Estilos para los checkboxes */
+.permissions-matrix-table input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    accent-color: #4CAF50 !important;
+    margin: 0 !important;
+}
+
+.permissions-matrix-table label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 5px !important;
+}
+
+/* Remover conflictos con otros estilos de modal */
+.permissions-modal-overlay * {
+    box-sizing: border-box !important;
+}
+
+/* Scrollbar personalizada */
+.permissions-matrix-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.permissions-matrix-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.permissions-matrix-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.permissions-matrix-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Estilos para los formularios dentro de modales */
+.Inputs-add, .Inputs-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.Inputs-add label, .Inputs-edit label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.3em;
+}
+
+.inputModal {
+    padding: 0.75em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.inputModal:focus {
+    border-color: #2196F3;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+    outline: none;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1em;
+    margin-top: 1.5em;
 }

@@ -29,7 +29,14 @@ const DynamicTable = ({ columns, data, itemsPerPage = 4 }) => {
                 <thead>
                     <tr>
                         {columns.map((column) => (
-                            <th key={column.key}>{column.header}</th>
+                            <th 
+                                key={column.key}
+                                onClick={column.sortable ? column.onSort : undefined}
+                                className={column.sortable ? 'sortable-header' : ''}
+                                style={column.sortable ? { cursor: 'pointer', userSelect: 'none' } : {}}
+                            >
+                                {column.header}
+                            </th>
                         ))}
                     </tr>
                 </thead>

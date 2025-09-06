@@ -23,6 +23,8 @@ export default function EventosLiturgicos() {
     const [showModal, setShowModal] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
+    const [sortKey, setSortKey] = useState(null);
+    const [sortDirection, setSortDirection] = useState('asc');
 
     // 2. Lógica para filtrar eventos basándose en el término de búsqueda
     const filteredEvents = events.filter((event) =>
@@ -30,6 +32,37 @@ export default function EventosLiturgicos() {
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
+
+    // 2.1. Lógica para ordenar los eventos filtrados
+    const sortedAndFilteredEvents = [...filteredEvents].sort((a, b) => {
+        if (!sortKey) return 0;
+        
+        let aValue = a[sortKey];
+        let bValue = b[sortKey];
+        
+        if (sortKey === 'id') {
+            const result = aValue - bValue;
+            return sortDirection === 'asc' ? result : -result;
+        }
+        
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? 
+                aValue.localeCompare(bValue) : 
+                bValue.localeCompare(aValue);
+        }
+        
+        return 0;
+    });
+
+    // 2.2. Función para manejar el ordenamiento
+    const handleSort = (key) => {
+        if (sortKey === key) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortKey(key);
+            setSortDirection('asc');
+        }
+    };
 
     // 3. Funciones de manejo de acciones
     const handleToggle = (eventId) => {
@@ -101,9 +134,27 @@ export default function EventosLiturgicos() {
     
     // 5. Configuración de las columnas de la tabla
     const eventColumns = [
-        { key: 'id', header: 'ID', accessor: (row) => row.id },
-        { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
-        { key: 'descripcion', header: 'Descripción', accessor: (row) => row.descripcion },
+        { 
+            key: 'id', 
+            header: 'ID', 
+            accessor: (row) => row.id,
+            sortable: true,
+            onSort: () => handleSort('id')
+        },
+        { 
+            key: 'nombre', 
+            header: 'Nombre', 
+            accessor: (row) => row.nombre,
+            sortable: true,
+            onSort: () => handleSort('nombre')
+        },
+        { 
+            key: 'descripcion', 
+            header: 'Descripción', 
+            accessor: (row) => row.descripcion,
+            sortable: true,
+            onSort: () => handleSort('descripcion')
+        },
         {
             key: 'estado',
             header: 'Estado',
@@ -136,7 +187,7 @@ export default function EventosLiturgicos() {
                     </div>
                     <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                 </div>
-                <DynamicTable columns={eventColumns} data={filteredEvents} />
+                <DynamicTable columns={eventColumns} data={sortedAndFilteredEvents} />
 
                 <Modal
                     show={showModal}

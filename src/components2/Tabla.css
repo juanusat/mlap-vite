@@ -30,6 +30,15 @@
   text-transform: uppercase;
 }
 
+/* Estilos para encabezados ordenables */
+.sortable-header {
+  transition: background-color 0.3s ease;
+}
+
+.sortable-header:hover {
+  background-color: #e9ecef !important;
+}
+
 .dynamic-table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
