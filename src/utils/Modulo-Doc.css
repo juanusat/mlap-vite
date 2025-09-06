@@ -1,0 +1,35 @@
+.modulo-container {
+  width: 95%;
+  margin: 20px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modulo-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.modulo-content {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.modulo-content ul {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+
+.modulo-content ul li {
+  margin-bottom: 10px;
+  list-style: disc;
+  color: #34495e;
+}

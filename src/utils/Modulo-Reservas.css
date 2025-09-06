@@ -1,0 +1,76 @@
+.modulo-container {
+  width: 95%;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: #2c2c2c;
+}
+
+.modulo-header {
+  text-align: start;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 1.5rem;
+}
+
+.modulo-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #cc6600; /* Naranja institucional para reservas */
+  margin-bottom: 0.5rem;
+}
+
+.modulo-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 750px;
+}
+
+.modulo-content {
+  line-height: 1.8;
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  text-align: justify;
+  color: #444;
+}
+
+.modulo-destacados {
+  background: linear-gradient(135deg, #fffaf5, #fef3e7);
+  padding: 2rem;
+  border-radius: 14px;
+  border: 1px solid #f1dfd0;
+}
+
+.destacados-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #cc6600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.destacados-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.destacados-list li {
+  background: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.destacados-list li:hover {
+  background: #fff4e6;
+  transform: translateY(-3px);
+}

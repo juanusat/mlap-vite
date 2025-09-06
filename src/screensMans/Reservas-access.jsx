@@ -2,6 +2,7 @@ import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdPendingActions, MdHistory } from "react-icons/md";
 import { Outlet } from 'react-router-dom';
+import '../utils/Modulo-Reservas.css';
 
 export default function Reservas() {
   const options = [
@@ -12,6 +13,29 @@ export default function Reservas() {
   return (
     <ScreenMan title="Módulo reserva" options={options}>
       <Outlet />
+      <section className="modulo-container">
+        <header className="modulo-header">
+          <h1 className="modulo-title">Módulo de Reservas</h1>
+          <p className="modulo-subtitle">
+            Organización y control centralizado de las reservas de espacios y servicios parroquiales.
+          </p>
+        </header>
+
+        <article className="modulo-content">
+          <p>
+            El <strong>Módulo de Reservas</strong> facilita la gestión de solicitudes
+            para la utilización de espacios, recursos y servicios dentro de la
+            parroquia. Desde la reserva de salones hasta la coordinación de equipos
+            y actividades, este módulo asegura un proceso transparente y accesible.
+          </p>
+
+          <p>
+            Su implementación contribuye a evitar conflictos de horarios, optimizar
+            el uso de los recursos parroquiales y garantizar que cada solicitud sea
+            atendida de manera ordenada y eficiente.
+          </p>
+        </article>
+      </section>
     </ScreenMan>
   );
 }
