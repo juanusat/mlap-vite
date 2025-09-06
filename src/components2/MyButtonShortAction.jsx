@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack,    } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -19,6 +19,12 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'add'){
     icon = <MdAdd />;
     className = 'btn-short-add';
+  } else if (type === 'next'){
+    icon = <MdArrowForward />;
+    className = 'btn-short-next'
+   } else if (type === 'back'){
+    icon = <MdArrowBack />;
+    className = 'btn-short-back'
   }else {
     icon = null;
     className = '';

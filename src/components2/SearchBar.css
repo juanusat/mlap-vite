@@ -1,0 +1,30 @@
+/* src/styles/SearchBar.css */
+
+.search-bar-container {
+  display: flex;
+  justify-content: center; /* Alinea la barra de búsqueda a la derecha */
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 500px; /* Ancho fijo para la barra de búsqueda */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px; /* Bordes más redondeados (estilo "píldora") */
+  font-size: 16px;
+  outline: none; /* Elimina el contorno azul al hacer clic */
+  transition: all 0.3s ease; /* Transición suave para los efectos */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+  background: white;
+  color: black;
+}
+
+.search-input:focus {
+  border-color: #007bff; /* Color del borde al enfocar */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); /* Sombra de enfoque */
+  width: 500px; /* Un poco más ancho al enfocar para un efecto de "expansión" */
+}
+
+.search-input::placeholder {
+  color: #888;
+}

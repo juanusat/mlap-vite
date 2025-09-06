@@ -1,0 +1,80 @@
+.app-container {
+    border: 1px solid #ddd;              /* borde sutil */
+    border-radius: 8px;                  /* esquinas más suaves */
+    background: #ffffff;                 /* fondo blanco limpio */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* sombra ligera */
+    padding: 20px;                       /* espacio interno */                  /* ancho máximo */
+    margin: 20px auto;                   /* centrado */
+    font-family: "Segoe UI", Tahoma, sans-serif; /* tipografía */
+    color: #333;                         /* color de texto */
+    transition: all 0.3s ease-in-out;    /* animación suave */
+}
+
+.app-container:hover {
+    transform: translateY(-4px);         /* pequeño levantamiento */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.search-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* espacio entre centro y botón */
+    width: 100%;
+    padding: 0 20px; /* opcional, para separarlo de los bordes */
+}
+
+.center-container {
+    flex: 1;                     /* ocupa todo el espacio posible */
+    display: flex;
+    justify-content: center;      /* centra el SearchBar dentro de este espacio */
+}
+
+.search-add button {
+    flex: 0;                     /* botón no se expande */
+}
+----------------------------------------------------------------------------------------
+.Inputs-edit {
+    display: flex;
+    flex-direction: column;   /* pone los elementos en columna */
+    align-items: flex-start;  /* los alinea a la izquierda */
+    gap: 10px;                /* espacio entre los inputs */
+    width: 100%;              /* opcional: para que ocupe todo el ancho disponible */
+}
+
+.inputModal {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 300px;            /* ancho fijo o ajustable */
+    font-size: 16px;
+    outline: none;
+    background-color: white;
+    color: black;
+}
+
+.Combo-add {
+    display: flex;             /* activamos Flexbox */
+    justify-content: center;   /* centramos horizontalmente */
+    align-items: center;       /* centramos verticalmente si hay altura */
+    margin: 20px ;           /* opcional: espacio arriba y abajo */
+}
+
+.ComboModal {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    min-width: 300px;   
+    color: black;       /* ancho mínimo opcional */
+}
+
+.buttons-container{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 10px;
+}
