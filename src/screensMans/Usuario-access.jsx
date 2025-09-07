@@ -1,10 +1,13 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdPerson } from "react-icons/md";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Usuario.css';
 
 export default function Usuario() {
+  const location = useLocation();
+  const isBasePath = location.pathname === '/man-usuario';
+
   const options = [
     { href: 'gestionar', icon: <MdPerson />, label: 'Gestionar Usuario' },
   ];
@@ -12,7 +15,7 @@ export default function Usuario() {
   return (
     <ScreenMan title="Módulo Usuario" options={options}>
       <Outlet />
-      <section className="modulo-container">
+      {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
           <h1 className="modulo-title">Módulo de Usuario</h1>
           <p className="modulo-subtitle">
@@ -38,6 +41,6 @@ export default function Usuario() {
         </article>
 
       </section>
-    </ScreenMan>
+      )}</ScreenMan>
   );
 }

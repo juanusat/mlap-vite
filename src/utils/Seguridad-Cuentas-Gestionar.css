@@ -1,0 +1,46 @@
+.app-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: #333;
+    transition: margin-right 0.3s ease-in-out;
+    margin-right: 0;
+}
+
+.app-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.app-container.sidebar-active {
+    margin-right: 250px;
+}
+
+.search-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.center-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-add button {
+    flex: 0;
+}
+
+.button-group {
+    display: flex !important;
+    gap: var(--space-s);
+    align-items: center;
+    justify-content: flex-end !important;
+    margin:  var(--space-s);
+}

@@ -1,5 +1,4 @@
 /* src/components/Modal.css */
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -11,6 +10,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  border: 2px solid black;
 }
 
 .modal-content {

@@ -1,32 +1,23 @@
 .sidebar-container {
-    /* Posicionamiento y tamaño */
-    width: 250px;
+    width: 0;
     height: 100vh;
     background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-
-    /* Posicionamiento a la derecha */
-    position: fixed;
-    /* Lo saca del flujo normal del documento */
+    padding: 0px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     top: 0;
-    right: -250px;
-    /* Oculta la barra lateral fuera de la pantalla (su propio ancho) */
+    position: fixed;
+    right: 0;
     z-index: 1000;
-    /* Asegura que esté por encima de otros elementos */
-
-    /* Transición para la animación de abrir/cerrar */
-    transition: right 0.3s ease-in-out;
-
-    /* Flexbox para el contenido interno */
+    overflow: hidden; 
+    transition: width 0.1s ease-in-out; /* Animación de ancho */
     display: flex;
     flex-direction: column;
 }
 
 /* Clase para cuando la barra lateral está abierta */
 .sidebar-container.open {
-    right: 0;
-    /* Mueve la barra lateral a la posición visible */
+    width: 250px;
+    padding: 20px
 }
 
 .sidebar-title {

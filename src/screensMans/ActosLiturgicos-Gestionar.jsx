@@ -137,7 +137,7 @@ export default function EventosLiturgicos() {
                     <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents} />
-
+            </div>
                 <Modal
                     show={showModal}
                     onClose={handleCloseModal}
@@ -175,7 +175,6 @@ export default function EventosLiturgicos() {
                         <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
                     )}
                 </Modal>
-            </div>
         </div>
     );
 }

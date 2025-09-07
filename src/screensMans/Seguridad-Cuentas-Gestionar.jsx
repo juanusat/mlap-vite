@@ -7,90 +7,41 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import Sidebar from "../components2/Sidebar-Lateral";
-import "../utils/Roles-Gestionar.css";
+import "../utils/Seguridad-Cuentas-Gestionar.css";
 
-// Simulación de la base de datos de usuarios y roles
+// Definición de los 4 roles
+const allRoles = ["Administrador", "Secretario", "Vicario", "Editor"];
+
+// Simulación de la base de datos de usuarios (100 usuarios)
 const initialUsers = Array.from({ length: 100 }, (_, i) => {
-    const userRoles = [];
-    if (i % 2 === 0) {
-        userRoles.push("Editor", "Analista", "Desarrollador");
-    }
-    if (i % 3 === 0) {
-        userRoles.push("Moderador", "Soporte");
-    }
-    if (i % 5 === 0) {
-        userRoles.push("Gerente", "Contador", "Recursos Humanos");
-    }
-    if (i === 0) {
-        for (let j = 1; j <= 20; j++) {
-            userRoles.push(`Rol de prueba ${j}`);
-        }
-    }
+    // Asignación de un rol de forma cíclica
+    const userRoles = [allRoles[i % allRoles.length]];
     return {
         id: i + 1,
         username: `Usuario${i + 1}`,
         lastName: `Apellido${i + 1}`,
         email: `usuario${i + 1}@example.com`,
         isEnabled: true,
-        roles: userRoles
+        roles: userRoles,
     };
 });
-
-const allRoles = ["Admin", "Secretario", "Vicario", "Editor", "Analista", "Desarrollador", "Moderador", "Soporte", "Gerente", "Contador", "Recursos Humanos"];
-const itemsPerPage = 4;
 
 export default function CuentasGestionar() {
     // 1. Estados que controlan la lógica de la aplicación
     const [users, setUsers] = useState(initialUsers);
     const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'asc' });
     const [showModal, setShowModal] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [modalType, setModalType] = useState(null);
     const [showSidebar, setShowSidebar] = useState(false);
 
-    // 2. Lógica para filtrar y ordenar usuarios
-    const filteredAndSortedUsers = [...users]
-        .filter(user =>
-            Object.values(user).some(value =>
-                String(value).toLowerCase().includes(searchTerm.toLowerCase())
-            )
+    const filteredEvents = users.filter((user) =>
+        Object.values(user).some((value) =>
+            String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
-        .sort((a, b) => {
-            const aValue = typeof a[sortConfig.key] === 'string' ? a[sortConfig.key].toLowerCase() : a[sortConfig.key];
-            const bValue = typeof b[sortConfig.key] === 'string' ? b[sortConfig.key].toLowerCase() : b[sortConfig.key];
-
-            if (aValue < bValue) {
-                return sortConfig.direction === 'asc' ? -1 : 1;
-            }
-            if (aValue > bValue) {
-                return sortConfig.direction === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
-
-    const totalPages = Math.ceil(filteredAndSortedUsers.length / itemsPerPage);
-    const paginatedUsers = filteredAndSortedUsers.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
     );
 
-    // 3. Funciones de manejo de acciones
-    const handleSort = (key) => {
-        let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-        setSortConfig({ key, direction });
-        setCurrentPage(1);
-    };
-
-    const handleSearch = (term) => {
-        setSearchTerm(term);
-        setCurrentPage(1);
-    };
-
+    // 2. Funciones de manejo de acciones
     const handleToggle = (userId) => {
         setUsers(prevUsers =>
             prevUsers.map(user =>
@@ -123,30 +74,22 @@ export default function CuentasGestionar() {
     };
 
     const handleDeleteRole = (roleToRemove) => {
-        // Si no hay un usuario seleccionado, no hagas nada.
         if (!currentUser) {
             return;
         }
         setUsers(prevUsers => {
-            // 1. Crea la nueva lista de usuarios, eliminando el rol del usuario actual.
             const updatedUsers = prevUsers.map(user =>
                 user.id === currentUser.id
                     ? {
                         ...user,
                         roles: user.roles.filter(
-                            // La comparación robusta es clave: quita espacios y normaliza.
                             role => role.toLowerCase().trim() !== roleToRemove.toLowerCase().trim()
                         ),
                     }
                     : user
             );
-
-            // 2. Encuentra al usuario que acaba de ser actualizado en la nueva lista.
             const updatedCurrentUser = updatedUsers.find(user => user.id === currentUser.id);
-            // 3. ¡Este es el paso crítico! Actualiza el estado de currentUser.
-            // Esto le dice a React que el prop de Sidebar ha cambiado.
             setCurrentUser(updatedCurrentUser);
-            // 4. Devuelve la lista de usuarios actualizada para el re-renderizado principal.
             return updatedUsers;
         });
     };
@@ -178,10 +121,10 @@ export default function CuentasGestionar() {
                 lastName: '',
                 email: data.email,
                 isEnabled: true,
-                roles: []
+                roles: [allRoles[0]], // Asigna un rol por defecto
             };
             setUsers(prevUsers => [...prevUsers, newUser]);
-            setSearchTerm('');
+            // Ya no es necesario setSearchTerm('') porque la lógica de búsqueda está en la tabla
         }
         handleCloseModal();
     };
@@ -193,12 +136,12 @@ export default function CuentasGestionar() {
         handleCloseModal();
     };
 
-    // 4. Configuración de las columnas de la tabla
+    // 3. Configuración de las columnas de la tabla
     const userColumns = [
-        { key: 'id', header: 'ID', accessor: (row) => row.id, onHeaderClick: handleSort },
-        { key: 'username', header: 'Nombre', accessor: (row) => row.username, onHeaderClick: handleSort },
-        { key: 'lastName', header: 'Apellidos', accessor: (row) => row.lastName, onHeaderClick: handleSort },
-        { key: 'email', header: 'Correo', accessor: (row) => row.email, onHeaderClick: handleSort },
+        { key: 'id', header: 'ID', accessor: (row) => row.id },
+        { key: 'username', header: 'Nombre', accessor: (row) => row.username },
+        { key: 'lastName', header: 'Apellidos', accessor: (row) => row.lastName },
+        { key: 'email', header: 'Correo', accessor: (row) => row.email },
         {
             key: 'estado',
             header: 'Estado',
@@ -220,7 +163,7 @@ export default function CuentasGestionar() {
         },
     ];
 
-    // 5. La interfaz de usuario (JSX)
+    // 4. La interfaz de usuario (JSX)
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de Cuentas</h2>
@@ -233,16 +176,10 @@ export default function CuentasGestionar() {
                 </div>
                 <DynamicTable
                     columns={userColumns}
-                    data={paginatedUsers}
+                    data={filteredEvents}
                 />
-                <div className="pagination-controls">
-                    <button id="prev-page" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>Anterior</button>
-                    <span id="page-info">Página {currentPage} de {totalPages || 1}</span>
-                    <button id="next-page" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage >= totalPages}>Siguiente</button>
-                </div>
             </div>
 
-            {/* ➡️ Uso del componente Sidebar con divs */}
             <Sidebar
                 items={currentUser?.roles || []}
                 title={`Roles de ${currentUser?.username || ''}`}
@@ -290,14 +227,12 @@ export default function CuentasGestionar() {
 // ... (Los componentes de formulario son los mismos)
 function InviteUserForm({ onSave, onClose }) {
     const [email, setEmail] = useState('');
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (email) {
             onSave({ email });
         }
     };
-
     return (
         <form onSubmit={handleSubmit}>
             <div className="form-field">
@@ -312,6 +247,7 @@ function InviteUserForm({ onSave, onClose }) {
                     required
                 />
             </div>
+
             <div className="button-group">
                 <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
                 <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
@@ -322,14 +258,12 @@ function InviteUserForm({ onSave, onClose }) {
 
 function AddRoleForm({ onSave, onClose, availableRoles }) {
     const [selectedRole, setSelectedRole] = useState('');
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (selectedRole) {
             onSave({ role: selectedRole });
         }
     };
-
     return (
         <form onSubmit={handleSubmit}>
             <div className="form-field">

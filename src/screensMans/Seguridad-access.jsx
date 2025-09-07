@@ -9,7 +9,8 @@ export default function Seguridad() {
   const isBasePath = location.pathname === '/man-seguridad';
 
   const options = [
-    { href: 'gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' },
+    { href: 'cuentas-gestionar', icon: <MdSecurity />, label: 'Gestionar Cuentas' },
+    { href: 'roles-gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' },
   ];
 
   return (

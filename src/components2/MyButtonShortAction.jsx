@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose   } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey   } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -10,6 +10,9 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'delete') {
     icon = <MdDelete />;
     className = 'btn-short-delete';
+  }else if (type === 'key'){
+    icon = <MdKey />;
+    className = 'btn-short-key';
   } else if (type === 'view') {
     icon = <MdRemoveRedEye />;
     className = 'btn-short-view';

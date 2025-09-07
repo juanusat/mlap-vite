@@ -1,0 +1,51 @@
+.info-item {
+  display: grid;
+  grid-template-columns: 230px 1fr; 
+  align-items: baseline; 
+  gap: 1.5em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid #eef1f5;
+  padding-bottom: 1em;
+
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.info-label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 1.1em;
+  color: #333;
+  font-weight: 400;
+}
+
+/* Password-View.css */
+.password-row {
+  /* Alinea el label y el div del password horizontalmente */
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  align-items: baseline;
+  gap: 1.5em;
+}
+
+.password-display {
+  /* Contenedor del valor de la contraseña y el botón */
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+/* Estilos para el botón de ver/ocultar */
+.password-display .my-button-short-action {
+  min-width: 60px; /* Para que el texto "Ver" u "Ocultar" quepa */
+}

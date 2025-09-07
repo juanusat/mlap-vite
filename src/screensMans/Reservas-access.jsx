@@ -1,10 +1,14 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdPendingActions, MdHistory } from "react-icons/md";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Reservas.css';
 
 export default function Reservas() {
+
+  const location = useLocation();
+  const isBasePath = location.pathname === '/man-reservas';
+
   const options = [
     { href: 'pendientes', icon: <MdPendingActions />, label: 'Reservas pendientes' },
     { href: 'historial', icon: <MdHistory />, label: 'Historial de reservas' },
@@ -13,7 +17,7 @@ export default function Reservas() {
   return (
     <ScreenMan title="Módulo reserva" options={options}>
       <Outlet />
-      <section className="modulo-container">
+      {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
           <h1 className="modulo-title">Módulo de Reservas</h1>
           <p className="modulo-subtitle">
@@ -36,6 +40,6 @@ export default function Reservas() {
           </p>
         </article>
       </section>
-    </ScreenMan>
+      )}</ScreenMan>
   );
 }

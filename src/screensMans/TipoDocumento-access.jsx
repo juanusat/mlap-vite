@@ -1,10 +1,14 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdDescription } from "react-icons/md";
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Doc.css';
 
 export default function TipoDocumento() {
+
+  const location = useLocation();
+  const isBasePath = location.pathname === '/man-tipos-documentos';
+
   const options = [
     { href: 'gestionar', icon: <MdDescription />, label: 'Gestionar tipo documentos' },
   ];
@@ -12,7 +16,7 @@ export default function TipoDocumento() {
   return (
     <ScreenMan title="Tipos documentos" options={options}>
       <Outlet />
-      <div className="modulo-container">
+      {isBasePath && (<div className="modulo-container">
         <h1 className="modulo-title">Módulo de Documentos</h1>
         <div className="modulo-content">
           <p>
@@ -29,6 +33,6 @@ export default function TipoDocumento() {
           </ul>
         </div>
       </div>
-    </ScreenMan>
+      )}</ScreenMan>
   );
 }
