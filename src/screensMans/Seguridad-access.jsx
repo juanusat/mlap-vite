@@ -5,7 +5,8 @@ import { Outlet } from 'react-router-dom';
 
 export default function Seguridad() {
   const options = [
-    { href: 'gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' },
+    { href: 'cuentas-gestionar', icon: <MdSecurity />, label: 'Gestionar Cuentas' },
+    { href: 'roles-gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' }
   ];
 
   return (

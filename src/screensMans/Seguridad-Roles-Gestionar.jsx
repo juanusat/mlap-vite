@@ -7,7 +7,7 @@ import MatrixModal from "../components2/MatrixModal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
-import '../utils/Roles-Gestionar.css';
+import '../utils/Seguridad-Roles-Gestionar.css';
 
 // Genera los datos iniciales para la tabla de roles
 const initialRoles = Array.from({ length: 100 }, (_, i) => ({
