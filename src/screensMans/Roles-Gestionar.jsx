@@ -3,6 +3,7 @@ import DynamicTable from "../components2/Tabla";
 import SearchBar from "../components2/SearchBar";
 import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
+import MatrixModal from "../components2/MatrixModal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
@@ -98,6 +99,7 @@ export default function RolesGestionar() {
     const [showModal, setShowModal] = useState(false);
     const [currentRole, setCurrentRole] = useState(null);
     const [modalType, setModalType] = useState(null);
+    const [showMatrixModal, setShowMatrixModal] = useState(false);
     const [permissionsSearch, setPermissionsSearch] = useState('');
     const [sortKey, setSortKey] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
@@ -177,8 +179,7 @@ export default function RolesGestionar() {
 
     const handlePermissions = (role) => {
         setCurrentRole(role);
-        setModalType('permissions');
-        setShowModal(true);
+        setShowMatrixModal(true);
     };
 
     const handleCloseModal = () => {
@@ -186,6 +187,11 @@ export default function RolesGestionar() {
         setCurrentRole(null);
         setModalType(null);
         setPermissionsSearch('');
+    };
+
+    const handleCloseMatrixModal = () => {
+        setShowMatrixModal(false);
+        setCurrentRole(null);
     };
 
     // 4. Lógica de manipulación de datos (Añadir, Editar y Eliminar)
@@ -353,63 +359,16 @@ export default function RolesGestionar() {
                         <AddRoleForm onSave={handleSave} onClose={handleCloseModal} />
                     )}
 
-                    {modalType === 'permissions' && currentRole && (
-                        <div className="permissions-modal-content">
-                            <div className="search-container" style={{ marginTop: '1em' }}>
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar módulo o permiso..." 
-                                    value={permissionsSearch}
-                                    onChange={(e) => setPermissionsSearch(e.target.value)}
-                                />
-                            </div>
-                            <div className="permissions-matrix-container">
-                                <table className="permissions-matrix-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Módulo</th>
-                                            <th>Ver</th>
-                                            <th>Añadir</th>
-                                            <th>Editar</th>
-                                            <th>Eliminar</th>
-                                            <th>Buscar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {predefinedModules
-                                            .filter(module => 
-                                                module.name.toLowerCase().includes(permissionsSearch.toLowerCase())
-                                            )
-                                            .map(module => (
-                                            <tr key={module.id}>
-                                                <td>{module.name}</td>
-                                                {permissionTypes.map(type => {
-                                                    const permissionName = `${type} ${module.name}`;
-                                                    const hasPermission = currentRole.modules.some(mod =>
-                                                        mod.id === module.id && mod.permissions.some(p => p.name === permissionName)
-                                                    );
-                                                    
-                                                    return (
-                                                        <td key={type}>
-                                                            <label className="toggle-container" style={{ margin: 'auto' }}>
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    checked={hasPermission}
-                                                                    onChange={() => togglePermission(currentRole.id, module.id, permissionName)}
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
                 </Modal>
+
+                {/* MatrixModal para permisos */}
+                <MatrixModal 
+                    isOpen={showMatrixModal}
+                    onClose={handleCloseMatrixModal}
+                    role={currentRole}
+                    predefinedModules={predefinedModules}
+                    onTogglePermission={togglePermission}
+                />
             </div>
         </div>
     );

@@ -29,9 +29,9 @@
     justify-content: center;
     margin-bottom: 1.5em;
 }
-
+/* ESTILO BARRA DE BUSQUEDA */
 .search-container input {
-    width: 50%;
+    width: 90%;
     padding: 0.8em 1.5em;
     border: 1px solid #ddd;
     border-radius: 25px;
@@ -189,8 +189,8 @@ input:checked + .slider:before {
     transform: translateX(24px);
 }
 
-/* Estilos de los modales */
-.modal {
+/* Estilos de los modales ---------------------------------------------*/
+/* .modal {
     display: none;
     position: fixed;
     z-index: 1;
@@ -225,7 +225,7 @@ input:checked + .slider:before {
 .modal-header h3 {
     margin: 0;
 }
-
+ */
 .close-btn {
     color: #aaa;
     font-size: 28px;
