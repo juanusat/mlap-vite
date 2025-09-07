@@ -1,10 +1,13 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdSecurity } from "react-icons/md";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Seguridad.css';
 
 export default function Seguridad() {
+  const location = useLocation();
+  const isBasePath = location.pathname === '/man-seguridad';
+
   const options = [
     { href: 'gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' },
   ];
@@ -12,7 +15,7 @@ export default function Seguridad() {
   return (
     <ScreenMan title="Módulo de seguridad" options={options}>
       <Outlet />
-      <section className="modulo-container">
+      {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
           <h1 className="modulo-title">Módulo de Seguridad</h1>
           <p className="modulo-subtitle">
@@ -37,6 +40,7 @@ export default function Seguridad() {
           </p>
         </article>
       </section>
+      )}
     </ScreenMan>
   );
 }

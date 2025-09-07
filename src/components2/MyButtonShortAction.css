@@ -43,5 +43,10 @@
 .btn-short-add:hover {
   background-color: #e3f2fd ;
 }
-
+.btn-short-close{
+  color: var(--color-error-700);
+}
+.btn-short-close:hover{
+  color: var(--color-error-500);
+}
 

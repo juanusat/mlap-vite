@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack,    } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose   } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -25,6 +25,9 @@ export default function MyButtonShortAction({ type, onClick, title }) {
    } else if (type === 'back'){
     icon = <MdArrowBack />;
     className = 'btn-short-back'
+  }else if (type === 'close') {
+    icon = <MdClose />;
+    className = 'btn-short-close'
   }else {
     icon = null;
     className = '';

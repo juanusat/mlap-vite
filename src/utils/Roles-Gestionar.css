@@ -1,10 +1,4 @@
 /* Estilos generales reutilizables */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5;
-    min-height: 100vh;
-    padding: 2em;
-}
 
 .container {
     width: 95%;
@@ -105,10 +99,21 @@ body {
     font-size: 1.2em;
 }
 
-.icon-btn.view-icon { color: #2196F3; }
-.icon-btn.edit-icon { color: #FFC107; }
-.icon-btn.delete-icon { color: #f44336; }
-.icon-btn.add-icon { color: #4CAF50; }
+.icon-btn.view-icon {
+    color: #2196F3;
+}
+
+.icon-btn.edit-icon {
+    color: #FFC107;
+}
+
+.icon-btn.delete-icon {
+    color: #f44336;
+}
+
+.icon-btn.add-icon {
+    color: #4CAF50;
+}
 
 .hidden {
     display: none;
@@ -193,15 +198,14 @@ body {
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #4CAF50;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(24px);
 }
 
-/* Estilos de los modales */
 .modal {
     display: none;
     position: fixed;
@@ -247,4 +251,24 @@ input:checked + .slider:before {
 
 .close-btn:hover {
     color: black;
+}
+
+.inputModal {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 300px;
+    /* ancho fijo o ajustable */
+    font-size: 16px;
+    outline: none;
+    background-color: white;
+    color: black;
+}
+
+.button-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 10px;
 }

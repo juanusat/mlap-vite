@@ -1,6 +1,7 @@
 .my-button-medium-icon {
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: var(--space-xs) var(--font-size-base);
     border: none;
     border-radius: var(--border-radius-xs);
@@ -9,6 +10,7 @@
     transition: background-color 0.2s;
     gap: var(--space-xs);
     font-size: var(--font-size-s);
+    width: 120px;
 }
 
 .my-button-medium-icon svg {

@@ -6,6 +6,7 @@ import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import Sidebar from "../components2/Sidebar-Lateral";
 import "../utils/Roles-Gestionar.css";
 
 // Simulación de la base de datos de usuarios y roles
@@ -38,7 +39,7 @@ const initialUsers = Array.from({ length: 100 }, (_, i) => {
 const allRoles = ["Admin", "Secretario", "Vicario", "Editor", "Analista", "Desarrollador", "Moderador", "Soporte", "Gerente", "Contador", "Recursos Humanos"];
 const itemsPerPage = 4;
 
-export default function RolesGestionar() {
+export default function CuentasGestionar() {
     // 1. Estados que controlan la lógica de la aplicación
     const [users, setUsers] = useState(initialUsers);
     const [searchTerm, setSearchTerm] = useState('');
@@ -122,13 +123,32 @@ export default function RolesGestionar() {
     };
 
     const handleDeleteRole = (roleToRemove) => {
-        setUsers(prevUsers =>
-            prevUsers.map(user =>
+        // Si no hay un usuario seleccionado, no hagas nada.
+        if (!currentUser) {
+            return;
+        }
+        setUsers(prevUsers => {
+            // 1. Crea la nueva lista de usuarios, eliminando el rol del usuario actual.
+            const updatedUsers = prevUsers.map(user =>
                 user.id === currentUser.id
-                    ? { ...user, roles: user.roles.filter(role => role !== roleToRemove) }
+                    ? {
+                        ...user,
+                        roles: user.roles.filter(
+                            // La comparación robusta es clave: quita espacios y normaliza.
+                            role => role.toLowerCase().trim() !== roleToRemove.toLowerCase().trim()
+                        ),
+                    }
                     : user
-            )
-        );
+            );
+
+            // 2. Encuentra al usuario que acaba de ser actualizado en la nueva lista.
+            const updatedCurrentUser = updatedUsers.find(user => user.id === currentUser.id);
+            // 3. ¡Este es el paso crítico! Actualiza el estado de currentUser.
+            // Esto le dice a React que el prop de Sidebar ha cambiado.
+            setCurrentUser(updatedCurrentUser);
+            // 4. Devuelve la lista de usuarios actualizada para el re-renderizado principal.
+            return updatedUsers;
+        });
     };
 
     const handleCloseModal = () => {
@@ -222,27 +242,15 @@ export default function RolesGestionar() {
                 </div>
             </div>
 
-            {/* Barra lateral para mostrar los roles del usuario */}
-            <aside className={`sidebar ${showSidebar ? 'active' : ''}`}>
-                <div className="sidebar-header">
-                    <h3>Roles de <span id="sidebar-username">{currentUser?.username}</span></h3>
-                    <button className="close-sidebar" onClick={handleCloseSidebar}>&times;</button>
-                </div>
-                <div className="sidebar-body">
-                    <ul id="sidebar-role-list" className="role-list">
-                        {currentUser?.roles.length > 0 ? (
-                            currentUser.roles.map((role, index) => (
-                                <li key={index} className="role-item">
-                                    <span className="role-name">{role}</span>
-                                    <MyButtonShortAction type="delete" title="Eliminar Rol" onClick={() => handleDeleteRole(role)} />
-                                </li>
-                            ))
-                        ) : (
-                            <li style={{ textAlign: 'center', color: '#777' }}>Este usuario no tiene roles asignados.</li>
-                        )}
-                    </ul>
-                </div>
-            </aside>
+            {/* ➡️ Uso del componente Sidebar con divs */}
+            <Sidebar
+                items={currentUser?.roles || []}
+                title={`Roles de ${currentUser?.username || ''}`}
+                isOpen={showSidebar}
+                toggleSidebar={handleCloseSidebar}
+                onDeleteRole={handleDeleteRole}
+                userId={currentUser?.id}
+            />
 
             {/* Modal dinámico para todas las acciones */}
             <Modal
@@ -296,6 +304,7 @@ function InviteUserForm({ onSave, onClose }) {
                 <label htmlFor="invite-email">Correo Electrónico</label>
                 <input
                     type="email"
+                    className="inputModal"
                     id="invite-email"
                     placeholder="ejemplo@correo.com"
                     value={email}
@@ -304,8 +313,8 @@ function InviteUserForm({ onSave, onClose }) {
                 />
             </div>
             <div className="button-group">
-                <MyButtonMediumIcon text="Invitar" icon="MdMailOutline" type="submit" />
                 <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
+                <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
             </div>
         </form>
     );
@@ -327,6 +336,7 @@ function AddRoleForm({ onSave, onClose, availableRoles }) {
                 <label htmlFor="role-select">Selecciona un rol</label>
                 <select
                     id="role-select"
+                    className="inputModal"
                     value={selectedRole}
                     onChange={e => setSelectedRole(e.target.value)}
                     required
@@ -338,8 +348,8 @@ function AddRoleForm({ onSave, onClose, availableRoles }) {
                 </select>
             </div>
             <div className="button-group">
-                <MyButtonMediumIcon text="Añadir" icon="MdAddCircle" type="submit" />
                 <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
+                <MyButtonMediumIcon text="Añadir" icon="MdAdd" type="submit" />
             </div>
         </form>
     );
