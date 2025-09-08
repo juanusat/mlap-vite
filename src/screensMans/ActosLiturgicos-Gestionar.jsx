@@ -8,7 +8,6 @@ import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/ActosLiturgicos-Gestionar.css";
 
-// Genera los datos iniciales para la tabla.
 const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
     id: i + 1,
     nombre: `Evento ${i + 1}`,
@@ -17,21 +16,21 @@ const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function EventosLiturgicos() {
-    // 1. Estados que controlan la lógica de la aplicación
+
     const [events, setEvents] = useState(initialEventsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
 
-    // 2. Lógica para filtrar eventos basándose en el término de búsqueda
+
     const filteredEvents = events.filter((event) =>
         Object.values(event).some((value) =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
 
-    // 3. Funciones de manejo de acciones
+
     const handleToggle = (eventId) => {
         setEvents(prevEvents =>
             prevEvents.map(event =>
