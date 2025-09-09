@@ -1,6 +1,6 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdSecurity } from "react-icons/md";
+import { MdAccountBox, MdRecentActors } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Seguridad.css';
 
@@ -9,8 +9,8 @@ export default function Seguridad() {
   const isBasePath = location.pathname === '/man-seguridad';
 
   const options = [
-    { href: 'cuentas-gestionar', icon: <MdSecurity />, label: 'Gestionar Cuentas' },
-    { href: 'roles-gestionar', icon: <MdSecurity />, label: 'Gestionar Roles' },
+    { href: 'cuentas-gestionar', icon: <MdAccountBox />, label: 'Gestionar Cuentas' },
+    { href: 'roles-gestionar', icon: <MdRecentActors />, label: 'Gestionar Roles' },
   ];
 
   return (
