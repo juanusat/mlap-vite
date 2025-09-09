@@ -105,6 +105,10 @@ export default function TipoDocumentoGestionar() {
 
   const columns = [
     {
+      header: 'ID',
+      accessor: (doc) => doc.id
+    },
+    {
       header: 'Nombre',
       accessor: (doc) => doc.nombre,
     },
