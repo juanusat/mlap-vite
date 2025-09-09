@@ -71,17 +71,13 @@ export default function EventosLiturgicos() {
         setModalType(null);
     };
 
-    // 4. Lógica de manipulación de datos (Añadir, Editar y Eliminar)
-    
-    // Función para eliminar un evento de la lista.
     const confirmDelete = () => {
         if (currentEvent) {
             setEvents(prevEvents => prevEvents.filter(event => event.id !== currentEvent.id));
             handleCloseModal();
         }
     };
-    
-    // Función para guardar o editar un evento.
+
     const handleSave = (eventData) => {
         if (modalType === 'add') {
             // Lógica para añadir un nuevo evento.
@@ -98,7 +94,7 @@ export default function EventosLiturgicos() {
         handleCloseModal();
     };
     
-    // 5. Configuración de las columnas de la tabla
+
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
         { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
@@ -149,7 +145,6 @@ export default function EventosLiturgicos() {
                 >
                     {modalType === 'view' && currentEvent && (
                         <div>
-                            <h3>Detalles del Evento</h3>
                             <p><strong>ID:</strong> {currentEvent.id}</p>
                             <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
                             <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>

@@ -8,7 +8,7 @@
     position: fixed;
     right: 0;
     z-index: 1000;
-    overflow: hidden; 
+    overflow: auto; 
     transition: width 0.1s ease-in-out; /* Animación de ancho */
     display: flex;
     flex-direction: column;
@@ -17,7 +17,8 @@
 /* Clase para cuando la barra lateral está abierta */
 .sidebar-container.open {
     width: 250px;
-    padding: 20px
+    padding: 20px;
+    height: var(--height-estandar)
 }
 
 .sidebar-title {
