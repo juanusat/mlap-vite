@@ -25,8 +25,11 @@ const GestionCuenta = () => {
     // Estado temporal para guardar los datos antes de confirmar la edición
     const [tempUserInfo, setTempUserInfo] = useState({});
 
-    // Estado para controlar la visibilidad de la contraseña
-    const [showPassword, setShowPassword] = useState(false);
+    // Estado para la confirmación de la contraseña y el mensaje de error
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false); 
 
     // ----- Handlers para la Información Personal -----
     const handleEditPersonal = () => {
@@ -43,21 +46,32 @@ const GestionCuenta = () => {
     const handleCancelPersonal = () => {
         setIsEditingPersonal(false);
     };
-    
+
     // ----- Handlers para los Datos de la Cuenta -----
     const handleEditAccount = () => {
         setIsEditingAccount(true);
         setTempUserInfo(userInfo);
+        // Limpiar estados de error y confirmación al entrar en modo de edición
+        setConfirmPassword("");
+        setPasswordError("");
     };
 
     const handleSaveAccount = () => {
+        // Verificar si las contraseñas coinciden solo si se está editando la contraseña
+        if (tempUserInfo.contraseña && tempUserInfo.contraseña !== confirmPassword) {
+            setPasswordError("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
+            return; // Detener la ejecución de la función si hay un error
+        }
+
         setIsEditingAccount(false);
         setUserInfo(tempUserInfo);
+        setPasswordError(""); // Limpiar el mensaje de error al guardar con éxito
         console.log("Datos de la cuenta guardados:", tempUserInfo);
     };
 
     const handleCancelAccount = () => {
         setIsEditingAccount(false);
+        setPasswordError(""); // Limpiar el mensaje de error al cancelar
     };
 
     // Handler para cambios en los inputs
@@ -67,6 +81,15 @@ const GestionCuenta = () => {
             ...prevInfo,
             [name]: value
         }));
+    };
+
+    // Handler específico para el campo de confirmar contraseña
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+        // Opcional: Limpiar el error si las contraseñas coinciden mientras se escribe
+        if (e.target.value === tempUserInfo.contraseña) {
+            setPasswordError("");
+        }
     };
 
     return (
@@ -124,7 +147,9 @@ const GestionCuenta = () => {
                     <>
                         <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
                         <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
-                        <TextInput label="Contraseña" value={tempUserInfo.contraseña} onChange={handleInputChange} name="contraseña" />
+                        <TextInput label="Nueva Contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
+                        <TextInput label="Confirmar Contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
+                        {passwordError && <p className="error-message">{passwordError}</p>}
                     </>
                 ) : (
                     <>
@@ -142,11 +167,6 @@ const GestionCuenta = () => {
                                 <span className="info-value">
                                     {showPassword ? userInfo.contraseña : '********'}
                                 </span>
-                                <MyButtonShortAction
-                                    title={showPassword ? 'view' : 'view'}
-                                    type='view'
-                                    onClick={() => setShowPassword(!showPassword)}
-                                />
                             </div>
                         </div>
                     </>
