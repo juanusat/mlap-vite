@@ -7,6 +7,7 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import Sidebar from "../components2/Sidebar-Lateral";
+import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import "../utils/Seguridad-Cuentas-Gestionar.css";
 
 // Definición de los 4 roles
@@ -163,128 +164,146 @@ export default function CuentasGestionar() {
         },
     ];
 
-    // 4. La interfaz de usuario (JSX)
+
+
     return (
-        <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Cuentas</h2>
-            <div className={`app-container ${showSidebar ? 'sidebar-active' : ''}`}>
-                <div className="search-add">
-                    <div className="center-container">
-                        <SearchBar onSearchChange={setSearchTerm} />
-                    </div>
-                    <MyButtonShortAction type="add" onClick={handleInviteUser} title="Añadir usuario" />
-                </div>
-                <DynamicTable
-                    columns={userColumns}
-                    data={filteredEvents}
-                />
-            </div>
+        <>
+            <div className="content-module only-this">
+                <h2 className='title-screen'>Gestión de Cuentas</h2>
 
-            <Sidebar
-                items={currentUser?.roles || []}
-                title={`Roles de ${currentUser?.username || ''}`}
-                isOpen={showSidebar}
-                toggleSidebar={handleCloseSidebar}
-                onDeleteRole={handleDeleteRole}
-                userId={currentUser?.id}
-            />
-
-            {/* Modal dinámico para todas las acciones */}
-            <Modal
-                show={showModal}
-                onClose={handleCloseModal}
-                title={
-                    modalType === 'invite' ? 'Invitar Usuarios' :
-                        modalType === 'addRole' ? 'Añadir Rol' :
-                            'Confirmar Eliminación'
-                }
-                isFullScreen={false}
-            >
-                {modalType === 'invite' && (
-                    <InviteUserForm onSave={handleSave} onClose={handleCloseModal} />
-                )}
-                {modalType === 'addRole' && currentUser && (
-                    <AddRoleForm
-                        onSave={handleSave}
-                        onClose={handleCloseModal}
-                        availableRoles={allRoles.filter(r => !currentUser.roles.includes(r))}
-                    />
-                )}
-                {modalType === 'deleteUser' && currentUser && (
-                    <div>
-                        <h4>¿Estás seguro de que deseas eliminar a este usuario permanentemente?</h4>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={handleDelete} />
+                {/* Contenedor principal para la tabla y la barra lateral. Su clase cambia para ajustar el diseño. */}
+                <div className={`main-content ${showSidebar ? 'sidebar-active' : ''}`}>
+                    <div className="search-add">
+                        <div className="center-container">
+                            <SearchBar onSearchChange={setSearchTerm} />
                         </div>
+                        <MyButtonShortAction type="add" onClick={handleInviteUser} title="Añadir usuario" />
                     </div>
-                )}
-            </Modal>
-        </div>
-    );
-}
+                    <DynamicTable
+                        columns={userColumns}
+                        data={filteredEvents}
+                    />
+                </div>
 
-// ... (Los componentes de formulario son los mismos)
-function InviteUserForm({ onSave, onClose }) {
-    const [email, setEmail] = useState('');
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (email) {
-            onSave({ email });
-        }
-    };
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="form-field">
-                <label htmlFor="invite-email">Correo Electrónico</label>
-                <input
-                    type="email"
-                    className="inputModal"
-                    id="invite-email"
-                    placeholder="ejemplo@correo.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-            </div>
-
-            <div className="button-group">
-                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
-            </div>
-        </form>
-    );
-}
-
-function AddRoleForm({ onSave, onClose, availableRoles }) {
-    const [selectedRole, setSelectedRole] = useState('');
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (selectedRole) {
-            onSave({ role: selectedRole });
-        }
-    };
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="form-field">
-                <label htmlFor="role-select">Selecciona un rol</label>
-                <select
-                    id="role-select"
-                    className="inputModal"
-                    value={selectedRole}
-                    onChange={e => setSelectedRole(e.target.value)}
-                    required
+                {/* Modal dinámico para las diferentes acciones de usuario */}
+                <Modal
+                    show={showModal}
+                    onClose={handleCloseModal}
+                    title={
+                        modalType === 'invite' ? 'Invitar Usuarios' :
+                            modalType === 'addRole' ? 'Añadir Rol' :
+                                'Confirmar Eliminación'
+                    }
+                    isFullScreen={false}
                 >
-                    <option value="">Selecciona un rol</option>
-                    {availableRoles.map(role => (
-                        <option key={role} value={role}>{role}</option>
-                    ))}
-                </select>
+                    {modalType === 'invite' && (
+                        <InviteUserForm onSave={handleSave} onClose={handleCloseModal} />
+                    )}
+                    {modalType === 'addRole' && currentUser && (
+                        <AddRoleForm
+                            onSave={handleSave}
+                            onClose={handleCloseModal}
+                            availableRoles={allRoles.filter(r => !currentUser.roles.includes(r))}
+                        />
+                    )}
+                    {modalType === 'deleteUser' && currentUser && (
+                        <div>
+                            <h4>¿Estás seguro de que deseas eliminar a este usuario permanentemente?</h4>
+                            <div className="buttons-container">
+                                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
+                                <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={handleDelete} />
+                            </div>
+                        </div>
+                    )}
+                </Modal>
             </div>
-            <div className="button-group">
-                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon text="Añadir" icon="MdAdd" type="submit" />
-            </div>
-        </form>
+            {/* El panel lateral se renderiza solo si showSidebar es verdadero y hay un usuario seleccionado */}
+            {showSidebar && currentUser && (
+                <MyPanelLateralConfig>
+                    <div className='sidebar-title-button'>
+                        <h3 className="sidebar-title">{`Roles de ${currentUser.username}`}</h3>
+                        <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar}>Cerrar</MyButtonShortAction>
+                    </div>
+                    <div className="sidebar-list">
+                        {/* Renderiza dinámicamente cada rol con su botón de eliminar */}
+                        {currentUser.roles.map((item) => (
+                            <div key={`${currentUser.id}-${item}`} className="sidebar-list-item">
+                                {item}
+                                <MyButtonShortAction
+                                    type="delete"
+                                    title="Eliminar Rol"
+                                    onClick={() => handleDeleteRole(item)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </MyPanelLateralConfig>
+            )}
+        </>
     );
+
+    // ... (Los componentes de formulario son los mismos)
+    function InviteUserForm({ onSave, onClose }) {
+        const [email, setEmail] = useState('');
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            if (email) {
+                onSave({ email });
+            }
+        };
+        return (
+            <form onSubmit={handleSubmit}>
+                <div className="form-field">
+                    <label htmlFor="invite-email">Correo Electrónico</label>
+                    <input
+                        type="email"
+                        className="inputModal"
+                        id="invite-email"
+                        placeholder="ejemplo@correo.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="button-group">
+                    <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
+                    <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
+                </div>
+            </form>
+        );
+    }
+
+    function AddRoleForm({ onSave, onClose, availableRoles }) {
+        const [selectedRole, setSelectedRole] = useState('');
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            if (selectedRole) {
+                onSave({ role: selectedRole });
+            }
+        };
+        return (
+            <form onSubmit={handleSubmit}>
+                <div className="form-field">
+                    <label htmlFor="role-select">Selecciona un rol</label>
+                    <select
+                        id="role-select"
+                        className="inputModal"
+                        value={selectedRole}
+                        onChange={e => setSelectedRole(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecciona un rol</option>
+                        {availableRoles.map(role => (
+                            <option key={role} value={role}>{role}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="button-group">
+                    <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
+                    <MyButtonMediumIcon text="Añadir" icon="MdAdd" type="submit" />
+                </div>
+            </form>
+        );
+    }
 }

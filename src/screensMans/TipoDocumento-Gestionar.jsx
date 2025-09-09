@@ -1,200 +1,230 @@
 import React, { useState } from 'react';
-import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
-import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import '../components/UI.css';
 import '../utils/spacing.css';
-import SwitchToggleDoc from '../components/SwitchToggleDoc';
-import MyModalConfirm from '../components/MyModalConfirm';
+import DynamicTable from "../components2/Tabla";
+import SearchBar from "../components2/SearchBar";
+import ToggleSwitch from "../components2/Toggle";
+import Modal from "../components2/Modal";
+import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from '../components2/MyButtonShortAction';
-import MyGroupButtonsActions from '../components2/MyGroupButtonsActions';
-import MyList1 from '../components/MyList1';
-import MyListItem1 from '../components/MyListItem1';
-import TextInput from '../components/formsUI/TextInput';
-import Textarea from '../components/formsUI/Textarea';
+import MyButtonMediumIcon from "../components/MyButtonMediumIcon"; // Importar para los botones dentro del modal
 
 const initialDocs = [
   { id: 1, nombre: 'DNI', estado: 'Activo', descripcion: 'Documento Nacional de Identidad', nombreCorto: 'DNI' },
   { id: 2, nombre: 'Pasaporte', estado: 'Activo', descripcion: 'Pasaporte Internacional', nombreCorto: 'PI' },
   { id: 3, nombre: 'Carnet de Extranjería', estado: 'Baja', descripcion: 'Carnet de Extranjería', nombreCorto: 'CE' },
+  { id: 4, nombre: 'Licencia de Conducir', estado: 'Activo', descripcion: 'Licencia de conducir vehicular', nombreCorto: 'LC' },
+  { id: 5, nombre: 'Cédula de Identidad', estado: 'Activo', descripcion: 'Documento para ciudadanos extranjeros', nombreCorto: 'CI' },
+  { id: 6, nombre: 'Tarjeta de Residencia', estado: 'Baja', descripcion: 'Tarjeta para residentes temporales', nombreCorto: 'TR' },
+  { id: 7, nombre: 'Certificado de Nacimiento', estado: 'Activo', descripcion: 'Documento que certifica el nacimiento', nombreCorto: 'CN' },
+  { id: 8, nombre: 'Permiso de Trabajo', estado: 'Activo', descripcion: 'Permiso para trabajar en el país', nombreCorto: 'PT' },
+  { id: 9, nombre: 'Visa de Estudiante', estado: 'Baja', descripcion: 'Visa para estudios académicos', nombreCorto: 'VE' },
+  { id: 10, nombre: 'Carnet de Sanidad', estado: 'Activo', descripcion: 'Certificado de salud', nombreCorto: 'CS' },
+  { id: 11, nombre: 'Declaración Jurada', estado: 'Activo', descripcion: 'Documento legal', nombreCorto: 'DJ' },
 ];
 
 export default function TipoDocumentoGestionar() {
-  // Visualiza el panel lateral en modo solo lectura
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [panelMode, setPanelMode] = useState('add'); // 'add' o 'edit'
-  const [editDoc, setEditDoc] = useState(null);
-  const [formValues, setFormValues] = useState({ nombre: '', descripcion: '', nombreCorto: '' });
   const [docs, setDocs] = useState(initialDocs);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalDocId, setModalDocId] = useState(null);
-  const [modalAction, setModalAction] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [currentDoc, setCurrentDoc] = useState(null);
+  const [modalType, setModalType] = useState(null);
 
-  const handleView = (id) => {
-    const doc = docs.find(d => d.id === id);
-    setEditDoc(doc);
-    setFormValues({ nombre: doc.nombre, descripcion: doc.descripcion || '', nombreCorto: doc.nombreCorto || '' });
-    setPanelMode('view');
-    setPanelOpen(true);
+  const filteredDocs = docs.filter((doc) =>
+    Object.values(doc).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+
+  // Funciones para manejar el modal
+  const handleOpenModal = (doc, action) => {
+    setCurrentDoc(doc);
+    setModalType(action);
+    setShowModal(true);
   };
 
-  const handleEdit = (id) => {
-    const doc = docs.find(d => d.id === id);
-    setEditDoc(doc);
-    setFormValues({ nombre: doc.nombre, descripcion: doc.descripcion || '', nombreCorto: doc.nombreCorto || '' });
-    setPanelMode('edit');
-    setPanelOpen(true); // El panel lateral se abre y se actualiza con los datos
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentDoc(null);
+    setModalType(null);
   };
 
-  const handleDelete = (id) => {
-    setModalDocId(id);
-    setModalAction('delete');
-    setModalOpen(true);
+  // Funciones para las acciones (añadir, editar, eliminar)
+  const handleView = (doc) => {
+    handleOpenModal(doc, 'view');
   };
 
-  const handleBaja = (id) => {
-    setDocs(docs.map(doc => doc.id === id ? { ...doc, estado: 'Baja' } : doc));
+  const handleEdit = (doc) => {
+    handleOpenModal(doc, 'edit');
   };
 
-  const handleAlta = (id) => {
-    setDocs(docs.map(doc => doc.id === id ? { ...doc, estado: 'Activo' } : doc));
+  const handleDeleteConfirmation = (doc) => {
+    handleOpenModal(doc, 'delete');
   };
 
-  const handleToggleConfirm = (id, action) => {
-    setModalDocId(id);
-    setModalAction(action);
-    setModalOpen(true);
+  const handleAddDoc = () => {
+    handleOpenModal(null, 'add');
   };
 
-  const handleModalConfirm = () => {
-    if (modalAction === 'baja') handleBaja(modalDocId);
-    if (modalAction === 'alta') handleAlta(modalDocId);
-    if (modalAction === 'delete') setDocs(docs.filter(doc => doc.id !== modalDocId));
-    setModalOpen(false);
-    setModalDocId(null);
-    setModalAction('');
-  };
-
-  const handleModalCancel = () => {
-    setModalOpen(false);
-    setModalDocId(null);
-    setModalAction('');
-  };
-
-  const handleAdd = () => {
-    setFormValues({ nombre: '', descripcion: '', nombreCorto: '' });
-    setPanelMode('add');
-    setPanelOpen(true);
-  };
-  const handlePanelSave = () => {
-    if (panelMode === 'add') {
-      if (formValues.nombre.trim()) {
-        setDocs([...docs, {
-          id: Date.now(),
-          nombre: formValues.nombre,
-          descripcion: formValues.descripcion,
-          nombreCorto: formValues.nombreCorto,
-          estado: 'Activo',
-        }]);
-        setPanelOpen(false);
-      }
-    } else if (panelMode === 'edit' && editDoc) {
-      setDocs(docs.map(doc => doc.id === editDoc.id ? {
-        ...doc,
-        nombre: formValues.nombre,
-        descripcion: formValues.descripcion,
-        nombreCorto: formValues.nombreCorto,
-      } : doc));
-      setPanelOpen(false);
-      setEditDoc(null);
+  const confirmDelete = () => {
+    if (currentDoc) {
+      setDocs(prevDocs => prevDocs.filter(doc => doc.id !== currentDoc.id));
+      handleCloseModal();
     }
   };
 
-  const handlePanelCancel = () => {
-    setPanelOpen(false);
-    setEditDoc(null);
+  const handleSave = (docData) => {
+    if (modalType === 'add') {
+      const newDoc = {
+        ...docData,
+        id: docs.length > 0 ? Math.max(...docs.map(d => d.id)) + 1 : 1,
+        estado: 'Activo'
+      };
+      setDocs(prevDocs => [...prevDocs, newDoc]);
+    } else if (modalType === 'edit' && currentDoc) {
+      setDocs(prevDocs =>
+        prevDocs.map(doc =>
+          doc.id === currentDoc.id ? { ...doc, ...docData } : doc
+        )
+      );
+    }
+    handleCloseModal();
   };
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues(prev => ({ ...prev, [name]: value }));
+  const handleToggle = (docId) => {
+    setDocs(prevDocs =>
+      prevDocs.map(doc =>
+        doc.id === docId
+          ? { ...doc, estado: doc.estado === 'Activo' ? 'Baja' : 'Activo' }
+          : doc
+      )
+    );
   };
+
+
+  const columns = [
+    {
+      header: 'ID',
+      accessor: (doc) => doc.id
+    },
+    {
+      header: 'Nombre',
+      accessor: (doc) => doc.nombre,
+    },
+    {
+      header: 'Descripción',
+      accessor: (doc) => doc.descripcion,
+    },
+    {
+      header: 'Estado',
+      accessor: (doc) => <ToggleSwitch checked={doc.estado === 'Activo'} onToggle={() => handleToggle(doc.id)} />,
+    },
+    {
+      header: 'Acciones',
+      accessor: (doc) => (
+        <MyGroupButtonsActions>
+          <MyButtonShortAction type="view" onClick={() => handleView(doc)} title="Visualizar" />
+          <MyButtonShortAction type="edit" onClick={() => handleEdit(doc)} title="Editar" />
+          <MyButtonShortAction type="delete" onClick={() => handleDeleteConfirmation(doc)} title="Eliminar" />
+        </MyGroupButtonsActions>
+      ),
+    },
+  ];
 
   return (
     <>
       <div className="content-module only-this">
         <h2 className='title-screen'>Tipos de Documentos</h2>
-        <MyButtonMediumIcon text="Agregar" icon="MdAdd" onClick={handleAdd} />
-        <div style={{ width: '100%' }}>
-          <MyList1>
-            {docs.map(doc => (
-              <MyListItem1 key={doc.id} baja={doc.estado === 'Baja'}>
-                <SwitchToggleDoc
-                  checked={doc.estado === 'Activo'}
-                  onChange={() => handleToggleConfirm(doc.id, doc.estado === 'Activo' ? 'baja' : 'alta')}
-                />
-                <span style={{ marginLeft: '12px', marginRight: 'auto' }}>{doc.nombre}</span>
-                <MyGroupButtonsActions>
-                  <MyButtonShortAction type="view" onClick={() => handleView(doc.id)} title="Visualizar" />
-                  <MyButtonShortAction type="edit" onClick={() => handleEdit(doc.id)} title="Editar" />
-                  <MyButtonShortAction type="delete" onClick={() => handleDelete(doc.id)} title="Eliminar" />
-                </MyGroupButtonsActions>
-              </MyListItem1>
-            ))}
-            <MyModalConfirm
-              open={modalOpen}
-              message={
-                modalAction === 'baja'
-                  ? '¿Desea dar de baja este tipo de documento?'
-                  : modalAction === 'alta'
-                    ? '¿Desea dar de alta este tipo de documento?'
-                    : modalAction === 'delete'
-                      ? '¿Seguro que quieres borrar este tipo de documento?'
-                      : ''
-              }
-              onConfirm={handleModalConfirm}
-              onCancel={handleModalCancel}
-            />
-          </MyList1>
+        <div>
+          <div className="search-add">
+            <div className="center-container">
+              <SearchBar onSearchChange={setSearchTerm} />
+            </div>
+            <MyButtonShortAction type="add" onClick={handleAddDoc} title="Añadir documento" />
+          </div>
+          <DynamicTable
+            columns={columns}
+            data={filteredDocs}
+          />
         </div>
       </div>
 
-      {panelOpen && (
-        <MyPanelLateralConfig
-          title={panelMode === 'add' ? 'Agregar Tipo de Documento' : panelMode === 'edit' ? 'Editar Tipo de Documento' : 'Visualizar Tipo de Documento'}
-        >
-          <form className="panel-config-form" onSubmit={e => { e.preventDefault(); handlePanelSave(); }}>
-            <TextInput
-              label="Nombre"
-              name="nombre"
-              value={formValues.nombre}
-              onChange={handleFormChange}
-              required
-              disabled={panelMode === 'view'}
-            />
-            <Textarea
-              label="Descripción"
-              name="descripcion"
-              value={formValues.descripcion}
-              onChange={handleFormChange}
-              disabled={panelMode === 'view'}
-              rows={3}
-            />
-            <TextInput
-              label="Nombre Corto"
-              name="nombreCorto"
-              value={formValues.nombreCorto}
-              onChange={handleFormChange}
-              disabled={panelMode === 'view'}
-            />
-            <div className="panel-config-actions">
-              {panelMode !== 'view' && (
-                <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
-              )}
-              <MyButtonMediumIcon text="Cancelar" icon="MdClose" type="button" onClick={() => { setPanelOpen(false); setEditDoc(null); }} />
+      <Modal
+        show={showModal}
+        onClose={handleCloseModal}
+        title={
+          modalType === 'view' ? 'Visualizar Documento' :
+            modalType === 'edit' ? 'Editar Documento' :
+              modalType === 'delete' ? 'Eliminar Documento' :
+                'Añadir Documento'
+        }
+      >
+        {modalType === 'view' && currentDoc && (
+          <div>
+            <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
+            <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
+            <p><strong>Nombre Corto:</strong> {currentDoc.nombreCorto}</p>
+            <div className="button-group">
+              <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
             </div>
-          </form>
-        </MyPanelLateralConfig>
-      )}
+          </div>
+        )}
+        {modalType === 'edit' && currentDoc && (
+          <DocForm onSave={handleSave} onClose={handleCloseModal} doc={currentDoc} />
+        )}
+        {modalType === 'add' && (
+          <DocForm onSave={handleSave} onClose={handleCloseModal} />
+        )}
+        {modalType === 'delete' && currentDoc && (
+          <div>
+            <p>¿Estás seguro de que quieres eliminar el documento "{currentDoc.nombre}"?</p>
+            <div className="button-group">
+              <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
+              <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={confirmDelete} />
+            </div>
+          </div>
+        )}
+      </Modal>
     </>
   );
 }
+
+const DocForm = ({ onSave, onClose, doc }) => {
+  const [formData, setFormData] = useState({
+    nombre: doc?.nombre || '',
+    descripcion: doc?.descripcion || '',
+    nombreCorto: doc?.nombreCorto || '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="form-field">
+        <label>Nombre</label>
+        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="inputModal" required />
+      </div>
+      <div className="form-field">
+        <label>Descripción</label>
+        <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} className="inputModal" rows="3" />
+      </div>
+      <div className="form-field">
+        <label>Nombre Corto</label>
+        <input type="text" name="nombreCorto" value={formData.nombreCorto} onChange={handleChange} className="inputModal" />
+      </div>
+      <div className="button-group">
+        <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
+        <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
+      </div>
+    </form>
+  );
+};

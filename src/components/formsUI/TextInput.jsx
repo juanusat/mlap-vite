@@ -1,12 +1,12 @@
 import './formsUI.css';
 import React from 'react';
 
-export default function TextInput({ label, name, value, onChange, required = false, disabled = false, placeholder = '', ...props }) {
+export default function TextInput({ label, name, value, onChange, required = false, disabled = false, placeholder = '', type = 'text', ...props }) {
 	return (
 		<div className="form-group">
 			{label && <label htmlFor={name}>{label}</label>}
 			<input
-				type="text"
+				type={type}
 				id={name}
 				name={name}
 				value={value}
