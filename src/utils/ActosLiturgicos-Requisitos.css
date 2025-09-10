@@ -1,0 +1,110 @@
+.app-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: #333;
+    transition: all 0.3s ease-in-out;
+}
+
+.app-container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.search-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.center-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.right-container {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.right-container .MyGroupButtonsActions {
+    margin-left: 10px;
+}
+
+.panel-config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.panel-config-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.sidebar-search .SearchBar {
+    width: 100%;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: #777;
+    font-style: italic;
+    
+}
+
+
+.content-module.only-this {
+    position: relative;
+    z-index: 1;
+}
+
+.MyPanelLateralConfig {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 350px;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+}
+
+.MyPanelLateralConfig .title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Regla CSS para el encabezado del panel */
+.panel-lateral-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 0px 0px 10px 0px;
+}
+
+/* Regla CSS específica para el h2 dentro del encabezado */
+.panel-lateral-header h2 {
+    margin: 0;
+    /* Elimina el margen superior e inferior */
+    font-size: 1.25rem;
+    color: #343a40;
+}

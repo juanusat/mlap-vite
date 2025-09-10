@@ -1,9 +1,11 @@
 .btn-short-view {
-  color: var(  --color-green-btn-hover);
+  color: var(--color-green-btn-hover);
 }
+
 .btn-short-view:hover {
   background: rgba(0, 0, 0, 0.14);
 }
+
 .my-btn-short-action {
   border: none;
   background: transparent;
@@ -16,15 +18,19 @@
   display: grid;
   place-items: center;
 }
+
 .btn-short-edit {
   color: var(--color-blue-btn);
 }
+
 .btn-short-edit:hover {
   background: #e3f2fd;
 }
+
 .btn-short-delete {
   color: var(--color-error-600);
 }
+
 .btn-short-delete:hover {
   background: var(--color-error-200);
 }
@@ -32,27 +38,39 @@
 .btn-short-refresh {
   color: var(--color-blue-btn);
 }
+
 .btn-short-refresh:hover {
   background: #e3f2fd;
 }
 
-.btn-short-add{
+.btn-short-add {
   color: var(--color-a-600);
 }
 
 .btn-short-add:hover {
-  background-color: #e3f2fd ;
+  background-color: #e3f2fd;
 }
-.btn-short-close{
+
+.btn-short-close {
   color: var(--color-error-700);
 }
-.btn-short-close:hover{
+
+.btn-short-close:hover {
   color: var(--color-error-500);
 }
 
-.btn-short-key{
+.btn-short-key {
   color: var(--color-error-700);
 }
-.btn-short-key{
+
+.btn-short-key {
   color: var(--color-error-500);
+}
+
+.btn-short-select {
+  color: var(--color-a-600);
+}
+
+.btn-short-select:hover {
+  background-color: #e3f2fd;
 }
