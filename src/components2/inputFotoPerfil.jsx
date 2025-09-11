@@ -116,74 +116,54 @@ const InputFotoPerfil = ({
 
   return (
     <div className="input-foto-perfil">
-      <div 
-        className={`upload-area ${isDragging ? 'dragging' : ''} ${disabled ? 'disabled' : ''} ${preview ? 'has-image' : ''}`}
-        onClick={handleClick}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={acceptedFormats.join(',')}
-          onChange={handleFileSelect}
-          disabled={disabled}
-          required={required}
-          style={{ display: 'none' }}
-        />
-
-        {preview ? (
-          <div className="image-preview">
-            <img src={preview} alt="Preview" />
-            <div className="image-overlay">
-              <button 
-                type="button"
-                className="remove-btn" 
-                onClick={handleRemove}
-                title="Eliminar foto"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18"></path>
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                  <path d="M8 6V4c0-1 1-2 2-2h4c-1 0 2 1 2 2v2"></path>
-                </svg>
-              </button>
-              <button 
-                type="button"
-                className="change-btn"
-                title="Cambiar foto"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="9" cy="9" r="2"></circle>
-                  <path d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="upload-placeholder">
-            <div className="upload-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 12a9 9 0 11-6.219-8.56"></path>
-                <path d="M12 2a7 7 0 016.93 6h.55a2.5 2.5 0 010 5H13"></path>
-                <path d="M8 21l4-7 4 7"></path>
-                <path d="M8 21h8"></path>
-              </svg>
-            </div>
-            <div className="upload-text">
-              <p className="primary-text">{placeholder}</p>
-              <p className="secondary-text">
-                Arrastra una imagen aquí o haz click para seleccionar
-              </p>
-              <p className="format-text">
-                Formatos: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} 
-                • Máximo: {(maxSize / (1024 * 1024)).toFixed(1)}MB
-              </p>
-            </div>
+      <div className="file-input-container">
+        <div 
+          className={`file-input-wrapper ${isDragging ? 'dragging' : ''} ${disabled ? 'disabled' : ''}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={acceptedFormats.join(',')}
+            onChange={handleFileSelect}
+            disabled={disabled}
+            required={required}
+            className="file-input"
+          />
+          <button 
+            type="button"
+            className="file-select-button"
+            onClick={handleClick}
+            disabled={disabled}
+          >
+            Seleccionar archivo
+          </button>
+          <span className="file-name">
+            {preview ? fileInputRef.current?.files[0]?.name || 'Archivo seleccionado' : 'Ningún archivo seleccionado'}
+          </span>
+        </div>
+        
+        {preview && (
+          <div className="file-actions">
+            <button 
+              type="button"
+              className="remove-file-btn" 
+              onClick={handleRemove}
+              title="Eliminar archivo"
+            >
+              Eliminar
+            </button>
           </div>
         )}
+      </div>
+
+      <div className="file-info">
+        <small>
+          Formatos permitidos: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} 
+          • Tamaño máximo: {(maxSize / (1024 * 1024)).toFixed(1)}MB
+        </small>
       </div>
 
       {error && (

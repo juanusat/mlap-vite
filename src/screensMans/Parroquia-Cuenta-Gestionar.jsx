@@ -4,6 +4,7 @@ import MyButtonShortAction from '../components2/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
+import InputFotoPerfil from '../components2/inputFotoPerfil';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {
@@ -22,6 +23,10 @@ const GestionCuenta = () => {
         contraseña: "password123"
     });
 
+    // Estados para los datos de las fotos
+    const [fotoPerfilData, setFotoPerfilData] = useState(null);
+    const [fotoPortadaData, setFotoPortadaData] = useState(null);
+
     // Estado para el modo de edición de cada sección
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingAccount, setIsEditingAccount] = useState(false);
@@ -39,16 +44,32 @@ const GestionCuenta = () => {
     const handleEditPersonal = () => {
         setIsEditingPersonal(true);
         setTempUserInfo(userInfo);
+        // Limpiar los datos de fotos al empezar a editar
+        setFotoPerfilData(null);
+        setFotoPortadaData(null);
     };
 
     const handleSavePersonal = () => {
         setIsEditingPersonal(false);
-        setUserInfo(tempUserInfo);
-        console.log("Datos personales guardados:", tempUserInfo);
+        // Actualizar userInfo con los datos de las fotos si están disponibles
+        const updatedUserInfo = { ...tempUserInfo };
+        if (fotoPerfilData) {
+            updatedUserInfo.fotoPerfil = fotoPerfilData.name;
+        }
+        if (fotoPortadaData) {
+            updatedUserInfo.fotoPortada = fotoPortadaData.name;
+        }
+        setUserInfo(updatedUserInfo);
+        console.log("Datos personales guardados:", updatedUserInfo);
+        console.log("Archivo foto perfil:", fotoPerfilData);
+        console.log("Archivo foto portada:", fotoPortadaData);
     };
 
     const handleCancelPersonal = () => {
         setIsEditingPersonal(false);
+        // Limpiar los datos de fotos al cancelar
+        setFotoPerfilData(null);
+        setFotoPortadaData(null);
     };
 
     // ----- Handlers para los Datos de la Cuenta -----
@@ -96,6 +117,27 @@ const GestionCuenta = () => {
         }
     };
 
+    // Handlers para las fotos
+    const handleFotoPerfilChange = (data) => {
+        setFotoPerfilData(data);
+        // Actualizar también el tempUserInfo con el nombre del archivo
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            fotoPerfil: data ? data.name : ""
+        }));
+        console.log("Foto de perfil seleccionada:", data);
+    };
+
+    const handleFotoPortadaChange = (data) => {
+        setFotoPortadaData(data);
+        // Actualizar también el tempUserInfo con el nombre del archivo
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            fotoPortada: data ? data.name : ""
+        }));
+        console.log("Foto de portada seleccionada:", data);
+    };
+
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de Cuenta de Parroquia</h2>
@@ -117,8 +159,26 @@ const GestionCuenta = () => {
                         <TextInput label="Celular" value={tempUserInfo.celular} onChange={handleInputChange} name="celular" />
                         <TextInput label="Color Primario" value={tempUserInfo.colorPrimario} onChange={handleInputChange} name="colorPrimario" />
                         <TextInput label="Color Secundario" value={tempUserInfo.colorSecundario} onChange={handleInputChange} name="colorSecundario" />
-                        <TextInput label="Foto Perfil" value={tempUserInfo.fotoPerfil} onChange={handleInputChange} name="fotoPerfil" />
-                        <TextInput label="Foto Portada" value={tempUserInfo.fotoPortada} onChange={handleInputChange} name="fotoPortada" />
+                        
+                        <div className="foto-input-container">
+                            <label className="foto-label">Foto Perfil:</label>
+                            <InputFotoPerfil 
+                                onChange={handleFotoPerfilChange}
+                                placeholder="Subir foto de perfil de la parroquia"
+                                maxSize={5 * 1024 * 1024} // 5MB
+                                acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
+                            />
+                        </div>
+                        
+                        <div className="foto-input-container">
+                            <label className="foto-label">Foto Portada:</label>
+                            <InputFotoPerfil 
+                                onChange={handleFotoPortadaChange}
+                                placeholder="Subir foto de portada de la parroquia"
+                                maxSize={10 * 1024 * 1024} // 10MB para portada
+                                acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
+                            />
+                        </div>
                     </>
                 ) : (
                     <>
