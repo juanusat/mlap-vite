@@ -4,7 +4,7 @@ import MyButtonShortAction from '../components2/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
-import InputFotoPerfil from '../components2/inputSelectorFoto';
+import InputFotoPerfil from '../components2/inputFotoPerfil';
 import InputColorPicker from '../components2/inputColorPicker';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
@@ -184,14 +184,7 @@ const GestionCuenta = () => {
                                 value={tempUserInfo.colorPrimario}
                                 onChange={handleColorPrimarioChange}
                                 placeholder="Ej: #DC2626"
-                                presetColors={[
-                                    '#DC2626', '#EF4444', '#F87171', '#FCA5A5',
-                                    '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD',
-                                    '#059669', '#10B981', '#34D399', '#6EE7B7',
-                                    '#D97706', '#F59E0B', '#FBBF24', '#FDE047',
-                                    '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
-                                    '#BE185D', '#EC4899', '#F472B6', '#F9A8D4'
-                                ]}
+                                
                             />
                         </div>
                         
@@ -201,14 +194,7 @@ const GestionCuenta = () => {
                                 value={tempUserInfo.colorSecundario}
                                 onChange={handleColorSecundarioChange}
                                 placeholder="Ej: #2563EB"
-                                presetColors={[
-                                    '#DC2626', '#EF4444', '#F87171', '#FCA5A5',
-                                    '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD',
-                                    '#059669', '#10B981', '#34D399', '#6EE7B7',
-                                    '#D97706', '#F59E0B', '#FBBF24', '#FDE047',
-                                    '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
-                                    '#BE185D', '#EC4899', '#F472B6', '#F9A8D4'
-                                ]}
+                                
                             />
                         </div>
                         
