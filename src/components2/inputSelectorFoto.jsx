@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import './inputFotoPerfil.css';
+import './inputSelectorFoto.css';
 
 const InputFotoPerfil = ({ 
   value, 
