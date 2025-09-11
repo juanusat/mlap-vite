@@ -1,29 +1,10 @@
-.app-container {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 20px auto;
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    color: #333;
-    transition: all 0.3s ease-in-out;
-}
-
-.app-container:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
 
 .right-container {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     margin-left: 10px;
 }
 
-.right-container .MyGroupButtonsActions {
-    margin-left: 10px;
-}
 
 .panel-config-form {
     display: flex;
@@ -92,4 +73,16 @@
     /* Elimina el margen superior e inferior */
     font-size: 1.25rem;
     color: #343a40;
+}
+
+.table-container{
+    padding: var(--space-l) var(--size-0) var(--size-0) var(--size-0);
+    
+}
+
+.my-group-buttons-actions {
+  display: flex ;
+  gap: var(--space-xs);
+  align-items: stretch;
+  justify-content: flex-start ;
 }
