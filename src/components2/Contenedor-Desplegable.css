@@ -17,6 +17,7 @@
 .expandable-title {
   margin: 0;
   font-size: 1.25rem;
+  width: 75%;
 }
 
 .expandable-icon {
