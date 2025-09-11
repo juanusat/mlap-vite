@@ -6,13 +6,6 @@ const InputColorPicker = ({
   onChange,
   label = "Seleccionar color",
   disabled = false,
-  presetColors = [
-    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
-    '#800000', '#008000', '#000080', '#808000', '#800080', '#008080',
-    '#FFA500', '#FFC0CB', '#A52A2A', '#DDA0DD', '#98FB98', '#F0E68C',
-    '#87CEEB', '#D2691E', '#CD853F', '#BC8F8F', '#4682B4', '#9ACD32'
-  ],
-  showPresets = true,
   showHexInput = true,
   placeholder = "Ingresa código hex..."
 }) => {
@@ -145,7 +138,7 @@ const InputColorPicker = ({
     <div className="input-color-picker" ref={containerRef}>
       {label && <label className="color-picker-label">{label}</label>}
       
-      <div className="color-picker-container">
+      <div className="color-picker-container" htmlFor="color-picker">
         {/* Input de color nativo (oculto) */}
         <input
           ref={colorInputRef}
@@ -191,41 +184,6 @@ const InputColorPicker = ({
             )}
           </div>
         )}
-      </div>
-
-      {/* Colores predefinidos */}
-      {showPresets && (
-        <div className="preset-colors">
-          <div className="preset-colors-label">Colores predefinidos:</div>
-          <div className="preset-colors-grid">
-            {presetColors.map((color, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`preset-color ${selectedColor === color ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
-                style={{ backgroundColor: color }}
-                onClick={() => handlePresetColorSelect(color)}
-                disabled={disabled}
-                title={getColorName(color)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Información del color */}
-      <div className="color-info">
-        <div className="color-info-item">
-          <strong>Hex:</strong> {selectedColor}
-        </div>
-        {hexToRgb(selectedColor) && (
-          <div className="color-info-item">
-            <strong>RGB:</strong> {`rgb(${hexToRgb(selectedColor).r}, ${hexToRgb(selectedColor).g}, ${hexToRgb(selectedColor).b})`}
-          </div>
-        )}
-        <div className="color-info-item">
-          <strong>Nombre:</strong> {getColorName(selectedColor)}
-        </div>
       </div>
     </div>
   );
