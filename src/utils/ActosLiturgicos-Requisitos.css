@@ -15,21 +15,6 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.search-add {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 20px;
-    margin-bottom: 20px;
-}
-
-.center-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
 .right-container {
     display: flex;
     align-items: center;
