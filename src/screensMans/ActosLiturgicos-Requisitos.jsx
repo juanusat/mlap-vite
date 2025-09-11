@@ -149,16 +149,8 @@ export default function RequisitosGestionarSoloBarra() {
             </div>
             <div className="right-container">
               <MyGroupButtonsActions>
-                <MyButtonShortAction
-                  type="select"
-                  title="Seleccionar Evento"
-                  onClick={handleSelectEvent}
-                />
-                <MyButtonShortAction
-                  type="add"
-                  onClick={handleAddRequirement}
-                  title="Añadir"
-                />
+                <MyButtonShortAction type="select" title="Seleccionar Evento" onClick={handleSelectEvent}/>
+                <MyButtonShortAction type="add" onClick={handleAddRequirement} title="Añadir"/>
               </MyGroupButtonsActions>
             </div>
           </div>

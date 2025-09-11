@@ -7,7 +7,8 @@ import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from '../components2/MyButtonShortAction';
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon"; // Importar para los botones dentro del modal
+import MyButtonMediumIcon from "../components/MyButtonMediumIcon"; 
+import "../utils/Estilos-Generales-1.css";
 
 const initialDocs = [
   { id: 1, nombre: 'DNI', estado: 'Activo', descripcion: 'Documento Nacional de Identidad', nombreCorto: 'DNI' },
@@ -166,9 +167,6 @@ export default function TipoDocumentoGestionar() {
             <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
             <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
             <p><strong>Nombre Corto:</strong> {currentDoc.nombreCorto}</p>
-            <div className="button-group">
-              <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
-            </div>
           </div>
         )}
         {modalType === 'edit' && currentDoc && (
@@ -222,7 +220,7 @@ const DocForm = ({ onSave, onClose, doc }) => {
         <label>Nombre Corto</label>
         <input type="text" name="nombreCorto" value={formData.nombreCorto} onChange={handleChange} className="inputModal" />
       </div>
-      <div className="button-group">
+      <div className="buttons-container">
         <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
         <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
       </div>
