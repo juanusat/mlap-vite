@@ -7,6 +7,7 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import "../utils/Estilos-Generales-1.css";
 import "../utils/Seguridad-Cuentas-Gestionar.css";
 
 // Definición de los 4 roles
@@ -169,9 +170,7 @@ export default function CuentasGestionar() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Gestión de Cuentas</h2>
-
-                {/* Contenedor principal para la tabla y la barra lateral. Su clase cambia para ajustar el diseño. */}
-                <div className={`main-content ${showSidebar ? 'sidebar-active' : ''}`}>
+                <div className={`app-container ${showSidebar ? 'sidebar-active' : ''}`}>
                     <div className="search-add">
                         <div className="center-container">
                             <SearchBar onSearchChange={setSearchTerm} />
@@ -181,6 +180,7 @@ export default function CuentasGestionar() {
                     <DynamicTable
                         columns={userColumns}
                         data={filteredEvents}
+                        gridColumnsLayout="auto auto auto auto 1fr auto auto auto"
                     />
                 </div>
 
@@ -219,10 +219,11 @@ export default function CuentasGestionar() {
             {/* El panel lateral se renderiza solo si showSidebar es verdadero y hay un usuario seleccionado */}
             {showSidebar && currentUser && (
                 <MyPanelLateralConfig>
-                    <div className='sidebar-title-button'>
+                    <MyGroupButtonsActions className="title">
                         <h3 className="sidebar-title">{`Roles de ${currentUser.username}`}</h3>
                         <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar}>Cerrar</MyButtonShortAction>
-                    </div>
+                    </MyGroupButtonsActions>
+
                     <div className="sidebar-list">
                         {/* Renderiza dinámicamente cada rol con su botón de eliminar */}
                         {currentUser.roles.map((item) => (
@@ -265,7 +266,7 @@ export default function CuentasGestionar() {
                     />
                 </div>
 
-                <div className="button-group">
+                <div className="buttons-container">
                     <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
                     <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
                 </div>

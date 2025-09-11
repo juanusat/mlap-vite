@@ -74,3 +74,10 @@
 .btn-short-select:hover {
   background-color: #e3f2fd;
 }
+
+.btn-short-next{
+  color: var(--color-a-600);
+}
+.btn-short-back{
+  color: var(--color-a-600);
+}

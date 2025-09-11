@@ -166,6 +166,7 @@ export default function RequisitosGestionarSoloBarra() {
             <DynamicTable
               columns={requirementColumns}
               data={filteredRequirements}
+              gridColumnsLayout="auto auto auto 1fr auto auto auto"
             />
           ) : (
             <div className="empty-state">

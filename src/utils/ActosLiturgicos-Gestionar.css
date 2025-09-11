@@ -1,38 +1,3 @@
-.app-container {
-    border: 1px solid #ddd;              
-    border-radius: 8px;                  
-    background: #ffffff;                
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-    padding: 20px;                                      
-    margin: 20px auto;                   
-    font-family: "Segoe UI", Tahoma, sans-serif; 
-    color: #333;                         
-    transition: all 0.3s ease-in-out;    
-}
-
-.app-container:hover {
-    transform: translateY(-4px);         
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.search-add {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    width: 100%;
-    padding: 0 20px; 
-}
-
-.center-container {
-    flex: 1;                    
-    display: flex;
-    justify-content: center;      
-}
-
-.search-add button {
-    flex: 0;                     
-}
-
 .Inputs-edit {
     display: flex;
     flex-direction: column;   
@@ -56,12 +21,4 @@
     display: flex;             
     justify-content: center;   
     align-items: center;       
-}
-
-.buttons-container{
-    display: flex;
-    gap: var(--space-s);
-    align-items: center;
-    justify-content: flex-end;
-    margin: var(--space-s);
 }

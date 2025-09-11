@@ -6,6 +6,7 @@ import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
 
 const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
@@ -93,7 +94,7 @@ export default function EventosLiturgicos() {
         }
         handleCloseModal();
     };
-    
+
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -131,44 +132,46 @@ export default function EventosLiturgicos() {
                     </div>
                     <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                 </div>
-                <DynamicTable columns={eventColumns} data={filteredEvents} />
+                <DynamicTable columns={eventColumns} data={filteredEvents}
+                    gridColumnsLayout="auto auto auto 1fr auto auto auto" 
+                    columnAlign={{ column: 4, align: "Center" }}/>
             </div>
-                <Modal
-                    show={showModal}
-                    onClose={handleCloseModal}
-                    title={
-                        modalType === 'view' ? 'Detalles del Evento' :
+            <Modal
+                show={showModal}
+                onClose={handleCloseModal}
+                title={
+                    modalType === 'view' ? 'Detalles del Evento' :
                         modalType === 'edit' ? 'Editar Evento' :
-                        modalType === 'delete' ? 'Confirmar Eliminación' :
-                        'Añadir Evento'
-                    }
-                >
-                    {modalType === 'view' && currentEvent && (
-                        <div>
-                            <p><strong>ID:</strong> {currentEvent.id}</p>
-                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                            <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
+                            modalType === 'delete' ? 'Confirmar Eliminación' :
+                                'Añadir Evento'
+                }
+            >
+                {modalType === 'view' && currentEvent && (
+                    <div>
+                        <p><strong>ID:</strong> {currentEvent.id}</p>
+                        <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
+                        <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
+                    </div>
+                )}
+
+                {modalType === 'edit' && currentEvent && (
+                    <EditEventForm onSave={handleSave} onClose={handleCloseModal} event={currentEvent} />
+                )}
+
+                {modalType === 'delete' && currentEvent && (
+                    <div>
+                        <h4>¿Estás seguro que quieres eliminar este evento?</h4>
+                        <div className="buttons-container">
+                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
+                            <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {modalType === 'edit' && currentEvent && (
-                        <EditEventForm onSave={handleSave} onClose={handleCloseModal} event={currentEvent} />
-                    )}
-
-                    {modalType === 'delete' && currentEvent && (
-                        <div>
-                            <h4>¿Estás seguro que quieres eliminar este evento?</h4>
-                            <div className="buttons-container">
-                                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                                <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
-                            </div>
-                        </div>
-                    )}
-
-                    {modalType === 'add' && (
-                        <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
-                    )}
-                </Modal>
+                {modalType === 'add' && (
+                    <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
+                )}
+            </Modal>
         </div>
     );
 }

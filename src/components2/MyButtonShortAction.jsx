@@ -10,37 +10,38 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'delete') {
     icon = <MdDelete />;
     className = 'btn-short-delete';
-  }else if (type === 'key'){
+  } else if (type === 'key') {
     icon = <MdKey />;
     className = 'btn-short-key';
   } else if (type === 'view') {
     icon = <MdRemoveRedEye />;
     className = 'btn-short-view';
   } else if (type === 'refresh') {
-    icon = <MdRefresh />; 
+    icon = <MdRefresh />;
     className = 'btn-short-refresh';
-  } else if (type === 'add'){
+  } else if (type === 'add') {
     icon = <MdAdd />;
     className = 'btn-short-add';
-  } else if (type === 'next'){
+  } else if (type === 'next') {
     icon = <MdArrowForward />;
     className = 'btn-short-next'
-   } else if (type === 'back'){
+  } else if (type === 'back') {
     icon = <MdArrowBack />;
     className = 'btn-short-back'
-  }else if (type === 'close') {
+  } else if (type === 'close') {
     icon = <MdClose />;
     className = 'btn-short-close'
-  }else if (type === 'select') {
+  } else if (type === 'select') {
     icon = <MdTouchApp />;
     className = 'btn-short-select'
-  }else {
+  } else {
     icon = null;
     className = '';
   }
   return (
-    <button className={`my-btn-short-action ${className}`} onClick={onClick} title={title}>
-      {icon}
-    </button>
+      <button className={`my-btn-short-action ${className}`} onClick={onClick} title={title}>
+        {icon}
+      </button>
+
   );
 }

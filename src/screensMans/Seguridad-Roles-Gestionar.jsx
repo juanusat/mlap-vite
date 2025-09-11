@@ -7,6 +7,7 @@ import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import ToggleSwitch from '../components2/Toggle';
 import Modal from '../components2/Modal';
 import MatrixModal from '../components2/MatrixModal'; // Importamos el nuevo componente
+import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css';
 
 
@@ -261,7 +262,8 @@ export default function RolesGestionar() {
                     </div>
                     <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal('add')} />
                 </div>
-                <DynamicTable columns={columns} data={rolesWithActions} />
+                <DynamicTable columns={columns} data={rolesWithActions} 
+                gridColumnsLayout="auto auto auto 1fr auto auto auto"/>
             </div>
             {/* Modal para agregar/editar/eliminar roles */}
             <Modal show={showModal} onClose={handleCloseModal} title={modalContent.title}>
