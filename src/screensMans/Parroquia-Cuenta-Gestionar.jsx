@@ -5,6 +5,7 @@ import TextInput from '../components/formsUI/TextInput';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
 import InputFotoPerfil from '../components2/inputFotoPerfil';
+import InputColorPicker from '../components2/inputColorPicker';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {
@@ -14,8 +15,8 @@ const GestionCuenta = () => {
         direccion: "Algarrobos 222, Chiclayo 14008",
         coordenadas: "-6.781771909288489, -79.84091136201245",
         celular: "999888777",
-        colorPrimario: "Rojo",
-        colorSecundario: "Azul",
+        colorPrimario: "#DC2626", // Rojo
+        colorSecundario: "#2563EB", // Azul
         fotoPerfil: "iglesia.jpg", // Aquí podrías poner una URL de imagen si tienes una
         fotoPortada: "iglesia_portada.jpg", // Aquí podrías poner una URL de imagen si tienes una
         usuario: "conso",
@@ -63,6 +64,8 @@ const GestionCuenta = () => {
         console.log("Datos personales guardados:", updatedUserInfo);
         console.log("Archivo foto perfil:", fotoPerfilData);
         console.log("Archivo foto portada:", fotoPortadaData);
+        console.log("Color primario:", updatedUserInfo.colorPrimario);
+        console.log("Color secundario:", updatedUserInfo.colorSecundario);
     };
 
     const handleCancelPersonal = () => {
@@ -138,6 +141,23 @@ const GestionCuenta = () => {
         console.log("Foto de portada seleccionada:", data);
     };
 
+    // Handlers para los colores
+    const handleColorPrimarioChange = (colorData) => {
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            colorPrimario: colorData.hex
+        }));
+        console.log("Color primario seleccionado:", colorData);
+    };
+
+    const handleColorSecundarioChange = (colorData) => {
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            colorSecundario: colorData.hex
+        }));
+        console.log("Color secundario seleccionado:", colorData);
+    };
+
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de Cuenta de Parroquia</h2>
@@ -157,8 +177,40 @@ const GestionCuenta = () => {
                         <TextInput label="Dirección" value={tempUserInfo.direccion} onChange={handleInputChange} name="direccion" />
                         <TextInput label="Coordenadas" value={tempUserInfo.coordenadas} onChange={handleInputChange} name="coordenadas" />
                         <TextInput label="Celular" value={tempUserInfo.celular} onChange={handleInputChange} name="celular" />
-                        <TextInput label="Color Primario" value={tempUserInfo.colorPrimario} onChange={handleInputChange} name="colorPrimario" />
-                        <TextInput label="Color Secundario" value={tempUserInfo.colorSecundario} onChange={handleInputChange} name="colorSecundario" />
+                        
+                        <div className="color-input-container">
+                            <InputColorPicker 
+                                label="Color Primario"
+                                value={tempUserInfo.colorPrimario}
+                                onChange={handleColorPrimarioChange}
+                                placeholder="Ej: #DC2626"
+                                presetColors={[
+                                    '#DC2626', '#EF4444', '#F87171', '#FCA5A5',
+                                    '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD',
+                                    '#059669', '#10B981', '#34D399', '#6EE7B7',
+                                    '#D97706', '#F59E0B', '#FBBF24', '#FDE047',
+                                    '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
+                                    '#BE185D', '#EC4899', '#F472B6', '#F9A8D4'
+                                ]}
+                            />
+                        </div>
+                        
+                        <div className="color-input-container">
+                            <InputColorPicker 
+                                label="Color Secundario"
+                                value={tempUserInfo.colorSecundario}
+                                onChange={handleColorSecundarioChange}
+                                placeholder="Ej: #2563EB"
+                                presetColors={[
+                                    '#DC2626', '#EF4444', '#F87171', '#FCA5A5',
+                                    '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD',
+                                    '#059669', '#10B981', '#34D399', '#6EE7B7',
+                                    '#D97706', '#F59E0B', '#FBBF24', '#FDE047',
+                                    '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
+                                    '#BE185D', '#EC4899', '#F472B6', '#F9A8D4'
+                                ]}
+                            />
+                        </div>
                         
                         <div className="foto-input-container">
                             <label className="foto-label">Foto Perfil:</label>
@@ -200,11 +252,23 @@ const GestionCuenta = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">Color Primario:</span>
-                            <span className="info-value">{userInfo.colorPrimario}</span>
+                            <span className="info-value color-display">
+                                <span 
+                                    className="color-sample" 
+                                    style={{ backgroundColor: userInfo.colorPrimario }}
+                                ></span>
+                                {userInfo.colorPrimario}
+                            </span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Color pecundario:</span>
-                            <span className="info-value">{userInfo.colorSecundario}</span>
+                            <span className="info-label">Color Secundario:</span>
+                            <span className="info-value color-display">
+                                <span 
+                                    className="color-sample" 
+                                    style={{ backgroundColor: userInfo.colorSecundario }}
+                                ></span>
+                                {userInfo.colorSecundario}
+                            </span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Foto perfil:</span>
