@@ -8,6 +8,7 @@ import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import "../utils/ActosLiturgicos-Requisitos.css";
+import "../utils/Estilos-Generales-1.css";
 
 // Datos simulados (se mantienen igual)
 const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
@@ -115,23 +116,12 @@ export default function RequisitosGestionarSoloBarra() {
     return (
       <div className="table-container">
         <table className="dynamic-table">
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th key={column.key}>{column.header}</th>
-              ))}
-            </tr>
-          </thead>
           <tbody>
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} onClick={() => handleRowClickEvent(row)}>
-                {columns.map((column) => (
-                  <td key={column.key}>
-                    {column.accessor(row)}
-                  </td>
-                ))}
-              </tr>
-            ))}
+                {columns.map((column) => (<td key={column.key}> {column.accessor(row)}
+                </td>
+              ))}</tr>))}
           </tbody>
         </table>
       </div>
