@@ -1,0 +1,159 @@
+/* InputFotoPerfil Component Styles - Traditional File Input */
+
+.input-foto-perfil {
+  width: 100%;
+}
+
+.file-input-container {
+  margin-bottom: 0.5rem;
+}
+
+.file-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--color-grey-50);
+  border-radius: var(--border-radius-s);
+  background: var(--color-n-50);
+  transition: all 0.2s ease;
+}
+
+.file-input-wrapper:hover {
+  border-color: var(--color-a-400);
+  background-color: #f9fafb;
+}
+
+.file-input-wrapper.dragging {
+  border-color: var(--color-a-400);
+  background-color: #ede9fe;
+  border-style: dashed;
+}
+
+.file-input-wrapper.disabled {
+  background-color: var(--color-a-100);
+  border-color: #d1d5db;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.file-select-button {
+  background-color: var(--color-a-300);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.file-select-button:hover:not(:disabled) {
+  background-color: var(--color-a-500);
+}
+
+.file-select-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-actions {
+  margin-top: 0.5rem;
+}
+
+.remove-file-btn {
+  background-color: var(--color-error-500);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--border-radius-xs);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.remove-file-btn:hover {
+  background-color: var(--color-error-700);
+}
+
+.file-info {
+  margin-top: 0.25rem;
+}
+
+.file-info small {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: #dc2626;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+  color: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .file-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .file-select-button {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .file-name {
+    text-align: center;
+    padding: 0.25rem;
+    background-color: #f9fafb;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+/* Focus states for accessibility */
+.file-select-button:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.remove-file-btn:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
