@@ -133,8 +133,8 @@ export default function EventosLiturgicos() {
                     <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents}
-                    gridColumnsLayout="auto auto auto 1fr auto auto auto" 
-                    columnAlign={{ column: 4, align: "Center" }}/>
+                    gridColumnsLayout="90px 380px 1fr 140px 220px" 
+                    columnLeftAlignIndex={[2,3]}/>
             </div>
             <Modal
                 show={showModal}

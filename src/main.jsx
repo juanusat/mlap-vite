@@ -15,6 +15,7 @@ import Reservas from './screensMans/Reservas-access.jsx';
 import AprobarParroquia from './screensMans/AprobarParroquia-access.jsx';
 import ActosLiturgicosReportes from './screensMans/ActosLiturgicos-Reportes.jsx';
 import UsuarioGestionar from './screensMans/Usuario-Gestionar.jsx';
+import ParroquiaGestionarCapilla from './screensMans/Parroquia-Gestionar-Capilla.jsx';
 import ParroquiaGestionar from './screensMans/Parroquia-Cuenta-Gestionar.jsx';
 import CuentasGestionar from './screensMans/Seguridad-Cuentas-Gestionar.jsx';
 import RolesGestionar from './screensMans/Seguridad-Roles-Gestionar.jsx';
@@ -47,7 +48,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="gestionar" element={<UsuarioGestionar />} />
         </Route>
         <Route path="/man-parroquia" element={<Parroquia />}>
-          <Route path="gestionar" element={<ParroquiaGestionar />} />
+          <Route path="gestionar-cuenta" element={<ParroquiaGestionar />} />
+          <Route path="gestionar-capilla" element={<ParroquiaGestionarCapilla />} />
         </Route>
         <Route path="/man-seguridad" element={<Seguridad />}>
           <Route path="cuentas-gestionar" element={<CuentasGestionar />} />

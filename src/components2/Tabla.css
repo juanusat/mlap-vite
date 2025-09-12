@@ -6,13 +6,24 @@
 }
 
 .grid-header {
-  padding: 12px 16px;
+  padding: 12px 0px;
   text-align: center;
-  /* Se añade esta línea para centrar el texto */
   border-bottom: 1px solid #e0e0e0;
   font-weight: bold;
-  /* Opcional: para que las cabeceras destaquen */
   background-color: #e2e1e1;
+}
+.grid-header.grid-cell-id{
+  width: 90px;
+} 
+.grid-header.grid-cell-estado{
+  width: 140px;
+}
+
+
+.grid-header.grid-cell-acciones{
+  width: 220px;
+  padding-right: 50px;
+  padding-left: 50px;
 }
 
 /* Estilo para las celdas de datos */
@@ -23,20 +34,11 @@
   text-align: center;
 }
 
-.align-left {
-  text-align: left;
-}
-
-.align-center {
-  text-align: center;
-}
-
-.align-right {
-  text-align: right;
-}
-
 .grid-table-cell.row-par {
   background-color: #f2f2f2;
+}
+.align-left {
+  text-align: left;
 }
 
 .pagination {
@@ -47,11 +49,4 @@
 } 
 .pagination span {
   margin: 0px 30px;
-}
-.grid-header.grid-cell-ghost-start{
-  width: 50px;
-}
-
-.grid-header.grid-cell-ghost-end{
-  width: 50px;
 }
