@@ -15,7 +15,7 @@ import Reservas from './screensMans/Reservas-access.jsx';
 import AprobarParroquia from './screensMans/AprobarParroquia-access.jsx';
 import ActosLiturgicosReportes from './screensMans/ActosLiturgicos-Reportes.jsx';
 import UsuarioGestionar from './screensMans/Usuario-Gestionar.jsx';
-import ParroquiaGestionar from './screensMans/Parroquia-Gestionar.jsx';
+import ParroquiaGestionar from './screensMans/Parroquia-Cuenta-Gestionar.jsx';
 import CuentasGestionar from './screensMans/Seguridad-Cuentas-Gestionar.jsx';
 import RolesGestionar from './screensMans/Seguridad-Roles-Gestionar.jsx';
 import ReservasPendientes from './screensMans/Reservas-Pendientes.jsx';
