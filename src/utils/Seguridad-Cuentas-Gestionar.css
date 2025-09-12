@@ -1,11 +1,3 @@
-.my-group-buttons-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-
-}
-
 .sidebar-list-item {
     display: flex;
     justify-content: space-between;

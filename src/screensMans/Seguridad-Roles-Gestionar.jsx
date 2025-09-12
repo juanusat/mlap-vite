@@ -263,7 +263,8 @@ export default function RolesGestionar() {
                     <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal('add')} />
                 </div>
                 <DynamicTable columns={columns} data={rolesWithActions} 
-                gridColumnsLayout="auto auto auto 1fr auto auto auto"/>
+                gridColumnsLayout="90px 380px 1fr 140px 220px"
+                columnLeftAlignIndex={[2,3]}/>
             </div>
             {/* Modal para agregar/editar/eliminar roles */}
             <Modal show={showModal} onClose={handleCloseModal} title={modalContent.title}>

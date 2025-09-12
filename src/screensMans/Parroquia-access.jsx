@@ -1,6 +1,6 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdAccountBalance } from "react-icons/md";
+import { MdAccountBalance, MdHomeFilled } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Parroquia.css';
 
@@ -10,7 +10,8 @@ export default function Parroquia() {
   const isBasePath = location.pathname === '/man-parroquia';
 
   const options = [
-    { href: 'gestionar', icon: <MdAccountBalance />, label: 'Gestionar Cuenta' },
+    { href: 'gestionar-cuenta', icon: <MdAccountBalance />, label: 'Gestionar Cuenta' },
+    { href: 'gestionar-capilla', icon: <MdHomeFilled />, label: 'Gestionar Capilla' },
   ];
 
   return (
