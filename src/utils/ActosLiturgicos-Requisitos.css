@@ -2,7 +2,6 @@
 .right-container {
     display: flex;
     align-items: stretch;
-    margin-left: 10px;
 }
 
 
@@ -67,10 +66,8 @@
     padding: 0px 0px 10px 0px;
 }
 
-/* Regla CSS específica para el h2 dentro del encabezado */
 .panel-lateral-header h2 {
     margin: 0;
-    /* Elimina el margen superior e inferior */
     font-size: 1.25rem;
     color: #343a40;
 }
@@ -80,9 +77,11 @@
     
 }
 
-.my-group-buttons-actions {
-  display: flex ;
-  gap: var(--space-xs);
-  align-items: stretch;
-  justify-content: flex-start ;
+.texto-evento{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  font-weight: bold;
+  font-size: 16px;
 }

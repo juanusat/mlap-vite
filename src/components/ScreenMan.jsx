@@ -2,6 +2,7 @@ import React from "react";
 import MyHeaderAdm from "./MyHeaderAdm";
 import MyAsideGen from "./MyAsideGen";
 import MyPanelLateralConfig from "./MyPanelLateralConfig";
+import "../utils/Estilos-Generales-1.css";
 import "./ScreenMan.css";
 
 const ScreenMan = ({ children, title, options }) => {

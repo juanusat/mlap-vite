@@ -130,7 +130,10 @@ export default function EventosLiturgicos() {
                     <div className="center-container">
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
-                    <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
+                    <MyGroupButtonsActions>
+                        <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
+                    </MyGroupButtonsActions>
+                    
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents}
                     gridColumnsLayout="90px 380px 1fr 140px 220px" 

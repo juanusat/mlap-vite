@@ -147,7 +147,8 @@ export default function TipoDocumentoGestionar() {
           <DynamicTable
             columns={columns}
             data={filteredDocs}
-            gridColumnsLayout="auto auto auto 1fr auto auto auto"
+            gridColumnsLayout="90px 380px 1fr 140px 220px"
+            columnLeftAlignIndex={[2,3]}
           />
         </div>
       </div>

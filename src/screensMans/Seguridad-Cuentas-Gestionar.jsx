@@ -220,11 +220,10 @@ export default function CuentasGestionar() {
             {/* El panel lateral se renderiza solo si showSidebar es verdadero y hay un usuario seleccionado */}
             {showSidebar && currentUser && (
                 <MyPanelLateralConfig>
-                    <MyGroupButtonsActions className="title">
-                        <h3 className="sidebar-title">{`Roles de ${currentUser.username}`}</h3>
-                        <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar}>Cerrar</MyButtonShortAction>
-                    </MyGroupButtonsActions>
-
+                    <div className="panel-lateral-header">
+                        <h2 className="sidebar-title">{`Roles de ${currentUser.username}`}</h2>
+                        <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar}/>
+                    </div>
                     <div className="sidebar-list">
                         {/* Renderiza dinámicamente cada rol con su botón de eliminar */}
                         {currentUser.roles.map((item) => (

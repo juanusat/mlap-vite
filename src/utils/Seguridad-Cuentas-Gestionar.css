@@ -1,4 +1,21 @@
+.sidebar-list{
+    gap: 10px;
+}
+
 .sidebar-list-item {
     display: flex;
     justify-content: space-between;
+    font-size: 18px;
+}
+.panel-lateral-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 0px 0px 10px 0px;
+}
+.panel-lateral-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #343a40;
 }

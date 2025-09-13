@@ -1,3 +1,7 @@
+.search-add .my-group-buttons-actions{
+  align-items: stretch;
+}
+
 .my-group-buttons-actions {
   display: flex ;
   gap: var(--space-xs);

@@ -260,8 +260,11 @@ export default function RolesGestionar() {
                     <div className="center-container">
                         <SearchBar onSearchChange={handleSearch} />
                     </div>
-                    <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal('add')} />
+                    <MyGroupButtonsActions>
+                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal('add')} />
+                    </MyGroupButtonsActions>
                 </div>
+                
                 <DynamicTable columns={columns} data={rolesWithActions} 
                 gridColumnsLayout="90px 380px 1fr 140px 220px"
                 columnLeftAlignIndex={[2,3]}/>

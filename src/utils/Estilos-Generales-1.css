@@ -39,3 +39,7 @@
     justify-content: flex-end;
     margin: var(--space-s);
 }
+
+.search-add.my-group-buttons-actions{
+    align-items: stretch;
+} 

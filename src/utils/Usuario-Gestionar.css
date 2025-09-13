@@ -49,6 +49,3 @@
 .password-display .my-button-short-action {
   min-width: 60px; /* Para que el texto "Ver" u "Ocultar" quepa */
 }
-.my-group-buttons-actions{
-  justify-content:end;
-}
