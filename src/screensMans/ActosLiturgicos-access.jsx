@@ -9,10 +9,10 @@ export default function ActosLiturgicos() {
   const isBasePath = location.pathname === '/man-actos-liturgicos';
   
   const options = [
-    { href: 'gestionar',icon: <MdBookmark />, label: 'Gestionar actos Litúrgicos' },
-    { href: 'requisitos', icon: <MdListAlt />, label: 'Gestionar Requisitos' },
-    { href: 'horarios', icon: <MdSchedule />, label: 'Gestionar Horarios' },
-    { href: 'reservas',icon: <MdBook />, label: 'Gestionar Reservas' },
+    { href: 'gestionar-actos',icon: <MdBookmark />, label: 'Gestionar actos Litúrgicos' },
+    { href: 'gestionar-requisitos', icon: <MdListAlt />, label: 'Gestionar Requisitos' },
+    { href: 'gestionar-horarios', icon: <MdSchedule />, label: 'Gestionar Horarios' },
+    { href: 'gestionar-reservas',icon: <MdBook />, label: 'Gestionar Reservas' },
     { href: 'reportes', icon: <MdAssessment />,label: 'Reportes' },
   ];
   

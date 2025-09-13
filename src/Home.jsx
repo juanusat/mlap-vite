@@ -60,6 +60,16 @@ export default function Home() {
               onClick={() => handleModuleClick('/man-actos-liturgicos')}
             />
             <MyModuleAccess
+              icon={<MdCalendarMonth />}
+              text="Reservas"
+              onClick={() => handleModuleClick('/man-reservas')}
+            />
+            <MyModuleAccess
+              icon={<MdSecurity />}
+              text="Seguridad"
+              onClick={() => handleModuleClick('/man-seguridad')}
+            />
+            <MyModuleAccess
               icon={<MdOutlineAccountBox />}
               text="Usuario"
               onClick={() => handleModuleClick('/man-usuario')}
@@ -70,24 +80,9 @@ export default function Home() {
               onClick={() => handleModuleClick('/man-parroquia')}
             />
             <MyModuleAccess
-              icon={<MdSecurity />}
-              text="Seguridad"
-              onClick={() => handleModuleClick('/man-seguridad')}
-            />
-            <MyModuleAccess
-              icon={<MdCalendarMonth />}
-              text="Reservas"
-              onClick={() => handleModuleClick('/man-reservas')}
-            />
-            <MyModuleAccess
               icon={<MdDescription />}
-              text="Tipos Documentos"
-              onClick={() => handleModuleClick('/man-tipos-documentos')}
-            />
-            <MyModuleAccess
-              icon={<MdDomainVerification />}
-              text="Aprobar Parroquia"
-              onClick={() => handleModuleClick('/man-aprobar-parroquia')}
+              text="Diócesis"
+              onClick={() => handleModuleClick('/man-diocesis')}
             />
           </div>
         </section>

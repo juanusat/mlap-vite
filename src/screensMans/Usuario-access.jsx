@@ -9,7 +9,7 @@ export default function Usuario() {
   const isBasePath = location.pathname === '/man-usuario';
 
   const options = [
-    { href: 'gestionar', icon: <MdPerson />, label: 'Gestionar Usuario' },
+    { href: 'gestionar-cuenta', icon: <MdPerson />, label: 'Gestionar Usuario' },
   ];
 
   return (
