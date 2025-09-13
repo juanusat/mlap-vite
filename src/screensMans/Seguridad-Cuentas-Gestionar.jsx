@@ -170,7 +170,7 @@ export default function CuentasGestionar() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Gestión de Cuentas</h2>
-                <div className={`app-container ${showSidebar ? 'sidebar-active' : ''}`}>
+                <div className="app-container">
                     <div className="search-add">
                         <div className="center-container">
                             <SearchBar onSearchChange={setSearchTerm} />

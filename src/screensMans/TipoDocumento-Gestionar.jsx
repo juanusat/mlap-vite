@@ -137,7 +137,7 @@ export default function TipoDocumentoGestionar() {
     <>
       <div className="content-module only-this">
         <h2 className='title-screen'>Tipos de Documentos</h2>
-        <div>
+        <div className="app-container">
           <div className="search-add">
             <div className="center-container">
               <SearchBar onSearchChange={setSearchTerm} />
