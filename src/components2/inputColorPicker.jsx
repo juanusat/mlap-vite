@@ -165,25 +165,7 @@ const InputColorPicker = ({
           </button>
         </div>
 
-        {/* Input de texto para código hex */}
-        {showHexInput && (
-          <div className="hex-input-container">
-            <input
-              type="text"
-              value={hexInput}
-              onChange={handleHexInputChange}
-              placeholder={placeholder}
-              disabled={disabled}
-              className={`hex-input ${!isValidHex ? 'invalid' : ''}`}
-              maxLength={7}
-            />
-            {!isValidHex && (
-              <div className="hex-error">
-                <span>Código hex inválido</span>
-              </div>
-            )}
-          </div>
-        )}
+        
       </div>
     </div>
   );

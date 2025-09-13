@@ -65,38 +65,6 @@
   font-weight: 400;
 }
 
-/* Hex Input */
-.hex-input-container {
-  flex: 1;
-}
-
-.hex-input {
-  width: 30%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: var(--border-radius-s);
-  font-size: var(--font-size-base);
-  font-family: 'Courier New', monospace;
-  transition: border-color 0.2s ease;
-  height: 2rem;
-}
-
-.hex-input:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px #6366f1;
-}
-
-.hex-input.invalid {
-  border-color: #dc2626;
-  background-color: #fef2f2;
-}
-
-.hex-input:disabled {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  cursor: not-allowed;
-}
 
 .hex-error {
   position: absolute;
