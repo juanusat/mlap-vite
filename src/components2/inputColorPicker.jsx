@@ -6,8 +6,7 @@ const InputColorPicker = ({
   onChange,
   label = "Seleccionar color",
   disabled = false,
-  showHexInput = true,
-  placeholder = "Ingresa código hex..."
+  
 }) => {
   const [selectedColor, setSelectedColor] = useState(value);
   const [hexInput, setHexInput] = useState(value);
@@ -116,9 +115,26 @@ const InputColorPicker = ({
   // Manejar click en el botón del color picker
   const handleColorPickerClick = () => {
     if (!disabled) {
-      colorInputRef.current?.click();
+      setShowColorPicker(!showColorPicker);
     }
   };
+
+  // Cerrar el color picker al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setShowColorPicker(false);
+      }
+    };
+
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showColorPicker]);
 
   // Obtener luminosidad del color para determinar el color del texto
   const getLuminance = (hex) => {
@@ -163,6 +179,20 @@ const InputColorPicker = ({
               {selectedColor}
             </span>
           </button>
+          
+          {/* Selector de color personalizado */}
+          {showColorPicker && (
+            <div className="custom-color-picker">
+              <input
+                ref={colorInputRef}
+                type="color"
+                value={selectedColor}
+                onChange={handleColorChange}
+                disabled={disabled}
+                className="native-color-input"
+              />
+            </div>
+          )}
         </div>
 
         
