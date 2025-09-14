@@ -6,76 +6,28 @@ const InputColorPicker = ({
   onChange,
   label = "Seleccionar color",
   disabled = false,
-  showHexInput = true,
-  placeholder = "Ingresa código hex..."
 }) => {
   const [selectedColor, setSelectedColor] = useState(value);
   const [hexInput, setHexInput] = useState(value);
-  const [isValidHex, setIsValidHex] = useState(true);
-  const [showColorPicker, setShowColorPicker] = useState(false);
   const colorInputRef = useRef(null);
-  const containerRef = useRef(null);
-
+  
   // Actualizar estado cuando cambie el prop value
   useEffect(() => {
     setSelectedColor(value);
     setHexInput(value);
   }, [value]);
 
-  // Validar código hexadecimal
-  const isValidHexColor = (hex) => {
-    const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-    return hexRegex.test(hex);
-  };
-
   // Manejar cambio en el input de color nativo
   const handleColorChange = (e) => {
     const newColor = e.target.value;
     setSelectedColor(newColor);
     setHexInput(newColor);
-    setIsValidHex(true);
     
     if (onChange) {
       onChange({
         hex: newColor,
         rgb: hexToRgb(newColor),
         name: getColorName(newColor)
-      });
-    }
-  };
-
-  // Manejar cambio en el input de texto hex
-  const handleHexInputChange = (e) => {
-    const value = e.target.value;
-    setHexInput(value);
-    
-    if (isValidHexColor(value)) {
-      setIsValidHex(true);
-      setSelectedColor(value);
-      
-      if (onChange) {
-        onChange({
-          hex: value,
-          rgb: hexToRgb(value),
-          name: getColorName(value)
-        });
-      }
-    } else {
-      setIsValidHex(false);
-    }
-  };
-
-  // Manejar selección de color preset
-  const handlePresetColorSelect = (color) => {
-    setSelectedColor(color);
-    setHexInput(color);
-    setIsValidHex(true);
-    
-    if (onChange) {
-      onChange({
-        hex: color,
-        rgb: hexToRgb(color),
-        name: getColorName(color)
       });
     }
   };
@@ -113,13 +65,6 @@ const InputColorPicker = ({
     return colorNames[hex.toUpperCase()] || hex.toUpperCase();
   };
 
-  // Manejar click en el botón del color picker
-  const handleColorPickerClick = () => {
-    if (!disabled) {
-      colorInputRef.current?.click();
-    }
-  };
-
   // Obtener luminosidad del color para determinar el color del texto
   const getLuminance = (hex) => {
     const rgb = hexToRgb(hex);
@@ -134,56 +79,52 @@ const InputColorPicker = ({
     return getLuminance(bgColor) > 0.5 ? '#000000' : '#FFFFFF';
   };
 
+  // Manejar click en el botón del color picker
+  const handleColorPickerClick = () => {
+    if (!disabled && colorInputRef.current) {
+      colorInputRef.current.click();
+    }
+  };
+
   return (
-    <div className="input-color-picker" ref={containerRef}>
+    <div className="input-color-picker">
       {label && <label className="color-picker-label">{label}</label>}
       
-      <div className="color-picker-container" htmlFor="color-picker">
-        {/* Input de color nativo (oculto) */}
+      <div className="color-picker-container">
+        
+        {/* Visualización del color seleccionado y botón de acción */}
+        <button
+          type="button"
+          className={`color-display-button ${disabled ? 'disabled' : ''}`}
+          style={{ backgroundColor: selectedColor }}
+          onClick={handleColorPickerClick}
+          disabled={disabled}
+          title={`Color seleccionado: ${getColorName(selectedColor)}`}
+        >
+          <span style={{ color: getTextColor(selectedColor) }}>
+            {selectedColor}
+          </span>
+        </button>
+        
+        {/* Input de color nativo oculto */}
         <input
+          class_name="native-color-input"
           ref={colorInputRef}
           type="color"
           value={selectedColor}
           onChange={handleColorChange}
           disabled={disabled}
-          style={{ display: 'none' }}
+          style={{ 
+            position: 'relative',
+            top: '20%',
+            right: '9.25%',
+            width: '100px',
+            opacity: '0',
+            pointerEvents: 'none'
+          }
+        }
         />
         
-        {/* Visualización del color seleccionado */}
-        <div className="color-display-container">
-          <button
-            type="button"
-            className={`color-display-button ${disabled ? 'disabled' : ''}`}
-            style={{ backgroundColor: selectedColor }}
-            onClick={handleColorPickerClick}
-            disabled={disabled}
-            title={`Color seleccionado: ${getColorName(selectedColor)}`}
-          >
-            <span style={{ color: getTextColor(selectedColor) }}>
-              {selectedColor}
-            </span>
-          </button>
-        </div>
-
-        {/* Input de texto para código hex */}
-        {showHexInput && (
-          <div className="hex-input-container">
-            <input
-              type="text"
-              value={hexInput}
-              onChange={handleHexInputChange}
-              placeholder={placeholder}
-              disabled={disabled}
-              className={`hex-input ${!isValidHex ? 'invalid' : ''}`}
-              maxLength={7}
-            />
-            {!isValidHex && (
-              <div className="hex-error">
-                <span>Código hex inválido</span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

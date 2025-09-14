@@ -65,44 +65,25 @@
   font-weight: 400;
 }
 
-/* Hex Input */
-.hex-input-container {
-  flex: 1;
-}
-
-.hex-input {
-  width: 30%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: var(--border-radius-s);
-  font-size: var(--font-size-base);
-  font-family: 'Courier New', monospace;
-  transition: border-color 0.2s ease;
-  height: 2rem;
-}
-
-.hex-input:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px #6366f1;
-}
-
-.hex-input.invalid {
-  border-color: #dc2626;
-  background-color: #fef2f2;
-}
-
-.hex-input:disabled {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  cursor: not-allowed;
-}
-
-.hex-error {
+.custom-color-picker {
   position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.25rem;
-  font-size: 12px;
-  color: #dc2626;
+  top: calc(0% - 2px);
+  left:100%;
+  
+  background: white;
+  border: 2px solid var(--color-grey-700);
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.2s ease;
+}
+
+.native-color-input {
+  width: 80px;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  
 }
