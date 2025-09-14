@@ -194,14 +194,13 @@ function AddEventForm({ onSave, onClose }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario para añadir parroquia</h3>
             <div className="Inputs-add">
                 <label htmlFor="addNombre">Nombre de Parroquia</label>
                 <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="addCorreo">Correo</label>
-                <input type="text" className="inputModal" id="addCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
                 <label htmlFor="addUsuario">Usuario</label>
                 <input type="text" className="inputModal" id="addUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
+                <label htmlFor="addCorreo">Correo</label>
+                <input type="text" className="inputModal" id="addCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
                 <label htmlFor="addClave">Clave</label>
                 <input type="password" className="inputModal" id="addClave" value={clave} onChange={e => setClave(e.target.value)} required />
             </div>
@@ -226,14 +225,13 @@ function EditEventForm({ onSave, onClose, event }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario de Edición</h3>
             <div className="Inputs-edit">
                 <label htmlFor="editNombre">Modificar nombre de parroquia</label>
                 <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="editCorreo">Modificar correo</label>
-                <input type="text" className="inputModal" id="editCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
                 <label htmlFor="editUsuario">Modificar usuario</label>
                 <input type="text" className="inputModal" id="editUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
+                <label htmlFor="editCorreo">Modificar correo</label>
+                <input type="text" className="inputModal" id="editCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
                 <label htmlFor="editClave">Modificar clave</label>
                 <input type="password" className="inputModal" id="editClave" value={clave} onChange={e => setClave(e.target.value)} required />
             </div>
