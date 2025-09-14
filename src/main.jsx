@@ -33,6 +33,7 @@ import ParroquiaGestionar from './screensMans/Parroquia-Gestionar-Cuenta.jsx';
 
 import Diocesis from './screensMans/Diocesis-access.jsx';
 import TipoDocumentoGestionar from './screensMans/Diocesis-Gestionar-TipoDocumento.jsx';
+import DiocesisGestionarParroquia from './screensMans/Diocesis-Gestionar-Parroquia.jsx';
 import DiocesisEventosLiturgicos from './screensMans/Diocesis-Gestionar-Eventos-Generales.jsx'
 import DiocesisRequisitosGestionarSoloBarra from './screensMans/Diocesis-Gestionar-Requisitos-Generales.jsx'
 
@@ -75,7 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
         <Route path="/man-diocesis" element={<Diocesis />}>
           <Route path="gestionar-tipo-doc" element={<TipoDocumentoGestionar />} />
-          <Route path="gestionar-cuenta-parroquia" element={<TipoDocumentoGestionar />} />
+          <Route path="gestionar-cuenta-parroquia" element={<DiocesisGestionarParroquia />} />
           <Route path="gestionar-eventos-generales" element={<DiocesisEventosLiturgicos />} />
           <Route path="gestionar-requisitos-generales" element={<DiocesisRequisitosGestionarSoloBarra />} />
         </Route>
