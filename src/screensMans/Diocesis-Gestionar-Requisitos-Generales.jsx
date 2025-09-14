@@ -9,7 +9,6 @@ import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import "../utils/ActosLiturgicos-Requisitos.css";
 
-
 // Datos simulados (se mantienen igual)
 const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
@@ -117,7 +116,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
   const handleRowClickEvent = (event) => {
     setSelectedEvent(event);
-    setShowPanel(false);
+    setShowPanel(true);
   };
 
   const handleToggle = (requirementId) => {
@@ -162,21 +161,26 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
   ];
 
   // Aquí se mueve y modifica la tabla de eventos para que la fila sea clickable
-  const TableEventsWithClick = ({ data, columns }) => {
-    return (
-      <div className="table-container">
-        <table className="dynamic-table">
-          <tbody>
-            {data.map((row, rowIndex) => (
-              <tr key={rowIndex} onClick={() => handleRowClickEvent(row)}>
-                {columns.map((column) => (<td key={column.key}> {column.accessor(row)}
-                </td>
-                ))}</tr>))}
-          </tbody>
-        </table>
+  const TableEventsWithClick = ({ data }) => {
+  return (
+    <div className="table-container">
+      <div className="table-body-div">
+        {data.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="table-row-div event-row"
+            onClick={() => handleRowClickEvent(row)}
+          >
+            <div className="event-cell">
+              <span className="event-id">{row.id}</span>
+              <span className="event-name">{row.nombre}</span>
+            </div>
+          </div>
+        ))}
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   return (
     <>

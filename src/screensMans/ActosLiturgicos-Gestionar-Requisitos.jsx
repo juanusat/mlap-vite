@@ -25,7 +25,7 @@ const initialRequirementsData = Array.from({ length: 100 }, (_, i) => ({
   estado: (i + 1) % 2 === 0 ? 'Activo' : 'Inactivo',
 }));
 
-export default function RequisitosGestionarSoloBarra() {
+export default function ActosLiturgicosRequisitos() {
 
   const [requirements, setRequirements] = useState(initialRequirementsData);
   const [searchTerm, setSearchTerm] = useState('');
