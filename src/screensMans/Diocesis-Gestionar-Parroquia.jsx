@@ -81,11 +81,11 @@ export default function Parroquia() {
 
     const handleSave = (eventData) => {
         if (modalType === 'add') {
-            // Lógica para añadir un nuevo evento.
+            // Lógica para añadir una nueva parroquia.
             const newEvent = { ...eventData, id: events.length + 1 };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
-            // Lógica para editar un evento existente.
+            // Lógica para editar una parroquia existente.
             setEvents(prevEvents =>
                 prevEvents.map(event =>
                     event.id === currentEvent.id ? { ...event, ...eventData } : event
@@ -143,8 +143,8 @@ export default function Parroquia() {
                 show={showModal}
                 onClose={handleCloseModal}
                 title={
-                    modalType === 'view' ? 'Detalles del Evento' :
-                        modalType === 'edit' ? 'Editar Evento' :
+                    modalType === 'view' ? 'Detalles de la parroquia' :
+                        modalType === 'edit' ? 'Editar parroquia' :
                             modalType === 'delete' ? 'Confirmar Eliminación' :
                                 'Añadir parroquia'
                 }
@@ -163,7 +163,7 @@ export default function Parroquia() {
 
                 {modalType === 'delete' && currentEvent && (
                     <div>
-                        <h4>¿Estás seguro que quieres eliminar este evento?</h4>
+                        <h4>¿Estás seguro que quieres eliminar esta parroquia?</h4>
                         <div className="buttons-container">
                             <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
                             <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
