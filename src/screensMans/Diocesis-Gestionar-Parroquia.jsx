@@ -203,7 +203,7 @@ function AddEventForm({ onSave, onClose }) {
                 <label htmlFor="addUsuario">Usuario</label>
                 <input type="text" className="inputModal" id="addUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
                 <label htmlFor="addClave">Clave</label>
-                <input type="text" className="inputModal" id="addClave" value={clave} onChange={e => setClave(e.target.value)} required />
+                <input type="password" className="inputModal" id="addClave" value={clave} onChange={e => setClave(e.target.value)} required />
             </div>
             <div className="buttons-container">
                 <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
@@ -235,7 +235,7 @@ function EditEventForm({ onSave, onClose, event }) {
                 <label htmlFor="editUsuario">Modificar usuario</label>
                 <input type="text" className="inputModal" id="editUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
                 <label htmlFor="editClave">Modificar clave</label>
-                <input type="text" className="inputModal" id="editClave" value={clave} onChange={e => setClave(e.target.value)} required />
+                <input type="password" className="inputModal" id="editClave" value={clave} onChange={e => setClave(e.target.value)} required />
             </div>
             <div className="buttons-container">
                 <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
