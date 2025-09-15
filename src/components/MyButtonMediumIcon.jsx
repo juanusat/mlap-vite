@@ -16,11 +16,11 @@ const ICON_COLORS = {
   MdOutlineSaveAs: "green",
 };
 
-const MyButtonMediumIcon = ({ text, icon, ...props }) => {
+const MyButtonMediumIcon = ({ text, icon, classNameExtra='', ...props }) => {
   const dataColor = ICON_COLORS[icon] || "blue";
   
   return (
-    <button className="my-button-medium-icon" data-color={dataColor} {...props}>
+    <button className={`my-button-medium-icon ${classNameExtra}`} data-color={dataColor} {...props}>
       {ICONS[icon]}
       <span className="my-button-medium-text">{text}</span>
     </button>
