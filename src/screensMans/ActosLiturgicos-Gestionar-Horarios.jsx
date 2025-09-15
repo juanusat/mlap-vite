@@ -15,6 +15,7 @@ export default function ActosLiturgicosHorarios() {
   const [isDragging, setIsDragging] = useState(false);
   const [startRow, setStartRow] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
+  const [isMouseMoved, setIsMouseMoved] = useState(false);
   
   // Paginación
   const [disponibilidadPage, setDisponibilidadPage] = useState(0);
@@ -82,6 +83,7 @@ export default function ActosLiturgicosHorarios() {
   const handleCellMouseDown = (rowIndex, colIndex) => {
     if (!isEditing) return;
     
+    setIsMouseMoved(false); // Reinicia el estado de movimiento del ratón
     setIsDragging(true);
     setStartRow(rowIndex);
     setCurrentDay(colIndex);
@@ -90,6 +92,8 @@ export default function ActosLiturgicosHorarios() {
   // Actualiza el final del intervalo mientras se arrastra
   const handleCellMouseEnter = (rowIndex, colIndex) => {
     if (!isDragging || !isEditing || colIndex !== currentDay) return;
+    
+    setIsMouseMoved(true); // Marca que el ratón se ha movido después de pulsar
     
     // No permitimos cambiar de día durante el arrastre
     const startInterval = Math.min(startRow, rowIndex);
@@ -108,52 +112,58 @@ export default function ActosLiturgicosHorarios() {
   
   // Finaliza la creación del intervalo
   const handleCellMouseUp = (rowIndex) => {
+    // Si no está en modo de arrastre o no está editando, no hace nada
     if (!isDragging || !isEditing) return;
     
-    const startInterval = Math.min(startRow, rowIndex);
-    const endInterval = Math.max(startRow, rowIndex);
-    
-    // Elimina la clase de vista previa
+    // Elimina la clase de vista previa en cualquier caso
     document.querySelectorAll('.day-cell.dragging').forEach((cell) => {
       cell.classList.remove('dragging');
     });
     
-    // Guarda el intervalo en el estado
-    setSelectedIntervals(prevIntervals => {
-      const newIntervals = { ...prevIntervals };
+    // Solo procesamos el arrastre si el ratón se ha movido
+    // Si no se ha movido, el onClick se encargará de procesarlo como un clic simple
+    if (isMouseMoved) {
+      const startInterval = Math.min(startRow, rowIndex);
+      const endInterval = Math.max(startRow, rowIndex);
       
-      if (!newIntervals[currentDay]) {
-        newIntervals[currentDay] = [];
-      }
-      
-      // Verifica si hay superposiciones y fusiona intervalos si es necesario
-      let newInterval = [startInterval, endInterval];
-      let intervalsToRemove = [];
-      
-      newIntervals[currentDay].forEach((interval, index) => {
-        // Si el nuevo intervalo se superpone con uno existente
-        if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) || 
-            (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
-          // Fusiona los intervalos
-          newInterval = [
-            Math.min(newInterval[0], interval[0]),
-            Math.max(newInterval[1], interval[1])
-          ];
-          intervalsToRemove.push(index);
+      // Guarda el intervalo en el estado
+      setSelectedIntervals(prevIntervals => {
+        const newIntervals = { ...prevIntervals };
+        
+        if (!newIntervals[currentDay]) {
+          newIntervals[currentDay] = [];
         }
+        
+        // Verifica si hay superposiciones y fusiona intervalos si es necesario
+        let newInterval = [startInterval, endInterval];
+        let intervalsToRemove = [];
+        
+        newIntervals[currentDay].forEach((interval, index) => {
+          // Si el nuevo intervalo se superpone con uno existente
+          if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) || 
+              (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
+            // Fusiona los intervalos
+            newInterval = [
+              Math.min(newInterval[0], interval[0]),
+              Math.max(newInterval[1], interval[1])
+            ];
+            intervalsToRemove.push(index);
+          }
+        });
+        
+        // Elimina los intervalos que se fusionaron
+        const filteredIntervals = newIntervals[currentDay].filter((_, index) => 
+          !intervalsToRemove.includes(index)
+        );
+        
+        // Añade el nuevo intervalo fusionado
+        newIntervals[currentDay] = [...filteredIntervals, newInterval];
+        
+        return newIntervals;
       });
-      
-      // Elimina los intervalos que se fusionaron
-      const filteredIntervals = newIntervals[currentDay].filter((_, index) => 
-        !intervalsToRemove.includes(index)
-      );
-      
-      // Añade el nuevo intervalo fusionado
-      newIntervals[currentDay] = [...filteredIntervals, newInterval];
-      
-      return newIntervals;
-    });
+    }
     
+    // Resetea el estado de arrastre en cualquier caso
     setIsDragging(false);
     setStartRow(null);
     setCurrentDay(null);
@@ -180,6 +190,57 @@ export default function ActosLiturgicosHorarios() {
           ...newIntervals[dayIndex].slice(intervalIndex + 1)
         ];
       }
+      
+      return newIntervals;
+    });
+  };
+  
+  // Crea un intervalo de una sola celda al hacer click (sin arrastrar)
+  const handleCellClick = (rowIndex, colIndex) => {
+    if (!isEditing) return;
+    
+    // Cancelamos cualquier arrastre en curso para evitar conflictos
+    setIsDragging(false);
+    setStartRow(null);
+    setCurrentDay(null);
+    
+    // Limpia cualquier efecto visual de arrastre
+    document.querySelectorAll('.day-cell.dragging').forEach((cell) => {
+      cell.classList.remove('dragging');
+    });
+    
+    // Crea un intervalo con solo esta celda (inicio y fin son el mismo)
+    setSelectedIntervals(prevIntervals => {
+      const newIntervals = { ...prevIntervals };
+      
+      if (!newIntervals[colIndex]) {
+        newIntervals[colIndex] = [];
+      }
+      
+      // Verifica si hay superposiciones y fusiona intervalos si es necesario
+      let newInterval = [rowIndex, rowIndex]; // Intervalo de una sola celda
+      let intervalsToRemove = [];
+      
+      newIntervals[colIndex].forEach((interval, index) => {
+        // Si el nuevo intervalo se superpone con uno existente
+        if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) || 
+            (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
+          // Fusiona los intervalos
+          newInterval = [
+            Math.min(newInterval[0], interval[0]),
+            Math.max(newInterval[1], interval[1])
+          ];
+          intervalsToRemove.push(index);
+        }
+      });
+      
+      // Elimina los intervalos que se fusionaron
+      const filteredIntervals = newIntervals[colIndex].filter((_, index) => 
+        !intervalsToRemove.includes(index)
+      );
+      
+      // Añade el nuevo intervalo fusionado
+      newIntervals[colIndex] = [...filteredIntervals, newInterval];
       
       return newIntervals;
     });
@@ -277,7 +338,18 @@ export default function ActosLiturgicosHorarios() {
                           onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                           onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                           onMouseUp={() => handleCellMouseUp(rowIndex)}
-                          onClick={() => isSelected && handleRemoveInterval(colIndex, rowIndex)}
+                          onClick={() => {
+                            // Solo procesamos el clic si no se ha arrastrado el ratón
+                            if (isEditing && !isMouseMoved) {
+                              if (isSelected) {
+                                handleRemoveInterval(colIndex, rowIndex);
+                              } else {
+                                handleCellClick(rowIndex, colIndex);
+                              }
+                            }
+                            // Reseteamos el estado de movimiento
+                            setIsMouseMoved(false);
+                          }}
                         >
                           {isSelected && (
                             <div className="interval-marker"></div>
@@ -295,23 +367,25 @@ export default function ActosLiturgicosHorarios() {
                 <div className="exceptions-header">
                   <h4>Excepciones - Disponibilidad</h4>
                   <div className="exceptions-controls">
-                    <MyButtonShortAction 
-                      type="back" 
-                      title="Página anterior" 
-                      onClick={() => setDisponibilidadPage(prev => prev - 1)}
-                      className={!hasPrevPage(disponibilidadPage) ? 'disabled-btn' : ''}
-                    />
+                    {hasPrevPage(disponibilidadPage) && (
+                      <MyButtonShortAction 
+                        type="back" 
+                        title="Página anterior" 
+                        onClick={() => setDisponibilidadPage(prev => prev - 1)}
+                      />
+                    )}
                     <MyButtonShortAction 
                       type="add" 
                       title="Agregar excepción de disponibilidad" 
                       onClick={() => handleOpenModal('disponibilidad')} 
                     />
-                    <MyButtonShortAction 
-                      type="next" 
-                      title="Página siguiente" 
-                      onClick={() => setDisponibilidadPage(prev => prev + 1)}
-                      className={!hasNextPage(exceptionsDisponibilidad, disponibilidadPage) ? 'disabled-btn' : ''}
-                    />
+                    {hasNextPage(exceptionsDisponibilidad, disponibilidadPage) && (
+                      <MyButtonShortAction 
+                        type="next" 
+                        title="Página siguiente" 
+                        onClick={() => setDisponibilidadPage(prev => prev + 1)}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="exceptions-table">
@@ -339,23 +413,25 @@ export default function ActosLiturgicosHorarios() {
                 <div className="exceptions-header">
                   <h4>Excepciones - No Disponibilidad</h4>
                   <div className="exceptions-controls">
-                    <MyButtonShortAction 
-                      type="back" 
-                      title="Página anterior" 
-                      onClick={() => setNoDisponibilidadPage(prev => prev - 1)}
-                      className={!hasPrevPage(noDisponibilidadPage) ? 'disabled-btn' : ''}
-                    />
+                    {hasPrevPage(noDisponibilidadPage) && (
+                      <MyButtonShortAction 
+                        type="back" 
+                        title="Página anterior" 
+                        onClick={() => setNoDisponibilidadPage(prev => prev - 1)}
+                      />
+                    )}
                     <MyButtonShortAction 
                       type="add" 
                       title="Agregar excepción de no disponibilidad" 
                       onClick={() => handleOpenModal('noDisponibilidad')} 
                     />
-                    <MyButtonShortAction 
-                      type="next" 
-                      title="Página siguiente" 
-                      onClick={() => setNoDisponibilidadPage(prev => prev + 1)}
-                      className={!hasNextPage(exceptionsNoDisponibilidad, noDisponibilidadPage) ? 'disabled-btn' : ''}
-                    />
+                    {hasNextPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
+                      <MyButtonShortAction 
+                        type="next" 
+                        title="Página siguiente" 
+                        onClick={() => setNoDisponibilidadPage(prev => prev + 1)}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="exceptions-table">
@@ -407,7 +483,16 @@ export default function ActosLiturgicosHorarios() {
                       <input type="text" className="reason-input" placeholder="Ingrese motivo" />
                     </div>
                     <div className="modal-actions">
-                      <button className="modal-button accept-button">Aceptar</button>
+                      <MyButtonMediumIcon
+                        icon="MdOutlineSaveAs"
+                        text="Guardar"
+                        onClick={handleCloseModal}
+                      />
+                      <MyButtonMediumIcon
+                        icon="MdClose"
+                        text="Cancelar"
+                        onClick={handleCloseModal}
+                      />
                     </div>
                   </div>
                 </div>

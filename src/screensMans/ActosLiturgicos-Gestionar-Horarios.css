@@ -251,10 +251,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 0px !important;
 }
 
 .form-group label {
   font-weight: bold;
+  margin-bottom: 0px !important;
 }
 
 .date-input,
@@ -273,7 +275,9 @@
 
 .modal-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  gap : 10px;
+  align-items: center;
   margin-top: 20px;
 }
 
