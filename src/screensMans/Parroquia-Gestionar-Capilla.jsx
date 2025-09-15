@@ -6,6 +6,7 @@ import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import InputFotoPerfil from '../components2/inputFotoPerfil';
 import "../utils/Estilos-Generales-1.css";
 
 const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
@@ -18,6 +19,25 @@ const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
     cover_photo: "",
     active: (i + 1) % 2 === 0,
 }));
+const handleFotoPerfilChange = (data) => {
+        setFotoPerfilData(data);
+        // Actualizar también el tempUserInfo con el nombre del archivo
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            profile_photo: data ? data.name : ""
+        }));
+        console.log("Foto de perfil seleccionada:", data);
+    };
+
+    const handleFotoPortadaChange = (data) => {
+        setFotoPortadaData(data);
+        // Actualizar también el tempUserInfo con el nombre del archivo
+        setTempUserInfo(prevInfo => ({
+            ...prevInfo,
+            cover_photo: data ? data.name : ""
+        }));
+        console.log("Foto de portada seleccionada:", data);
+    };
 
 export default function GestionCapillas() {
 
@@ -199,9 +219,9 @@ function AddChapelForm({ onSave, onClose }) {
                 <label htmlFor="addPhone">Teléfono</label>
                 <input type="text" className="inputModal" id="addPhone" value={phone} onChange={e => setPhone(e.target.value)} />
                 <label htmlFor="addProfile">Foto de perfil (URL)</label>
-                <input type="text" className="inputModal" id="addProfile" value={profile_photo} onChange={e => setProfilePhoto(e.target.value)} />
+                <InputFotoPerfil onChange={handleFotoPerfilChange} placeholder="Subir foto de perfil de la capilla" maxSize={5 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
                 <label htmlFor="addCover">Foto de portada (URL)</label>
-                <input type="text" className="inputModal" id="addCover" value={cover_photo} onChange={e => setCoverPhoto(e.target.value)} />
+                <InputFotoPerfil onChange={handleFotoPortadaChange} placeholder="Subir foto de portada de la capilla" maxSize={10 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
             </div>
             <div className="buttons-container">
                 <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
@@ -226,7 +246,6 @@ function EditChapelForm({ onSave, onClose, chapel }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario de Edición de Capilla</h3>
             <div className="Inputs-edit">
                 <label htmlFor="editName">Nuevo nombre</label>
                 <input type="text" className="inputModal" id="editName" value={name} onChange={e => setName(e.target.value)} required />
@@ -238,10 +257,10 @@ function EditChapelForm({ onSave, onClose, chapel }) {
                 <input type="text" className="inputModal" id="editPhone" value={phone} onChange={e => setPhone(e.target.value)} />
 
                 <label htmlFor="editProfile">Foto de perfil (URL)</label>
-                <input type="text" className="inputModal" id="editProfile" value={profilePhoto} onChange={e => setProfilePhoto(e.target.value)} />
+                <InputFotoPerfil onChange={handleFotoPerfilChange} placeholder="Subir foto de perfil de la capilla" maxSize={5 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
 
                 <label htmlFor="editCover">Foto de portada (URL)</label>
-                <input type="text" className="inputModal" id="editCover" value={coverPhoto} onChange={e => setCoverPhoto(e.target.value)} />
+                <InputFotoPerfil onChange={handleFotoPortadaChange} placeholder="Subir foto de portada de la capilla" maxSize={10 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
             </div>
             <div className="buttons-container">
                 <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
