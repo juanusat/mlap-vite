@@ -180,20 +180,28 @@ export default function GestionCapillas() {
 function AddChapelForm({ onSave, onClose }) {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [profile_photo, setProfilePhoto] = useState('');
+    const [cover_photo, setCoverPhoto] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ name, address });
+        onSave({ name, address, phone: "", profile_photo: "", cover_photo: "" });
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario para Añadir Capilla</h3>
             <div className="Inputs-add">
                 <label htmlFor="addName">Nombre de la capilla</label>
                 <input type="text" className="inputModal" id="addName" value={name} onChange={e => setName(e.target.value)} required />
                 <label htmlFor="addAddress">Dirección</label>
                 <textarea className="inputModal" id="addAddress" value={address} onChange={e => setAddress(e.target.value)} required />
+                <label htmlFor="addPhone">Teléfono</label>
+                <input type="text" className="inputModal" id="addPhone" value={phone} onChange={e => setPhone(e.target.value)} />
+                <label htmlFor="addProfile">Foto de perfil (URL)</label>
+                <input type="text" className="inputModal" id="addProfile" value={profile_photo} onChange={e => setProfilePhoto(e.target.value)} />
+                <label htmlFor="addCover">Foto de portada (URL)</label>
+                <input type="text" className="inputModal" id="addCover" value={cover_photo} onChange={e => setCoverPhoto(e.target.value)} />
             </div>
             <div className="buttons-container">
                 <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
