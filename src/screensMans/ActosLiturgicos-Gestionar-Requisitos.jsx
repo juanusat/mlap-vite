@@ -7,6 +7,7 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
+import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
 
 
@@ -244,9 +245,7 @@ export default function ActosLiturgicosRequisitos() {
 
           {modalType === 'delete' && currentRequirement && (
             <div>
-              <h4>¿Estás seguro que quieres eliminar este requisito?</h4>
-              <p><strong>ID:</strong> {currentRequirement.id}</p>
-              <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
+              <h3>¿Estás seguro que quieres eliminar este requisito?</h3>
               <div className="buttons-container">
                 <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
                 <MyButtonMediumIcon text="Eliminar" icon="MdDeleteForever" onClick={confirmDelete} />
@@ -295,9 +294,8 @@ function RequisitoForm({ onSave, onClose, req = {} }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>{req.id ? 'Editar Requisito' : 'Añadir Requisito'}</h3>
       <div className="Inputs-add">
-        <label htmlFor="nombre">Nombre del Requisito</label>
+        <label htmlFor="nombre">Nombre del requisito</label>
         <input type="text" className="inputModal" id="nombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
         <label htmlFor="descripcion">Descripción</label>
         <textarea className="inputModal" id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />

@@ -163,7 +163,7 @@ export default function DiocesisEventosLiturgicos() {
 
                 {modalType === 'delete' && currentEvent && (
                     <div>
-                        <h4>¿Estás seguro que quieres eliminar este evento?</h4>
+                        <h3>¿Estás seguro que quieres eliminar este evento?</h3>
                         <div className="buttons-container">
                             <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
                             <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
@@ -192,7 +192,6 @@ function AddEventForm({ onSave, onClose }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario para Añadir</h3>
             <div className="Inputs-add">
                 <label htmlFor="addNombre">Nombre de evento</label>
                 <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
@@ -218,7 +217,6 @@ function EditEventForm({ onSave, onClose, event }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario de Edición</h3>
             <div className="Inputs-edit">
                 <label htmlFor="editNombre">Nuevo nombre de evento</label>
                 <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />

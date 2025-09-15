@@ -10,7 +10,6 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  border: 2px solid black;
 }
 
 .modal-content {
@@ -18,8 +17,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  width: 90%;
-  max-width: 350px;
+  width: 380px;
+  max-width: 100%;
   transform: scale(0.95);
   transition: transform 0.3s ease-in-out;
 }
@@ -30,13 +29,17 @@
   align-items: center;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
-  margin-bottom: 10px;
 }
 
 .modal-title {
-  margin: 0;
-  font-size: 1.1em;
+  font-size: 18px;
   color: #333;
+}
+.modal-body {
+  font-size: 1em;
+  line-height: 1.6;
+  color: #444;
+  gap: 10px;
 }
 
 .modal-close-btn {
@@ -53,8 +56,3 @@
   color: #555;
 }
 
-.modal-body {
-  font-size: 1em;
-  line-height: 1.6;
-  color: #444;
-}

@@ -299,7 +299,7 @@ export default function CuentasGestionar() {
                         ))}
                     </select>
                 </div>
-                <div className="button-group">
+                <div className="buttons-container">
                     <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
                     <MyButtonMediumIcon text="Añadir" icon="MdAdd" type="submit" />
                 </div>

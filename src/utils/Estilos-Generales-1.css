@@ -24,14 +24,27 @@
 }
 
 
+
+.search-add.my-group-buttons-actions{
+    align-items: stretch;
+} 
+
+.inputModal {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 380px;  
+    max-width: 100%;
+    font-size: 16px;
+    outline: none;
+    background-color: white;
+    color: black;
+}
+
 .buttons-container {
     display: flex;
     gap: var(--space-s);
     align-items: center;
     justify-content: flex-end;
-    margin: var(--space-s);
+    margin-top: 12px;
 }
-
-.search-add.my-group-buttons-actions{
-    align-items: stretch;
-} 

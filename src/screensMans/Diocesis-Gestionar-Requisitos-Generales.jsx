@@ -243,7 +243,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
           {modalType === 'delete' && currentRequirement && (
             <div>
-              <h4>¿Estás seguro que quieres eliminar este requisito?</h4>
+              <h3>¿Estás seguro que quieres eliminar este requisito?</h3>
               <p><strong>ID:</strong> {currentRequirement.id}</p>
               <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
               <div className="buttons-container">
@@ -294,7 +294,6 @@ function RequisitoForm({ onSave, onClose, req = {} }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>{req.id ? 'Editar Requisito' : 'Añadir Requisito'}</h3>
       <div className="Inputs-add">
         <label htmlFor="nombre">Nombre del Requisito</label>
         <input type="text" className="inputModal" id="nombre" value={nombre} onChange={e => setNombre(e.target.value)} required />

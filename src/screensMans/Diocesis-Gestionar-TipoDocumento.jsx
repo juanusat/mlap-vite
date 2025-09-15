@@ -179,7 +179,7 @@ export default function TipoDocumentoGestionar() {
         {modalType === 'delete' && currentDoc && (
           <div>
             <p>¿Estás seguro de que quieres eliminar el documento "{currentDoc.nombre}"?</p>
-            <div className="button-group">
+            <div className="buttons-container">
               <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
               <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={confirmDelete} />
             </div>
