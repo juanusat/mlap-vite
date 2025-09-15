@@ -17,6 +17,9 @@ import Reservas from './screensMans/Reservas-access.jsx';
 import ReservasPendientes from './screensMans/Reservas-Pendientes.jsx';
 import ReservasHistorial from './screensMans/Reservas-Historial.jsx';
 
+import MisReservas from './screensMans/MisReservas-access.jsx';
+import MisReservasReservar from './screensMans/MisReservas-Reservar.jsx';
+
 import Seguridad from './screensMans/Seguridad-access.jsx';
 import CuentasGestionar from './screensMans/Seguridad-Gestionar-Cuentas.jsx';
 import RolesGestionar from './screensMans/Seguridad-Gestionar-Roles.jsx';
@@ -67,6 +70,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/man-seguridad" element={<Seguridad />}>
           <Route path="cuentas-gestionar" element={<CuentasGestionar />} />
           <Route path="roles-gestionar" element={<RolesGestionar />} />
+        </Route>
+
+        <Route path="/man-misreservas" element={<MisReservas />}>
+          <Route path="reservar" element={<MisReservasReservar />} />
         </Route>
 
         <Route path="/man-reservas" element={<Reservas />}>

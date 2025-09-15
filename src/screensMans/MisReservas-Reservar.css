@@ -1,0 +1,110 @@
+.reserva-form {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.reserva-row {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    margin-bottom: 25px;
+    align-items: center;
+}
+
+.reserva-label {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    padding-right: 10px;
+}
+
+.reserva-value {
+    font-size: 18px;
+    text-align: left;
+}
+
+.reserva-date-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px 15px;
+    font-size: 16px;
+    border: 1px solid #000;
+    color: black;
+    border-radius: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.reserva-time-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px 15px;
+    font-size: 16px;
+    border: 1px solid #000;
+    border-radius: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Estilos personalizados para los controles nativos de fecha y hora */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.8;
+    margin-left: 10px;
+}
+
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit {
+    padding: 0;
+}
+
+/* Asegurarse de que los selectores tengan un aspecto consistente en diferentes navegadores */
+input[type="date"],
+input[type="time"] {
+    color: black;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+}
+
+.reserva-actions {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+/* Estilos para los botones */
+.reserva-actions .my-button-medium-icon {
+    min-width: 180px;
+    font-size: 16px;
+    padding: 10px 30px;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reserva-actions .my-button-medium-icon svg {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.reserva-btn-aceptar {
+    background-color: #1a75b8 !important;
+    color: white !important;
+    text-transform: uppercase;
+}
+
+.reserva-btn-cancelar {
+    background-color: #a21e1e !important;
+    color: white !important;
+    text-transform: uppercase;
+}
+
+.reserva-btn-aceptar svg,
+.reserva-btn-cancelar svg {
+    color: white !important;
+}
