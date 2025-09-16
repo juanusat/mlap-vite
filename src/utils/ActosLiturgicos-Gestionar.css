@@ -1,11 +1,3 @@
-.Inputs-edit {
-    display: flex;
-    flex-direction: column;   
-    align-items: flex-start;  
-    gap: 10px;                
-    width: 100%;              
-}
-
 
 .Combo-add {
     display: flex;             
