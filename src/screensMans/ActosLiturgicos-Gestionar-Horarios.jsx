@@ -407,7 +407,7 @@ export default function ActosLiturgicosHorarios() {
                         title={modalType === 'disponibilidad' ? 'Agregar Excepción - Disponibilidad' : 'Agregar Excepción - No Disponibilidad'}
                     >
                         <form onSubmit={handleSaveException} className='form-modal-horarios'>
-                            <div className="Inputs-horarios">
+                            <div className="Inputs-add">
                                 <label htmlFor="fecha">Fecha</label>
                                 <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
                                 <label>Hora</label>
@@ -416,7 +416,7 @@ export default function ActosLiturgicosHorarios() {
                                     <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
                                 </div>
                                 <label htmlFor="motivo">Motivo</label>
-                                <textarea type="textarea" className="input-text-area" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
+                                <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
                             </div>
                             <div className="buttons-container">
                                 <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />

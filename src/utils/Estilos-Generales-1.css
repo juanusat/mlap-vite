@@ -24,10 +24,24 @@
 }
 
 
-
 .search-add.my-group-buttons-actions{
     align-items: stretch;
 } 
+
+.Inputs-edit {
+    display: flex;
+    flex-direction: column;   
+    align-items: flex-start;  
+    gap: 10px;                
+    width: 100%;              
+}
+.Inputs-add {
+    display: flex;
+    flex-direction: column;   
+    align-items: flex-start;  
+    gap: 10px;                
+    width: 100%;              
+}
 
 .inputModal {
     padding: 8px 12px;
@@ -40,6 +54,12 @@
     background-color: white;
     color: black;
 }
+textarea.inputModal{
+    width: 380px;  
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100px;
+}
 
 .buttons-container {
     display: flex;
@@ -47,4 +67,5 @@
     align-items: center;
     justify-content: flex-end;
     margin-top: 12px;
-}
+} 
+

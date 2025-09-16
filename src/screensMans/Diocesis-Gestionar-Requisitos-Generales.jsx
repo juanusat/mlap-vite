@@ -7,6 +7,7 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
+import '../utils/Estilos-Generales-1.css';
 import "../utils/ActosLiturgicos-Requisitos.css";
 
 // Datos simulados (se mantienen igual)

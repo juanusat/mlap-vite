@@ -1,14 +1,18 @@
-.Inputs-edit {
+#maxAttendees.inputModal{
+    width: 50%;
+}
+.Inputs-add .checkbox-group {
     display: flex;
-    flex-direction: column;   
-    align-items: flex-start;  
-    gap: 10px;                
-    width: 100%;              
+    gap: 20px;
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px; 
+}
 
-.Combo-add {
-    display: flex;             
-    justify-content: center;   
-    align-items: center;       
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }

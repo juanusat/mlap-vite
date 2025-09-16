@@ -218,3 +218,11 @@
     background-color: white;
     color: black;
 }
+.inputTime{
+  width: 50%;
+} 
+
+.my-button-medium-icon.horarios-btn{
+  white-space: nowrap;
+  width: auto;
+}
