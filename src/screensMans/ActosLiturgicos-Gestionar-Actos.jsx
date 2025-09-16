@@ -9,12 +9,40 @@ import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
 
-const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
+// Lista de capillas predefinidas
+const chapelsOptions = [
+    "Capilla Santa Ana",
+    "Capilla San José Obrero",
+    "Capilla Virgen del Carmen",
+    "Capilla La Candelaria",
+    "Capilla de San Antonio"
+];
+
+const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
     nombre: `Evento ${i + 1}`,
     descripcion: `Descripción detallada para el Evento ${i + 1}.`,
     estado: (i + 1) % 2 === 0 ? 'Activo' : 'Pendiente',
+    tipo: (i + 1) % 3 === 0 ? 'Comunitario' : 'Privado',
+    personas: (i + 1) % 3 === 0 ? Math.floor(Math.random() * 50) + 10 : '-',
+    // Ahora cada evento inicial tendrá una capilla asignada
+    capilla: chapelsOptions[Math.floor(Math.random() * chapelsOptions.length)]
 }));
+
+const eventsOptions = [
+    { nombre: "Bautizo", descripcion: "Ceremonia para el sacramento del bautismo." },
+    { nombre: "Primera Comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
+    { nombre: "Confirmación", descripcion: "Ceremonia para el sacramento de la confirmación." },
+    { nombre: "Matrimonio", descripcion: "Celebración del sacramento del matrimonio." },
+    { nombre: "Funeral", descripcion: "Misa en memoria de un difunto." },
+    { nombre: "Misa Dominical", descripcion: "Misa habitual del domingo." },
+    { nombre: "Adoración Eucarística", descripcion: "Tiempo de oración y adoración al Santísimo Sacramento." },
+    { nombre: "Vigilia de Oración", descripcion: "Noche de oración antes de una festividad o evento importante." },
+    { nombre: "Retiro Espiritual", descripcion: "Jornada de reflexión y crecimiento espiritual." },
+    { nombre: "Catequesis", descripcion: "Clases de formación religiosa." },
+    { nombre: "Confesión", descripcion: "Sacramento de la penitencia y la reconciliación." },
+    { nombre: "Unción de los Enfermos", descripcion: "Sacramento para aquellos que se enfrentan a una enfermedad o ancianidad." }
+];
 
 export default function EventosLiturgicos() {
 
@@ -24,13 +52,16 @@ export default function EventosLiturgicos() {
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
 
+    const [addEventSearchTerm, setAddEventSearchTerm] = useState('');
+    const [eventType, setEventType] = useState('Privado');
+    const [maxAttendees, setMaxAttendees] = useState('');
+    const [selectedChapel, setSelectedChapel] = useState('');
 
     const filteredEvents = events.filter((event) =>
         Object.values(event).some((value) =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
-
 
     const handleToggle = (eventId) => {
         setEvents(prevEvents =>
@@ -64,6 +95,10 @@ export default function EventosLiturgicos() {
         setCurrentEvent(null);
         setModalType('add');
         setShowModal(true);
+        setAddEventSearchTerm('');
+        setEventType('Privado');
+        setMaxAttendees('');
+        setSelectedChapel('');
     };
 
     const handleCloseModal = () => {
@@ -81,11 +116,9 @@ export default function EventosLiturgicos() {
 
     const handleSave = (eventData) => {
         if (modalType === 'add') {
-            // Lógica para añadir un nuevo evento.
-            const newEvent = { ...eventData, id: events.length + 1 };
+            const newEvent = { ...eventData, id: events.length + 1, estado: 'Pendiente' };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
-            // Lógica para editar un evento existente.
             setEvents(prevEvents =>
                 prevEvents.map(event =>
                     event.id === currentEvent.id ? { ...event, ...eventData } : event
@@ -95,11 +128,35 @@ export default function EventosLiturgicos() {
         handleCloseModal();
     };
 
+    const handleAddSubmit = (e) => {
+        e.preventDefault();
+        const selectedEvent = eventsOptions.find(event => event.nombre.toLowerCase() === addEventSearchTerm.toLowerCase());
+        const chapelExists = chapelsOptions.includes(selectedChapel);
+        
+        if (selectedEvent && chapelExists) {
+            const eventToSave = {
+                ...selectedEvent,
+                tipo: eventType,
+                personas: eventType === 'Comunitario' ? maxAttendees : '-',
+                capilla: selectedChapel
+            };
+            handleSave(eventToSave);
+        } else {
+            if (!selectedEvent) {
+                alert('Por favor, selecciona un evento válido de la lista.');
+            } else if (!chapelExists) {
+                alert('Por favor, selecciona una capilla válida de la lista.');
+            }
+        }
+    };
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
         { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
         { key: 'descripcion', header: 'Descripción', accessor: (row) => row.descripcion },
+        { key: 'capilla', header: 'Capilla', accessor: (row) => row.capilla },
+        { key: 'tipo', header: 'Tipo', accessor: (row) => row.tipo },
+        { key: 'personas', header: 'Personas', accessor: (row) => row.personas },
         {
             key: 'estado',
             header: 'Estado',
@@ -121,7 +178,6 @@ export default function EventosLiturgicos() {
         },
     ];
 
-    // 6. La interfaz de usuario (JSX)
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de Eventos</h2>
@@ -133,11 +189,10 @@ export default function EventosLiturgicos() {
                     <MyGroupButtonsActions>
                         <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                     </MyGroupButtonsActions>
-                    
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents}
-                    gridColumnsLayout="90px 380px 1fr 140px 220px" 
-                    columnLeftAlignIndex={[2,3]}/>
+                    gridColumnsLayout="90px 240px 1fr 250px 140px 140px 140px 220px"
+                    columnLeftAlignIndex={[2, 3,4]} />
             </div>
             <Modal
                 show={showModal}
@@ -154,6 +209,9 @@ export default function EventosLiturgicos() {
                         <p><strong>ID:</strong> {currentEvent.id}</p>
                         <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
                         <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
+                        <p><strong>Tipo:</strong> {currentEvent.tipo}</p>
+                        <p><strong>Capilla:</strong> {currentEvent.capilla}</p>
+                        {currentEvent.tipo === 'Comunitario' && <p><strong>Personas:</strong> {currentEvent.personas}</p>}
                     </div>
                 )}
 
@@ -172,37 +230,84 @@ export default function EventosLiturgicos() {
                 )}
 
                 {modalType === 'add' && (
-                    <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
+                    <form onSubmit={handleAddSubmit}>
+                        <div className="Inputs-add">
+                            <label htmlFor="addNombre">Escoger evento</label>
+                            <input
+                                list="eventos"
+                                className="inputModal"
+                                value={addEventSearchTerm}
+                                onChange={e => setAddEventSearchTerm(e.target.value)}
+                                placeholder="Buscar o seleccionar un evento..."
+                                required
+                            />
+                            <datalist id="eventos">
+                                {eventsOptions
+                                    .filter(event => event.nombre.toLowerCase().includes(addEventSearchTerm.toLowerCase()))
+                                    .map((event, index) => (
+                                        <option key={index} value={event.nombre} />
+                                    ))}
+                            </datalist>
+                        </div>
+                        <div className="Inputs-add">
+                            <label htmlFor="chapel">Escoger Capilla</label>
+                            <input
+                                list="capillas"
+                                className="inputModal"
+                                id="chapel"
+                                value={selectedChapel}
+                                onChange={e => setSelectedChapel(e.target.value)}
+                                placeholder="Buscar o seleccionar una capilla..."
+                                required
+                            />
+                            <datalist id="capillas">
+                                {chapelsOptions
+                                    .filter(chapel => chapel.toLowerCase().includes(selectedChapel.toLowerCase()))
+                                    .map((chapel, index) => (
+                                        <option key={index} value={chapel} />
+                                    ))}
+                            </datalist>
+                        </div>
+                        <div className="Inputs-add">
+                            <label>Tipo de Evento</label>
+                            <div className="checkbox-group">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={eventType === 'Privado'}
+                                        onChange={() => setEventType('Privado')}
+                                    /> Privado
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={eventType === 'Comunitario'}
+                                        onChange={() => setEventType('Comunitario')}
+                                    /> Comunitario
+                                </label>
+                            </div>
+                            {eventType === 'Comunitario' && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <label htmlFor="maxAttendees">Número máximo de personas</label>
+                                    <input
+                                        type="number"
+                                        id="maxAttendees"
+                                        className="inputModal"
+                                        value={maxAttendees}
+                                        onChange={(e) => setMaxAttendees(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="buttons-container">
+                            <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
+                            <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
+                        </div>
+                    </form>
                 )}
             </Modal>
         </div>
-    );
-}
-
-// Estos son los nuevos componentes que debes crear para los formularios
-
-function AddEventForm({ onSave, onClose }) {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, descripcion, estado: 'Pendiente' });
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="Inputs-add">
-                <label htmlFor="addNombre">Nombre de evento</label>
-                <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="addDescripcion">Descripción</label>
-                <textarea className="inputModal" id="addDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-            </div>
-        </form>
     );
 }
 
