@@ -282,7 +282,6 @@ export default function ActosLiturgicosRequisitos() {
   );
 }
 
-// Componente para el formulario de adición y edición
 function RequisitoForm({ onSave, onClose, req = {} }) {
   const [nombre, setNombre] = useState(req.nombre || '');
   const [descripcion, setDescripcion] = useState(req.descripcion || '');
