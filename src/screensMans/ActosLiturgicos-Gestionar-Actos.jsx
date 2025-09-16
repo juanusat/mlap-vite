@@ -171,7 +171,6 @@ export default function EventosLiturgicos() {
             key: 'acciones', header: 'Acciones', accessor: (row) => (
                 <MyGroupButtonsActions>
                     <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
-                    <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
                     <MyButtonShortAction type="delete" title="Eliminar" onClick={() => handleDeleteConfirmation(row)} />
                 </MyGroupButtonsActions>
             )
