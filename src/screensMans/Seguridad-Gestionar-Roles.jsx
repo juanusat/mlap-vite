@@ -22,7 +22,6 @@ const AddRolForm = ({ onSave, onClose }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario para Añadir Rol</h3>
             <div className="Inputs-add">
                 <label htmlFor="addNombre">Nombre de Rol</label>
                 <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
@@ -48,7 +47,6 @@ const EditRolForm = ({ onSave, onClose, rol }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Formulario de Edición de Rol</h3>
             <div className="Inputs-edit">
                 <label htmlFor="editNombre">Nuevo nombre de Rol</label>
                 <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
