@@ -19,7 +19,7 @@ export default function Reservas() {
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
-          <h1 className="modulo-title">Módulo de Reservas</h1>
+          <h1 className="modulo-title">Módulo de reservas</h1>
           <p className="modulo-subtitle">
             Organización y control centralizado de las reservas de espacios y servicios parroquiales.
           </p>
@@ -27,7 +27,7 @@ export default function Reservas() {
 
         <article className="modulo-content">
           <p>
-            El <strong>Módulo de Reservas</strong> facilita la gestión de solicitudes
+            El <strong>Módulo de reservas</strong> facilita la gestión de solicitudes
             para la utilización de espacios, recursos y servicios dentro de la
             parroquia. Desde la reserva de salones hasta la coordinación de equipos
             y actividades, este módulo asegura un proceso transparente y accesible.

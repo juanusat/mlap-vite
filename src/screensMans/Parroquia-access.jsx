@@ -10,8 +10,8 @@ export default function Parroquia() {
   const isBasePath = location.pathname === '/man-parroquia';
 
   const options = [
-    { href: 'gestionar-cuenta', icon: <MdAccountBalance />, label: 'Gestionar Cuenta' },
-    { href: 'gestionar-capilla', icon: <MdHomeFilled />, label: 'Gestionar Capilla' },
+    { href: 'gestionar-cuenta', icon: <MdAccountBalance />, label: 'Gestionar cuenta' },
+    { href: 'gestionar-capilla', icon: <MdHomeFilled />, label: 'Gestionar capilla' },
   ];
 
   return (
@@ -19,7 +19,7 @@ export default function Parroquia() {
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
-          <h1 className="modulo-title">Módulo de Parroquia</h1>
+          <h1 className="modulo-title">Módulo de parroquia</h1>
           <p className="modulo-subtitle">
             Administración centralizada de la información institucional de la parroquia.
           </p>
@@ -27,7 +27,7 @@ export default function Parroquia() {
 
         <article className="modulo-content">
           <p>
-            El <strong>Módulo de Parroquia</strong> está diseñado para gestionar de
+            El <strong>Módulo de parroquia</strong> está diseñado para gestionar de
             manera integral los datos de cada parroquia, garantizando una
             administración ordenada y transparente. Desde la identificación
             institucional hasta los responsables y áreas de servicio, este módulo

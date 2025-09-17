@@ -19,28 +19,8 @@ const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
     cover_photo: "",
     active: (i + 1) % 2 === 0,
 }));
-const handleFotoPerfilChange = (data) => {
-        setFotoPerfilData(data);
-        // Actualizar también el tempUserInfo con el nombre del archivo
-        setTempUserInfo(prevInfo => ({
-            ...prevInfo,
-            profile_photo: data ? data.name : ""
-        }));
-        console.log("Foto de perfil seleccionada:", data);
-    };
-
-    const handleFotoPortadaChange = (data) => {
-        setFotoPortadaData(data);
-        // Actualizar también el tempUserInfo con el nombre del archivo
-        setTempUserInfo(prevInfo => ({
-            ...prevInfo,
-            cover_photo: data ? data.name : ""
-        }));
-        console.log("Foto de portada seleccionada:", data);
-    };
 
 export default function GestionCapillas() {
-
     const [chapels, setChapels] = useState(initialChapelsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -139,9 +119,60 @@ export default function GestionCapillas() {
         },
     ];
 
+    const getModalContentAndActions = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles de la Capilla',
+                    content: currentChapel && (
+                        <div>
+                            <p><strong>ID:</strong> {currentChapel.id}</p>
+                            <p><strong>Nombre:</strong> {currentChapel.name}</p>
+                            <p><strong>Dirección:</strong> {currentChapel.address}</p>
+                            {currentChapel.phone && <p><strong>Teléfono:</strong> {currentChapel.phone}</p>}
+                            {currentChapel.profile_photo && <p><strong>Foto de perfil:</strong> {currentChapel.profile_photo}</p>}
+                            {currentChapel.cover_photo && <p><strong>Foto de portada:</strong> {currentChapel.cover_photo}</p>}
+                        </div>
+                    ),
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
+            case 'edit':
+                return {
+                    title: 'Editar Capilla',
+                    content: <EditChapelForm onSave={handleSave} chapel={currentChapel} />,
+                    onAccept: () => document.getElementById('edit-chapel-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h4>¿Estás seguro que quieres eliminar esta capilla?</h4>,
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir Capilla',
+                    content: <AddChapelForm onSave={handleSave} />,
+                    onAccept: () => document.getElementById('add-chapel-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: null
+                };
+        }
+    };
+
+    const modalProps = getModalContentAndActions();
+
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Capillas</h2>
+            <h2 className='title-screen'>Gestión de capillas</h2>
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">
@@ -149,95 +180,43 @@ export default function GestionCapillas() {
                     </div>
                     <MyButtonShortAction type="add" onClick={handleAddChapel} title="Añadir" />
                 </div>
-                <DynamicTable columns={chapelColumns} data={filteredChapels}
+                <DynamicTable
+                    columns={chapelColumns}
+                    data={filteredChapels}
                     gridColumnsLayout="90px 380px 1fr 140px 220px"
-                    columnLeftAlignIndex={[2,3]}/>
+                    columnLeftAlignIndex={[2, 3]}
+                />
             </div>
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
-                title={
-                    modalType === 'view' ? 'Detalles de la Capilla' :
-                        modalType === 'edit' ? 'Editar Capilla' :
-                            modalType === 'delete' ? 'Confirmar Eliminación' :
-                                'Añadir Capilla'
-                }
+                title={modalProps.title}
+                onAccept={modalProps.onAccept}
+                onCancel={modalProps.onCancel}
             >
-                {modalType === 'view' && currentChapel && (
-                    <div>
-                        <p><strong>ID:</strong> {currentChapel.id}</p>
-                        <p><strong>Nombre:</strong> {currentChapel.name}</p>
-                        <p><strong>Dirección:</strong> {currentChapel.address}</p>
-                        {currentChapel.phone && <p><strong>Teléfono:</strong> {currentChapel.phone}</p>}
-                        {currentChapel.profile_photo && <p><strong>Foto de perfil:</strong> {currentChapel.profile_photo}</p>}
-                        {currentChapel.cover_photo && <p><strong>Foto de portada:</strong> {currentChapel.cover_photo}</p>}
-                    </div>
-                )}
-
-                {modalType === 'edit' && currentChapel && (
-                    <EditChapelForm onSave={handleSave} onClose={handleCloseModal} chapel={currentChapel} />
-                )}
-
-                {modalType === 'delete' && currentChapel && (
-                    <div>
-                        <h4>¿Estás seguro que quieres eliminar esta capilla?</h4>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
-                        </div>
-                    </div>
-                )}
-
-                {modalType === 'add' && (
-                    <AddChapelForm onSave={handleSave} onClose={handleCloseModal} />
-                )}
+                {modalProps.content}
             </Modal>
         </div>
     );
 }
 
-// Formulario para añadir solo name y address
-function AddChapelForm({ onSave, onClose }) {
+// Formulario para añadir
+function AddChapelForm({ onSave }) {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
-    const [profile_photo, setProfilePhoto] = useState('');
-    const [cover_photo, setCoverPhoto] = useState('');
+    const [profilePhoto, setProfilePhoto] = useState('');
+    const [coverPhoto, setCoverPhoto] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ name, address, phone: "", profile_photo: "", cover_photo: "" });
+    const handleFotoPerfilChange = (data) => {
+        setProfilePhoto(data ? data.name : "");
+        console.log("Foto de perfil seleccionada:", data);
     };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="Inputs-add">
-                <label htmlFor="addName">Nombre de la capilla</label>
-                <input type="text" className="inputModal" id="addName" value={name} onChange={e => setName(e.target.value)} required />
-                <label htmlFor="addAddress">Dirección</label>
-                <textarea className="inputModal" id="addAddress" value={address} onChange={e => setAddress(e.target.value)} required />
-                <label htmlFor="addPhone">Teléfono</label>
-                <input type="text" className="inputModal" id="addPhone" value={phone} onChange={e => setPhone(e.target.value)} />
-                <label htmlFor="addProfile">Foto de perfil (URL)</label>
-                <InputFotoPerfil onChange={handleFotoPerfilChange} placeholder="Subir foto de perfil de la capilla" maxSize={5 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
-                <label htmlFor="addCover">Foto de portada (URL)</label>
-                <InputFotoPerfil onChange={handleFotoPortadaChange} placeholder="Subir foto de portada de la capilla" maxSize={10 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-            </div>
-        </form>
-    );
-}
-
-// Formulario para editar más campos
-function EditChapelForm({ onSave, onClose, chapel }) {
-    const [name, setName] = useState(chapel.name);
-    const [address, setAddress] = useState(chapel.address);
-    const [phone, setPhone] = useState(chapel.phone || "");
-    const [profilePhoto, setProfilePhoto] = useState(chapel.profile_photo || "");
-    const [coverPhoto, setCoverPhoto] = useState(chapel.cover_photo || "");
+    const handleFotoPortadaChange = (data) => {
+        setCoverPhoto(data ? data.name : "");
+        console.log("Foto de portada seleccionada:", data);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -245,26 +224,59 @@ function EditChapelForm({ onSave, onClose, chapel }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form id="add-chapel-form" onSubmit={handleSubmit}>
+            <div className="Inputs-add">
+                <label htmlFor="addName">Nombre de la capilla</label>
+                <input type="text" className="inputModal" id="addName" value={name} onChange={e => setName(e.target.value)} required />
+                <label htmlFor="addAddress">Dirección</label>
+                <textarea className="inputModal" id="addAddress" value={address} onChange={e => setAddress(e.target.value)} required />
+                <label htmlFor="addPhone">Teléfono</label>
+                <input type="text" className="inputModal" id="addPhone" value={phone} onChange={e => setPhone(e.target.value)} />
+                <label htmlFor="addProfile">Foto de perfil</label>
+                <InputFotoPerfil onChange={handleFotoPerfilChange} placeholder="Subir foto de perfil de la capilla" maxSize={5 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
+                <label htmlFor="addCover">Foto de portada</label>
+                <InputFotoPerfil onChange={handleFotoPortadaChange} placeholder="Subir foto de portada de la capilla" maxSize={10 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
+            </div>
+        </form>
+    );
+}
+
+// Formulario para editar
+function EditChapelForm({ onSave, chapel }) {
+    const [name, setName] = useState(chapel.name);
+    const [address, setAddress] = useState(chapel.address);
+    const [phone, setPhone] = useState(chapel.phone || "");
+    const [profilePhoto, setProfilePhoto] = useState(chapel.profile_photo || "");
+    const [coverPhoto, setCoverPhoto] = useState(chapel.cover_photo || "");
+
+    const handleFotoPerfilChange = (data) => {
+        setProfilePhoto(data ? data.name : "");
+        console.log("Foto de perfil seleccionada:", data);
+    };
+
+    const handleFotoPortadaChange = (data) => {
+        setCoverPhoto(data ? data.name : "");
+        console.log("Foto de portada seleccionada:", data);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ name, address, phone, profile_photo: profilePhoto, cover_photo: coverPhoto });
+    };
+
+    return (
+        <form id="edit-chapel-form" onSubmit={handleSubmit}>
             <div className="Inputs-edit">
                 <label htmlFor="editName">Nuevo nombre</label>
                 <input type="text" className="inputModal" id="editName" value={name} onChange={e => setName(e.target.value)} required />
-
                 <label htmlFor="editAddress">Nueva dirección</label>
                 <textarea className="inputModal" id="editAddress" value={address} onChange={e => setAddress(e.target.value)} required />
-
                 <label htmlFor="editPhone">Teléfono</label>
                 <input type="text" className="inputModal" id="editPhone" value={phone} onChange={e => setPhone(e.target.value)} />
-
-                <label htmlFor="editProfile">Foto de perfil (URL)</label>
+                <label htmlFor="editProfile">Foto de perfil</label>
                 <InputFotoPerfil onChange={handleFotoPerfilChange} placeholder="Subir foto de perfil de la capilla" maxSize={5 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
-
-                <label htmlFor="editCover">Foto de portada (URL)</label>
+                <label htmlFor="editCover">Foto de portada</label>
                 <InputFotoPerfil onChange={handleFotoPortadaChange} placeholder="Subir foto de portada de la capilla" maxSize={10 * 1024 * 1024} acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']} />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
             </div>
         </form>
     );

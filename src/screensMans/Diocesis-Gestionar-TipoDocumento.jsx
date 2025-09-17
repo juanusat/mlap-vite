@@ -7,7 +7,7 @@ import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from '../components2/MyButtonShortAction';
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon"; 
+import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 
 const initialDocs = [
@@ -37,8 +37,6 @@ export default function TipoDocumentoGestionar() {
     )
   );
 
-
-  // Funciones para manejar el modal
   const handleOpenModal = (doc, action) => {
     setCurrentDoc(doc);
     setModalType(action);
@@ -51,7 +49,6 @@ export default function TipoDocumentoGestionar() {
     setModalType(null);
   };
 
-  // Funciones para las acciones (añadir, editar, eliminar)
   const handleView = (doc) => {
     handleOpenModal(doc, 'view');
   };
@@ -103,7 +100,6 @@ export default function TipoDocumentoGestionar() {
     );
   };
 
-
   const columns = [
     {
       header: 'ID',
@@ -133,10 +129,62 @@ export default function TipoDocumentoGestionar() {
     },
   ];
 
+  const getModalContentAndActions = () => {
+    switch (modalType) {
+      case 'view':
+        return {
+          title: 'Visualizar documento',
+          content: currentDoc && (
+            <div>
+              <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
+              <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
+              <p><strong>Nombre Corto:</strong> {currentDoc.nombreCorto}</p>
+            </div>
+          ),
+          onAccept: handleCloseModal,
+          onCancel: handleCloseModal
+        };
+      case 'edit':
+        return {
+          title: 'Editar documento',
+          content: <DocForm onSave={handleSave} />,
+          onAccept: () => document.getElementById('doc-form').requestSubmit(),
+          onCancel: handleCloseModal
+        };
+      case 'add':
+        return {
+          title: 'Añadir documento',
+          content: <DocForm onSave={handleSave} />,
+          onAccept: () => document.getElementById('doc-form').requestSubmit(),
+          onCancel: handleCloseModal
+        };
+      case 'delete':
+        return {
+          title: 'Eliminar documento',
+          content: (
+            <div>
+              <p>¿Estás seguro de que quieres eliminar el documento "{currentDoc.nombre}"?</p>
+            </div>
+          ),
+          onAccept: confirmDelete,
+          onCancel: handleCloseModal
+        };
+      default:
+        return {
+          title: '',
+          content: null,
+          onAccept: null,
+          onCancel: handleCloseModal
+        };
+    }
+  };
+
+  const modalProps = getModalContentAndActions();
+
   return (
     <>
       <div className="content-module only-this">
-        <h2 className='title-screen'>Tipos de Documentos</h2>
+        <h2 className='title-screen'>Tipos de documentos</h2>
         <div className="app-container">
           <div className="search-add">
             <div className="center-container">
@@ -148,7 +196,7 @@ export default function TipoDocumentoGestionar() {
             columns={columns}
             data={filteredDocs}
             gridColumnsLayout="90px 380px 1fr 140px 220px"
-            columnLeftAlignIndex={[2,3]}
+            columnLeftAlignIndex={[2, 3]}
           />
         </div>
       </div>
@@ -156,41 +204,17 @@ export default function TipoDocumentoGestionar() {
       <Modal
         show={showModal}
         onClose={handleCloseModal}
-        title={
-          modalType === 'view' ? 'Visualizar Documento' :
-            modalType === 'edit' ? 'Editar Documento' :
-              modalType === 'delete' ? 'Eliminar Documento' :
-                'Añadir Documento'
-        }
+        title={modalProps.title}
+        onAccept={modalProps.onAccept}
+        onCancel={modalProps.onCancel}
       >
-        {modalType === 'view' && currentDoc && (
-          <div>
-            <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
-            <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
-            <p><strong>Nombre Corto:</strong> {currentDoc.nombreCorto}</p>
-          </div>
-        )}
-        {modalType === 'edit' && currentDoc && (
-          <DocForm onSave={handleSave} onClose={handleCloseModal} doc={currentDoc} />
-        )}
-        {modalType === 'add' && (
-          <DocForm onSave={handleSave} onClose={handleCloseModal} />
-        )}
-        {modalType === 'delete' && currentDoc && (
-          <div>
-            <p>¿Estás seguro de que quieres eliminar el documento "{currentDoc.nombre}"?</p>
-            <div className="buttons-container">
-              <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-              <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={confirmDelete} />
-            </div>
-          </div>
-        )}
+        {modalProps.content}
       </Modal>
     </>
   );
 }
 
-const DocForm = ({ onSave, onClose, doc }) => {
+const DocForm = ({ onSave, doc }) => {
   const [formData, setFormData] = useState({
     nombre: doc?.nombre || '',
     descripcion: doc?.descripcion || '',
@@ -208,7 +232,7 @@ const DocForm = ({ onSave, onClose, doc }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form id="doc-form" onSubmit={handleSubmit}>
       <div className="form-field">
         <label>Nombre</label>
         <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="inputModal" required />
@@ -220,10 +244,6 @@ const DocForm = ({ onSave, onClose, doc }) => {
       <div className="form-field">
         <label>Nombre Corto</label>
         <input type="text" name="nombreCorto" value={formData.nombreCorto} onChange={handleChange} className="inputModal" />
-      </div>
-      <div className="buttons-container">
-        <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
-        <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" type="submit" />
       </div>
     </form>
   );

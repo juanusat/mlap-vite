@@ -9,7 +9,7 @@ export default function Usuario() {
   const isBasePath = location.pathname === '/man-usuario';
 
   const options = [
-    { href: 'gestionar-cuenta', icon: <MdPerson />, label: 'Gestionar Usuario' },
+    { href: 'gestionar-cuenta', icon: <MdPerson />, label: 'Gestionar usuario' },
   ];
 
   return (
@@ -17,7 +17,7 @@ export default function Usuario() {
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
-          <h1 className="modulo-title">Módulo de Usuario</h1>
+          <h1 className="modulo-title">Módulo de usuario</h1>
           <p className="modulo-subtitle">
             Gestión centralizada de la información personal y administrativa de los usuarios.
           </p>
@@ -25,7 +25,7 @@ export default function Usuario() {
 
         <article className="modulo-content">
           <p>
-            El <strong>Módulo de Usuario</strong> permite administrar de manera
+            El <strong>Módulo de usuario</strong> permite administrar de manera
             eficiente y segura los datos de cada miembro registrado en el sistema.
             Su diseño está orientado a garantizar la integridad, privacidad y
             disponibilidad de la información.

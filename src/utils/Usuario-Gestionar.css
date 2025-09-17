@@ -16,15 +16,12 @@
 }
 
 .info-label {
-  font-size: 0.9em;
   font-weight: 500;
   color: #777;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .info-value {
-  font-size: 1.1em;
   color: #333;
   font-weight: 400;
 }

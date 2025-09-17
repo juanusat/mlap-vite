@@ -94,10 +94,10 @@ const GestionCuenta = () => {
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Cuenta</h2>
+            <h2 className='title-screen'>Gestión de cuenta</h2>
 
             <ExpandableContainer
-                title='Información Personal'
+                title='Información personal'
                 type='edit'
                 showDeleteButton="no"
                 isEditing={isEditingPersonal}
@@ -135,7 +135,7 @@ const GestionCuenta = () => {
             </ExpandableContainer>
 
             <ExpandableContainer
-                title='Datos de la Cuenta'
+                title='Datos de la cuenta'
                 type='edit'
                 showDeleteButton="si"
                 isEditing={isEditingAccount}

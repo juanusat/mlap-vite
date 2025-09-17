@@ -24,13 +24,11 @@ export default function DiocesisEventosLiturgicos() {
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
 
-
     const filteredEvents = events.filter((event) =>
         Object.values(event).some((value) =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
-
 
     const handleToggle = (eventId) => {
         setEvents(prevEvents =>
@@ -81,11 +79,9 @@ export default function DiocesisEventosLiturgicos() {
 
     const handleSave = (eventData) => {
         if (modalType === 'add') {
-            // Lógica para añadir un nuevo evento.
-            const newEvent = { ...eventData, id: events.length + 1 };
+            const newEvent = { ...eventData, id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1, estado: 'Activo' };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
-            // Lógica para editar un evento existente.
             setEvents(prevEvents =>
                 prevEvents.map(event =>
                     event.id === currentEvent.id ? { ...event, ...eventData } : event
@@ -121,10 +117,57 @@ export default function DiocesisEventosLiturgicos() {
         },
     ];
 
-    // 6. La interfaz de usuario (JSX)
+    const getModalContentAndActions = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles del Evento',
+                    content: currentEvent && (
+                        <div>
+                            <p><strong>ID:</strong> {currentEvent.id}</p>
+                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
+                            <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
+                        </div>
+                    ),
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
+            case 'edit':
+                return {
+                    title: 'Editar Evento',
+                    content: <EditEventForm onSave={handleSave} event={currentEvent} />,
+                    onAccept: () => document.getElementById('edit-event-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h4>¿Estás seguro que quieres eliminar este evento?</h4>,
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir Evento',
+                    content: <AddEventForm onSave={handleSave} />,
+                    onAccept: () => document.getElementById('add-event-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: null
+                };
+        }
+    };
+
+    const modalProps = getModalContentAndActions();
+
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Eventos</h2>
+            <h2 className='title-screen'>Gestión de eventos generales</h2>
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">
@@ -133,55 +176,25 @@ export default function DiocesisEventosLiturgicos() {
                     <MyGroupButtonsActions>
                         <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                     </MyGroupButtonsActions>
-                    
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents}
-                    gridColumnsLayout="90px 380px 1fr 140px 220px" 
-                    columnLeftAlignIndex={[2,3]}/>
+                    gridColumnsLayout="90px 380px 1fr 140px 220px"
+                    columnLeftAlignIndex={[2, 3]} />
             </div>
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
-                title={
-                    modalType === 'view' ? 'Detalles del Evento' :
-                        modalType === 'edit' ? 'Editar Evento' :
-                            modalType === 'delete' ? 'Confirmar Eliminación' :
-                                'Añadir Evento'
-                }
+                title={modalProps.title}
+                onAccept={modalProps.onAccept}
+                onCancel={modalProps.onCancel}
             >
-                {modalType === 'view' && currentEvent && (
-                    <div>
-                        <p><strong>ID:</strong> {currentEvent.id}</p>
-                        <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                        <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
-                    </div>
-                )}
-
-                {modalType === 'edit' && currentEvent && (
-                    <EditEventForm onSave={handleSave} onClose={handleCloseModal} event={currentEvent} />
-                )}
-
-                {modalType === 'delete' && currentEvent && (
-                    <div>
-                        <h3>¿Estás seguro que quieres eliminar este evento?</h3>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
-                        </div>
-                    </div>
-                )}
-
-                {modalType === 'add' && (
-                    <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
-                )}
+                {modalProps.content}
             </Modal>
         </div>
     );
 }
 
-// Estos son los nuevos componentes que debes crear para los formularios
-
-function AddEventForm({ onSave, onClose }) {
+function AddEventForm({ onSave }) {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
 
@@ -191,22 +204,18 @@ function AddEventForm({ onSave, onClose }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form id="add-event-form" onSubmit={handleSubmit}>
             <div className="Inputs-add">
                 <label htmlFor="addNombre">Nombre de evento</label>
                 <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
                 <label htmlFor="addDescripcion">Descripción</label>
                 <textarea className="inputModal" id="addDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
             </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-            </div>
         </form>
     );
 }
 
-function EditEventForm({ onSave, onClose, event }) {
+function EditEventForm({ onSave, event }) {
     const [nombre, setNombre] = useState(event.nombre);
     const [descripcion, setDescripcion] = useState(event.descripcion);
 
@@ -216,16 +225,12 @@ function EditEventForm({ onSave, onClose, event }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form id="edit-event-form" onSubmit={handleSubmit}>
             <div className="Inputs-edit">
                 <label htmlFor="editNombre">Nuevo nombre de evento</label>
                 <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
                 <label htmlFor="editDescripcion">Nueva descripción</label>
                 <textarea className="inputModal" id="editDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
             </div>
         </form>
     );

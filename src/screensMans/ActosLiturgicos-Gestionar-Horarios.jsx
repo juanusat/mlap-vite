@@ -15,7 +15,7 @@ export default function ActosLiturgicosHorarios() {
     const [startRow, setStartRow] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
-    
+
     // Estados para el formulario de excepciones
     const [fecha, setFecha] = useState('');
     const [horaInicio, setHoraInicio] = useState('');
@@ -25,15 +25,15 @@ export default function ActosLiturgicosHorarios() {
     const [disponibilidadPage, setDisponibilidadPage] = useState(0);
     const [noDisponibilidadPage, setNoDisponibilidadPage] = useState(0);
     const ITEMS_PER_PAGE = 4;
-    
+
     const timeSlots = [
-        '8:00 - 9:00', '9:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00', 
-        '12:00 - 13:00', '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00', 
+        '8:00 - 9:00', '9:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00',
+        '12:00 - 13:00', '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00',
         '16:00 - 17:00', '17:00 - 18:00'
     ];
-    
+
     const daysOfWeek = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
-    
+
     const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([
         { fecha: '17/08/2025', hora: '17:00 - 21:00' },
         { fecha: '18/08/2025', hora: '17:00 - 21:00' },
@@ -45,19 +45,20 @@ export default function ActosLiturgicosHorarios() {
         { fecha: '24/08/2025', hora: '17:00 - 21:00' },
         { fecha: '25/08/2025', hora: '17:00 - 21:00' }
     ]);
-    
+
     const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([
         { fecha: '17/08/2025', hora: '17:00 - 21:00' },
         { fecha: '18/08/2025', hora: '17:00 - 21:00' },
         { fecha: '19/08/2025', hora: '17:00 - 21:00' }
     ]);
-    
+
     const handleOpenModal = (type) => {
         setModalType(type);
         setShowModal(true);
     };
-    
-    const handleCloseModal = () => {
+
+    // Renombrado para ser más explícito
+    const handleCancelModal = () => {
         setShowModal(false);
         // Limpiar los estados del formulario al cerrar
         setFecha('');
@@ -65,16 +66,16 @@ export default function ActosLiturgicosHorarios() {
         setHoraFin('');
         setMotivo('');
     };
-    
-    const handleSaveException = (e) => {
-        e.preventDefault();
+
+    // Nueva función para manejar el guardado desde el modal
+    const handleAcceptModal = () => {
         const newException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
         if (modalType === 'disponibilidad') {
             setExceptionsDisponibilidad(prev => [...prev, newException]);
         } else {
             setExceptionsNoDisponibilidad(prev => [...prev, newException]);
         }
-        handleCloseModal();
+        handleCancelModal(); // Llama a la función de cancelación para limpiar y cerrar
     };
 
     const toggleEditing = () => {
@@ -85,15 +86,15 @@ export default function ActosLiturgicosHorarios() {
             handleDiscard();
         }
     };
-    
+
     const isCellInInterval = (rowIndex, colIndex) => {
         if (!selectedIntervals[colIndex]) return false;
-        
+
         return selectedIntervals[colIndex].some(interval => {
             return rowIndex >= interval[0] && rowIndex <= interval[1];
         });
     };
-    
+
     const handleCellMouseDown = (rowIndex, colIndex) => {
         if (!isEditing) return;
         setIsMouseMoved(false);
@@ -101,7 +102,7 @@ export default function ActosLiturgicosHorarios() {
         setStartRow(rowIndex);
         setCurrentDay(colIndex);
     };
-    
+
     const handleCellMouseEnter = (rowIndex, colIndex) => {
         if (!isDragging || !isEditing || colIndex !== currentDay) return;
         setIsMouseMoved(true);
@@ -116,7 +117,7 @@ export default function ActosLiturgicosHorarios() {
             }
         });
     };
-    
+
     const handleCellMouseUp = (rowIndex) => {
         if (!isDragging || !isEditing) return;
         document.querySelectorAll('.day-cell.dragging').forEach((cell) => {
@@ -133,7 +134,7 @@ export default function ActosLiturgicosHorarios() {
                 let newInterval = [startInterval, endInterval];
                 let intervalsToRemove = [];
                 newIntervals[currentDay].forEach((interval, index) => {
-                    if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) || 
+                    if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
                         (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
                         newInterval = [
                             Math.min(newInterval[0], interval[0]),
@@ -142,7 +143,7 @@ export default function ActosLiturgicosHorarios() {
                         intervalsToRemove.push(index);
                     }
                 });
-                const filteredIntervals = newIntervals[currentDay].filter((_, index) => 
+                const filteredIntervals = newIntervals[currentDay].filter((_, index) =>
                     !intervalsToRemove.includes(index)
                 );
                 newIntervals[currentDay] = [...filteredIntervals, newInterval];
@@ -153,7 +154,7 @@ export default function ActosLiturgicosHorarios() {
         setStartRow(null);
         setCurrentDay(null);
     };
-    
+
     const handleRemoveInterval = (dayIndex, rowIndex) => {
         if (!isEditing) return;
         setSelectedIntervals(prevIntervals => {
@@ -171,83 +172,77 @@ export default function ActosLiturgicosHorarios() {
             return newIntervals;
         });
     };
-    
+
     const handleCellClick = (rowIndex, colIndex) => {
-        if (!isEditing) return;
-        setIsDragging(false);
-        setStartRow(null);
-        setCurrentDay(null);
-        document.querySelectorAll('.day-cell.dragging').forEach((cell) => {
-            cell.classList.remove('dragging');
-        });
+        if (!isEditing || isMouseMoved) return; // Añadir esta condición
+
         setSelectedIntervals(prevIntervals => {
             const newIntervals = { ...prevIntervals };
             if (!newIntervals[colIndex]) {
                 newIntervals[colIndex] = [];
             }
-            let newInterval = [rowIndex, rowIndex];
-            let intervalsToRemove = [];
-            newIntervals[colIndex].forEach((interval, index) => {
-                if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) || 
-                    (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
-                    newInterval = [
-                        Math.min(newInterval[0], interval[0]),
-                        Math.max(newInterval[1], interval[1])
-                    ];
-                    intervalsToRemove.push(index);
-                }
-            });
-            const filteredIntervals = newIntervals[colIndex].filter((_, index) => 
-                !intervalsToRemove.includes(index)
-            );
-            newIntervals[colIndex] = [...filteredIntervals, newInterval];
+            const isSelected = isCellInInterval(rowIndex, colIndex);
+            if (isSelected) {
+                newIntervals[colIndex] = newIntervals[colIndex].filter(interval =>
+                    !(rowIndex >= interval[0] && rowIndex <= interval[1])
+                );
+            } else {
+                let newInterval = [rowIndex, rowIndex];
+                const filteredIntervals = newIntervals[colIndex].filter(interval => {
+                    const overlaps = (newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
+                        (interval[0] <= newInterval[1] && interval[1] >= newInterval[0]);
+                    if (overlaps) {
+                        newInterval = [
+                            Math.min(newInterval[0], interval[0]),
+                            Math.max(newInterval[1], interval[1])
+                        ];
+                    }
+                    return !overlaps;
+                });
+                newIntervals[colIndex] = [...filteredIntervals, newInterval];
+            }
             return newIntervals;
         });
     };
-    
+
     const handleDiscard = () => {
         setSelectedIntervals(JSON.parse(JSON.stringify(savedIntervals)));
         setIsEditing(false);
     };
-    
+
     const handleSave = () => {
         console.log('Guardando horarios', selectedIntervals);
         setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
         setIsEditing(false);
     };
-    
+
     const hasNextPage = (items, currentPage) => (currentPage + 1) * ITEMS_PER_PAGE < items.length;
     const hasPrevPage = (currentPage) => currentPage > 0;
     const getPaginatedItems = (items, currentPage) => {
         const startIndex = currentPage * ITEMS_PER_PAGE;
         return items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     };
-    
+
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Gestionar Horario</h2>
+                <h2 className='title-screen'>Gestionar horario</h2>
                 <div className='app-container'>
                     <div className="horarios-container">
-                        <div className="horarios-header">
-                            <h3>Gestión de Horarios</h3>
-                            <hr />
-                        </div>
-                        
                         <div className="horarios-controls">
                             <div className="horarios-edit-control">
-                                <MyButtonMediumIcon 
-                                    icon="MdAccept" 
-                                    text={isEditing ? "Finalizar edición" : "Editar"} 
+                                <MyButtonMediumIcon
+                                    icon="MdAccept"
+                                    text={isEditing ? "Finalizar edición" : "Editar"}
                                     onClick={toggleEditing}
                                     classNameExtra="horarios-btn"
                                 />
                             </div>
                             {isEditing && (
                                 <div className="horarios-actions">
-                                    <MyButtonMediumIcon 
-                                        icon="MdClose" 
-                                        text="Cancelar" 
+                                    <MyButtonMediumIcon
+                                        icon="MdClose"
+                                        text="Cancelar"
                                         onClick={handleDiscard}
                                         classNameExtra="horarios-btn"
                                     />
@@ -260,7 +255,7 @@ export default function ActosLiturgicosHorarios() {
                                 </div>
                             )}
                         </div>
-                        
+
                         <div className="horarios-grid-container">
                             <div className="horarios-grid">
                                 <div className="grid-header">
@@ -269,31 +264,22 @@ export default function ActosLiturgicosHorarios() {
                                         <div key={index} className="grid-cell header-cell">{day}</div>
                                     ))}
                                 </div>
-                                
+
                                 {timeSlots.map((timeSlot, rowIndex) => (
                                     <div key={rowIndex} className="grid-row">
                                         <div className="grid-cell time-cell">{timeSlot}</div>
                                         {daysOfWeek.map((_, colIndex) => {
                                             const isSelected = isCellInInterval(rowIndex, colIndex);
                                             return (
-                                                <div 
-                                                    key={colIndex} 
+                                                <div
+                                                    key={colIndex}
                                                     className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${isEditing ? 'editable' : ''}`}
                                                     data-row={rowIndex}
                                                     data-col={colIndex}
                                                     onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                                                     onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                                                     onMouseUp={() => handleCellMouseUp(rowIndex)}
-                                                    onClick={() => {
-                                                        if (isEditing && !isMouseMoved) {
-                                                            if (isSelected) {
-                                                                handleRemoveInterval(colIndex, rowIndex);
-                                                            } else {
-                                                                handleCellClick(rowIndex, colIndex);
-                                                            }
-                                                        }
-                                                        setIsMouseMoved(false);
-                                                    }}
+                                                    onClick={() => handleCellClick(rowIndex, colIndex)}
                                                 >
                                                     {isSelected && (
                                                         <div className="interval-marker"></div>
@@ -305,28 +291,28 @@ export default function ActosLiturgicosHorarios() {
                                 ))}
                             </div>
                         </div>
-                        
+
                         <div className="exceptions-container">
                             <div className="exceptions-section">
                                 <div className="exceptions-header">
                                     <h4>Excepciones - Disponibilidad</h4>
                                     <div className="exceptions-controls">
                                         {hasPrevPage(disponibilidadPage) && (
-                                            <MyButtonShortAction 
-                                                type="back" 
-                                                title="Página anterior" 
+                                            <MyButtonShortAction
+                                                type="back"
+                                                title="Página anterior"
                                                 onClick={() => setDisponibilidadPage(prev => prev - 1)}
                                             />
                                         )}
-                                        <MyButtonShortAction 
-                                            type="add" 
-                                            title="Agregar excepción de disponibilidad" 
-                                            onClick={() => handleOpenModal('disponibilidad')} 
+                                        <MyButtonShortAction
+                                            type="add"
+                                            title="Agregar excepción de disponibilidad"
+                                            onClick={() => handleOpenModal('disponibilidad')}
                                         />
                                         {hasNextPage(exceptionsDisponibilidad, disponibilidadPage) && (
-                                            <MyButtonShortAction 
-                                                type="next" 
-                                                title="Página siguiente" 
+                                            <MyButtonShortAction
+                                                type="next"
+                                                title="Página siguiente"
                                                 onClick={() => setDisponibilidadPage(prev => prev + 1)}
                                             />
                                         )}
@@ -352,27 +338,26 @@ export default function ActosLiturgicosHorarios() {
                                     ))}
                                 </div>
                             </div>
-                            
+
                             <div className="exceptions-section">
                                 <div className="exceptions-header">
-                                    <h4>Excepciones - No Disponibilidad</h4>
+                                    <h4>Excepciones - No disponibilidad</h4>
                                     <div className="exceptions-controls">
                                         {hasPrevPage(noDisponibilidadPage) && (
-                                            <MyButtonShortAction 
-                                                type="back" 
-                                                title="Página anterior" 
+                                            <MyButtonShortAction
+                                                type="back"
+                                                title="Página anterior"
                                                 onClick={() => setNoDisponibilidadPage(prev => prev - 1)}
                                             />
                                         )}
-                                        <MyButtonShortAction 
-                                            type="add" 
-                                            title="Agregar excepción de no disponibilidad" 
-                                            onClick={() => handleOpenModal('noDisponibilidad')} 
+                                        <MyButtonShortAction
+                                            type="add"
+                                            title="Agregar excepción de no disponibilidad"
+                                            onClick={() => handleOpenModal('noDisponibilidad')}
                                         />
                                         {hasNextPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
-                                            <MyButtonShortAction 
-                                                type="next" 
-                                                title="Página siguiente" 
+                                            <MyButtonShortAction
+                                                type="next"
                                                 onClick={() => setNoDisponibilidadPage(prev => prev + 1)}
                                             />
                                         )}
@@ -400,13 +385,15 @@ export default function ActosLiturgicosHorarios() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <Modal
                         show={showModal}
-                        onClose={handleCloseModal}
-                        title={modalType === 'disponibilidad' ? 'Agregar Excepción - Disponibilidad' : 'Agregar Excepción - No Disponibilidad'}
+                        onClose={handleCancelModal}
+                        title={modalType === 'disponibilidad' ? 'Agregar excepción - Disponibilidad' : 'Agregar excepción - No disponibilidad'}
+                        onAccept={handleAcceptModal}
+                        onCancel={handleCancelModal}
                     >
-                        <form onSubmit={handleSaveException} className='form-modal-horarios'>
+                        <form className='form-modal-horarios'>
                             <div className="Inputs-add">
                                 <label htmlFor="fecha">Fecha</label>
                                 <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
@@ -417,10 +404,6 @@ export default function ActosLiturgicosHorarios() {
                                 </div>
                                 <label htmlFor="motivo">Motivo</label>
                                 <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
-                            </div>
-                            <div className="buttons-container">
-                                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
                             </div>
                         </form>
                     </Modal>

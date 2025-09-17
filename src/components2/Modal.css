@@ -35,6 +35,7 @@
   font-size: 18px;
   color: #333;
 }
+
 .modal-body {
   font-size: 1em;
   line-height: 1.6;
@@ -56,3 +57,10 @@
   color: #555;
 }
 
+.buttons-container {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

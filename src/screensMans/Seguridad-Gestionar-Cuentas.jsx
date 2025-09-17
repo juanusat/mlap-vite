@@ -28,7 +28,6 @@ const initialUsers = Array.from({ length: 100 }, (_, i) => {
 });
 
 export default function CuentasGestionar() {
-    // 1. Estados que controlan la lógica de la aplicación
     const [users, setUsers] = useState(initialUsers);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -36,13 +35,12 @@ export default function CuentasGestionar() {
     const [modalType, setModalType] = useState(null);
     const [showSidebar, setShowSidebar] = useState(false);
 
-    const filteredEvents = users.filter((user) =>
+    const filteredUsers = users.filter((user) =>
         Object.values(user).some((value) =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
 
-    // 2. Funciones de manejo de acciones
     const handleToggle = (userId) => {
         setUsers(prevUsers =>
             prevUsers.map(user =>
@@ -75,18 +73,11 @@ export default function CuentasGestionar() {
     };
 
     const handleDeleteRole = (roleToRemove) => {
-        if (!currentUser) {
-            return;
-        }
+        if (!currentUser) return;
         setUsers(prevUsers => {
             const updatedUsers = prevUsers.map(user =>
                 user.id === currentUser.id
-                    ? {
-                        ...user,
-                        roles: user.roles.filter(
-                            role => role.toLowerCase().trim() !== roleToRemove.toLowerCase().trim()
-                        ),
-                    }
+                    ? { ...user, roles: user.roles.filter(role => role !== roleToRemove) }
                     : user
             );
             const updatedCurrentUser = updatedUsers.find(user => user.id === currentUser.id);
@@ -122,10 +113,9 @@ export default function CuentasGestionar() {
                 lastName: '',
                 email: data.email,
                 isEnabled: true,
-                roles: [allRoles[0]], // Asigna un rol por defecto
+                roles: ['Secretario'],
             };
             setUsers(prevUsers => [...prevUsers, newUser]);
-            // Ya no es necesario setSearchTerm('') porque la lógica de búsqueda está en la tabla
         }
         handleCloseModal();
     };
@@ -137,7 +127,46 @@ export default function CuentasGestionar() {
         handleCloseModal();
     };
 
-    // 3. Configuración de las columnas de la tabla
+    const getModalProps = () => {
+        switch (modalType) {
+            case 'invite':
+                return {
+                    title: 'Invitar Usuarios',
+                    content: <InviteUserForm onSave={handleSave} />,
+                    onAccept: () => document.getElementById('invite-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            case 'addRole':
+                return {
+                    title: 'Añadir Rol',
+                    content: currentUser && (
+                        <AddRoleForm
+                            onSave={handleSave}
+                            availableRoles={allRoles.filter(r => !currentUser.roles.includes(r))}
+                        />
+                    ),
+                    onAccept: () => document.getElementById('add-role-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            case 'deleteUser':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h4>¿Estás seguro de que deseas eliminar a este usuario permanentemente?</h4>,
+                    onAccept: handleDelete,
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: handleCloseModal
+                };
+        }
+    };
+
+    const modalProps = getModalProps();
+
     const userColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
         { key: 'username', header: 'Nombre', accessor: (row) => row.username },
@@ -164,8 +193,6 @@ export default function CuentasGestionar() {
         },
     ];
 
-
-
     return (
         <>
             <div className="content-module only-this">
@@ -179,53 +206,28 @@ export default function CuentasGestionar() {
                     </div>
                     <DynamicTable
                         columns={userColumns}
-                        data={filteredEvents}
+                        data={filteredUsers}
                         gridColumnsLayout="90px 350px 380px 1fr 140px 220px"
-                        columnLeftAlignIndex={[2,3,4]}
+                        columnLeftAlignIndex={[2, 3, 4]}
                     />
                 </div>
-
-                {/* Modal dinámico para las diferentes acciones de usuario */}
                 <Modal
                     show={showModal}
                     onClose={handleCloseModal}
-                    title={
-                        modalType === 'invite' ? 'Invitar Usuarios' :
-                            modalType === 'addRole' ? 'Añadir Rol' :
-                                'Confirmar Eliminación'
-                    }
-                    isFullScreen={false}
+                    title={modalProps.title}
+                    onAccept={modalProps.onAccept}
+                    onCancel={modalProps.onCancel}
                 >
-                    {modalType === 'invite' && (
-                        <InviteUserForm onSave={handleSave} onClose={handleCloseModal} />
-                    )}
-                    {modalType === 'addRole' && currentUser && (
-                        <AddRoleForm
-                            onSave={handleSave}
-                            onClose={handleCloseModal}
-                            availableRoles={allRoles.filter(r => !currentUser.roles.includes(r))}
-                        />
-                    )}
-                    {modalType === 'deleteUser' && currentUser && (
-                        <div>
-                            <h4>¿Estás seguro de que deseas eliminar a este usuario permanentemente?</h4>
-                            <div className="buttons-container">
-                                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                                <MyButtonMediumIcon text="Eliminar" icon="MdDelete" onClick={handleDelete} />
-                            </div>
-                        </div>
-                    )}
+                    {modalProps.content}
                 </Modal>
             </div>
-            {/* El panel lateral se renderiza solo si showSidebar es verdadero y hay un usuario seleccionado */}
             {showSidebar && currentUser && (
                 <MyPanelLateralConfig>
                     <div className="panel-lateral-header">
                         <h2 className="sidebar-title">{`Roles de ${currentUser.username}`}</h2>
-                        <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar}/>
+                        <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
                     </div>
                     <div className="sidebar-list">
-                        {/* Renderiza dinámicamente cada rol con su botón de eliminar */}
                         {currentUser.roles.map((item) => (
                             <div key={`${currentUser.id}-${item}`} className="sidebar-list-item">
                                 {item}
@@ -241,69 +243,57 @@ export default function CuentasGestionar() {
             )}
         </>
     );
+}
 
-    // ... (Los componentes de formulario son los mismos)
-    function InviteUserForm({ onSave, onClose }) {
-        const [email, setEmail] = useState('');
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            if (email) {
-                onSave({ email });
-            }
-        };
-        return (
-            <form onSubmit={handleSubmit}>
-                <div className="form-field">
-                    <label htmlFor="invite-email">Correo Electrónico</label>
-                    <input
-                        type="email"
-                        className="inputModal"
-                        id="invite-email"
-                        placeholder="ejemplo@correo.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
+// ---------------------- Componentes de formulario ----------------------
 
-                <div className="buttons-container">
-                    <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
-                    <MyButtonMediumIcon text="Invitar" icon="MdMail" type="submit" />
-                </div>
-            </form>
-        );
-    }
+function InviteUserForm({ onSave }) {
+    const [email, setEmail] = useState('');
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ email });
+    };
+    return (
+        <form id="invite-form" onSubmit={handleSubmit}>
+            <div className="form-field">
+                <label htmlFor="invite-email">Correo Electrónico</label>
+                <input
+                    type="email"
+                    className="inputModal"
+                    id="invite-email"
+                    placeholder="ejemplo@correo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+            </div>
+        </form>
+    );
+}
 
-    function AddRoleForm({ onSave, onClose, availableRoles }) {
-        const [selectedRole, setSelectedRole] = useState('');
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            if (selectedRole) {
-                onSave({ role: selectedRole });
-            }
-        };
-        return (
-            <form onSubmit={handleSubmit}>
-                <div className="form-field">
-                    <label htmlFor="role-select">Selecciona un rol</label>
-                    <select
-                        id="role-select"
-                        className="inputModal"
-                        value={selectedRole}
-                        onChange={e => setSelectedRole(e.target.value)}
-                        required
-                    >
-                        <option value="">Selecciona un rol</option>
-                        {availableRoles.map(role => (
-                            <option key={role} value={role}>{role}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="buttons-container">
-                    <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onClose} />
-                    <MyButtonMediumIcon text="Añadir" icon="MdAdd" type="submit" />
-                </div>
-            </form>
-        );
-    }
+function AddRoleForm({ onSave, availableRoles }) {
+    const [selectedRole, setSelectedRole] = useState('');
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ role: selectedRole });
+    };
+    return (
+        <form id="add-role-form" onSubmit={handleSubmit}>
+            <div className="form-field">
+                <label htmlFor="role-select">Selecciona un rol</label>
+                <select
+                    id="role-select"
+                    className="inputModal"
+                    value={selectedRole}
+                    onChange={e => setSelectedRole(e.target.value)}
+                    required
+                >
+                    <option value="">Selecciona un rol</option>
+                    {availableRoles.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                    ))}
+                </select>
+            </div>
+        </form>
+    );
 }
