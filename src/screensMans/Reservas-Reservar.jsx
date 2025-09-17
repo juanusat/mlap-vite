@@ -1,9 +1,9 @@
 import React from 'react';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import '../components/MyButtonMediumIcon.css';
-import './MisReservas-Reservar.css';
+import './Reservas-Reservar.css';
 
-export default function MisReservasReservar() {
+export default function ReservasReservar() {
     return (
         <>
             <div className="content-module only-this">
