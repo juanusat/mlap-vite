@@ -10,7 +10,6 @@ import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import '../utils/Estilos-Generales-1.css';
 import "../utils/ActosLiturgicos-Requisitos.css";
 
-// Datos simulados (se mantienen igual)
 const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   nombre: `Evento ${i + 1}`,
@@ -103,7 +102,12 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
   const handleSave = (reqData) => {
     if (modalType === 'add') {
-      const newReq = { ...reqData, id: requirements.length + 1, eventoId: selectedEvent.id, estado: 'Activo' };
+      const newReq = {
+        ...reqData,
+        id: requirements.length > 0 ? Math.max(...requirements.map(r => r.id)) + 1 : 1,
+        eventoId: selectedEvent.id,
+        estado: 'Activo'
+      };
       setRequirements(prevReqs => [...prevReqs, newReq]);
     } else if (modalType === 'edit' && currentRequirement) {
       setRequirements(prevReqs =>
@@ -117,7 +121,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
   const handleRowClickEvent = (event) => {
     setSelectedEvent(event);
-    setShowPanel(true);
+    setShowPanel(false);
   };
 
   const handleToggle = (requirementId) => {
@@ -129,7 +133,6 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
       )
     );
   };
-
 
   const requirementColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -156,41 +159,85 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
     },
   ];
 
-  const eventColumns = [
-    { key: 'id', header: 'ID', accessor: (row) => row.id },
-    { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
-  ];
-
-  // Aquí se mueve y modifica la tabla de eventos para que la fila sea clickable
+  // Esta es tu función original que yo eliminé por error.
   const TableEventsWithClick = ({ data }) => {
-  return (
-    <div className="table-container">
-      <div className="table-body-div">
-        {data.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="table-row-div event-row"
-            onClick={() => handleRowClickEvent(row)}
-          >
-            <div className="event-cell">
-              <span className="event-id">{row.id}</span>
-              <span className="event-name">{row.nombre}</span>
+    return (
+      <div className="table-container">
+        <div className="table-body-div">
+          {data.map((row, rowIndex) => (
+            <div
+              key={rowIndex}
+              className="table-row-div event-row"
+              onClick={() => handleRowClickEvent(row)}
+            >
+              <div className="event-cell">
+                <span className="event-id">{row.id}</span>
+                <span className="event-name">{row.nombre}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+
+  const getModalContentAndActions = () => {
+    switch (modalType) {
+      case 'view':
+        return {
+          title: 'Detalles del requisito',
+          content: currentRequirement && (
+            <div>
+              <p><strong>ID:</strong> {currentRequirement.id}</p>
+              <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
+              <p><strong>Descripción:</strong> {currentRequirement.descripcion}</p>
+              <p><strong>Estado:</strong> {currentRequirement.estado}</p>
+            </div>
+          ),
+          onAccept: handleCloseModal,
+          onCancel: handleCloseModal
+        };
+      case 'edit':
+        return {
+          title: 'Editar requisito',
+          content: <RequisitoForm onSave={handleSave} req={currentRequirement} />,
+          onAccept: () => document.getElementById('edit-req-form').requestSubmit(),
+          onCancel: handleCloseModal
+        };
+      case 'delete':
+        return {
+          title: 'Confirmar eliminación',
+          content: <h4>¿Estás seguro que quieres eliminar este requisito?</h4>,
+          onAccept: confirmDelete,
+          onCancel: handleCloseModal
+        };
+      case 'add':
+        return {
+          title: 'Añadir requisito',
+          content: <RequisitoForm onSave={handleSave} />,
+          onAccept: () => document.getElementById('add-req-form').requestSubmit(),
+          onCancel: handleCloseModal
+        };
+      default:
+        return {
+          title: '',
+          content: null,
+          onAccept: null,
+          onCancel: null
+        };
+    }
+  };
+
+  const modalProps = getModalContentAndActions();
 
   return (
     <>
       <div className="content-module only-this">
-        <h2 className='title-screen'>Gestión de Requisitos</h2>
+        <h2 className='title-screen'>Gestión de requisitos generales</h2>
         <div className="app-container">
           <div className="search-add">
             <div className="texto-evento">
-              <label>{selectedEvent ? selectedEvent.nombre : ''}</label>
+              <label>{selectedEvent ? `Requisitos de: ${selectedEvent.nombre}` : ''}</label>
             </div>
             <div className="center-container">
               <SearchBar onSearchChange={setSearchTerm} />
@@ -218,45 +265,11 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         <Modal
           show={showModal}
           onClose={handleCloseModal}
-          title={
-            modalType === 'view' ? 'Detalles del Requisito' :
-              modalType === 'edit' ? 'Editar Requisito' :
-                modalType === 'delete' ? 'Confirmar Eliminación' :
-                  'Añadir Requisito'
-          }
+          title={modalProps.title}
+          onAccept={modalProps.onAccept}
+          onCancel={modalProps.onCancel}
         >
-          {modalType === 'view' && currentRequirement && (
-            <div>
-              <h3>Detalles del Requisito</h3>
-              <p><strong>ID:</strong> {currentRequirement.id}</p>
-              <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
-              <p><strong>Descripción:</strong> {currentRequirement.descripcion}</p>
-              <p><strong>Estado:</strong> {currentRequirement.estado}</p>
-              <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
-              </div>
-            </div>
-          )}
-
-          {modalType === 'edit' && currentRequirement && (
-            <RequisitoForm onSave={handleSave} onClose={handleCloseModal} req={currentRequirement} />
-          )}
-
-          {modalType === 'delete' && currentRequirement && (
-            <div>
-              <h3>¿Estás seguro que quieres eliminar este requisito?</h3>
-              <p><strong>ID:</strong> {currentRequirement.id}</p>
-              <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
-              <div className="buttons-container">
-                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                <MyButtonMediumIcon text="Eliminar" icon="MdDeleteForever" onClick={confirmDelete} />
-              </div>
-            </div>
-          )}
-
-          {modalType === 'add' && (
-            <RequisitoForm onSave={handleSave} onClose={handleCloseModal} />
-          )}
+          {modalProps.content}
         </Modal>
       </div>
 
@@ -265,17 +278,13 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
           <MyPanelLateralConfig>
             <div className="panel-lateral-header">
               <h2>Seleccionar Evento</h2>
-              <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar"/>
+              <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
             </div>
             <br />
             <div className="sidebar-search">
               <SearchBar onSearchChange={setSearchTermEvent} />
             </div>
-
-            <TableEventsWithClick
-              columns={eventColumns}
-              data={filteredEvents}
-            />
+            <TableEventsWithClick data={filteredEvents} />
           </MyPanelLateralConfig>
         </>
       )}
@@ -284,7 +293,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 }
 
 // Componente para el formulario de adición y edición
-function RequisitoForm({ onSave, onClose, req = {} }) {
+function RequisitoForm({ onSave, req = {} }) {
   const [nombre, setNombre] = useState(req.nombre || '');
   const [descripcion, setDescripcion] = useState(req.descripcion || '');
 
@@ -294,16 +303,12 @@ function RequisitoForm({ onSave, onClose, req = {} }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form id={req.id ? "edit-req-form" : "add-req-form"} onSubmit={handleSubmit}>
       <div className="Inputs-add">
         <label htmlFor="nombre">Nombre del Requisito</label>
         <input type="text" className="inputModal" id="nombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
         <label htmlFor="descripcion">Descripción</label>
         <textarea className="inputModal" id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-      </div>
-      <div className="buttons-container">
-        <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-        <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
       </div>
     </form>
   );

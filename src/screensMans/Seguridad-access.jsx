@@ -9,8 +9,8 @@ export default function Seguridad() {
   const isBasePath = location.pathname === '/man-seguridad';
 
   const options = [
-    { href: 'cuentas-gestionar', icon: <MdAccountBox />, label: 'Gestionar Cuentas' },
-    { href: 'roles-gestionar', icon: <MdRecentActors />, label: 'Gestionar Roles' },
+    { href: 'cuentas-gestionar', icon: <MdAccountBox />, label: 'Gestionar cuentas' },
+    { href: 'roles-gestionar', icon: <MdRecentActors />, label: 'Gestionar roles' },
   ];
 
   return (
@@ -18,7 +18,7 @@ export default function Seguridad() {
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">
-          <h1 className="modulo-title">Módulo de Seguridad</h1>
+          <h1 className="modulo-title">Módulo de seguridad</h1>
           <p className="modulo-subtitle">
             Administración de roles y cuentas asociadas a cada parroquia,
             garantizando un control de accesos seguro y eficiente.
@@ -27,7 +27,7 @@ export default function Seguridad() {
 
         <article className="modulo-content">
           <p>
-            El <strong>Módulo de Seguridad</strong> proporciona herramientas para
+            El <strong>Módulo de seguridad</strong> proporciona herramientas para
             definir y gestionar los <strong>roles</strong> de cada parroquia, con
             el fin de asegurar que cada usuario tenga los permisos adecuados según
             sus responsabilidades.

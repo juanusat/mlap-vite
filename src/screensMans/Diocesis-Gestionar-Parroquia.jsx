@@ -24,13 +24,23 @@ export default function Parroquia() {
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
 
+    const [formData, setFormData] = useState({
+        nombre: '',
+        correo: '',
+        usuario: '',
+        clave: ''
+    });
+
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     const filteredEvents = events.filter((event) =>
         Object.values(event).some((value) =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
-
 
     const handleToggle = (eventId) => {
         setEvents(prevEvents =>
@@ -51,6 +61,12 @@ export default function Parroquia() {
     const handleEdit = (event) => {
         setCurrentEvent(event);
         setModalType('edit');
+        setFormData({
+            nombre: event.nombre,
+            correo: event.correo,
+            usuario: event.usuario || '',
+            clave: event.clave || '' 
+        });
         setShowModal(true);
     };
 
@@ -63,6 +79,12 @@ export default function Parroquia() {
     const handleAddEvent = () => {
         setCurrentEvent(null);
         setModalType('add');
+        setFormData({
+            nombre: '',
+            correo: '',
+            usuario: '',
+            clave: ''
+        });
         setShowModal(true);
     };
 
@@ -70,6 +92,12 @@ export default function Parroquia() {
         setShowModal(false);
         setCurrentEvent(null);
         setModalType(null);
+        setFormData({
+            nombre: '',
+            correo: '',
+            usuario: '',
+            clave: ''
+        });
     };
 
     const confirmDelete = () => {
@@ -79,22 +107,23 @@ export default function Parroquia() {
         }
     };
 
-    const handleSave = (eventData) => {
+    const handleSave = () => {
         if (modalType === 'add') {
-            // Lógica para añadir una nueva parroquia.
-            const newEvent = { ...eventData, id: events.length + 1 };
+            const newEvent = { 
+                ...formData, 
+                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1, 
+                estado: 'Pendiente' 
+            };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
-            // Lógica para editar una parroquia existente.
             setEvents(prevEvents =>
                 prevEvents.map(event =>
-                    event.id === currentEvent.id ? { ...event, ...eventData } : event
+                    event.id === currentEvent.id ? { ...event, ...formData } : event
                 )
             );
         }
         handleCloseModal();
     };
-
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -121,10 +150,79 @@ export default function Parroquia() {
         },
     ];
 
-    // 6. La interfaz de usuario (JSX)
+    const getModalContentAndActions = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles de la parroquia',
+                    content: currentEvent && (
+                        <div>
+                            <p><strong>ID:</strong> {currentEvent.id}</p>
+                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
+                            <p><strong>Correo:</strong> {currentEvent.correo}</p>
+                        </div>
+                    ),
+                    onAccept: null,
+                    onCancel: handleCloseModal
+                };
+            case 'edit':
+                return {
+                    title: 'Editar parroquia',
+                    content: (
+                        <div className="Inputs-edit">
+                            <label htmlFor="editNombre">Modificar nombre de parroquia</label>
+                            <input type="text" className="inputModal" id="editNombre" name="nombre" value={formData.nombre} onChange={handleFormChange} required />
+                            <label htmlFor="editUsuario">Modificar usuario</label>
+                            <input type="text" className="inputModal" id="editUsuario" name="usuario" value={formData.usuario} onChange={handleFormChange} required />
+                            <label htmlFor="editCorreo">Modificar correo</label>
+                            <input type="text" className="inputModal" id="editCorreo" name="correo" value={formData.correo} onChange={handleFormChange} required />
+                            <label htmlFor="editClave">Modificar clave</label>
+                            <input type="password" className="inputModal" id="editClave" name="clave" value={formData.clave} onChange={handleFormChange} required />
+                        </div>
+                    ),
+                    onAccept: handleSave,
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h4>¿Estás seguro que quieres eliminar esta parroquia?</h4>,
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir parroquia',
+                    content: (
+                        <div className="Inputs-add">
+                            <label htmlFor="addNombre">Nombre de Parroquia</label>
+                            <input type="text" className="inputModal" id="addNombre" name="nombre" value={formData.nombre} onChange={handleFormChange} required />
+                            <label htmlFor="addUsuario">Usuario</label>
+                            <input type="text" className="inputModal" id="addUsuario" name="usuario" value={formData.usuario} onChange={handleFormChange} required />
+                            <label htmlFor="addCorreo">Correo</label>
+                            <input type="text" className="inputModal" id="addCorreo" name="correo" value={formData.correo} onChange={handleFormChange} required />
+                            <label htmlFor="addClave">Clave</label>
+                            <input type="password" className="inputModal" id="addClave" name="clave" value={formData.clave} onChange={handleFormChange} required />
+                        </div>
+                    ),
+                    onAccept: handleSave,
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: null
+                };
+        }
+    };
+
+    const modalProps = getModalContentAndActions();
+
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Parroquias</h2>
+            <h2 className='title-screen'>Gestión de parroquias</h2>
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">
@@ -133,112 +231,20 @@ export default function Parroquia() {
                     <MyGroupButtonsActions>
                         <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
                     </MyGroupButtonsActions>
-                    
                 </div>
                 <DynamicTable columns={eventColumns} data={filteredEvents}
-                    gridColumnsLayout="90px 380px 1fr 140px 220px" 
-                    columnLeftAlignIndex={[2,3]}/>
+                    gridColumnsLayout="90px 380px 1fr 140px 220px"
+                    columnLeftAlignIndex={[2, 3]} />
             </div>
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
-                title={
-                    modalType === 'view' ? 'Detalles de la parroquia' :
-                        modalType === 'edit' ? 'Editar parroquia' :
-                            modalType === 'delete' ? 'Confirmar Eliminación' :
-                                'Añadir parroquia'
-                }
+                title={modalProps.title}
+                onAccept={modalProps.onAccept}
+                onCancel={modalProps.onCancel}
             >
-                {modalType === 'view' && currentEvent && (
-                    <div>
-                        <p><strong>ID:</strong> {currentEvent.id}</p>
-                        <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                        <p><strong>Correo:</strong> {currentEvent.correo}</p>
-                    </div>
-                )}
-
-                {modalType === 'edit' && currentEvent && (
-                    <EditEventForm onSave={handleSave} onClose={handleCloseModal} event={currentEvent} />
-                )}
-
-                {modalType === 'delete' && currentEvent && (
-                    <div>
-                        <h4>¿Estás seguro que quieres eliminar esta parroquia?</h4>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
-                        </div>
-                    </div>
-                )}
-
-                {modalType === 'add' && (
-                    <AddEventForm onSave={handleSave} onClose={handleCloseModal} />
-                )}
+                {modalProps.content}
             </Modal>
         </div>
-    );
-}
-
-// Estos son los nuevos componentes que debes crear para los formularios
-
-function AddEventForm({ onSave, onClose }) {
-    const [nombre, setNombre] = useState('');
-    const [correo, setCorreo] = useState('');
-    const [usuario, setUsuario] = useState('');
-    const [clave, setClave] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, correo,usuario, clave, estado: 'Pendiente' });
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="Inputs-add">
-                <label htmlFor="addNombre">Nombre de Parroquia</label>
-                <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="addUsuario">Usuario</label>
-                <input type="text" className="inputModal" id="addUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
-                <label htmlFor="addCorreo">Correo</label>
-                <input type="text" className="inputModal" id="addCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
-                <label htmlFor="addClave">Clave</label>
-                <input type="password" className="inputModal" id="addClave" value={clave} onChange={e => setClave(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-            </div>
-        </form>
-    );
-}
-
-function EditEventForm({ onSave, onClose, event }) {
-    const [nombre, setNombre] = useState(event.nombre);
-    const [correo, setCorreo] = useState(event.correo);
-    const [usuario, setUsuario] = useState(event.usuario);
-    const [clave, setClave] = useState(event.clave);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, correo });
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="Inputs-edit">
-                <label htmlFor="editNombre">Modificar nombre de parroquia</label>
-                <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="editUsuario">Modificar usuario</label>
-                <input type="text" className="inputModal" id="editUsuario" value={usuario} onChange={e => setUsuario(e.target.value)} required />
-                <label htmlFor="editCorreo">Modificar correo</label>
-                <input type="text" className="inputModal" id="editCorreo" value={correo} onChange={e => setCorreo(e.target.value)} required />
-                <label htmlFor="editClave">Modificar clave</label>
-                <input type="password" className="inputModal" id="editClave" value={clave} onChange={e => setClave(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-            </div>
-        </form>
     );
 }

@@ -9,10 +9,10 @@ export default function ActosLiturgicos() {
   const isBasePath = location.pathname === '/man-actos-liturgicos';
   
   const options = [
-    { href: 'gestionar-actos',icon: <MdBookmark />, label: 'Gestionar actos Litúrgicos' },
-    { href: 'gestionar-requisitos', icon: <MdListAlt />, label: 'Gestionar Requisitos' },
-    { href: 'gestionar-horarios', icon: <MdSchedule />, label: 'Gestionar Horarios' },
-    { href: 'gestionar-reservas',icon: <MdBook />, label: 'Gestionar Reservas' },
+    { href: 'gestionar-actos',icon: <MdBookmark />, label: 'Gestionar actos litúrgicos' },
+    { href: 'gestionar-requisitos', icon: <MdListAlt />, label: 'Gestionar requisitos' },
+    { href: 'gestionar-horarios', icon: <MdSchedule />, label: 'Gestionar horarios' },
+    { href: 'gestionar-reservas',icon: <MdBook />, label: 'Gestionar reservas' },
     { href: 'reportes', icon: <MdAssessment />,label: 'Reportes' },
   ];
   
@@ -22,7 +22,7 @@ export default function ActosLiturgicos() {
       {isBasePath && (
         <section className="modulo-container">
           <header className="modulo-header">
-            <h1 className="modulo-title">Módulo de Actos Litúrgicos</h1>
+            <h1 className="modulo-title">Módulo de actos litúrgicos</h1>
             <p className="modulo-subtitle"> Un espacio diseñado para fortalecer la organización y solemnidad de tu
               comunidad.
             </p>
@@ -30,7 +30,7 @@ export default function ActosLiturgicos() {
 
           <article className="modulo-content">
             <p>
-              El <strong>Módulo de Actos Litúrgicos</strong> reúne en un solo lugar
+              El <strong>Módulo de actos litúrgicos</strong> reúne en un solo lugar
               todas las herramientas necesarias para planificar, registrar y dar
               seguimiento a ceremonias, sacramentos y celebraciones especiales.
               Nuestra propuesta ofrece un entorno confiable, ordenado y accesible,

@@ -160,7 +160,7 @@ const GestionCuenta = () => {
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Cuenta de Parroquia</h2>
+            <h2 className='title-screen'>Gestión de cuenta de parroquia</h2>
 
             <ExpandableContainer
                 title='Información de la parroquia'
@@ -269,7 +269,7 @@ const GestionCuenta = () => {
             </ExpandableContainer>
 
             <ExpandableContainer
-                title='Datos de la Cuenta'
+                title='Datos de la cuenta'
                 type='edit'
                 showDeleteButton="si"
                 isEditing={isEditingAccount}

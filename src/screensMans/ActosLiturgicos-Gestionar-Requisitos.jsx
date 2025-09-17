@@ -10,7 +10,6 @@ import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
 
-
 // Datos simulados (se mantienen igual)
 const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
@@ -104,7 +103,6 @@ export default function ActosLiturgicosRequisitos() {
 
     const handleSave = (reqData) => {
         if (modalType === 'add') {
-            // Se agrega la propiedad 'isNew' al nuevo requisito
             const newReq = { ...reqData, id: requirements.length + 1, eventoId: selectedEvent.id, estado: 'Activo', isNew: true };
             setRequirements(prevReqs => [...prevReqs, newReq]);
         } else if (modalType === 'edit' && currentRequirement) {
@@ -119,7 +117,7 @@ export default function ActosLiturgicosRequisitos() {
 
     const handleRowClickEvent = (event) => {
         setSelectedEvent(event);
-        setShowPanel(true);
+        setShowPanel(false); // Cierra el panel al seleccionar el evento
     };
 
     const handleToggle = (requirementId) => {
@@ -131,7 +129,55 @@ export default function ActosLiturgicosRequisitos() {
             )
         );
     };
+    
+    const getModalProps = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles del Requisito',
+                    content: currentRequirement && (
+                        <div>
+                            <p><strong>ID:</strong> {currentRequirement.id}</p>
+                            <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
+                            <p><strong>Descripción:</strong> {currentRequirement.descripcion}</p>
+                            <p><strong>Estado:</strong> {currentRequirement.estado}</p>
+                        </div>
+                    ),
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
+            case 'edit':
+                return {
+                    title: 'Editar Requisito',
+                    content: currentRequirement && <RequisitoForm onSave={handleSave} req={currentRequirement} />,
+                    onAccept: () => document.getElementById('requisito-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h3>¿Estás seguro que quieres eliminar este requisito?</h3>,
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir Requisito',
+                    content: <RequisitoForm onSave={handleSave} />,
+                    onAccept: () => document.getElementById('requisito-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: handleCloseModal
+                };
+        }
+    };
 
+    const modalProps = getModalProps();
 
     const requirementColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -149,16 +195,11 @@ export default function ActosLiturgicosRequisitos() {
         },
         {
             key: 'acciones', header: 'Acciones', accessor: (row) => (
-                // Se renderizan los botones solo si el requisito es nuevo
-                row.isNew ? (
-                    <MyGroupButtonsActions>
-                        <MyButtonShortAction type="view" title="Ver" onClick={() => handleViewRequirement(row)} />
-                        <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEditRequirement(row)} />
-                        <MyButtonShortAction type="delete" title="Eliminar" onClick={() => handleDeleteConfirmation(row)} />
-                    </MyGroupButtonsActions>
-                ) : (
-                    <div style={{ textAlign: 'center' }}>-</div>
-                )
+                <MyGroupButtonsActions>
+                    <MyButtonShortAction type="view" title="Ver" onClick={() => handleViewRequirement(row)} />
+                    <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEditRequirement(row)} />
+                    <MyButtonShortAction type="delete" title="Eliminar" onClick={() => handleDeleteConfirmation(row)} />
+                </MyGroupButtonsActions>
             )
         },
     ];
@@ -192,7 +233,7 @@ export default function ActosLiturgicosRequisitos() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Gestión de Requisitos</h2>
+                <h2 className='title-screen'>Gestión de requisitos</h2>
                 <div className="app-container">
                     <div className="search-add">
                         <div className="texto-evento">
@@ -224,70 +265,32 @@ export default function ActosLiturgicosRequisitos() {
                 <Modal
                     show={showModal}
                     onClose={handleCloseModal}
-                    title={
-                        modalType === 'view' ? 'Detalles del Requisito' :
-                            modalType === 'edit' ? 'Editar Requisito' :
-                                modalType === 'delete' ? 'Confirmar Eliminación' :
-                                    'Añadir Requisito'
-                    }
+                    title={modalProps.title}
+                    onAccept={modalProps.onAccept}
+                    onCancel={modalProps.onCancel}
                 >
-                    {modalType === 'view' && currentRequirement && (
-                        <div>
-                            <h3>Detalles del Requisito</h3>
-                            <p><strong>ID:</strong> {currentRequirement.id}</p>
-                            <p><strong>Nombre:</strong> {currentRequirement.nombre}</p>
-                            <p><strong>Descripción:</strong> {currentRequirement.descripcion}</p>
-                            <p><strong>Estado:</strong> {currentRequirement.estado}</p>
-                            <div className="buttons-container">
-                                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
-                            </div>
-                        </div>
-                    )}
-
-                    {modalType === 'edit' && currentRequirement && (
-                        <RequisitoForm onSave={handleSave} onClose={handleCloseModal} req={currentRequirement} />
-                    )}
-
-                    {modalType === 'delete' && currentRequirement && (
-                        <div>
-                            <h3>¿Estás seguro que quieres eliminar este requisito?</h3>
-                            <div className="buttons-container">
-                                <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                                <MyButtonMediumIcon text="Eliminar" icon="MdDeleteForever" onClick={confirmDelete} />
-                            </div>
-                        </div>
-                    )}
-
-                    {modalType === 'add' && (
-                        <RequisitoForm onSave={handleSave} onClose={handleCloseModal} />
-                    )}
+                    {modalProps.content}
                 </Modal>
             </div>
 
             {showPanel && (
-                <>
-                    <MyPanelLateralConfig>
-                        <div className="panel-lateral-header">
-                            <h2>Seleccionar Evento</h2>
-                            <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
-                        </div>
-                        <br />
-                        <div className="sidebar-search">
-                            <SearchBar onSearchChange={setSearchTermEvent} />
-                        </div>
-
-                        <TableEventsWithClick
-                            columns={eventColumns}
-                            data={filteredEvents}
-                        />
-                    </MyPanelLateralConfig>
-                </>
+                <MyPanelLateralConfig>
+                    <div className="panel-lateral-header">
+                        <h2>Seleccionar Evento</h2>
+                        <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
+                    </div>
+                    <br />
+                    <div className="sidebar-search">
+                        <SearchBar onSearchChange={setSearchTermEvent} />
+                    </div>
+                    <TableEventsWithClick data={filteredEvents} />
+                </MyPanelLateralConfig>
             )}
         </>
     );
 }
 
-function RequisitoForm({ onSave, onClose, req = {} }) {
+function RequisitoForm({ onSave, req = {} }) {
     const [nombre, setNombre] = useState(req.nombre || '');
     const [descripcion, setDescripcion] = useState(req.descripcion || '');
 
@@ -297,16 +300,12 @@ function RequisitoForm({ onSave, onClose, req = {} }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form id="requisito-form" onSubmit={handleSubmit}>
             <div className="Inputs-add">
                 <label htmlFor="nombre">Nombre del requisito</label>
                 <input type="text" className="inputModal" id="nombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
                 <label htmlFor="descripcion">Descripción</label>
                 <textarea className="inputModal" id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
             </div>
         </form>
     );

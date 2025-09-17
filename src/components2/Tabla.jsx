@@ -2,19 +2,35 @@ import React, { useState } from 'react';
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import './Tabla.css';
 
-// Ahora, columnLeftAlignIndex es un arreglo vacío por defecto
 const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = '', columnLeftAlignIndex = [] }) => {
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortConfig, setSortConfig] = useState(null); // Nuevo estado para la configuración de ordenación
     const tableColumns = [...columns];
 
     const alignmentClasses = {
         Left: "align-left"
     };
 
+    // Lógica para ordenar los datos
+    const sortedData = [...data];
+    if (sortConfig !== null) {
+        sortedData.sort((a, b) => {
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
+            if (aValue < bValue) {
+                return sortConfig.direction === 'ascending' ? -1 : 1;
+            }
+            if (aValue > bValue) {
+                return sortConfig.direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
+    }
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(data.length / itemsPerPage);
 
     const handleNextPage = () => {
@@ -28,6 +44,16 @@ const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = ''
             setCurrentPage(currentPage - 1);
         }
     };
+    
+    // Nueva función para manejar el clic en la cabecera
+    const handleSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+        setCurrentPage(1); // Opcional: regresar a la primera página al ordenar
+    };
 
     return (
         <div>
@@ -40,8 +66,12 @@ const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = ''
                         <div
                             className={`grid-header grid-cell-${column.key}`}
                             key={column.key}
+                            onClick={() => handleSort(column.key)} // Agregado el evento de clic
                         >
                             {column.header}
+                            {sortConfig && sortConfig.key === column.key && (
+                                <span>{sortConfig.direction === 'ascending' ? ' ▲' : ' ▼'}</span>
+                            )}
                         </div>
                     );
                 })}

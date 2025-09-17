@@ -5,7 +5,6 @@ import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
 
@@ -25,7 +24,6 @@ const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
     estado: (i + 1) % 2 === 0 ? 'Activo' : 'Pendiente',
     tipo: (i + 1) % 3 === 0 ? 'Comunitario' : 'Privado',
     personas: (i + 1) % 3 === 0 ? Math.floor(Math.random() * 50) + 10 : '-',
-    // Ahora cada evento inicial tendrá una capilla asignada
     capilla: chapelsOptions[Math.floor(Math.random() * chapelsOptions.length)]
 }));
 
@@ -79,12 +77,6 @@ export default function EventosLiturgicos() {
         setShowModal(true);
     };
 
-    const handleEdit = (event) => {
-        setCurrentEvent(event);
-        setModalType('edit');
-        setShowModal(true);
-    };
-
     const handleDeleteConfirmation = (event) => {
         setCurrentEvent(event);
         setModalType('delete');
@@ -128,27 +120,130 @@ export default function EventosLiturgicos() {
         handleCloseModal();
     };
 
-    const handleAddSubmit = (e) => {
+    const handleFormSubmit = (e) => {
         e.preventDefault();
-        const selectedEvent = eventsOptions.find(event => event.nombre.toLowerCase() === addEventSearchTerm.toLowerCase());
-        const chapelExists = chapelsOptions.includes(selectedChapel);
         
-        if (selectedEvent && chapelExists) {
-            const eventToSave = {
-                ...selectedEvent,
-                tipo: eventType,
-                personas: eventType === 'Comunitario' ? maxAttendees : '-',
-                capilla: selectedChapel
-            };
-            handleSave(eventToSave);
-        } else {
-            if (!selectedEvent) {
-                alert('Por favor, selecciona un evento válido de la lista.');
-            } else if (!chapelExists) {
-                alert('Por favor, selecciona una capilla válida de la lista.');
+        if (modalType === 'add') {
+            const selectedEvent = eventsOptions.find(event => event.nombre.toLowerCase() === addEventSearchTerm.toLowerCase());
+            const chapelExists = chapelsOptions.includes(selectedChapel);
+            
+            if (selectedEvent && chapelExists) {
+                const eventToSave = {
+                    ...selectedEvent,
+                    tipo: eventType,
+                    personas: eventType === 'Comunitario' ? maxAttendees : '-',
+                    capilla: selectedChapel
+                };
+                handleSave(eventToSave);
+            } else {
+                if (!selectedEvent) {
+                    alert('Por favor, selecciona un evento válido de la lista.');
+                } else if (!chapelExists) {
+                    alert('Por favor, selecciona una capilla válida de la lista.');
+                }
+            }
+        } else if (modalType === 'edit') {
+            const form = document.getElementById('edit-event-form');
+            if (form) {
+                const nombre = form.querySelector('#editNombre').value;
+                const descripcion = form.querySelector('#editDescripcion').value;
+                handleSave({ nombre, descripcion });
             }
         }
     };
+
+    const getModalContentAndActions = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles del Evento',
+                    content: currentEvent && (
+                        <div>
+                            <p><strong>ID:</strong> {currentEvent.id}</p>
+                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
+                            <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
+                            <p><strong>Tipo:</strong> {currentEvent.tipo}</p>
+                            <p><strong>Capilla:</strong> {currentEvent.capilla}</p>
+                            {currentEvent.tipo === 'Comunitario' && <p><strong>Personas:</strong> {currentEvent.personas}</p>}
+                        </div>
+                    ),
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Confirmar Eliminación',
+                    content: <h3>¿Estás seguro que quieres eliminar este evento?</h3>,
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir Evento',
+                    content: (
+                        <form id="add-event-form" onSubmit={handleFormSubmit}>
+                            <div className="Inputs-add">
+                                <label htmlFor="addNombre">Escoger evento</label>
+                                <input
+                                    list="eventos"
+                                    className="inputModal"
+                                    value={addEventSearchTerm}
+                                    onChange={e => setAddEventSearchTerm(e.target.value)}
+                                    placeholder="Buscar o seleccionar un evento..."
+                                    required
+                                />
+                                <datalist id="eventos">
+                                    {eventsOptions.filter(event => event.nombre.toLowerCase().includes(addEventSearchTerm.toLowerCase())).map((event, index) => <option key={index} value={event.nombre} />)}
+                                </datalist>
+                            </div>
+                            <div className="Inputs-add">
+                                <label htmlFor="chapel">Escoger Capilla</label>
+                                <input
+                                    list="capillas"
+                                    className="inputModal"
+                                    id="chapel"
+                                    value={selectedChapel}
+                                    onChange={e => setSelectedChapel(e.target.value)}
+                                    placeholder="Buscar o seleccionar una capilla..."
+                                    required
+                                />
+                                <datalist id="capillas">
+                                    {chapelsOptions.filter(chapel => chapel.toLowerCase().includes(selectedChapel.toLowerCase())).map((chapel, index) => <option key={index} value={chapel} />)}
+                                </datalist>
+                            </div>
+                            <div className="Inputs-add">
+                                <label>Tipo de Evento</label>
+                                <div className="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" checked={eventType === 'Privado'} onChange={() => setEventType('Privado')} /> Privado
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" checked={eventType === 'Comunitario'} onChange={() => setEventType('Comunitario')} /> Comunitario
+                                    </label>
+                                </div>
+                                {eventType === 'Comunitario' && (
+                                    <div style={{ marginTop: '10px' }}>
+                                        <label htmlFor="maxAttendees">Número máximo de personas</label>
+                                        <input type="number" id="maxAttendees" className="inputModal" value={maxAttendees} onChange={(e) => setMaxAttendees(e.target.value)} required />
+                                    </div>
+                                )}
+                            </div>
+                        </form>
+                    ),
+                    onAccept: () => document.getElementById('add-event-form').requestSubmit(),
+                    onCancel: handleCloseModal
+                };
+            default:
+                return {
+                    title: '',
+                    content: null,
+                    onAccept: null,
+                    onCancel: handleCloseModal
+                };
+        }
+    };
+
+    const modalProps = getModalContentAndActions();
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -179,7 +274,7 @@ export default function EventosLiturgicos() {
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Eventos</h2>
+            <h2 className='title-screen'>Gestión de eventos</h2>
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">
@@ -196,121 +291,18 @@ export default function EventosLiturgicos() {
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
-                title={
-                    modalType === 'view' ? 'Detalles del Evento' :
-                        modalType === 'edit' ? 'Editar Evento' :
-                            modalType === 'delete' ? 'Confirmar Eliminación' :
-                                'Añadir Evento'
-                }
+                title={modalProps.title}
+                onAccept={modalProps.onAccept}
+                onCancel={modalProps.onCancel}
             >
-                {modalType === 'view' && currentEvent && (
-                    <div>
-                        <p><strong>ID:</strong> {currentEvent.id}</p>
-                        <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                        <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
-                        <p><strong>Tipo:</strong> {currentEvent.tipo}</p>
-                        <p><strong>Capilla:</strong> {currentEvent.capilla}</p>
-                        {currentEvent.tipo === 'Comunitario' && <p><strong>Personas:</strong> {currentEvent.personas}</p>}
-                    </div>
-                )}
-
-                {modalType === 'edit' && currentEvent && (
-                    <EditEventForm onSave={handleSave} onClose={handleCloseModal} event={currentEvent} />
-                )}
-
-                {modalType === 'delete' && currentEvent && (
-                    <div>
-                        <h3>¿Estás seguro que quieres eliminar este evento?</h3>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon text="Eliminar" icon="MdAccept" onClick={confirmDelete} />
-                        </div>
-                    </div>
-                )}
-
-                {modalType === 'add' && (
-                    <form onSubmit={handleAddSubmit}>
-                        <div className="Inputs-add">
-                            <label htmlFor="addNombre">Escoger evento</label>
-                            <input
-                                list="eventos"
-                                className="inputModal"
-                                value={addEventSearchTerm}
-                                onChange={e => setAddEventSearchTerm(e.target.value)}
-                                placeholder="Buscar o seleccionar un evento..."
-                                required
-                            />
-                            <datalist id="eventos">
-                                {eventsOptions
-                                    .filter(event => event.nombre.toLowerCase().includes(addEventSearchTerm.toLowerCase()))
-                                    .map((event, index) => (
-                                        <option key={index} value={event.nombre} />
-                                    ))}
-                            </datalist>
-                        </div>
-                        <div className="Inputs-add">
-                            <label htmlFor="chapel">Escoger Capilla</label>
-                            <input
-                                list="capillas"
-                                className="inputModal"
-                                id="chapel"
-                                value={selectedChapel}
-                                onChange={e => setSelectedChapel(e.target.value)}
-                                placeholder="Buscar o seleccionar una capilla..."
-                                required
-                            />
-                            <datalist id="capillas">
-                                {chapelsOptions
-                                    .filter(chapel => chapel.toLowerCase().includes(selectedChapel.toLowerCase()))
-                                    .map((chapel, index) => (
-                                        <option key={index} value={chapel} />
-                                    ))}
-                            </datalist>
-                        </div>
-                        <div className="Inputs-add">
-                            <label>Tipo de Evento</label>
-                            <div className="checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={eventType === 'Privado'}
-                                        onChange={() => setEventType('Privado')}
-                                    /> Privado
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={eventType === 'Comunitario'}
-                                        onChange={() => setEventType('Comunitario')}
-                                    /> Comunitario
-                                </label>
-                            </div>
-                            {eventType === 'Comunitario' && (
-                                <div style={{ marginTop: '10px' }}>
-                                    <label htmlFor="maxAttendees">Número máximo de personas</label>
-                                    <input
-                                        type="number"
-                                        id="maxAttendees"
-                                        className="inputModal"
-                                        value={maxAttendees}
-                                        onChange={(e) => setMaxAttendees(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                            )}
-                        </div>
-                        <div className="buttons-container">
-                            <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={handleCloseModal} />
-                            <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
-                        </div>
-                    </form>
-                )}
+                {modalProps.content}
             </Modal>
         </div>
     );
 }
 
 function EditEventForm({ onSave, onClose, event }) {
+
     const [nombre, setNombre] = useState(event.nombre);
     const [descripcion, setDescripcion] = useState(event.descripcion);
 
@@ -320,16 +312,12 @@ function EditEventForm({ onSave, onClose, event }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form id="edit-event-form" onSubmit={handleSubmit}>
             <div className="Inputs-edit">
                 <label htmlFor="editNombre">Nuevo nombre de evento</label>
                 <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
                 <label htmlFor="editDescripcion">Nueva descripción</label>
                 <textarea className="inputModal" id="editDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-            <div className="buttons-container">
-                <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-                <MyButtonMediumIcon type="submit" text="Guardar" icon="MdOutlineSaveAs" />
             </div>
         </form>
     );

@@ -60,12 +60,3 @@ textarea.inputModal{
     min-width: 100%;
     min-height: 100px;
 }
-
-.buttons-container {
-    display: flex;
-    gap: var(--space-s);
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 12px;
-} 
-

@@ -1,7 +1,8 @@
 import React from 'react';
-import './Modal.css'; // We will create this CSS file next
+import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import './Modal.css';
 
-const Modal = ({ show, onClose, children, title }) => {
+const Modal = ({ show, onClose, children, title, onAccept, onCancel }) => {
   if (!show) {
     return null;
   }
@@ -18,6 +19,12 @@ const Modal = ({ show, onClose, children, title }) => {
         <div className="modal-body">
           {children}
         </div>
+        {onAccept && onCancel && (
+          <div className="buttons-container">
+            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onCancel} />
+            <MyButtonMediumIcon text="Aceptar" icon="MdAccept" onClick={onAccept} type="submit" />
+          </div>
+        )}
       </div>
     </div>
   );
