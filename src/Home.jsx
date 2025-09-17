@@ -65,11 +65,6 @@ export default function Home() {
               onClick={() => handleModuleClick('/man-reservas')}
             />
             <MyModuleAccess
-              icon={<MdCalendarMonth />}
-              text="Mis Reservas"
-              onClick={() => handleModuleClick('/man-misreservas')}
-            />
-            <MyModuleAccess
               icon={<MdSecurity />}
               text="Seguridad"
               onClick={() => handleModuleClick('/man-seguridad')}

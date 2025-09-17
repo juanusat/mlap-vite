@@ -16,9 +16,7 @@ import ActosLiturgicosReportes from './screensMans/ActosLiturgicos-Reportes.jsx'
 import Reservas from './screensMans/Reservas-access.jsx';
 import ReservasPendientes from './screensMans/Reservas-Pendientes.jsx';
 import ReservasHistorial from './screensMans/Reservas-Historial.jsx';
-
-import MisReservas from './screensMans/MisReservas-access.jsx';
-import MisReservasReservar from './screensMans/MisReservas-Reservar.jsx';
+import ReservasReservar from './screensMans/Reservas-Reservar.jsx';
 
 import Seguridad from './screensMans/Seguridad-access.jsx';
 import CuentasGestionar from './screensMans/Seguridad-Gestionar-Cuentas.jsx';
@@ -72,13 +70,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="roles-gestionar" element={<RolesGestionar />} />
         </Route>
 
-        <Route path="/man-misreservas" element={<MisReservas />}>
-          <Route path="reservar" element={<MisReservasReservar />} />
-        </Route>
-
         <Route path="/man-reservas" element={<Reservas />}>
           <Route path="pendientes" element={<ReservasPendientes />} />
           <Route path="historial" element={<ReservasHistorial />} />
+          <Route path="reservar" element={<ReservasReservar />} />
         </Route>
 
         <Route path="/man-diocesis" element={<Diocesis />}>
