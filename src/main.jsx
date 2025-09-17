@@ -5,6 +5,7 @@ import './index.css';
 import App from './App.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
+import Comenzar from './Begin.jsx';
 
 import ActosLiturgicos from './screensMans/ActosLiturgicos-access.jsx';
 import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Actos.jsx';
@@ -46,6 +47,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/acceso" element={<Login />} />
+        <Route path="/comenzar" element={<Comenzar />} />
         <Route path="/inicio" element={<Home />} />
  
         <Route path="/man-actos-liturgicos" element={<ActosLiturgicos />}>

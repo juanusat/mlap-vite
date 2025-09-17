@@ -12,7 +12,7 @@ export default function Login() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    navigate('/inicio');
+    navigate('/comenzar');
   };
 
   const handleOpenForgotPasswordModal = () => {

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import logoWhite from './../assets/logo-mlap-white.svg';
 import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-icons/md";
 import './MyHeaderAdm.css';
@@ -6,46 +7,36 @@ import '../App.css';
 import NotificacionSimple from './NotificacionSimple';
 
 export default function MyHeaderAdm() {
+  const location = useLocation();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
-  const [selectedParroquia, setSelectedParroquia] = useState(null);
+  const [parroquiaSeleccionada, setParroquiaSeleccionada] = useState(null);
+  const [rolActual, setRolActual] = useState("Administrador"); // Estado para manejar el rol actual
+
+  // Obtener la parroquia seleccionada desde Begin.jsx
+  useEffect(() => {
+    if (location.state && location.state.parroquia) {
+      setParroquiaSeleccionada(location.state.parroquia);
+    }
+  }, [location.state]);
 
   // Datos de ejemplo para el usuario
   const usuario = {
     nombre: "María García",
     foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    parroquiasRoles: [
-      {
-        id: 1,
-        nombre: "Parroquia San Francisco de Asís",
-        roles: ["Administrador", "Secretario"]
-      },
-      {
-        id: 2,
-        nombre: "Parroquia Santa Rosa de Lima",
-        roles: ["Secretario"]
-      },
-      {
-        id: 3,
-        nombre: "Parroquia Nuestra Señora del Carmen",
-        roles: ["Administrador"]
-      }
-    ],
-    parroquiaActual: {
-      id: 1,
-      nombre: "Parroquia San Francisco de Asís",
-      rolActual: "Administrador"
-    }
-  };
-
-  const handleParroquiaSelect = (parroquia) => {
-    setSelectedParroquia(parroquia);
+    roles: ["Administrador", "Secretario", "Párroco", "Diácono", "Coordinador"], // Roles disponibles para la parroquia seleccionada
   };
 
   const handleRolSelect = (rol) => {
-    // Aquí iría la lógica para cambiar el rol
+    // Actualizar el rol actual
+    setRolActual(rol);
+    console.log(`Rol cambiado a: ${rol} en parroquia: ${parroquiaSeleccionada?.nombre}`);
     setPerfilModalOpen(false);
-    setSelectedParroquia(null);
+    
+    // Aquí puedes agregar lógica adicional como:
+    // - Enviar la actualización al servidor
+    // - Actualizar permisos en el contexto global
+    // - Refrescar datos según el nuevo rol
   };
 
   // Datos de ejemplo para las notificaciones
@@ -71,8 +62,8 @@ export default function MyHeaderAdm() {
           </div>
           <div className="mlap-home-header-bar" style={{ color: '#fff' }}>
             <div className="parroquia-actual">
-              <span>{usuario.parroquiaActual.nombre}</span>
-              <span className="rol-actual">{usuario.parroquiaActual.rolActual}</span>
+              <span>{parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'Sin parroquia seleccionada'}</span>
+              <span className="rol-actual">{rolActual}</span>
             </div>
             <button
               role="button"
@@ -124,12 +115,11 @@ export default function MyHeaderAdm() {
         <div className="modal-overlay">
           <div className="modal-perfil">
             <div className="modal-perfil-header">
-              <h2>Cambiar Parroquia/Rol</h2>
+              <h2>Cambiar Rol</h2>
               <button
                 className="btn-nb"
                 onClick={() => {
                   setPerfilModalOpen(false);
-                  setSelectedParroquia(null);
                 }}
                 style={{ color: 'var(--color-n-900)' }}
               >
@@ -142,50 +132,32 @@ export default function MyHeaderAdm() {
               <div className="perfil-datos">
                 <h3>{usuario.nombre}</h3>
                 <div className="perfil-datos-rol">
-                  <p>Actual: {usuario.parroquiaActual.nombre}</p>
-                  <p>Rol: {usuario.parroquiaActual.rolActual}</p>
+                  <p>Parroquia: {parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'No seleccionada'}</p>
+                  <p>Rol actual: {rolActual}</p>
                 </div>
               </div>
             </div>
 
-            <div className="selector-parroquia-rol">
-              {!selectedParroquia ? (
-                <>
-                  <h4>Seleccionar Parroquia</h4>
-                  <div className="lista-parroquias">
-                    {usuario.parroquiasRoles.map((parroquia) => (
-                      <button
-                        key={parroquia.id}
-                        className="parroquia-item"
-                        onClick={() => handleParroquiaSelect(parroquia)}
-                      >
-                        <span>{parroquia.nombre}</span>
-                        <MdArrowForward />
-                      </button>
-                    ))}
-                  </div>
-                </>
+            <div className="selector-rol">
+              <h4>Seleccionar Rol</h4>
+              {parroquiaSeleccionada ? (
+                <div className="lista-roles">
+                  {usuario.roles.map((rol) => (
+                    <button
+                      key={rol}
+                      className={`rol-item ${rol === rolActual ? 'rol-activo' : ''}`}
+                      onClick={() => handleRolSelect(rol)}
+                      disabled={rol === rolActual}
+                    >
+                      {rol}
+                      {rol === rolActual && <span className="rol-badge">Actual</span>}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <>
-                  <h4>Seleccionar Rol en {selectedParroquia.nombre}</h4>
-                  <div className="lista-roles">
-                    {selectedParroquia.roles.map((rol) => (
-                      <button
-                        key={rol}
-                        className="rol-item"
-                        onClick={() => handleRolSelect(rol)}
-                      >
-                        {rol}
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    className="btn-volver"
-                    onClick={() => setSelectedParroquia(null)}
-                  >
-                    Volver a parroquias
-                  </button>
-                </>
+                <div className="sin-parroquia">
+                  <p>Por favor, selecciona una parroquia desde la página de inicio</p>
+                </div>
               )}
             </div>
 
