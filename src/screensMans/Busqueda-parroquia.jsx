@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components2/SearchBar';
 import MyButtonShortAction from '../components2/MyButtonShortAction';
+import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
 import './Busqueda-parroquia.css';
 import '../App.css';
@@ -19,10 +20,11 @@ const parroquiasData = [
     parroco: "Padre José García",
     descripcion: "Catedral principal de la Diócesis de Chiclayo",
     eventos: [
-      { id: 1, nombre: "Misa Dominical", horario: "08:00 AM" },
-      { id: 2, nombre: "Bautismo", horario: "Sábados 4:00 PM" },
-      { id: 3, nombre: "Matrimonio", horario: "Por cita" },
-      { id: 4, nombre: "Primera Comunión", horario: "Domingos 10:00 AM" }
+      { id: 1, nombre: "Matrimonio" },
+      { id: 2, nombre: "Bautismo" },
+      { id: 3, nombre: "Primera Comunión" },
+      { id: 4, nombre: "Confirmación" },
+      { id: 5, nombre: "Misa de Mención" }
     ]
   },
   {
@@ -35,9 +37,11 @@ const parroquiasData = [
     parroco: "Padre Miguel Rodríguez",
     descripcion: "Parroquia dedicada al Señor de los Milagros",
     eventos: [
-      { id: 1, nombre: "Misa Diaria", horario: "06:00 AM" },
-      { id: 2, nombre: "Confesiones", horario: "Viernes 6:00 PM" },
-      { id: 3, nombre: "Rosario", horario: "Lunes 7:00 PM" }
+      { id: 1, nombre: "Matrimonio" },
+      { id: 2, nombre: "Bautismo" },
+      { id: 3, nombre: "Primera Comunión" },
+      { id: 4, nombre: "Confirmación" },
+      { id: 5, nombre: "Misa de Mención" }
     ]
   },
   {
@@ -50,9 +54,11 @@ const parroquiasData = [
     parroco: "Padre Carlos Mendoza",
     descripcion: "Parroquia en honor a Santa Rosa de Lima",
     eventos: [
-      { id: 1, nombre: "Misa Vespertina", horario: "06:00 PM" },
-      { id: 2, nombre: "Confirmación", horario: "Sábados 3:00 PM" },
-      { id: 3, nombre: "Adoración Eucarística", horario: "Jueves 8:00 PM" }
+      { id: 1, nombre: "Matrimonio" },
+      { id: 2, nombre: "Bautismo" },
+      { id: 3, nombre: "Primera Comunión" },
+      { id: 4, nombre: "Confirmación" },
+      { id: 5, nombre: "Misa de Mención" }
     ]
   },
   {
@@ -65,9 +71,11 @@ const parroquiasData = [
     parroco: "Padre Luis Fernández",
     descripcion: "Parroquia dedicada a San José Obrero",
     eventos: [
-      { id: 1, nombre: "Misa de Niños", horario: "Domingo 11:00 AM" },
-      { id: 2, nombre: "Catequesis", horario: "Sábados 2:00 PM" },
-      { id: 3, nombre: "Retiro Espiritual", horario: "Primer sábado del mes" }
+      { id: 1, nombre: "Matrimonio" },
+      { id: 2, nombre: "Bautismo" },
+      { id: 3, nombre: "Primera Comunión" },
+      { id: 4, nombre: "Confirmación" },
+      { id: 5, nombre: "Misa de Mención" }
     ]
   }
 ];
@@ -172,65 +180,67 @@ export default function BuscarParroquia() {
   
 
   return (
-    <div className="content-module only-this">
-      <h2 className='title-screen'>Búsqueda de Parroquias</h2>
-      <div className="app-container">
-        <div className="search-add">
-          <div className="center-container">
-            <SearchBar onSearchChange={setSearchTerm} placeholder="Buscar parroquia..." />
-          </div>
-        </div>
-        
-        <div className="map-container-wrapper">
-          <div className="map-container">
-            <div ref={mapRef} style={{ width: '100%', height: '500px' }} />
+    <ScreenMan>
+      <div className="content-module only-this">
+        <h2 className='title-screen'>Búsqueda de Parroquias</h2>
+        <div className="app-container">
+          <div className="search-add">
+            <div className="center-container">
+              <SearchBar onSearchChange={setSearchTerm} placeholder="Buscar parroquia..." />
+            </div>
           </div>
           
-          {selectedParroquia && (
-            <div className="parish-info-panel">
-              <div className="parish-info-header">
-                <h3>{selectedParroquia.nombre}</h3>
-                <button 
-                  className="close-panel-btn"
-                  onClick={() => setSelectedParroquia(null)}
-                >
-                  ×
-                </button>
-              </div>
-              
-              <div className="parish-info-content">
-                <div className="parish-basic-info">
-                  <p><strong>Dirección:</strong> {selectedParroquia.direccion}</p>
-                  <p><strong>Teléfono:</strong> {selectedParroquia.telefono}</p>
-                  <p><strong>Párroco:</strong> {selectedParroquia.parroco}</p>
-                  <p><strong>Descripción:</strong> {selectedParroquia.descripcion}</p>
+          <div className="map-container-wrapper">
+            <div className="map-container">
+              <div ref={mapRef} style={{ width: '100%', height: '500px' }} />
+            </div>
+            
+            {selectedParroquia && (
+              <div className="parish-info-panel">
+                <div className="parish-info-header">
+                  <h3>{selectedParroquia.nombre}</h3>
+                  <button 
+                    className="close-panel-btn"
+                    onClick={() => setSelectedParroquia(null)}
+                  >
+                    ×
+                  </button>
                 </div>
                 
-                <div className="parish-events">
-                  <h4>Actos Litúrgicos Disponibles</h4>
-                  <div className="events-list">
-                    {selectedParroquia.eventos.map(evento => (
-                      <div key={evento.id} className="event-item">
-                        <span className="event-name">{evento.nombre}</span>
-                        <span className="event-schedule">{evento.horario}</span>
-                      </div>
-                    ))}
+                <div className="parish-info-content">
+                  <div className="parish-basic-info">
+                    <p><strong>Dirección:</strong> {selectedParroquia.direccion}</p>
+                    <p><strong>Teléfono:</strong> {selectedParroquia.telefono}</p>
+                    <p><strong>Párroco:</strong> {selectedParroquia.parroco}</p>
+                    <p><strong>Descripción:</strong> {selectedParroquia.descripcion}</p>
+                  </div>
+                  
+                  <div className="parish-events">
+                    <h4>Actos Litúrgicos Disponibles</h4>
+                    <div className="events-list">
+                      {selectedParroquia.eventos.map(evento => (
+                        <div key={evento.id} className="event-item">
+                          <span className="event-name">{evento.nombre}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="parish-actions">
+                    <button 
+                      className="btn-ver-perfil"
+                      onClick={handleVerPerfil}
+                    >
+                      Ver perfil
+                    </button>
                   </div>
                 </div>
-                
-                <div className="parish-actions">
-                  <MyButtonShortAction 
-                    type="view" 
-                    title="Ver Perfil Completo" 
-                    onClick={handleVerPerfil} 
-                  />
-                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </ScreenMan>
   );
 }
 
