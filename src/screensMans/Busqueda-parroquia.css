@@ -1,0 +1,204 @@
+/* Estilos específicos para Busqueda-parroquia.jsx */
+
+.map-container-wrapper {
+  display: flex;
+  gap: 1rem;
+  height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-grey-200);
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+.map-container div {
+  border-radius: 8px 0 0 8px;
+}
+
+/* Panel de información de la parroquia */
+.parish-info-panel {
+  width: 350px;
+  background: rgb(255, 255, 255);
+  border-left: 1px solid var(--color-grey-200);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.parish-info-header {
+  padding: 1rem;
+  background: var(--color-primary-50);
+  border-bottom: 1px solid var(--color-grey-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parish-info-header h3 {
+  margin: 0;
+  color: var(--color-primary-700);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.close-panel-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-grey-500);
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-panel-btn:hover {
+  background: var(--color-grey-100);
+  color: var(--color-grey-700);
+}
+
+.parish-info-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.parish-basic-info p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.parish-basic-info strong {
+  color: var(--color-n-700);
+  font-weight: 600;
+}
+
+/* Eventos litúrgicos */
+.parish-events h4 {
+  margin: 0 0 0.75rem 0;
+  color: var(--color-n-700);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--color-n-50);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-primary-400);
+}
+
+.event-name {
+  font-weight: 500;
+  color: var(--color-n-700);
+  font-size: 0.9rem;
+}
+
+/* Acciones de la parroquia */
+.parish-actions {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-grey-200);
+}
+
+.btn-ver-perfil {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-a-700);
+  color: var(--color-n-50);
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.btn-ver-perfil:hover {
+  background: var(--color-a-200);
+  color: var(--color-n-900);
+  border: var(--color-a-700) solid 2px;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .map-container-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .parish-info-panel {
+    width: 100%;
+    max-height: 400px;
+  }
+  
+  .map-container {
+    height: 400px;
+  }
+  
+  .map-container div {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 300px;
+  }
+  
+  .parish-info-panel {
+    max-height: 350px;
+  }
+  
+  .event-item {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .btn-ver-perfil {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Ajustes para el contenedor principal */
+.content-module.only-this .app-container .search-add {
+  margin-bottom: 1.5rem;
+}
+
+.content-module.only-this .app-container .center-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Estilos para los marcadores de Leaflet (si es necesario personalizar) */
+.leaflet-popup-content {
+  margin: 8px 12px;
+  line-height: 1.4;
+}
+
+.leaflet-popup-content b {
+  color: var(--color-primary-700);
+}

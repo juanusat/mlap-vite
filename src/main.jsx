@@ -6,6 +6,7 @@ import App from './App.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
 import Comenzar from './Begin.jsx';
+import Buscar from './screensMans/Busqueda-parroquia.jsx';
 
 import ActosLiturgicos from './screensMans/ActosLiturgicos-access.jsx';
 import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Actos.jsx';
@@ -13,6 +14,7 @@ import ActosLiturgicosRequisitos from './screensMans/ActosLiturgicos-Gestionar-R
 import ActosLiturgicosHorarios from './screensMans/ActosLiturgicos-Gestionar-Horarios.jsx';
 import ActosLiturgicosReservas from './screensMans/ActosLiturgicos-Gestionar-Reservas.jsx';
 import ActosLiturgicosReportes from './screensMans/ActosLiturgicos-Reportes.jsx';
+
 
 import Reservas from './screensMans/Reservas-access.jsx';
 import ReservasPendientes from './screensMans/Reservas-Pendientes.jsx';
@@ -49,6 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/acceso" element={<Login />} />
         <Route path="/comenzar" element={<Comenzar />} />
         <Route path="/inicio" element={<Home />} />
+        <Route path="/buscar" element={<Buscar />} />
  
         <Route path="/man-actos-liturgicos" element={<ActosLiturgicos />}>
           <Route path="gestionar-actos" element={<ActosLiturgicosGestionar />} />
