@@ -7,6 +7,7 @@ import Login from './Login.jsx';
 import Home from './Home.jsx';
 import Comenzar from './Begin.jsx';
 import Buscar from './screensMans/Busqueda-parroquia.jsx';
+import VistaPresentacion from './screensMans/VistaPresentacion-Capilla.jsx';
 
 import ActosLiturgicos from './screensMans/ActosLiturgicos-access.jsx';
 import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Actos.jsx';
@@ -52,7 +53,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/comenzar" element={<Comenzar />} />
         <Route path="/inicio" element={<Home />} />
         <Route path="/buscar" element={<Buscar />} />
- 
+  <Route path="/capilla" element={<VistaPresentacion />} />
+
         <Route path="/man-actos-liturgicos" element={<ActosLiturgicos />}>
           <Route path="gestionar-actos" element={<ActosLiturgicosGestionar />} />
           <Route path="gestionar-requisitos" element={<ActosLiturgicosRequisitos />} />

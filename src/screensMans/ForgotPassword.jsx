@@ -13,7 +13,7 @@ const ForgotPassword = ({ onClose }) => {
     const [showVerificationField, setShowVerificationField] = useState(false);
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [step, setStep] = useState(1); // 1: Email, 2: Verification, 3: New Password
+    const [step, setStep] = useState(1);
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
