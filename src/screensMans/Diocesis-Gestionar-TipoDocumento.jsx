@@ -11,17 +11,17 @@ import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 
 const initialDocs = [
-  { id: 1, nombre: 'DNI', estado: 'Activo', descripcion: 'Documento Nacional de Identidad', nombreCorto: 'DNI' },
-  { id: 2, nombre: 'Pasaporte', estado: 'Activo', descripcion: 'Pasaporte Internacional', nombreCorto: 'PI' },
-  { id: 3, nombre: 'Carnet de Extranjería', estado: 'Baja', descripcion: 'Carnet de Extranjería', nombreCorto: 'CE' },
-  { id: 4, nombre: 'Licencia de Conducir', estado: 'Activo', descripcion: 'Licencia de conducir vehicular', nombreCorto: 'LC' },
-  { id: 5, nombre: 'Cédula de Identidad', estado: 'Activo', descripcion: 'Documento para ciudadanos extranjeros', nombreCorto: 'CI' },
-  { id: 6, nombre: 'Tarjeta de Residencia', estado: 'Baja', descripcion: 'Tarjeta para residentes temporales', nombreCorto: 'TR' },
-  { id: 7, nombre: 'Certificado de Nacimiento', estado: 'Activo', descripcion: 'Documento que certifica el nacimiento', nombreCorto: 'CN' },
-  { id: 8, nombre: 'Permiso de Trabajo', estado: 'Activo', descripcion: 'Permiso para trabajar en el país', nombreCorto: 'PT' },
-  { id: 9, nombre: 'Visa de Estudiante', estado: 'Baja', descripcion: 'Visa para estudios académicos', nombreCorto: 'VE' },
-  { id: 10, nombre: 'Carnet de Sanidad', estado: 'Activo', descripcion: 'Certificado de salud', nombreCorto: 'CS' },
-  { id: 11, nombre: 'Declaración Jurada', estado: 'Activo', descripcion: 'Documento legal', nombreCorto: 'DJ' },
+  { id: 1, nombre: 'DNI', estado: 'Activo', descripcion: 'Documento nacional de identidad', nombreCorto: 'DNI' },
+  { id: 2, nombre: 'Pasaporte', estado: 'Activo', descripcion: 'Pasaporte internacional', nombreCorto: 'PI' },
+  { id: 3, nombre: 'Carnet de extranjería', estado: 'Baja', descripcion: 'Carnet de extranjería', nombreCorto: 'CE' },
+  { id: 4, nombre: 'Licencia de conducir', estado: 'Activo', descripcion: 'Licencia de conducir vehicular', nombreCorto: 'LC' },
+  { id: 5, nombre: 'Cédula de identidad', estado: 'Activo', descripcion: 'Documento para ciudadanos extranjeros', nombreCorto: 'CI' },
+  { id: 6, nombre: 'Tarjeta de residencia', estado: 'Baja', descripcion: 'Tarjeta para residentes temporales', nombreCorto: 'TR' },
+  { id: 7, nombre: 'Certificado de nacimiento', estado: 'Activo', descripcion: 'Documento que certifica el nacimiento', nombreCorto: 'CN' },
+  { id: 8, nombre: 'Permiso de trabajo', estado: 'Activo', descripcion: 'Permiso para trabajar en el país', nombreCorto: 'PT' },
+  { id: 9, nombre: 'Visa de estudiante', estado: 'Baja', descripcion: 'Visa para estudios académicos', nombreCorto: 'VE' },
+  { id: 10, nombre: 'Carnet de sanidad', estado: 'Activo', descripcion: 'Certificado de salud', nombreCorto: 'CS' },
+  { id: 11, nombre: 'Declaración jurada', estado: 'Activo', descripcion: 'Documento legal', nombreCorto: 'DJ' },
 ];
 
 export default function TipoDocumentoGestionar() {
@@ -138,7 +138,7 @@ export default function TipoDocumentoGestionar() {
             <div>
               <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
               <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
-              <p><strong>Nombre Corto:</strong> {currentDoc.nombreCorto}</p>
+              <p><strong>Nombre corto:</strong> {currentDoc.nombreCorto}</p>
             </div>
           ),
           onAccept: handleCloseModal,
@@ -242,7 +242,7 @@ const DocForm = ({ onSave, doc }) => {
         <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} className="inputModal" rows="3" />
       </div>
       <div className="form-field">
-        <label>Nombre Corto</label>
+        <label>Nombre corto</label>
         <input type="text" name="nombreCorto" value={formData.nombreCorto} onChange={handleChange} className="inputModal" />
       </div>
     </form>

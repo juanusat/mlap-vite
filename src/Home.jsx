@@ -56,7 +56,7 @@ export default function Home() {
           <div className="mlap-home-modules-list">
             <MyModuleAccess
               icon={<MdEventNote />}
-              text="Actos Litúrgicos"
+              text="Actos litúrgicos"
               onClick={() => handleModuleClick('/man-actos-liturgicos')}
             />
             <MyModuleAccess

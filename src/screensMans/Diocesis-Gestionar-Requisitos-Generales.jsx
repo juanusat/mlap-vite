@@ -244,7 +244,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
             </div>
             <div className="right-container">
               <MyGroupButtonsActions>
-                <MyButtonShortAction type="select" title="Seleccionar Evento" onClick={handleSelectEvent} />
+                <MyButtonShortAction type="select" title="Seleccionar evento" onClick={handleSelectEvent} />
                 <MyButtonShortAction type="add" onClick={handleAddRequirement} title="Añadir" />
               </MyGroupButtonsActions>
             </div>
@@ -277,7 +277,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         <>
           <MyPanelLateralConfig>
             <div className="panel-lateral-header">
-              <h2>Seleccionar Evento</h2>
+              <h2>Seleccionar evento</h2>
               <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
             </div>
             <br />

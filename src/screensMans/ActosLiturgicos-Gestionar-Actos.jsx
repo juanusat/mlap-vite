@@ -29,14 +29,14 @@ const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
 
 const eventsOptions = [
     { nombre: "Bautizo", descripcion: "Ceremonia para el sacramento del bautismo." },
-    { nombre: "Primera Comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
+    { nombre: "Primera comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
     { nombre: "Confirmación", descripcion: "Ceremonia para el sacramento de la confirmación." },
     { nombre: "Matrimonio", descripcion: "Celebración del sacramento del matrimonio." },
     { nombre: "Funeral", descripcion: "Misa en memoria de un difunto." },
-    { nombre: "Misa Dominical", descripcion: "Misa habitual del domingo." },
+    { nombre: "Misa dominical", descripcion: "Misa habitual del domingo." },
     { nombre: "Adoración Eucarística", descripcion: "Tiempo de oración y adoración al Santísimo Sacramento." },
     { nombre: "Vigilia de Oración", descripcion: "Noche de oración antes de una festividad o evento importante." },
-    { nombre: "Retiro Espiritual", descripcion: "Jornada de reflexión y crecimiento espiritual." },
+    { nombre: "Retiro espiritual", descripcion: "Jornada de reflexión y crecimiento espiritual." },
     { nombre: "Catequesis", descripcion: "Clases de formación religiosa." },
     { nombre: "Confesión", descripcion: "Sacramento de la penitencia y la reconciliación." },
     { nombre: "Unción de los Enfermos", descripcion: "Sacramento para aquellos que se enfrentan a una enfermedad o ancianidad." }
@@ -156,7 +156,7 @@ export default function EventosLiturgicos() {
         switch (modalType) {
             case 'view':
                 return {
-                    title: 'Detalles del Evento',
+                    title: 'Detalles del evento',
                     content: currentEvent && (
                         <div>
                             <p><strong>ID:</strong> {currentEvent.id}</p>
@@ -172,14 +172,14 @@ export default function EventosLiturgicos() {
                 };
             case 'delete':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h3>¿Estás seguro que quieres eliminar este evento?</h3>,
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
-                    title: 'Añadir Evento',
+                    title: 'Añadir evento',
                     content: (
                         <form id="add-event-form" onSubmit={handleFormSubmit}>
                             <div className="Inputs-add">
@@ -197,7 +197,7 @@ export default function EventosLiturgicos() {
                                 </datalist>
                             </div>
                             <div className="Inputs-add">
-                                <label htmlFor="chapel">Escoger Capilla</label>
+                                <label htmlFor="chapel">Escoger capilla</label>
                                 <input
                                     list="capillas"
                                     className="inputModal"

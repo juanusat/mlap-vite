@@ -180,7 +180,7 @@ const GestionCuenta = () => {
                         
                         <div className="color-input-container">
                             <InputColorPicker 
-                                label="Color Primario"
+                                label="Color primario"
                                 value={tempUserInfo.colorPrimario}
                                 onChange={handleColorPrimarioChange}
                                 placeholder="Ej: #DC2626"
@@ -190,7 +190,7 @@ const GestionCuenta = () => {
                         
                         <div className="color-input-container">
                             <InputColorPicker 
-                                label="Color Secundario"
+                                label="Color secundario"
                                 value={tempUserInfo.colorSecundario}
                                 onChange={handleColorSecundarioChange}
                                 placeholder="Ej: #2563EB"
@@ -199,7 +199,7 @@ const GestionCuenta = () => {
                         </div>
                         
                         <div className="foto-input-container">
-                            <label className="foto-label">Foto Perfil:</label>
+                            <label className="foto-label">Foto perfil:</label>
                             <InputFotoPerfil 
                                 onChange={handleFotoPerfilChange}
                                 placeholder="Subir foto de perfil de la parroquia"
@@ -209,7 +209,7 @@ const GestionCuenta = () => {
                         </div>
                         
                         <div className="foto-input-container">
-                            <label className="foto-label">Foto Portada:</label>
+                            <label className="foto-label">Foto portada:</label>
                             <InputFotoPerfil 
                                 onChange={handleFotoPortadaChange}
                                 placeholder="Subir foto de portada de la parroquia"
@@ -237,7 +237,7 @@ const GestionCuenta = () => {
                             <span className="info-value">{userInfo.celular}</span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Color Primario:</span>
+                            <span className="info-label">Color primario:</span>
                             <span className="info-value color-display">
                                 <span 
                                     className="color-sample" 
@@ -247,7 +247,7 @@ const GestionCuenta = () => {
                             </span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Color Secundario:</span>
+                            <span className="info-label">Color secundario:</span>
                             <span className="info-value color-display">
                                 <span 
                                     className="color-sample" 
@@ -281,8 +281,8 @@ const GestionCuenta = () => {
                     <>
                         <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
                         <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
-                        <TextInput label="Nueva Contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
-                        <TextInput label="Confirmar Contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
+                        <TextInput label="Nueva contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
+                        <TextInput label="Confirmar contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
                         {passwordError && <p className="error-message">{passwordError}</p>}
                     </>
                 ) : (

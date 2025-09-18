@@ -139,21 +139,21 @@ export default function GestionCapillas() {
                 };
             case 'edit':
                 return {
-                    title: 'Editar Capilla',
+                    title: 'Editar capilla',
                     content: <EditChapelForm onSave={handleSave} chapel={currentChapel} />,
                     onAccept: () => document.getElementById('edit-chapel-form').requestSubmit(),
                     onCancel: handleCloseModal
                 };
             case 'delete':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h4>¿Estás seguro que quieres eliminar esta capilla?</h4>,
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
-                    title: 'Añadir Capilla',
+                    title: 'Añadir capilla',
                     content: <AddChapelForm onSave={handleSave} />,
                     onAccept: () => document.getElementById('add-chapel-form').requestSubmit(),
                     onCancel: handleCloseModal

@@ -115,7 +115,7 @@ export default function MyHeaderAdm() {
         <div className="modal-overlay">
           <div className="modal-perfil">
             <div className="modal-perfil-header">
-              <h2>Cambiar Rol</h2>
+              <h2>Cambiar rol</h2>
               <button
                 className="btn-nb"
                 onClick={() => {
@@ -139,7 +139,7 @@ export default function MyHeaderAdm() {
             </div>
 
             <div className="selector-rol">
-              <h4>Seleccionar Rol</h4>
+              <h4>Seleccionar rol</h4>
               {parroquiaSeleccionada ? (
                 <div className="lista-roles">
                   {usuario.roles.map((rol) => (

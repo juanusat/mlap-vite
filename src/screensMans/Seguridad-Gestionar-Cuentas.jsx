@@ -131,14 +131,14 @@ export default function CuentasGestionar() {
         switch (modalType) {
             case 'invite':
                 return {
-                    title: 'Invitar Usuarios',
+                    title: 'Invitar usuarios',
                     content: <InviteUserForm onSave={handleSave} />,
                     onAccept: () => document.getElementById('invite-form').requestSubmit(),
                     onCancel: handleCloseModal
                 };
             case 'addRole':
                 return {
-                    title: 'Añadir Rol',
+                    title: 'Añadir rol',
                     content: currentUser && (
                         <AddRoleForm
                             onSave={handleSave}
@@ -150,7 +150,7 @@ export default function CuentasGestionar() {
                 };
             case 'deleteUser':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h4>¿Estás seguro de que deseas eliminar a este usuario permanentemente?</h4>,
                     onAccept: handleDelete,
                     onCancel: handleCloseModal
@@ -185,9 +185,9 @@ export default function CuentasGestionar() {
         {
             key: 'acciones', header: 'Acciones', accessor: (row) => (
                 <MyGroupButtonsActions>
-                    <MyButtonShortAction type="view" title="Ver Roles" onClick={() => handleViewRoles(row)} />
-                    <MyButtonShortAction type="add" title="Añadir Rol" onClick={() => handleAddRole(row)} />
-                    <MyButtonShortAction type="delete" title="Eliminar Usuario" onClick={() => handleDeleteUserConfirmation(row)} />
+                    <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(row)} />
+                    <MyButtonShortAction type="add" title="Añadir rol" onClick={() => handleAddRole(row)} />
+                    <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleDeleteUserConfirmation(row)} />
                 </MyGroupButtonsActions>
             )
         },
@@ -196,7 +196,7 @@ export default function CuentasGestionar() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Gestión de Cuentas</h2>
+                <h2 className='title-screen'>Gestión de cuentas</h2>
                 <div className="app-container">
                     <div className="search-add">
                         <div className="center-container">
@@ -233,7 +233,7 @@ export default function CuentasGestionar() {
                                 {item}
                                 <MyButtonShortAction
                                     type="delete"
-                                    title="Eliminar Rol"
+                                    title="Eliminar rol"
                                     onClick={() => handleDeleteRole(item)}
                                 />
                             </div>
@@ -256,7 +256,7 @@ function InviteUserForm({ onSave }) {
     return (
         <form id="invite-form" onSubmit={handleSubmit}>
             <div className="form-field">
-                <label htmlFor="invite-email">Correo Electrónico</label>
+                <label htmlFor="invite-email">Correo electrónico</label>
                 <input
                     type="email"
                     className="inputModal"

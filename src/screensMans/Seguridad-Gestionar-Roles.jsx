@@ -55,13 +55,13 @@ const EditRolForm = ({ onSave, rol }) => {
 
 export default function RolesGestionar() {
     const modulesList = [
-        { id: 'liturgicalActs', name: 'Actos Liturgicos' },
+        { id: 'liturgicalActs', name: 'Actos liturgicos' },
         { id: 'users', name: 'Usuario' },
         { id: 'parishes', name: 'Parroquia' },
         { id: 'security', name: 'Seguridad' },
         { id: 'reservations', name: 'Reservas' },
         { id: 'documentTypes', name: 'Tipo de Documentos' },
-        { id: 'parishApproval', name: 'Aprobar Parroquia' }
+        { id: 'parishApproval', name: 'Aprobar parroquia' }
     ];
 
     const generateMockPermissions = () => {
@@ -176,14 +176,14 @@ export default function RolesGestionar() {
         switch (modalType) {
             case 'add':
                 return {
-                    title: 'Añadir Nuevo Rol',
+                    title: 'Añadir nuevo rol',
                     content: <AddRolForm onSave={onSaveAddRol} />,
                     onAccept: () => document.getElementById('add-rol-form').requestSubmit(),
                     onCancel: handleCloseModal,
                 };
             case 'view':
                 return {
-                    title: `Detalles del Rol: ${selectedRol.Rol}`,
+                    title: `Detalles del rol: ${selectedRol.Rol}`,
                     content: selectedRol && (
                         <div>
                             <p><strong>ID:</strong> {selectedRol.ID}</p>
@@ -196,14 +196,14 @@ export default function RolesGestionar() {
                 };
             case 'edit':
                 return {
-                    title: `Editar Rol: ${selectedRol.Rol}`,
+                    title: `Editar rol: ${selectedRol.Rol}`,
                     content: selectedRol && <EditRolForm onSave={onSaveEditRol} rol={selectedRol} />,
                     onAccept: () => document.getElementById('edit-rol-form').requestSubmit(),
                     onCancel: handleCloseModal,
                 };
             case 'delete':
                 return {
-                    title: `Eliminar Rol: ${selectedRol.ID}`,
+                    title: `Eliminar rol: ${selectedRol.ID}`,
                     content: <h4>¿Estás seguro de que deseas eliminar el rol con ID: {selectedRol.ID}?</h4>,
                     onAccept: () => onSaveDeleteRol(selectedRol.ID),
                     onCancel: handleCloseModal,
@@ -253,7 +253,7 @@ export default function RolesGestionar() {
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestión de Roles</h2>
+            <h2 className='title-screen'>Gestión de roles</h2>
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">

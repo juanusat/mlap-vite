@@ -134,14 +134,14 @@ export default function DiocesisEventosLiturgicos() {
                 };
             case 'edit':
                 return {
-                    title: 'Editar Evento',
+                    title: 'Editar evento',
                     content: <EditEventForm onSave={handleSave} event={currentEvent} />,
                     onAccept: () => document.getElementById('edit-event-form').requestSubmit(),
                     onCancel: handleCloseModal
                 };
             case 'delete':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h4>¿Estás seguro que quieres eliminar este evento?</h4>,
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
