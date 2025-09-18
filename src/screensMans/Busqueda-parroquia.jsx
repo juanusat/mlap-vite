@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom'; //  Importamos useSearchParams
+import { useNavigate, useSearchParams } from 'react-router-dom'; 
 import SearchBar from '../components2/SearchBar';
 import MyButtonShortAction from '../components2/MyButtonShortAction';
 import ScreenMan from '../components/ScreenMan';
@@ -208,7 +208,6 @@ export default function BuscarParroquia() {
                     className="close-panel-btn"
                     onClick={() => setSelectedParroquia(null)}
                   >
-                    ×
                   </button>
                 </div>
                 
