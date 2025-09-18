@@ -10,7 +10,7 @@ const ForgotPassword = ({ onClose }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [step, setStep] = useState(1); 
+    const [step, setStep] = useState(1); // 1: Email, 2: Verification, 3: New Password
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -33,16 +33,21 @@ const ForgotPassword = ({ onClose }) => {
         setIsSubmitting(true);
         setMessage('');
 
-        // Simula una llamada a una API
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
         if (!email || !email.includes('@')) {
-            setMessage('Por favor, ingresa una dirección de correo electrónico.');
-        } else {
-            setMessage('¡Correo enviado correctamente! Revisa tu bandeja de entrada e ingresa el código de verificación para restablecer la contraseña.');
-            setStep(2);
+            setMessage('Por favor, ingresa una dirección de correo electrónico válida.');
+            setIsSubmitting(false);
+            return;
         }
-        setIsSubmitting(false);
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setMessage('¡Correo enviado correctamente! Revisa tu bandeja de entrada.');
+            setShowVerificationField(true);
+        } catch (error) {
+            setMessage('Error al enviar el correo. Por favor, intenta de nuevo.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleVerificationSubmit = async (e) => {
@@ -50,17 +55,18 @@ const ForgotPassword = ({ onClose }) => {
         setIsSubmitting(true);
         setMessage('');
 
-        // Simula la verificación del código
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        if (verificationCode === '123456') {
-            setMessage('Código verificado correctamente. Ingresa tu nueva contraseña.');
-            setStep(3);
-        } else {
-            setMessage('Código de verificación incorrecto. Por favor, intenta de nuevo.');
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            if (verificationCode === '123456') {
+                setStep(2);
+            } else {
+                setMessage('Código de verificación incorrecto. Por favor, intenta de nuevo.');
+            }
+        } catch (error) {
+            setMessage('Error en la verificación. Por favor, intenta de nuevo.');
+        } finally {
+            setIsSubmitting(false);
         }
-
-        setIsSubmitting(false);
     };
 
     const handlePasswordResetSubmit = async (e) => {
@@ -74,24 +80,28 @@ const ForgotPassword = ({ onClose }) => {
             return;
         }
 
-        // Simula el restablecimiento de contraseña
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Lógica para enviar la nueva contraseña a la API
-        // ...
-
-        setMessage('Contraseña restablecida correctamente.');
-        setIsSubmitting(false);
-        // Opcional: Cerrar el modal después de un tiempo
-        // setTimeout(() => onClose(), 2000);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setMessage('¡Contraseña restablecida correctamente!. Ahora inicia sesión...');
+            setTimeout(() => {
+                onClose();
+            }, 3000);
+        } catch (error) {
+            setMessage('No se pudo restablecer la contraseña. Intenta de nuevo.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleSubmit = (e) => {
+        e.preventDefault();
         if (step === 1) {
-            handleForgotPasswordSubmit(e);
+            if (showVerificationField) {
+                handleVerificationSubmit(e);
+            } else {
+                handleForgotPasswordSubmit(e);
+            }
         } else if (step === 2) {
-            handleVerificationSubmit(e);
-        } else if (step === 3) {
             handlePasswordResetSubmit(e);
         }
     };
@@ -100,50 +110,56 @@ const ForgotPassword = ({ onClose }) => {
         if (isSubmitting) {
             return 'Cargando...';
         }
-        switch (step) {
-            case 1:
-                return 'Enviar';
-            case 2:
-                return 'Verificar';
-            case 3:
-                return 'Aceptar';
-            default:
-                return 'Enviar';
+        if (step === 1) {
+            return showVerificationField ? 'Verificar' : 'Enviar';
         }
+        return 'Aceptar';
+    };
+
+    const buttonIcon = () => {
+        if (isSubmitting) {
+            return 'MdAutorenew';
+        }
+        if (step === 1) {
+            return showVerificationField ? 'MdAccept' : 'MdMail';
+        }
+        return 'MdAccept';
     };
 
     return (
         <div className="forgot-password-modal-content">
             <h3 className="modal-title">¿Olvidaste tu contraseña?</h3>
             <p className="modal-description">
-                {step === 1 && 'Introduce tu correo electrónico y te enviaremos un código de verificación.'}
-                {step === 2 && 'Revisa tu bandeja de entrada e ingresa el código de verificación.'}
-                {step === 3 && 'Ahora ingresa tu nueva contraseña.'}
+                {step === 1
+                    ? 'Introduce tu correo electrónico para restablecerla.'
+                    : 'Código verificado. Ahora ingresa tu nueva contraseña.'}
             </p>
             <form onSubmit={handleSubmit}>
                 {step === 1 && (
-                    <InputField
-                        type="email"
-                        placeholder="correo@ejemplo.com"
-                        value={email}
-                        onChange={handleEmailChange}
-                        required
-                        className="mlap-input"
-                        disabled={isSubmitting}
-                    />
-                )}
-                
-                {step === 2 && (
-                    <InputField
-                        type="text"
-                        placeholder="Ingresa el código de verificación"
-                        value={verificationCode}
-                        onChange={handleVerificationCodeChange}
-                        required
-                    />
+                    <>
+                        <InputField
+                            type="email"
+                            placeholder="correo@ejemplo.com"
+                            value={email}
+                            onChange={handleEmailChange}
+                            required
+                            className="mlap-input"
+                            disabled={isSubmitting || showVerificationField}
+                        />
+                        {showVerificationField && (
+                            <InputField
+                                type="text"
+                                placeholder="Ingresa el código de verificación"
+                                value={verificationCode}
+                                onChange={handleVerificationCodeChange}
+                                required
+                                disabled={isSubmitting}
+                            />
+                        )}
+                    </>
                 )}
 
-                {step === 3 && (
+                {step === 2 && (
                     <>
                         <InputField
                             type="password"
@@ -151,6 +167,7 @@ const ForgotPassword = ({ onClose }) => {
                             value={newPassword}
                             onChange={handleNewPasswordChange}
                             required
+                            disabled={isSubmitting}
                         />
                         <InputField
                             type="password"
@@ -158,11 +175,16 @@ const ForgotPassword = ({ onClose }) => {
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
                             required
+                            disabled={isSubmitting}
                         />
                     </>
                 )}
 
-                {message && <p className={`modal-message ${message.includes('incorrecto') || message.includes('no coinciden') ? 'error' : ''}`}>{message}</p>}
+                {message && (
+                    <p className={`modal-message ${message.includes('incorrecto') || message.includes('no coinciden') || message.includes('Error') ? 'error' : 'success'}`}>
+                        {message}
+                    </p>
+                )}
 
                 <div className="buttons-container">
                     <MyButtonMediumIcon
@@ -173,8 +195,8 @@ const ForgotPassword = ({ onClose }) => {
                     />
                     <MyButtonMediumIcon
                         text={buttonText()}
-                        icon={step === 1 ? 'MdMail' : step === 2 ? 'MdCheckCircle' : 'MdLockReset'}
-                        onClick={handleSubmit}
+                        icon={buttonIcon()}
+                        type="submit"
                         disabled={isSubmitting}
                         classNameExtra={isSubmitting ? 'disabled-button' : ''}
                     />
