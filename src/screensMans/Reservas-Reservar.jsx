@@ -41,14 +41,14 @@ export default function ReservasReservar() {
 
                         <div className="reserva-actions">
                             <MyButtonMediumIcon
-                                text="Aceptar"
-                                icon="MdAccept"
-                                onClick={() => console.log('Reserva aceptada')}
-                            />
-                            <MyButtonMediumIcon
                                 text="Cancelar"
                                 icon="MdClose"
                                 onClick={() => console.log('Reserva cancelada')}
+                            />
+                            <MyButtonMediumIcon
+                                text="Aceptar"
+                                icon="MdAccept"
+                                onClick={() => console.log('Reserva aceptada')}
                             />
                         </div>
                     </div>
