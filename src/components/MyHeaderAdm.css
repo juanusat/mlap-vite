@@ -90,6 +90,7 @@ button.btn-nb:hover {
     background-color: var(--color-n-50);
     border-radius: var(--border-radius-s);
     margin-bottom: var(--font-size-xl);
+    width: 300px;
 }
 
 .perfil-foto-grande {
@@ -227,7 +228,7 @@ button.btn-nb:hover {
 /* Estilos para el rol activo */
 .rol-item.rol-activo {
     background-color: var(--color-primary-100);
-    border-color: var(--color-primary-400);
+    border: 2px solid var(--color-b-400);
     color: var(--color-primary-800);
     cursor: not-allowed;
     opacity: 0.7;
@@ -240,7 +241,7 @@ button.btn-nb:hover {
 
 .rol-badge {
     margin-left: var(--space-xs);
-    background-color: var(--color-primary-500);
+    background-color: var(--color-primary-100);
     color: var(--color-n-0);
     font-size: var(--font-size-xs);
     padding: 2px 6px;
