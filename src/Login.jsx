@@ -43,7 +43,7 @@ export default function Login() {
         >
           ¿Olvidaste tu contraseña?
         </a>
-        <SecondaryButton>Crear Cuenta</SecondaryButton>
+        <SecondaryButton>Crear cuenta</SecondaryButton>
       </div>
       <hr className="mlap-login-divider" />
       <p className="mlap-login-info">
@@ -53,7 +53,7 @@ export default function Login() {
       <Modal
         show={isModalVisible}
         onClose={handleCloseModal}
-        title="Restablecer Contraseña"
+        title="Restablecer contraseña"
       >
         <ForgotPassword onClose={handleCloseModal} />
       </Modal>

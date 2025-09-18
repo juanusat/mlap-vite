@@ -185,7 +185,7 @@ export default function Parroquia() {
                 };
             case 'delete':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h4>¿Estás seguro que quieres eliminar esta parroquia?</h4>,
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal

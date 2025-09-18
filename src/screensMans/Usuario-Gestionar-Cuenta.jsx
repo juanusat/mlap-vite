@@ -108,8 +108,8 @@ const GestionCuenta = () => {
                 {isEditingPersonal ? (
                     <>
                         <TextInput label="Nombres" value={tempUserInfo.nombres} onChange={handleInputChange} name="nombres" />
-                        <TextInput label="Apellido Paterno" value={tempUserInfo.apellidoPaterno} onChange={handleInputChange} name="apellidoPaterno" />
-                        <TextInput label="Apellido Materno" value={tempUserInfo.apellidoMaterno} onChange={handleInputChange} name="apellidoMaterno" />
+                        <TextInput label="Apellido paterno" value={tempUserInfo.apellidoPaterno} onChange={handleInputChange} name="apellidoPaterno" />
+                        <TextInput label="Apellido materno" value={tempUserInfo.apellidoMaterno} onChange={handleInputChange} name="apellidoMaterno" />
                         <TextInput label="Documento de Identidad" value={tempUserInfo.documentoIdentidad} onChange={handleInputChange} name="documentoIdentidad" />
                     </>
                 ) : (
@@ -119,15 +119,15 @@ const GestionCuenta = () => {
                             <span className="info-value">{userInfo.nombres}</span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Apellido Paterno:</span>
+                            <span className="info-label">Apellido paterno:</span>
                             <span className="info-value">{userInfo.apellidoPaterno}</span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Apellido Materno:</span>
+                            <span className="info-label">Apellido materno:</span>
                             <span className="info-value">{userInfo.apellidoMaterno}</span>
                         </div>
                         <div className="info-item">
-                            <span className="info-label">Documento de Identidad:</span>
+                            <span className="info-label">Documento de identidad:</span>
                             <span className="info-value">{userInfo.documentoIdentidad}</span>
                         </div>
                     </>
@@ -147,8 +147,8 @@ const GestionCuenta = () => {
                     <>
                         <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
                         <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
-                        <TextInput label="Nueva Contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
-                        <TextInput label="Confirmar Contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
+                        <TextInput label="Nueva contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
+                        <TextInput label="Confirmar contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
                         {passwordError && <p className="error-message">{passwordError}</p>}
                     </>
                 ) : (

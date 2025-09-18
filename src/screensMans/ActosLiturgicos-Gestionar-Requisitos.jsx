@@ -148,21 +148,21 @@ export default function ActosLiturgicosRequisitos() {
                 };
             case 'edit':
                 return {
-                    title: 'Editar Requisito',
+                    title: 'Editar requisito',
                     content: currentRequirement && <RequisitoForm onSave={handleSave} req={currentRequirement} />,
                     onAccept: () => document.getElementById('requisito-form').requestSubmit(),
                     onCancel: handleCloseModal
                 };
             case 'delete':
                 return {
-                    title: 'Confirmar Eliminación',
+                    title: 'Confirmar eliminación',
                     content: <h3>¿Estás seguro que quieres eliminar este requisito?</h3>,
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
-                    title: 'Añadir Requisito',
+                    title: 'Añadir requisito',
                     content: <RequisitoForm onSave={handleSave} />,
                     onAccept: () => document.getElementById('requisito-form').requestSubmit(),
                     onCancel: handleCloseModal
@@ -244,7 +244,7 @@ export default function ActosLiturgicosRequisitos() {
                         </div>
                         <div className="right-container">
                             <MyGroupButtonsActions>
-                                <MyButtonShortAction type="select" title="Seleccionar Evento" onClick={handleSelectEvent} />
+                                <MyButtonShortAction type="select" title="Seleccionar evento" onClick={handleSelectEvent} />
                                 <MyButtonShortAction type="add" onClick={handleAddRequirement} title="Añadir" />
                             </MyGroupButtonsActions>
                         </div>
@@ -276,7 +276,7 @@ export default function ActosLiturgicosRequisitos() {
             {showPanel && (
                 <MyPanelLateralConfig>
                     <div className="panel-lateral-header">
-                        <h2>Seleccionar Evento</h2>
+                        <h2>Seleccionar evento</h2>
                         <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
                     </div>
                     <br />

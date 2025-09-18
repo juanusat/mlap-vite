@@ -7,7 +7,7 @@ export default function ReservasReservar() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reservar Evento</h2>
+                <h2 className='title-screen'>Reservar evento</h2>
                 <div className='app-container'>
                     <div className="reserva-form">
                         <div className="reserva-row">

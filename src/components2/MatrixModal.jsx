@@ -1,4 +1,3 @@
-// En MatrixModal.jsx
 import React, { useState, useEffect } from 'react'; // Importamos useEffect
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import ToggleSwitch from '../components2/Toggle';
