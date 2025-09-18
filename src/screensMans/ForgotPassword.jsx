@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { InputField } from '../components/UI';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import '../components/MyButtonMediumIcon.css';
 
 const ForgotPassword = ({ onClose }) => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showVerificationField, setShowVerificationField] = useState(false);
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState(1); // 1: Email, 2: Verification, 3: New Password
@@ -76,19 +79,17 @@ const ForgotPassword = ({ onClose }) => {
 
         if (newPassword !== confirmPassword) {
             setMessage('Las contraseñas no coinciden.');
-            setIsSubmitting(false);
+            setIsSubmitting(false); 
             return;
         }
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
             setMessage('¡Contraseña restablecida correctamente!. Ahora inicia sesión...');
             setTimeout(() => {
-                onClose();
+                navigate('/inicio');
             }, 3000);
         } catch (error) {
             setMessage('No se pudo restablecer la contraseña. Intenta de nuevo.');
-        } finally {
             setIsSubmitting(false);
         }
     };
