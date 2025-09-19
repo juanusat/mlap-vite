@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
 import Login from './Login.jsx';
+import Register from './Register.jsx';
 import Home from './Home.jsx';
 import Comenzar from './Begin.jsx';
 import Buscar from './screensMans/Busqueda-parroquia.jsx';
@@ -50,6 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/acceso" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
         <Route path="/comenzar" element={<Comenzar />} />
         <Route path="/inicio" element={<Home />} />
         <Route path="/buscar" element={<Buscar />} />

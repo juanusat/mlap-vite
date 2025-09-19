@@ -14,6 +14,10 @@ export default function Login() {
     e.preventDefault();
     navigate('/comenzar');
   };
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    navigate('/registro');
+  };
 
   const handleOpenForgotPasswordModal = () => {
     setIsModalVisible(true);
@@ -43,7 +47,10 @@ export default function Login() {
         >
           ¿Olvidaste tu contraseña?
         </a>
+        <form className="mlap-login-form" onSubmit={handleRegisterSubmit}>
         <SecondaryButton>Crear cuenta</SecondaryButton>
+      </form>
+        
       </div>
       <hr className="mlap-login-divider" />
       <p className="mlap-login-info">
