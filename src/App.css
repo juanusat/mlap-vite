@@ -186,7 +186,8 @@
   font-size: var(--font-size-base);
   border: var(--border-width-m) solid var(--color-a-300);
   border-radius: var(--border-radius-xs);
-  background: var(--color-a-700);
+  background: var(--color-a-0);
+  color: var(--color-n-1000);
   outline: none;
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -237,4 +238,15 @@
 
 .mlap-success-content p:last-child {
   margin-bottom: 0;
+}
+
+/*POR SI ACASO*/
+/* App.css */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    transition: background-color 5000s ease-in-out 0s;
 }

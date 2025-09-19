@@ -5,6 +5,7 @@ import './App.css';
 import './colors.css';
 import Modal from './components2/Modal';
 import { useNavigate } from 'react-router-dom';
+
 export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -52,10 +53,7 @@ export default function Register() {
     navigate('/acceso');
   };
 
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    navigate('/acceso');
-  };
+  
 
   return (
     <div className="mlap-login-container">
@@ -76,7 +74,7 @@ export default function Register() {
         <InputField
           name="apellidoPaterno"
           type="text"
-          placeholder="Apellido Paterno"
+          placeholder="Apellido paterno"
           value={formData.apellidoPaterno}
           onChange={handleInputChange}
           required
@@ -85,7 +83,7 @@ export default function Register() {
         <InputField
           name="apellidoMaterno"
           type="text"
-          placeholder="Apellido Materno"
+          placeholder="Apellido materno"
           value={formData.apellidoMaterno}
           onChange={handleInputChange}
           required
@@ -137,7 +135,7 @@ export default function Register() {
         <InputField
           name="contrasena"
           type="password"
-          placeholder="Contrasena"
+          placeholder="Contraseña"
           value={formData.contrasena}
           onChange={handleInputChange}
           required
@@ -146,7 +144,7 @@ export default function Register() {
         <InputField
           name="confirmarContrasena"
           type="password"
-          placeholder="Confirmar contrasena"
+          placeholder="Confirmar contraseña"
           value={formData.confirmarContrasena}
           onChange={handleInputChange}
           required
@@ -156,7 +154,7 @@ export default function Register() {
           <p className="mlap-error-message">{passwordError}</p>
         )}
 
-        <MainButton type="submit">Registrarse</MainButton>
+        <MainButton type="submit" onClick={e => {handleLoginRedirect();}}>Registrarse</MainButton>
       </form>
       
       <div className="mlap-login-links">
@@ -172,22 +170,9 @@ export default function Register() {
         </a>
       </div>
       
-      <hr className="mlap-login-divider" />
-      <p className="mlap-login-info">
-        Al registrarte, estarás solicitando acceso como personal de la Parroquia. 
-        Tu cuenta será <b>revisada y aprobada por un administrador</b> antes de poder acceder al sistema.
-      </p>
+      
 
-      <Modal
-        show={showSuccessModal}
-        onClose={handleCloseSuccessModal}
-        title="Registro exitoso"
-      >
-        <div className="mlap-success-content">
-          <p>¡Tu registro ha sido enviado correctamente!</p>
-          <p>Tu cuenta será revisada por un administrador y recibirás una confirmación por correo electrónico.</p>
-        </div>
-      </Modal>
+      
     </div>
   );
 }
