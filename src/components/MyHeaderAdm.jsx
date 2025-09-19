@@ -132,7 +132,7 @@ export default function MyHeaderAdm() {
               <div className="perfil-datos">
                 <h3>{usuario.nombre}</h3>
                 <div className="perfil-datos-rol">
-                  <p>Parroquia: {parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'No seleccionada'}</p>
+                  <p>{parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'No seleccionada'}</p>
                   <p>Rol actual: {rolActual}</p>
                 </div>
               </div>

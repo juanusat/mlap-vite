@@ -24,7 +24,7 @@ const GestionCuenta = () => {
         contraseña: "password123"
     });
 
-    // Estados para los datos de las fotos
+    // Estados para los datos de las fotos (ahora guardan la URL de la preview y el archivo)
     const [fotoPerfilData, setFotoPerfilData] = useState(null);
     const [fotoPortadaData, setFotoPortadaData] = useState(null);
 
@@ -51,9 +51,11 @@ const GestionCuenta = () => {
     };
 
     const handleSavePersonal = () => {
+        // Lógica de guardado...
         setIsEditingPersonal(false);
         // Actualizar userInfo con los datos de las fotos si están disponibles
         const updatedUserInfo = { ...tempUserInfo };
+        // Si hay datos de la nueva foto, actualizamos el nombre del archivo
         if (fotoPerfilData) {
             updatedUserInfo.fotoPerfil = fotoPerfilData.name;
         }
@@ -62,8 +64,10 @@ const GestionCuenta = () => {
         }
         setUserInfo(updatedUserInfo);
         console.log("Datos personales guardados:", updatedUserInfo);
-        console.log("Archivo foto perfil:", fotoPerfilData);
-        console.log("Archivo foto portada:", fotoPortadaData);
+        // Aquí podrías enviar los archivos (fotoPerfilData.file, fotoPortadaData.file)
+        // a una API para su subida al servidor
+        console.log("Archivo foto perfil:", fotoPerfilData?.file);
+        console.log("Archivo foto portada:", fotoPortadaData?.file);
         console.log("Color primario:", updatedUserInfo.colorPrimario);
         console.log("Color secundario:", updatedUserInfo.colorSecundario);
     };
@@ -120,25 +124,13 @@ const GestionCuenta = () => {
         }
     };
 
-    // Handlers para las fotos
+    // Handlers para las fotos (modificados para usar la URL de la preview)
     const handleFotoPerfilChange = (data) => {
-        setFotoPerfilData(data);
-        // Actualizar también el tempUserInfo con el nombre del archivo
-        setTempUserInfo(prevInfo => ({
-            ...prevInfo,
-            fotoPerfil: data ? data.name : ""
-        }));
-        console.log("Foto de perfil seleccionada:", data);
+        setFotoPerfilData(data); // data.preview ahora contiene la URL para mostrar
     };
 
     const handleFotoPortadaChange = (data) => {
-        setFotoPortadaData(data);
-        // Actualizar también el tempUserInfo con el nombre del archivo
-        setTempUserInfo(prevInfo => ({
-            ...prevInfo,
-            fotoPortada: data ? data.name : ""
-        }));
-        console.log("Foto de portada seleccionada:", data);
+        setFotoPortadaData(data); // data.preview ahora contiene la URL para mostrar
     };
 
     // Handlers para los colores
@@ -184,7 +176,6 @@ const GestionCuenta = () => {
                                 value={tempUserInfo.colorPrimario}
                                 onChange={handleColorPrimarioChange}
                                 placeholder="Ej: #DC2626"
-                                
                             />
                         </div>
                         
@@ -194,7 +185,6 @@ const GestionCuenta = () => {
                                 value={tempUserInfo.colorSecundario}
                                 onChange={handleColorSecundarioChange}
                                 placeholder="Ej: #2563EB"
-                                
                             />
                         </div>
                         
@@ -202,6 +192,7 @@ const GestionCuenta = () => {
                             <label className="foto-label">Foto perfil:</label>
                             <InputFotoPerfil 
                                 onChange={handleFotoPerfilChange}
+                                value={fotoPerfilData ? fotoPerfilData.preview : null} // Pasar la URL de la preview
                                 placeholder="Subir foto de perfil de la parroquia"
                                 maxSize={5 * 1024 * 1024} // 5MB
                                 acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
@@ -212,6 +203,7 @@ const GestionCuenta = () => {
                             <label className="foto-label">Foto portada:</label>
                             <InputFotoPerfil 
                                 onChange={handleFotoPortadaChange}
+                                value={fotoPortadaData ? fotoPortadaData.preview : null} // Pasar la URL de la preview
                                 placeholder="Subir foto de portada de la parroquia"
                                 maxSize={10 * 1024 * 1024} // 10MB para portada
                                 acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
@@ -311,4 +303,3 @@ const GestionCuenta = () => {
 };
 
 export default GestionCuenta;
-
