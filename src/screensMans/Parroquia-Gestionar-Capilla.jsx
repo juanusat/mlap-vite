@@ -8,6 +8,7 @@ import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import InputFotoPerfil from '../components2/inputFotoPerfil';
 import "../utils/Estilos-Generales-1.css";
+import '../utils/Parroquia-Gestionar-Capilla.css';
 
 const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
