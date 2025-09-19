@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './inputFotoPerfil.css';
 
 const InputFotoPerfil = ({ 
-  value, 
+  value, // Ahora se usa como valor inicial de la vista previa
   onChange, 
   maxSize = 5 * 1024 * 1024, // 5MB por defecto
   acceptedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -15,17 +15,20 @@ const InputFotoPerfil = ({
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  // Validar archivo
+  // Sincronizar el estado interno si el prop 'value' cambia desde el padre
+  useEffect(() => {
+    setPreview(value || null);
+  }, [value]);
+
   const validateFile = (file) => {
+    // ... (El código de validación es el mismo)
     if (!file) return false;
 
-    // Validar tipo de archivo
     if (!acceptedFormats.includes(file.type)) {
       setError(`Formato no válido. Solo se permiten: ${acceptedFormats.map(f => f.split('/')[1]).join(', ')}`);
       return false;
     }
 
-    // Validar tamaño
     if (file.size > maxSize) {
       const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
       setError(`El archivo es muy grande. Tamaño máximo: ${maxSizeMB}MB`);
@@ -36,7 +39,6 @@ const InputFotoPerfil = ({
     return true;
   };
 
-  // Procesar archivo seleccionado
   const processFile = (file) => {
     if (!validateFile(file)) return;
 
@@ -45,11 +47,10 @@ const InputFotoPerfil = ({
       const result = e.target.result;
       setPreview(result);
       
-      // Llamar al callback onChange con el archivo y la preview
       if (onChange) {
         onChange({
           file: file,
-          preview: result,
+          preview: result, // ¡Pasamos la URL de la preview al padre!
           name: file.name,
           size: file.size,
           type: file.type
@@ -59,7 +60,6 @@ const InputFotoPerfil = ({
     reader.readAsDataURL(file);
   };
 
-  // Manejar selección de archivo
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -67,14 +67,12 @@ const InputFotoPerfil = ({
     }
   };
 
-  // Manejar click en el área de upload
   const handleClick = () => {
     if (!disabled) {
       fileInputRef.current?.click();
     }
   };
 
-  // Manejar drag events
   const handleDragOver = (e) => {
     e.preventDefault();
     if (!disabled) {
@@ -99,7 +97,6 @@ const InputFotoPerfil = ({
     }
   };
 
-  // Remover foto
   const handleRemove = (e) => {
     e.stopPropagation();
     setPreview(null);
@@ -141,7 +138,7 @@ const InputFotoPerfil = ({
             Seleccionar archivo
           </button>
           <span className="file-name">
-            {preview ? fileInputRef.current?.files[0]?.name || 'Archivo seleccionado' : 'Ningún archivo seleccionado'}
+            {preview ? 'Archivo seleccionado' : 'Ningún archivo seleccionado'}
           </span>
         </div>
         
@@ -165,6 +162,13 @@ const InputFotoPerfil = ({
           • Tamaño máximo: {(maxSize / (1024 * 1024)).toFixed(1)}MB
         </small>
       </div>
+
+      {/* **AGREGAMOS ESTA SECCIÓN PARA LA VISTA PREVIA** */}
+      {preview && (
+        <div className="image-preview-container">
+          <img src={preview} alt="Vista previa" className="image-preview" />
+        </div>
+      )}
 
       {error && (
         <div className="error-message">
