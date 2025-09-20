@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom'; 
-import SearchBar from '../components2/SearchBar';
+import MyBarSearchGen from '../components/MyBarSearchGen';
 import MyButtonShortAction from '../components2/MyButtonShortAction';
 import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
@@ -187,7 +187,8 @@ export default function BuscarParroquia() {
         <div className="app-container">
           <div className="search-add">
             <div className="center-container">
-              <SearchBar 
+              <MyBarSearchGen 
+                mode="local"
                 value={searchTerm} //  Pasamos el valor del estado al componente
                 onSearchChange={setSearchTerm} 
                 placeholder="Buscar parroquia..." 
