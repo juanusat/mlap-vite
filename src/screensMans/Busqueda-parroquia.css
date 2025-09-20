@@ -1,5 +1,11 @@
 /* Estilos específicos para Busqueda-parroquia.jsx */
 
+/* Variables adicionales si no están definidas */
+:root {
+  --color-blue-100: #dbeafe;
+  --color-blue-800: #1e40af;
+}
+
 .map-container-wrapper {
   display: flex;
   gap: 1rem;
@@ -10,7 +16,7 @@
 }
 
 .map-container {
-  flex: 1;
+  flex: 0 0 45%;
   position: relative;
 }
 
@@ -20,12 +26,134 @@
 
 /* Panel de información de la parroquia */
 .parish-info-panel {
-  width: 350px;
+  flex: 0 0 55%;
   background: rgb(255, 255, 255);
   border-left: 1px solid var(--color-grey-200);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.parish-details-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Estilos para el panel selector por defecto */
+.parish-selector {
+  margin-bottom: 1.5rem;
+}
+
+.parish-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-n-700);
+  font-size: 0.9rem;
+}
+
+.parroquia-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-grey-300);
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+  color: var(--color-n-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parroquia-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.parroquia-select:hover {
+  border-color: var(--color-grey-400);
+}
+
+.instructions {
+  color: var(--color-n-600);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.parishes-list h4 {
+  margin: 0 0 1rem 0;
+  color: var(--color-n-700);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.parishes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.parish-card {
+  padding: 0.75rem;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 6px;
+  background: var(--color-n-0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.parish-card:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.parish-card h5 {
+  margin: 0 0 0.25rem 0;
+  color: var(--color-primary-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.parish-card p {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-n-600);
+  font-size: 0.8rem;
+}
+
+.location-type {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.parroquia-card .location-type {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+}
+
+.capilla-card .location-type {
+  background-color: var(--color-blue-100);
+  color: var(--color-blue-800);
+}
+
+/* Estilos para los marcadores del mapa */
+.custom-marker-parroquia {
+  z-index: 1000;
+}
+
+.custom-marker-capilla {
+  z-index: 999;
 }
 
 .parish-info-header {
@@ -154,13 +282,14 @@
     height: auto;
   }
   
-  .parish-info-panel {
-    width: 100%;
-    max-height: 400px;
+  .map-container {
+    flex: 1;
+    height: 400px;
   }
   
-  .map-container {
-    height: 400px;
+  .parish-info-panel {
+    flex: 1;
+    max-height: 400px;
   }
   
   .map-container div {
@@ -170,10 +299,12 @@
 
 @media (max-width: 768px) {
   .map-container {
+    flex: 1;
     height: 300px;
   }
   
   .parish-info-panel {
+    flex: 1;
     max-height: 350px;
   }
   
@@ -185,6 +316,45 @@
     padding: 0.875rem 1rem;
     font-size: 1rem;
   }
+  
+  .parishes-grid {
+    max-height: 200px;
+  }
+  
+  .parish-card {
+    padding: 0.5rem;
+  }
+  
+  .parish-card h5 {
+    font-size: 0.85rem;
+  }
+  
+  .parish-card p {
+    font-size: 0.75rem;
+  }
+  
+  .location-type {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+/* Información adicional sobre zoom */
+.zoom-info {
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--color-n-600);
+  text-align: center;
+}
+
+.zoom-info.show-chapels {
+  background: var(--color-blue-50);
+  border-color: var(--color-blue-200);
+  color: var(--color-blue-700);
 }
 
 /* Ajustes para el contenedor principal */

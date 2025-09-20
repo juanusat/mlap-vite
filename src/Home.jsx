@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <ScreenMan>
       <div className="content-module">
-        <MyBarSearchGen ref={searchBarRef} />
+        <MyBarSearchGen ref={searchBarRef} mode="navigate" />
         <section className="mlap-home-welcome">
           <div className="mlap-home-welcome-img" />
           <div className="mlap-home-welcome-info">
