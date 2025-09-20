@@ -27,6 +27,99 @@
   flex-direction: column;
   overflow: hidden;
 }
+.parish-details-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Estilos para el panel selector por defecto */
+.parish-selector {
+  margin-bottom: 1.5rem;
+}
+
+.parish-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-n-700);
+  font-size: 0.9rem;
+}
+
+.parroquia-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-grey-300);
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+  color: var(--color-n-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parroquia-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.parroquia-select:hover {
+  border-color: var(--color-grey-400);
+}
+
+.instructions {
+  color: var(--color-n-600);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.parishes-list h4 {
+  margin: 0 0 1rem 0;
+  color: var(--color-n-700);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.parishes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.parish-card {
+  padding: 0.75rem;
+  border: 1px solid var(--color-grey-200);
+  border-radius: 6px;
+  background: var(--color-n-0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parish-card:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.parish-card h5 {
+  margin: 0 0 0.25rem 0;
+  color: var(--color-primary-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.parish-card p {
+  margin: 0;
+  color: var(--color-n-600);
+  font-size: 0.8rem;
+}
 
 .parish-info-header {
   padding: 1rem;
@@ -187,6 +280,22 @@
   .btn-ver-perfil {
     padding: 0.875rem 1rem;
     font-size: 1rem;
+  }
+  
+  .parishes-grid {
+    max-height: 200px;
+  }
+  
+  .parish-card {
+    padding: 0.5rem;
+  }
+  
+  .parish-card h5 {
+    font-size: 0.85rem;
+  }
+  
+  .parish-card p {
+    font-size: 0.75rem;
   }
 }
 

@@ -130,11 +130,16 @@ export default function BuscarParroquia() {
     );
     setFilteredParroquias(filtered);
     
+    // Si la parroquia seleccionada no está en los resultados filtrados, deseleccionarla
+    if (selectedParroquia && !filtered.find(p => p.id === selectedParroquia.id)) {
+      setSelectedParroquia(null);
+    }
+    
     // Actualizar marcadores en el mapa
     if (map) {
       updateMapMarkers(filtered);
     }
-  }, [searchTerm, map]);
+  }, [searchTerm, map, selectedParroquia]);
 
   const initMap = () => {
     if (!window.L || !mapRef.current) return;
@@ -178,6 +183,19 @@ export default function BuscarParroquia() {
     navigate('/inicio');
   };
 
+  const handleParroquiaSelect = (e) => {
+    const parroquiaId = parseInt(e.target.value);
+    if (parroquiaId) {
+      const parroquia = parroquiasData.find(p => p.id === parroquiaId);
+      setSelectedParroquia(parroquia);
+      if (map && parroquia) {
+        map.flyTo([parroquia.latitud, parroquia.longitud], 15);
+      }
+    } else {
+      setSelectedParroquia(null);
+    }
+  };
+
   //  Modificamos la SearchBar para que reciba y muestre el término de búsqueda
   //   y para que actualice el searchTerm del estado cuando el usuario escribe.
   return (
@@ -201,47 +219,102 @@ export default function BuscarParroquia() {
               <div ref={mapRef} style={{ width: '100%', height: '500px' }} />
             </div>
             
-            {selectedParroquia && (
-              <div className="parish-info-panel">
-                <div className="parish-info-header">
-                  <h3>{selectedParroquia.nombre}</h3>
-                  <button 
-                    className="close-panel-btn"
-                    onClick={() => setSelectedParroquia(null)}
-                  >
-                  </button>
-                </div>
-                
-                <div className="parish-info-content">
-                  <div className="parish-basic-info">
-                    <p><strong>Dirección:</strong> {selectedParroquia.direccion}</p>
-                    <p><strong>Teléfono:</strong> {selectedParroquia.telefono}</p>
-                    <p><strong>Párroco:</strong> {selectedParroquia.parroco}</p>
-                    <p><strong>Descripción:</strong> {selectedParroquia.descripcion}</p>
+            <div className="parish-info-panel">
+              {!selectedParroquia ? (
+                // Panel por defecto con combo box
+                <div className="parish-selector-panel">
+                  <div className="parish-info-header">
+                    <h3>Seleccionar Parroquia</h3>
                   </div>
                   
-                  <div className="parish-events">
-                    <h4>Actos Litúrgicos Disponibles</h4>
-                    <div className="events-list">
-                      {selectedParroquia.eventos.map(evento => (
-                        <div key={evento.id} className="event-item">
-                          <span className="event-name">{evento.nombre}</span>
+                  <div className="parish-info-content">
+                    <div className="parish-selector">
+                      <label htmlFor="parroquia-select">Elige una parroquia:</label>
+                      <select 
+                        id="parroquia-select"
+                        className="parroquia-select"
+                        onChange={handleParroquiaSelect}
+                        defaultValue=""
+                      >
+                        <option value="">-- Selecciona una parroquia --</option>
+                        {filteredParroquias.map(parroquia => (
+                          <option key={parroquia.id} value={parroquia.id}>
+                            {parroquia.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="instructions">
+                      <p>Puedes seleccionar una parroquia de la lista o hacer clic directamente en los marcadores del mapa para ver su información detallada.</p>
+                      
+                      <div className="parishes-list">
+                        <h4>Parroquias disponibles:</h4>
+                        <div className="parishes-grid">
+                          {filteredParroquias.map(parroquia => (
+                            <div 
+                              key={parroquia.id} 
+                              className="parish-card"
+                              onClick={() => {
+                                setSelectedParroquia(parroquia);
+                                if (map) {
+                                  map.flyTo([parroquia.latitud, parroquia.longitud], 15);
+                                }
+                              }}
+                            >
+                              <h5>{parroquia.nombre}</h5>
+                              <p>{parroquia.direccion}</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="parish-actions">
+                </div>
+              ) : (
+                // Panel de información de parroquia seleccionada
+                <div className="parish-details-panel">
+                  <div className="parish-info-header">
+                    <h3>{selectedParroquia.nombre}</h3>
                     <button 
-                      className="btn-ver-perfil"
-                      onClick={handleVerPerfil}
+                      className="close-panel-btn"
+                      onClick={() => setSelectedParroquia(null)}
                     >
-                      Ver perfil
+                      ×
                     </button>
                   </div>
+                  
+                  <div className="parish-info-content">
+                    <div className="parish-basic-info">
+                      <p><strong>Dirección:</strong> {selectedParroquia.direccion}</p>
+                      <p><strong>Teléfono:</strong> {selectedParroquia.telefono}</p>
+                      <p><strong>Párroco:</strong> {selectedParroquia.parroco}</p>
+                      <p><strong>Descripción:</strong> {selectedParroquia.descripcion}</p>
+                    </div>
+                    
+                    <div className="parish-events">
+                      <h4>Actos Litúrgicos Disponibles</h4>
+                      <div className="events-list">
+                        {selectedParroquia.eventos.map(evento => (
+                          <div key={evento.id} className="event-item">
+                            <span className="event-name">{evento.nombre}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="parish-actions">
+                      <button 
+                        className="btn-ver-perfil"
+                        onClick={handleVerPerfil}
+                      >
+                        Ver perfil
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
