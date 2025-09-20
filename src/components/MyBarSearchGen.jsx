@@ -8,7 +8,7 @@ const MyBarSearchGen = forwardRef((props, ref) => {
   const { 
     value = '', 
     onSearchChange, 
-    placeholder = "Buscar parroquias",
+    placeholder = "Buscar parroquias y capillas",
     mode = "navigate" // "navigate" para navegación, "local" para búsqueda local
   } = props;
   

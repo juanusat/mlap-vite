@@ -1,5 +1,11 @@
 /* Estilos específicos para Busqueda-parroquia.jsx */
 
+/* Variables adicionales si no están definidas */
+:root {
+  --color-blue-100: #dbeafe;
+  --color-blue-800: #1e40af;
+}
+
 .map-container-wrapper {
   display: flex;
   gap: 1rem;
@@ -99,6 +105,7 @@
   background: var(--color-n-0);
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .parish-card:hover {
@@ -116,9 +123,37 @@
 }
 
 .parish-card p {
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   color: var(--color-n-600);
   font-size: 0.8rem;
+}
+
+.location-type {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.parroquia-card .location-type {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+}
+
+.capilla-card .location-type {
+  background-color: var(--color-blue-100);
+  color: var(--color-blue-800);
+}
+
+/* Estilos para los marcadores del mapa */
+.custom-marker-parroquia {
+  z-index: 1000;
+}
+
+.custom-marker-capilla {
+  z-index: 999;
 }
 
 .parish-info-header {
@@ -297,6 +332,29 @@
   .parish-card p {
     font-size: 0.75rem;
   }
+  
+  .location-type {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+/* Información adicional sobre zoom */
+.zoom-info {
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--color-n-600);
+  text-align: center;
+}
+
+.zoom-info.show-chapels {
+  background: var(--color-blue-50);
+  border-color: var(--color-blue-200);
+  color: var(--color-blue-700);
 }
 
 /* Ajustes para el contenedor principal */
