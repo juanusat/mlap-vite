@@ -76,6 +76,24 @@
   border-color: var(--color-grey-400);
 }
 
+.clear-selection-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-grey-100);
+  color: var(--color-n-700);
+  border: 1px solid var(--color-grey-300);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.clear-selection-btn:hover {
+  background-color: var(--color-grey-200);
+  border-color: var(--color-grey-400);
+}
+
 .instructions {
   color: var(--color-n-600);
   font-size: 0.85rem;
