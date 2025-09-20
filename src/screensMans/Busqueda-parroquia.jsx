@@ -329,6 +329,18 @@ export default function BuscarParroquia() {
     );
     setFilteredLocations(filtered);
     
+    // Si hay una capilla en los resultados y no hay parroquia seleccionada para el grid,
+    // seleccionar automáticamente la parroquia madre de la primera capilla encontrada
+    if (searchTerm && !selectedParroquiaForGrid) {
+      const capillaEncontrada = filtered.find(l => l.tipo === 'capilla');
+      if (capillaEncontrada) {
+        const parroquiaMadre = parroquiasData.find(p => p.id === capillaEncontrada.parroquiaId);
+        if (parroquiaMadre) {
+          setSelectedParroquiaForGrid(parroquiaMadre);
+        }
+      }
+    }
+    
     // Si la ubicación seleccionada no está en los resultados filtrados, deseleccionarla
     if (selectedLocation && !filtered.find(l => l.id === selectedLocation.id && l.tipo === selectedLocation.tipo)) {
       setSelectedLocation(null);
@@ -337,7 +349,13 @@ export default function BuscarParroquia() {
     // Si la parroquia seleccionada para el grid no está en las parroquias filtradas, deseleccionarla
     if (selectedParroquiaForGrid) {
       const filteredParroquias = filtered.filter(l => l.tipo === 'parroquia');
-      if (!filteredParroquias.find(p => p.id === selectedParroquiaForGrid.id)) {
+      const capillasDeParroquia = getCapillasByParroquia(selectedParroquiaForGrid.id);
+      const hayCapillasEnFiltrado = capillasDeParroquia.some(capilla => 
+        filtered.find(f => f.id === capilla.id && f.tipo === 'capilla')
+      );
+      
+      // Solo deseleccionar si ni la parroquia ni sus capillas están en el filtrado
+      if (!filteredParroquias.find(p => p.id === selectedParroquiaForGrid.id) && !hayCapillasEnFiltrado) {
         setSelectedParroquiaForGrid(null);
       }
     }
@@ -346,7 +364,7 @@ export default function BuscarParroquia() {
     if (map) {
       updateMapMarkers(filtered);
     }
-  }, [searchTerm, map, selectedLocation, selectedParroquiaForGrid]);
+  }, [searchTerm, map, selectedLocation]);
 
   const initMap = () => {
     if (!window.L || !mapRef.current) return;
@@ -512,6 +530,17 @@ export default function BuscarParroquia() {
                           </option>
                         ))}
                       </select>
+                      {selectedParroquiaForGrid && searchTerm && (
+                        <button 
+                          className="clear-selection-btn"
+                          onClick={() => {
+                            setSelectedParroquiaForGrid(null);
+                            setSearchTerm('');
+                          }}
+                        >
+                          Ver todas las ubicaciones
+                        </button>
+                      )}
                     </div>
                     
                     <div className="instructions">
@@ -523,8 +552,10 @@ export default function BuscarParroquia() {
                       </div>
                       <p>
                         {selectedParroquiaForGrid 
-                          ? `Selecciona la parroquia "${selectedParroquiaForGrid.nombre}" o una de sus capillas:` 
-                          : "Puedes seleccionar una parroquia de la lista o hacer clic directamente en los marcadores del mapa para ver información detallada."
+                          ? `Resultados para "${selectedParroquiaForGrid.nombre}":` 
+                          : searchTerm 
+                            ? `Resultados de búsqueda para "${searchTerm}":` 
+                            : "Puedes seleccionar una parroquia de la lista o hacer clic directamente en los marcadores del mapa para ver información detallada."
                         }
                       </p>
                       
@@ -532,23 +563,38 @@ export default function BuscarParroquia() {
                         <h4>
                           {selectedParroquiaForGrid 
                             ? `${selectedParroquiaForGrid.nombre} y sus capillas:` 
-                            : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
+                            : searchTerm
+                              ? `Resultados encontrados (${filteredLocations.filter(location => currentZoom >= 15 || location.tipo === 'parroquia').length}):`
+                              : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
                           }
                         </h4>
                         <div className="parishes-grid">
                           {selectedParroquiaForGrid ? (
-                            // Mostrar parroquia seleccionada y sus capillas
+                            // Mostrar parroquia seleccionada y sus capillas (solo si coinciden con la búsqueda)
                             <>
-                              <div 
-                                key={`parroquia-${selectedParroquiaForGrid.id}`}
-                                className="parish-card parroquia-card"
-                                onClick={() => handleLocationSelect(selectedParroquiaForGrid)}
-                              >
-                                <h5>{selectedParroquiaForGrid.nombre}</h5>
-                                <p>{selectedParroquiaForGrid.direccion}</p>
-                                <span className="location-type">Parroquia</span>
-                              </div>
-                              {getCapillasByParroquia(selectedParroquiaForGrid.id).map(capilla => (
+                              {/* Mostrar la parroquia solo si coincide con el filtro de búsqueda */}
+                              {(!searchTerm || 
+                                selectedParroquiaForGrid.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                selectedParroquiaForGrid.direccion.toLowerCase().includes(searchTerm.toLowerCase())
+                              ) && (
+                                <div 
+                                  key={`parroquia-${selectedParroquiaForGrid.id}`}
+                                  className="parish-card parroquia-card"
+                                  onClick={() => handleLocationSelect(selectedParroquiaForGrid)}
+                                >
+                                  <h5>{selectedParroquiaForGrid.nombre}</h5>
+                                  <p>{selectedParroquiaForGrid.direccion}</p>
+                                  <span className="location-type">Parroquia</span>
+                                </div>
+                              )}
+                              {getCapillasByParroquia(selectedParroquiaForGrid.id)
+                                .filter(capilla => {
+                                  // Filtrar capillas según el término de búsqueda
+                                  if (!searchTerm) return true;
+                                  return capilla.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                         capilla.direccion.toLowerCase().includes(searchTerm.toLowerCase());
+                                })
+                                .map(capilla => (
                                 <div 
                                   key={`capilla-${capilla.id}`}
                                   className="parish-card capilla-card"
