@@ -5,7 +5,7 @@ import './Tabla.css';
 const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = '', columnLeftAlignIndex = [] }) => {
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortConfig, setSortConfig] = useState(null); // Nuevo estado para la configuración de ordenación
+    const [sortConfig, setSortConfig] = useState(null);
     const tableColumns = [...columns];
 
     const alignmentClasses = {
@@ -26,6 +26,9 @@ const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = ''
             }
             return 0;
         });
+        
+        // Muestra el arreglo ordenado en la consola
+        console.log("Arreglo ordenado:", sortedData);
     }
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -51,6 +54,8 @@ const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = ''
         if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
             direction = 'descending';
         }
+        // Muestra el ID de la columna por la que se ordena
+        console.log("Ordenando por columna:", key);
         setSortConfig({ key, direction });
         setCurrentPage(1); // Opcional: regresar a la primera página al ordenar
     };
@@ -66,7 +71,7 @@ const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = ''
                         <div
                             className={`grid-header grid-cell-${column.key}`}
                             key={column.key}
-                            onClick={() => handleSort(column.key)} // Agregado el evento de clic
+                            onClick={() => handleSort(column.key)}
                         >
                             {column.header}
                             {sortConfig && sortConfig.key === column.key && (

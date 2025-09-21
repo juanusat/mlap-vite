@@ -5,10 +5,39 @@ import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
 
+// Componente reutilizable para los formularios de eventos
+const EventoForm = ({ formData, handleFormChange, isViewMode }) => {
+    return (
+        <div className="Inputs-add">
+            <label htmlFor="nombre">Nombre:</label>
+            <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+            <label htmlFor="descripcion">Descripción:</label>
+            <textarea
+                className="inputModal"
+                id="descripcion"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+        </div>
+    );
+};
+
+// Datos iniciales de ejemplo para eventos generales
 const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
     id: i + 1,
     nombre: `Evento ${i + 1}`,
@@ -17,12 +46,21 @@ const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function DiocesisEventosLiturgicos() {
-
     const [events, setEvents] = useState(initialEventsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
+
+    const [formData, setFormData] = useState({
+        nombre: '',
+        descripcion: ''
+    });
+
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     const filteredEvents = events.filter((event) =>
         Object.values(event).some((value) =>
@@ -43,12 +81,20 @@ export default function DiocesisEventosLiturgicos() {
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
+        setFormData({
+            nombre: event.nombre,
+            descripcion: event.descripcion
+        });
         setShowModal(true);
     };
 
     const handleEdit = (event) => {
         setCurrentEvent(event);
         setModalType('edit');
+        setFormData({
+            nombre: event.nombre,
+            descripcion: event.descripcion
+        });
         setShowModal(true);
     };
 
@@ -61,6 +107,10 @@ export default function DiocesisEventosLiturgicos() {
     const handleAddEvent = () => {
         setCurrentEvent(null);
         setModalType('add');
+        setFormData({
+            nombre: '',
+            descripcion: ''
+        });
         setShowModal(true);
     };
 
@@ -68,6 +118,10 @@ export default function DiocesisEventosLiturgicos() {
         setShowModal(false);
         setCurrentEvent(null);
         setModalType(null);
+        setFormData({
+            nombre: '',
+            descripcion: ''
+        });
     };
 
     const confirmDelete = () => {
@@ -77,20 +131,23 @@ export default function DiocesisEventosLiturgicos() {
         }
     };
 
-    const handleSave = (eventData) => {
+    const handleSave = () => {
         if (modalType === 'add') {
-            const newEvent = { ...eventData, id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1, estado: 'Activo' };
+            const newEvent = {
+                ...formData,
+                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                estado: 'Activo'
+            };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
             setEvents(prevEvents =>
                 prevEvents.map(event =>
-                    event.id === currentEvent.id ? { ...event, ...eventData } : event
+                    event.id === currentEvent.id ? { ...event, ...formData } : event
                 )
             );
         }
         handleCloseModal();
     };
-
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -121,36 +178,34 @@ export default function DiocesisEventosLiturgicos() {
         switch (modalType) {
             case 'view':
                 return {
-                    title: 'Detalles del Evento',
-                    content: currentEvent && (
-                        <div>
-                            <p><strong>ID:</strong> {currentEvent.id}</p>
-                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                            <p><strong>Descripción:</strong> {currentEvent.descripcion}</p>
-                        </div>
-                    ),
+                    title: 'Detalles del evento',
+                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
                     onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar evento',
-                    content: <EditEventForm onSave={handleSave} event={currentEvent} />,
-                    onAccept: () => document.getElementById('edit-event-form').requestSubmit(),
+                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
             case 'delete':
                 return {
                     title: 'Confirmar eliminación',
-                    content: <h4>¿Estás seguro que quieres eliminar este evento?</h4>,
+                    content: currentEvent && (
+                        <div className='Inputs-add'>
+                            <input type="text" className="inputModal" placeholder="¿Deseas eliminar el evento?" disabled />
+                        </div>
+                    ),
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
-                    title: 'Añadir Evento',
-                    content: <AddEventForm onSave={handleSave} />,
-                    onAccept: () => document.getElementById('add-event-form').requestSubmit(),
+                    title: 'Añadir evento',
+                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
             default:
@@ -191,47 +246,5 @@ export default function DiocesisEventosLiturgicos() {
                 {modalProps.content}
             </Modal>
         </div>
-    );
-}
-
-function AddEventForm({ onSave }) {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, descripcion, estado: 'Pendiente' });
-    };
-
-    return (
-        <form id="add-event-form" onSubmit={handleSubmit}>
-            <div className="Inputs-add">
-                <label htmlFor="addNombre">Nombre de evento</label>
-                <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="addDescripcion">Descripción</label>
-                <textarea className="inputModal" id="addDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-        </form>
-    );
-}
-
-function EditEventForm({ onSave, event }) {
-    const [nombre, setNombre] = useState(event.nombre);
-    const [descripcion, setDescripcion] = useState(event.descripcion);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, descripcion });
-    };
-
-    return (
-        <form id="edit-event-form" onSubmit={handleSubmit}>
-            <div className="Inputs-edit">
-                <label htmlFor="editNombre">Nuevo nombre de evento</label>
-                <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="editDescripcion">Nueva descripción</label>
-                <textarea className="inputModal" id="editDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-        </form>
     );
 }

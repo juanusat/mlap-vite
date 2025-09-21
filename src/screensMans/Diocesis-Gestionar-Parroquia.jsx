@@ -9,10 +9,13 @@ import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Diocesis-Gestionar-Parroquia.css";
 
+// Datos iniciales de ejemplo con usuario y clave
 const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
     id: i + 1,
     nombre: `Parroquia ${i + 1}`,
-    correo: `Correo${i + 1}@parroquia.com`,
+    correo: `correo${i + 1}@parroquia.com`,
+    usuario: `usuario${i + 1}`,
+    clave: `clave${i + 1}`,
     estado: (i + 1) % 2 === 0 ? 'Activo' : 'Pendiente',
 }));
 
@@ -55,6 +58,12 @@ export default function Parroquia() {
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
+        setFormData({
+            nombre: event.nombre,
+            correo: event.correo,
+            usuario: event.usuario || '',
+            clave: event.clave || ''
+        });
         setShowModal(true);
     };
 
@@ -65,7 +74,7 @@ export default function Parroquia() {
             nombre: event.nombre,
             correo: event.correo,
             usuario: event.usuario || '',
-            clave: event.clave || '' 
+            clave: event.clave || ''
         });
         setShowModal(true);
     };
@@ -109,10 +118,10 @@ export default function Parroquia() {
 
     const handleSave = () => {
         if (modalType === 'add') {
-            const newEvent = { 
-                ...formData, 
-                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1, 
-                estado: 'Pendiente' 
+            const newEvent = {
+                ...formData,
+                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                estado: 'Pendiente'
             };
             setEvents(prevEvents => [...prevEvents, newEvent]);
         } else if (modalType === 'edit' && currentEvent) {
@@ -155,56 +164,32 @@ export default function Parroquia() {
             case 'view':
                 return {
                     title: 'Detalles de la parroquia',
-                    content: currentEvent && (
-                        <div>
-                            <p><strong>ID:</strong> {currentEvent.id}</p>
-                            <p><strong>Nombre:</strong> {currentEvent.nombre}</p>
-                            <p><strong>Correo:</strong> {currentEvent.correo}</p>
-                        </div>
-                    ),
-                    onAccept: null,
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+                    onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar parroquia',
-                    content: (
-                        <div className="Inputs-edit">
-                            <label htmlFor="editNombre">Modificar nombre de parroquia</label>
-                            <input type="text" className="inputModal" id="editNombre" name="nombre" value={formData.nombre} onChange={handleFormChange} required />
-                            <label htmlFor="editUsuario">Modificar usuario</label>
-                            <input type="text" className="inputModal" id="editUsuario" name="usuario" value={formData.usuario} onChange={handleFormChange} required />
-                            <label htmlFor="editCorreo">Modificar correo</label>
-                            <input type="text" className="inputModal" id="editCorreo" name="correo" value={formData.correo} onChange={handleFormChange} required />
-                            <label htmlFor="editClave">Modificar clave</label>
-                            <input type="password" className="inputModal" id="editClave" name="clave" value={formData.clave} onChange={handleFormChange} required />
-                        </div>
-                    ),
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
             case 'delete':
                 return {
                     title: 'Confirmar eliminación',
-                    content: <h4>¿Estás seguro que quieres eliminar esta parroquia?</h4>,
+                    content: currentEvent && (
+                        <div className='Inputs-add'>
+                            <input type="text" className="inputModal" placeholder="¿Deseas eliminar la parroquia?" disabled />
+                        </div>
+                    ),
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
                     title: 'Añadir parroquia',
-                    content: (
-                        <div className="Inputs-add">
-                            <label htmlFor="addNombre">Nombre de Parroquia</label>
-                            <input type="text" className="inputModal" id="addNombre" name="nombre" value={formData.nombre} onChange={handleFormChange} required />
-                            <label htmlFor="addUsuario">Usuario</label>
-                            <input type="text" className="inputModal" id="addUsuario" name="usuario" value={formData.usuario} onChange={handleFormChange} required />
-                            <label htmlFor="addCorreo">Correo</label>
-                            <input type="text" className="inputModal" id="addCorreo" name="correo" value={formData.correo} onChange={handleFormChange} required />
-                            <label htmlFor="addClave">Clave</label>
-                            <input type="password" className="inputModal" id="addClave" name="clave" value={formData.clave} onChange={handleFormChange} required />
-                        </div>
-                    ),
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -248,3 +233,55 @@ export default function Parroquia() {
         </div>
     );
 }
+
+// Componente reutilizable para los formularios de la parroquia
+const ParroquiaForm = ({ formData, handleFormChange, isViewMode }) => {
+    return (
+        <div className="Inputs-add">
+            <label htmlFor="nombre">Nombre:</label>
+            <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+            <label htmlFor="correo">Correo:</label>
+            <input
+                type="text"
+                className="inputModal"
+                id="correo"
+                name="correo"
+                value={formData.correo}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+            <label htmlFor="usuario">Usuario:</label>
+            <input
+                type="text"
+                className="inputModal"
+                id="usuario"
+                name="usuario"
+                value={formData.usuario}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+            <label htmlFor="clave">Clave:</label>
+            <input
+                type="password"
+                className="inputModal"
+                id="clave"
+                name="clave"
+                value={formData.clave}
+                onChange={handleFormChange}
+                disabled={isViewMode}
+                required
+            />
+        </div>
+    );
+};
