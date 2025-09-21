@@ -244,7 +244,6 @@ const capillasData = [
     ]
   },
 
-  // Capillas de Sagrado Corazón de Jesús (id: 5)
   {
     id: 501,
     nombre: "Capilla Inmaculada Concepción",
@@ -264,12 +263,11 @@ const capillasData = [
   }
 ];
 
-// Función para obtener todas las ubicaciones (parroquias + capillas)
+
 const getAllLocations = () => {
   return [...parroquiasData, ...capillasData];
 };
 
-// Función para obtener capillas de una parroquia específica
 const getCapillasByParroquia = (parroquiaId) => {
   return capillasData.filter(capilla => capilla.parroquiaId === parroquiaId);
 };
@@ -278,14 +276,14 @@ export default function BuscarParroquia() {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState({});
-  const [selectedLocation, setSelectedLocation] = useState(null); // Cambié de selectedParroquia
-  const [selectedParroquiaForGrid, setSelectedParroquiaForGrid] = useState(null); // Nueva para el grid
+  const [selectedLocation, setSelectedLocation] = useState(null); 
+  const [selectedParroquiaForGrid, setSelectedParroquiaForGrid] = useState(null); 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredLocations, setFilteredLocations] = useState(getAllLocations()); // Cambié de filteredParroquias
-  const [searchParams] = useSearchParams(); //  Hook para leer parámetros de la URL
+  const [filteredLocations, setFilteredLocations] = useState(getAllLocations()); 
+  const [searchParams] = useSearchParams();
   const [currentZoom, setCurrentZoom] = useState(13);
 
-  //  Nuevo useEffect para leer el parámetro de la URL al cargar la página
+ 
   useEffect(() => {
     const urlSearchTerm = searchParams.get('q');
     if (urlSearchTerm) {
@@ -293,10 +291,9 @@ export default function BuscarParroquia() {
     }
   }, [searchParams]);
 
-  // Cargar Leaflet dinámicamente
+
   useEffect(() => {
     const loadLeaflet = async () => {
-      // ... (código existente) ...
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
@@ -311,14 +308,13 @@ export default function BuscarParroquia() {
     loadLeaflet();
 
     return () => {
-      // Limpiar en unmount
       if (map) {
         map.remove();
       }
     };
   }, []);
 
-  // Filtrar ubicaciones por búsqueda (parroquias y capillas)
+
   useEffect(() => {
     const allLocations = getAllLocations();
     const filtered = allLocations.filter(location =>
@@ -326,9 +322,7 @@ export default function BuscarParroquia() {
       location.direccion.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredLocations(filtered);
-
-    // Si hay una capilla en los resultados y no hay parroquia seleccionada para el grid,
-    // seleccionar automáticamente la parroquia madre de la primera capilla encontrada
+    
     if (searchTerm && !selectedParroquiaForGrid) {
       const capillaEncontrada = filtered.find(l => l.tipo === 'capilla');
       if (capillaEncontrada) {
@@ -649,7 +643,7 @@ export default function BuscarParroquia() {
                       <p><strong>{selectedLocation.tipo === 'parroquia' ? 'Párroco' : 'Encargado'}:</strong> {selectedLocation.parroco || selectedLocation.encargado}</p>
                       <p><strong>Descripción:</strong> {selectedLocation.descripcion}</p>
                       {selectedLocation.tipo === 'capilla' && (
-                        <p><strong>Parroquia madre:</strong> {parroquiasData.find(p => p.id === selectedLocation.parroquiaId)?.nombre}</p>
+                        <p><strong>Parroquia:</strong> {parroquiasData.find(p => p.id === selectedLocation.parroquiaId)?.nombre}</p>
                       )}
                     </div>
 
