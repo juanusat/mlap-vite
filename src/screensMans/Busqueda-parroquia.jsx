@@ -453,7 +453,7 @@ export default function BuscarParroquia() {
   };
 
   const handleVerPerfil = () => {
-    navigate('/inicio');
+    navigate('/capilla');
   };
 
   const handleParroquiaSelect = (e) => {
