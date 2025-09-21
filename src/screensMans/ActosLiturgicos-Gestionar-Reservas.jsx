@@ -5,7 +5,6 @@ import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
 
@@ -49,7 +48,6 @@ const initialRequirementsData = Array.from({ length: 10 }, (_, i) => ({
 const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
   const randomUser = initialUsers[Math.floor(Math.random() * initialUsers.length)];
   const randomEvent = eventsOptions[Math.floor(Math.random() * eventsOptions.length)];
-  // Asigna un monto aleatorio entre 100 y 500
   const randomAmount = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
   return {
     id: i + 1,
@@ -60,7 +58,7 @@ const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
     estado: 'Reservado',
     pagoCompletado: false,
     requisitos: initialRequirementsData.map(req => ({ ...req, completado: false })),
-    monto: randomAmount, // Nueva columna de monto
+    monto: randomAmount,
   };
 });
 
@@ -71,47 +69,16 @@ export default function Reservas() {
   const [currentReservation, setCurrentReservation] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
-
   const [displayedReservations, setDisplayedReservations] = useState(initialReservationsData);
 
   useEffect(() => {
-    let filteredData = reservations.filter((reservation) =>
+    const filteredData = reservations.filter((reservation) =>
       Object.values(reservation).some((value) =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-
-    console.log("Arreglo original (filtrado):", filteredData);
-
-    if (sortColumn) {
-      filteredData = [...filteredData].sort((a, b) => {
-        let valueA, valueB;
-
-        if (sortColumn === 'usuarioNombre') {
-          valueA = parseInt(a.usuarioNombre.replace('Usuario ', ''), 10);
-          valueB = parseInt(b.usuarioNombre.replace('Usuario ', ''), 10);
-        } else {
-          valueA = a[sortColumn];
-          valueB = b[sortColumn];
-        }
-
-        if (valueA < valueB) {
-          return sortDirection === 'asc' ? -1 : 1;
-        }
-        if (valueA > valueB) {
-          return sortDirection === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-
-      console.log("Arreglo ordenado por", sortColumn, "en dirección", sortDirection + ":", filteredData);
-    }
-
     setDisplayedReservations(filteredData);
-
-  }, [reservations, searchTerm, sortColumn, sortDirection]);
+  }, [reservations, searchTerm]);
 
   const handleView = (reservation) => {
     setCurrentReservation(reservation);
@@ -187,22 +154,13 @@ export default function Reservas() {
     setModalType(null);
   };
 
-  const handleSort = (columnKey) => {
-    if (sortColumn === columnKey) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(columnKey);
-      setSortDirection('asc');
-    }
-  };
-
   const reservationColumns = [
-    { key: 'id', header: 'ID', accessor: (row) => row.id, sortable: true, sortKey: 'id' },
-    { key: 'usuario', header: 'Usuario', accessor: (row) => row.usuarioNombre, sortable: true, sortKey: 'usuarioNombre' },
-    { key: 'evento', header: 'Evento', accessor: (row) => row.evento, sortable: true, sortKey: 'evento' },
-    { key: 'fecha', header: 'Fecha', accessor: (row) => row.fecha, sortable: true, sortKey: 'fecha' },
-    { key: 'monto', header: 'Monto', accessor: (row) => `${row.monto.toFixed(2)}`, sortable: true, sortKey: 'monto' }, // Nueva columna
-    { key: 'estado', header: 'Estado', accessor: (row) => row.estado, sortable: true, sortKey: 'estado' },
+    { key: 'id', header: 'ID', accessor: (row) => row.id },
+    { key: 'usuarioNombre', header: 'Usuario', accessor: (row) => row.usuarioNombre },
+    { key: 'evento', header: 'Evento', accessor: (row) => row.evento },
+    { key: 'fecha', header: 'Fecha', accessor: (row) => row.fecha },
+    { key: 'monto', header: 'Monto', accessor: (row) => `$ ${row.monto.toFixed(2)}` },
+    { key: 'estado', header: 'Estado', accessor: (row) => row.estado },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
@@ -222,13 +180,57 @@ export default function Reservas() {
         return {
           title: 'Detalles de la Reserva',
           content: currentReservation && (
-            <div>
-              <p><strong>ID de reserva:</strong> {currentReservation.id}</p>
-              <p><strong>Evento:</strong> {currentReservation.evento}</p>
-              <p><strong>Fecha:</strong> {currentReservation.fecha}</p>
-              <p><strong>Usuario:</strong> {currentReservation.usuarioNombre}</p>
-              <p><strong>Monto:</strong> ${currentReservation.monto.toFixed(2)}</p>
-              <p><strong>Estado:</strong> {currentReservation.estado}</p>
+            <div className="Inputs-add">
+              <label>Evento</label>
+              <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                value={currentReservation.evento}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                disabled
+              />
+              <label>Fecha</label>
+              <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                value={currentReservation.fecha}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                disabled
+              />
+              <label>Usuario</label>
+              <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                value={currentReservation.usuarioNombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                disabled
+              />
+              <label>Monto</label>
+              <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                value={`$ ${currentReservation.monto.toFixed(2)}`}
+                onChange={(e) => setNombre(e.target.value)}
+                required 
+                disabled
+              />
+              <label>Estado</label>
+              <input
+                type="text"
+                className="inputModal"
+                id="nombre"
+                value={currentReservation.estado}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                disabled
+              />
             </div>
           ),
           onAccept: handleCloseModal,
@@ -237,11 +239,11 @@ export default function Reservas() {
       case 'edit':
         if (currentReservation?.estado === 'Reservado') {
           return {
-            title: 'Aceptar/Rechazar Reserva',
+            title: 'Cambiar estado reserva',
             content: currentReservation && (
               <div>
                 <h4>Cambiar estado de la reserva #{currentReservation.id}</h4>
-                <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
+                <p> <strong>Estado actual:</strong> {currentReservation.estado}</p>
               </div>
             ),
             onAccept: handleAccept,
@@ -293,9 +295,6 @@ export default function Reservas() {
             data={displayedReservations}
             gridColumnsLayout="90px 300px auto 170px 100px 140px 220px"
             columnLeftAlignIndex={[2, 3]}
-            onSort={handleSort}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
           />
         </div>
         <Modal

@@ -3,56 +3,44 @@ import DynamicTable from "../components2/Tabla";
 import SearchBar from "../components2/SearchBar";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import ToggleSwitch from '../components2/Toggle';
 import Modal from '../components2/Modal';
 import MatrixModal from '../components2/MatrixModal';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css';
 
-// Componentes de formulario extraídos del componente principal
-const AddRolForm = ({ onSave }) => {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ nombre, descripcion });
-    };
-
+// --------------------- FORMULARIO ---------------------
+const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
     return (
-        <form id="add-rol-form" onSubmit={handleSubmit}>
+        <div>
             <div className="Inputs-add">
-                <label htmlFor="addNombre">Nombre de Rol</label>
-                <input type="text" className="inputModal" id="addNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="addDescripcion">Descripción</label>
-                <textarea className="inputModal" id="addDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
+                <label htmlFor="nombre">Nombre de Rol:</label>
+                <input
+                    type="text"
+                    className="inputModal"
+                    id="nombre"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleFormChange}
+                    disabled={isViewMode}
+                    required
+                />
+                <label htmlFor="descripcion">Descripción:</label>
+                <textarea
+                    className="inputModal"
+                    id="descripcion"
+                    name="descripcion"
+                    value={formData.descripcion}
+                    onChange={handleFormChange}
+                    disabled={isViewMode}
+                    required
+                />
             </div>
-        </form>
+        </div>
     );
 };
 
-const EditRolForm = ({ onSave, rol }) => {
-    const [nombre, setNombre] = useState(rol.Rol);
-    const [descripcion, setDescripcion] = useState(rol.Descripcion);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ id: rol.ID, nombre, descripcion });
-    };
-
-    return (
-        <form id="edit-rol-form" onSubmit={handleSubmit}>
-            <div className="Inputs-edit">
-                <label htmlFor="editNombre">Nuevo nombre de Rol</label>
-                <input type="text" className="inputModal" id="editNombre" value={nombre} onChange={e => setNombre(e.target.value)} required />
-                <label htmlFor="editDescripcion">Nueva descripción</label>
-                <textarea className="inputModal" id="editDescripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} required />
-            </div>
-        </form>
-    );
-};
-
+// --------------------- PRINCIPAL ---------------------
 export default function RolesGestionar() {
     const modulesList = [
         { id: 'liturgicalActs', name: 'Actos liturgicos' },
@@ -67,12 +55,7 @@ export default function RolesGestionar() {
     const generateMockPermissions = () => {
         const permissions = {};
         modulesList.forEach(module => {
-            permissions[module.id] = {
-                view: false,
-                add: false,
-                edit: false,
-                delete: false
-            };
+            permissions[module.id] = { view: false, add: false, edit: false, delete: false };
         });
         return permissions;
     };
@@ -91,28 +74,55 @@ export default function RolesGestionar() {
         return data;
     };
 
+    // --------------------- ESTADOS ---------------------
     const [searchTerm, setSearchTerm] = useState('');
+    const [roles, setRoles] = useState(generateMockData(20));
+
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState(null);
-    const [roles, setRoles] = useState(generateMockData(100));
+    const [currentRol, setCurrentRol] = useState(null);
+
+    const [formData, setFormData] = useState({
+        nombre: '',
+        descripcion: ''
+    });
+
+    // Para MatrixModal
     const [showMatrixModal, setShowMatrixModal] = useState(false);
     const [selectedRol, setSelectedRol] = useState(null);
 
-    const handleOpenModal = (type, rolData = null) => {
-        setModalType(type);
-        if (type === 'permissions') {
-            setSelectedRol(rolData);
+    // --------------------- HANDLERS FORM ---------------------
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleOpenModal = (rol, action) => {
+        setCurrentRol(rol);
+        setModalType(action);
+
+        if (rol) {
+            setFormData({
+                nombre: rol.Rol,
+                descripcion: rol.Descripcion
+            });
+        } else {
+            setFormData({ nombre: '', descripcion: '' });
+        }
+
+        if (action === 'permissions') {
+            setSelectedRol(rol);
             setShowMatrixModal(true);
         } else {
-            setSelectedRol(rolData);
             setShowModal(true);
         }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setCurrentRol(null);
         setModalType(null);
-        setSelectedRol(null);
+        setFormData({ nombre: '', descripcion: '' });
     };
 
     const handleCloseMatrixModal = () => {
@@ -120,33 +130,34 @@ export default function RolesGestionar() {
         setSelectedRol(null);
     };
 
-    const onSaveAddRol = (newRolData) => {
-        const newId = roles.length > 0 ? Math.max(...roles.map(rol => rol.ID)) + 1 : 1;
-        const newRol = {
-            ID: newId,
-            Rol: newRolData.nombre,
-            Descripcion: newRolData.descripcion,
-            Estado: true,
-            Permissions: generateMockPermissions(),
-        };
-        setRoles([...roles, newRol]);
+    // --------------------- CRUD ---------------------
+    const handleSave = () => {
+        if (modalType === 'add') {
+            const newRol = {
+                ID: roles.length > 0 ? Math.max(...roles.map(r => r.ID)) + 1 : 1,
+                Rol: formData.nombre,
+                Descripcion: formData.descripcion,
+                Estado: true,
+                Permissions: generateMockPermissions(),
+            };
+            setRoles(prev => [...prev, newRol]);
+        } else if (modalType === 'edit' && currentRol) {
+            setRoles(prev =>
+                prev.map(r =>
+                    r.ID === currentRol.ID
+                        ? { ...r, Rol: formData.nombre, Descripcion: formData.descripcion }
+                        : r
+                )
+            );
+        }
         handleCloseModal();
     };
 
-    const onSaveEditRol = (editedRolData) => {
-        const updatedRoles = roles.map(rol =>
-            rol.ID === editedRolData.id
-                ? { ...rol, Rol: editedRolData.nombre, Descripcion: editedRolData.descripcion }
-                : rol
-        );
-        setRoles(updatedRoles);
-        handleCloseModal();
-    };
-
-    const onSaveDeleteRol = (rolId) => {
-        const updatedRoles = roles.filter(rol => rol.ID !== rolId);
-        setRoles(updatedRoles);
-        handleCloseModal();
+    const confirmDelete = () => {
+        if (currentRol) {
+            setRoles(prev => prev.filter(r => r.ID !== currentRol.ID));
+            handleCloseModal();
+        }
     };
 
     const onSavePermissions = (rolId, updatedPermissions) => {
@@ -159,68 +170,14 @@ export default function RolesGestionar() {
         handleCloseMatrixModal();
     };
 
-    const countActivePermissions = (permissions) => {
-        let count = 0;
-        if (!permissions) return 0;
-        for (const moduleId in permissions) {
-            for (const action in permissions[moduleId]) {
-                if (permissions[moduleId][action]) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    };
-    
-    const getModalProps = () => {
-        switch (modalType) {
-            case 'add':
-                return {
-                    title: 'Añadir nuevo rol',
-                    content: <AddRolForm onSave={onSaveAddRol} />,
-                    onAccept: () => document.getElementById('add-rol-form').requestSubmit(),
-                    onCancel: handleCloseModal,
-                };
-            case 'view':
-                return {
-                    title: `Detalles del rol: ${selectedRol.Rol}`,
-                    content: selectedRol && (
-                        <div>
-                            <p><strong>ID:</strong> {selectedRol.ID}</p>
-                            <p><strong>Rol:</strong> {selectedRol.Rol}</p>
-                            <p><strong>Descripción:</strong> {selectedRol.Descripcion}</p>
-                        </div>
-                    ),
-                    onAccept: handleCloseModal,
-                    onCancel: handleCloseModal,
-                };
-            case 'edit':
-                return {
-                    title: `Editar rol: ${selectedRol.Rol}`,
-                    content: selectedRol && <EditRolForm onSave={onSaveEditRol} rol={selectedRol} />,
-                    onAccept: () => document.getElementById('edit-rol-form').requestSubmit(),
-                    onCancel: handleCloseModal,
-                };
-            case 'delete':
-                return {
-                    title: `Eliminar rol: ${selectedRol.ID}`,
-                    content: <h4>¿Estás seguro de que deseas eliminar el rol con ID: {selectedRol.ID}?</h4>,
-                    onAccept: () => onSaveDeleteRol(selectedRol.ID),
-                    onCancel: handleCloseModal,
-                };
-            default:
-                return { title: '', content: null, onAccept: null, onCancel: handleCloseModal };
-        }
-    };
-    
-    const modalProps = getModalProps();
-
+    // --------------------- FILTRO ---------------------
     const filteredRoles = roles.filter(rol =>
         Object.values(rol).some(value =>
             String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
 
+    // --------------------- COLUMNAS ---------------------
     const columns = [
         { key: 'ID', header: 'ID', accessor: row => row.ID },
         { key: 'Rol', header: 'Rol', accessor: row => row.Rol },
@@ -231,9 +188,13 @@ export default function RolesGestionar() {
             accessor: row => (
                 <ToggleSwitch
                     isEnabled={row.Estado}
-                    onToggle={() => setRoles(prevRoles =>
-                        prevRoles.map(r => r.ID === row.ID ? { ...r, Estado: !r.Estado } : r)
-                    )}
+                    onToggle={() =>
+                        setRoles(prev =>
+                            prev.map(r =>
+                                r.ID === row.ID ? { ...r, Estado: !r.Estado } : r
+                            )
+                        )
+                    }
                 />
             )
         },
@@ -242,15 +203,60 @@ export default function RolesGestionar() {
             header: 'Acciones',
             accessor: rol => (
                 <MyGroupButtonsActions>
-                    <MyButtonShortAction type="view" onClick={() => handleOpenModal('view', rol)} />
-                    <MyButtonShortAction type="key" onClick={() => handleOpenModal('permissions', rol)} />
-                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal('edit', rol)} />
-                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal('delete', rol)} />
+                    <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
+                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
+                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
+                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
                 </MyGroupButtonsActions>
             )
         }
     ];
 
+    // --------------------- MODAL ---------------------
+    const getModalContentAndActions = () => {
+        switch (modalType) {
+            case 'view':
+                return {
+                    title: 'Detalles del rol',
+                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
+            case 'edit':
+                return {
+                    title: 'Editar rol',
+                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    onAccept: handleSave,
+                    onCancel: handleCloseModal
+                };
+            case 'add':
+                return {
+                    title: 'Añadir rol',
+                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    onAccept: handleSave,
+                    onCancel: handleCloseModal
+                };
+            case 'delete':
+                return {
+                    title: 'Eliminar rol',
+                    content: currentRol && (
+                        <div className='Inputs-add'>
+                            <label className="inputModal" disabled>
+                                ¿Deseas eliminar el rol con ID {currentRol.ID}?
+                            </label>
+                        </div>
+                    ),
+                    onAccept: confirmDelete,
+                    onCancel: handleCloseModal
+                };
+            default:
+                return { title: '', content: null, onAccept: null, onCancel: handleCloseModal };
+        }
+    };
+
+    const modalProps = getModalContentAndActions();
+
+    // --------------------- RENDER ---------------------
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de roles</h2>
@@ -260,10 +266,10 @@ export default function RolesGestionar() {
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
                     <MyGroupButtonsActions>
-                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal('add')} />
+                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal(null, 'add')} />
                     </MyGroupButtonsActions>
                 </div>
-                
+
                 <DynamicTable
                     columns={columns}
                     data={filteredRoles}
@@ -272,7 +278,6 @@ export default function RolesGestionar() {
                 />
             </div>
 
-            {/* Modal para agregar/editar/eliminar roles */}
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
@@ -282,7 +287,7 @@ export default function RolesGestionar() {
             >
                 {modalProps.content}
             </Modal>
-            
+
             {showMatrixModal && selectedRol && (
                 <div className='matrix-cont'>
                     <div className='cont'>

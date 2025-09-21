@@ -7,7 +7,6 @@ import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from '../components2/MyButtonShortAction';
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 
 const initialDocs = [
@@ -31,6 +30,18 @@ export default function TipoDocumentoGestionar() {
   const [currentDoc, setCurrentDoc] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  // Nuevo estado para gestionar los datos del formulario
+  const [formData, setFormData] = useState({
+    nombre: '',
+    descripcion: '',
+    nombreCorto: ''
+  });
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const filteredDocs = docs.filter((doc) =>
     Object.values(doc).some((value) =>
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,6 +51,20 @@ export default function TipoDocumentoGestionar() {
   const handleOpenModal = (doc, action) => {
     setCurrentDoc(doc);
     setModalType(action);
+    // Cargar los datos del documento en el estado del formulario
+    if (doc) {
+      setFormData({
+        nombre: doc.nombre,
+        descripcion: doc.descripcion,
+        nombreCorto: doc.nombreCorto
+      });
+    } else {
+      setFormData({
+        nombre: '',
+        descripcion: '',
+        nombreCorto: ''
+      });
+    }
     setShowModal(true);
   };
 
@@ -47,6 +72,11 @@ export default function TipoDocumentoGestionar() {
     setShowModal(false);
     setCurrentDoc(null);
     setModalType(null);
+    setFormData({
+      nombre: '',
+      descripcion: '',
+      nombreCorto: ''
+    });
   };
 
   const handleView = (doc) => {
@@ -72,10 +102,10 @@ export default function TipoDocumentoGestionar() {
     }
   };
 
-  const handleSave = (docData) => {
+  const handleSave = () => {
     if (modalType === 'add') {
       const newDoc = {
-        ...docData,
+        ...formData,
         id: docs.length > 0 ? Math.max(...docs.map(d => d.id)) + 1 : 1,
         estado: 'Activo'
       };
@@ -83,7 +113,7 @@ export default function TipoDocumentoGestionar() {
     } else if (modalType === 'edit' && currentDoc) {
       setDocs(prevDocs =>
         prevDocs.map(doc =>
-          doc.id === currentDoc.id ? { ...doc, ...docData } : doc
+          doc.id === currentDoc.id ? { ...doc, ...formData } : doc
         )
       );
     }
@@ -101,23 +131,23 @@ export default function TipoDocumentoGestionar() {
   };
 
   const columns = [
-    {
+    { key: 'id',
       header: 'ID',
       accessor: (doc) => doc.id
     },
-    {
+    { key: 'nombre',
       header: 'Nombre',
       accessor: (doc) => doc.nombre,
     },
-    {
+    { key: 'descripcion',
       header: 'Descripción',
       accessor: (doc) => doc.descripcion,
     },
-    {
+    { key: 'estado',
       header: 'Estado',
-      accessor: (doc) => <ToggleSwitch checked={doc.estado === 'Activo'} onToggle={() => handleToggle(doc.id)} />,
+      accessor: (doc) => <ToggleSwitch isEnabled={doc.estado === 'Activo'} onToggle={() => handleToggle(doc.id)} />,
     },
-    {
+    { key: 'acciones',
       header: 'Acciones',
       accessor: (doc) => (
         <MyGroupButtonsActions>
@@ -134,36 +164,30 @@ export default function TipoDocumentoGestionar() {
       case 'view':
         return {
           title: 'Visualizar documento',
-          content: currentDoc && (
-            <div>
-              <p><strong>Nombre:</strong> {currentDoc.nombre}</p>
-              <p><strong>Descripción:</strong> {currentDoc.descripcion}</p>
-              <p><strong>Nombre corto:</strong> {currentDoc.nombreCorto}</p>
-            </div>
-          ),
+          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
           onAccept: handleCloseModal,
           onCancel: handleCloseModal
         };
       case 'edit':
         return {
           title: 'Editar documento',
-          content: <DocForm onSave={handleSave} />,
-          onAccept: () => document.getElementById('doc-form').requestSubmit(),
+          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+          onAccept: handleSave,
           onCancel: handleCloseModal
         };
       case 'add':
         return {
           title: 'Añadir documento',
-          content: <DocForm onSave={handleSave} />,
-          onAccept: () => document.getElementById('doc-form').requestSubmit(),
+          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+          onAccept: handleSave,
           onCancel: handleCloseModal
         };
       case 'delete':
         return {
           title: 'Eliminar documento',
-          content: (
-            <div>
-              <p>¿Estás seguro de que quieres eliminar el documento "{currentDoc.nombre}"?</p>
+          content: currentDoc && (
+            <div className='Inputs-add'>
+              <label htmlFor="deleteConfirmation" className="inputModal" disabled>¿Deseas eliminar el documento?</label>
             </div>
           ),
           onAccept: confirmDelete,
@@ -214,37 +238,43 @@ export default function TipoDocumentoGestionar() {
   );
 }
 
-const DocForm = ({ onSave, doc }) => {
-  const [formData, setFormData] = useState({
-    nombre: doc?.nombre || '',
-    descripcion: doc?.descripcion || '',
-    nombreCorto: doc?.nombreCorto || '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
+const DocForm = ({ formData, handleFormChange, isViewMode }) => {
   return (
-    <form id="doc-form" onSubmit={handleSubmit}>
-      <div className="form-field">
-        <label>Nombre</label>
-        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="inputModal" required />
+    <div>
+      <div className="Inputs-add">
+        <label htmlFor="nombre">Nombre:</label>
+        <input
+          type="text"
+          className="inputModal"
+          id="nombre"
+          name="nombre"
+          value={formData.nombre}
+          onChange={handleFormChange}
+          disabled={isViewMode}
+          required
+        />
+        <label htmlFor="descripcion">Descripción:</label>
+        <textarea
+          className="inputModal"
+          id="descripcion"
+          name="descripcion"
+          value={formData.descripcion}
+          onChange={handleFormChange}
+          disabled={isViewMode}
+          required
+        />
+        <label htmlFor="nombreCorto">Nombre corto:</label>
+        <input
+          type="text"
+          className="inputModal"
+          id="nombreCorto"
+          name="nombreCorto"
+          value={formData.nombreCorto}
+          onChange={handleFormChange}
+          disabled={isViewMode}
+          required
+        />
       </div>
-      <div className="form-field">
-        <label>Descripción</label>
-        <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} className="inputModal" rows="3" />
-      </div>
-      <div className="form-field">
-        <label>Nombre corto</label>
-        <input type="text" name="nombreCorto" value={formData.nombreCorto} onChange={handleChange} className="inputModal" />
-      </div>
-    </form>
+    </div>
   );
 };
