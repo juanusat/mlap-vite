@@ -7,7 +7,8 @@ import './ActosLiturgicos-Gestionar-Horarios.css';
 
 export default function ActosLiturgicosHorarios() {
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState('disponibilidad'); // disponibilidad o noDisponibilidad
+    const [modalType, setModalType] = useState('disponibilidad'); // 'disponibilidad' o 'noDisponibilidad'
+    const [modalAction, setModalAction] = useState('add'); // 'add', 'edit', o 'delete'
     const [isEditing, setIsEditing] = useState(false);
     const [selectedIntervals, setSelectedIntervals] = useState({});
     const [savedIntervals, setSavedIntervals] = useState({});
@@ -15,11 +16,11 @@ export default function ActosLiturgicosHorarios() {
     const [startRow, setStartRow] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
+    
     // Establece el lunes previo al día actual como fecha inicial de la semana
     const getMondayOfCurrentWeek = () => {
         const today = new Date();
         const day = today.getDay();
-        // getDay(): 0=Domingo, 1=Lunes, ..., 6=Sábado
         const diff = day === 0 ? -6 : 1 - day;
         const monday = new Date(today);
         monday.setDate(today.getDate() + diff);
@@ -33,6 +34,8 @@ export default function ActosLiturgicosHorarios() {
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
     const [motivo, setMotivo] = useState('');
+    const [selectedException, setSelectedException] = useState(null);
+    const [selectedExceptionType, setSelectedExceptionType] = useState(null);
 
     const [disponibilidadPage, setDisponibilidadPage] = useState(0);
     const [noDisponibilidadPage, setNoDisponibilidadPage] = useState(0);
@@ -71,47 +74,78 @@ export default function ActosLiturgicosHorarios() {
     const weekDates = getWeekDates(currentWeekStart);
 
     const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '12:00 - 14:00' },
-        { fecha: '18/08/2025', hora: '12:00 - 14:00' },
-        { fecha: '19/08/2025', hora: '12:00 - 14:00' },
-        { fecha: '20/07/2025', hora: '12:00 - 14:00' },
-        { fecha: '21/07/2025', hora: '12:00 - 14:00' },
-        { fecha: '22/07/2025', hora: '12:00 - 14:00' },
-        { fecha: '23/07/2025', hora: '12:00 - 14:00' },
-        { fecha: '24/07/2025', hora: '12:00 - 14:00' },
-        { fecha: '25/07/2025', hora: '14:00 - 15:00' }
+        { fecha: '17/08/2025', hora: '12:00 - 14:00', motivo: 'Mantenimiento' },
+        { fecha: '18/08/2025', hora: '12:00 - 14:00', motivo: 'Limpieza profunda' },
+        { fecha: '19/08/2025', hora: '12:00 - 14:00', motivo: 'Evento especial' },
+        { fecha: '20/07/2025', hora: '12:00 - 14:00', motivo: 'Reunión de personal' },
+        { fecha: '21/07/2025', hora: '12:00 - 14:00', motivo: 'Capacitación' },
+        { fecha: '22/07/2025', hora: '12:00 - 14:00', motivo: 'Misa especial' },
+        { fecha: '23/07/2025', hora: '12:00 - 14:00', motivo: 'Retiro' },
+        { fecha: '24/07/2025', hora: '12:00 - 14:00', motivo: 'Visita pastoral' },
+        { fecha: '25/07/2025', hora: '14:00 - 15:00', motivo: 'Confesiones' }
     ]);
 
     const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '16:00 - 17:00' },
-        { fecha: '18/08/2025', hora: '16:00 - 17:00' },
-        { fecha: '19/08/2025', hora: '16:00 - 17:00' }
+        { fecha: '17/08/2025', hora: '16:00 - 17:00', motivo: 'Vacaciones' },
+        { fecha: '18/08/2025', hora: '16:00 - 17:00', motivo: 'Viaje' },
+        { fecha: '19/08/2025', hora: '16:00 - 17:00', motivo: 'Enfermedad' }
     ]);
 
     const handleOpenModal = (type) => {
         setModalType(type);
+        setModalAction('add');
         setShowModal(true);
     };
 
-    // Renombrado para ser más explícito
+    const handleEditException = (exception, type) => {
+        setModalType(type);
+        setModalAction('edit');
+        setFecha(exception.fecha);
+        const [start, end] = exception.hora.split(' - ');
+        setHoraInicio(start);
+        setHoraFin(end);
+        setMotivo(exception.motivo);
+        setSelectedException(exception);
+        setSelectedExceptionType(type);
+        setShowModal(true);
+    };
+
+    const handleDeleteException = (exception, type) => {
+        setModalType(type);
+        setModalAction('delete');
+        setSelectedException(exception);
+        setSelectedExceptionType(type);
+        setShowModal(true);
+    };
+
     const handleCancelModal = () => {
         setShowModal(false);
-        // Limpiar los estados del formulario al cerrar
         setFecha('');
         setHoraInicio('');
         setHoraFin('');
         setMotivo('');
+        setSelectedException(null);
+        setSelectedExceptionType(null);
+        setModalAction('add');
     };
 
-    // Nueva función para manejar el guardado desde el modal
     const handleAcceptModal = () => {
-        const newException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
-        if (modalType === 'disponibilidad') {
-            setExceptionsDisponibilidad(prev => [...prev, newException]);
-        } else {
-            setExceptionsNoDisponibilidad(prev => [...prev, newException]);
+        if (modalAction === 'add') {
+            const newException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
+            if (modalType === 'disponibilidad') {
+                setExceptionsDisponibilidad(prev => [newException, ...prev]);
+            } else {
+                setExceptionsNoDisponibilidad(prev => [newException, ...prev]);
+            }
+        } else if (modalAction === 'edit') {
+            const updatedException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
+            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
+            setter(prev => prev.map(ex => (ex === selectedException ? updatedException : ex)));
+        } else if (modalAction === 'delete') {
+            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
+            setter(prev => prev.filter(ex => ex !== selectedException));
         }
-        handleCancelModal(); // Llama a la función de cancelación para limpiar y cerrar
+        handleCancelModal();
     };
 
     const toggleEditing = () => {
@@ -144,7 +178,6 @@ export default function ActosLiturgicosHorarios() {
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
             
-            // Convertir horas a minutos para comparación más precisa
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
@@ -155,7 +188,6 @@ export default function ActosLiturgicosHorarios() {
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
             
-            // Verificar si hay solapamiento real entre los intervalos
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
     };
@@ -171,7 +203,6 @@ export default function ActosLiturgicosHorarios() {
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
             
-            // Convertir horas a minutos para comparación más precisa
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
@@ -182,7 +213,6 @@ export default function ActosLiturgicosHorarios() {
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
             
-            // Verificar si hay solapamiento real entre los intervalos
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
 
@@ -194,7 +224,6 @@ export default function ActosLiturgicosHorarios() {
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
             
-            // Convertir horas a minutos para comparación más precisa
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
@@ -205,7 +234,6 @@ export default function ActosLiturgicosHorarios() {
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
             
-            // Verificar si hay solapamiento real entre los intervalos
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
 
@@ -293,7 +321,7 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const handleCellClick = (rowIndex, colIndex) => {
-        if (!isEditing || isMouseMoved) return; // Añadir esta condición
+        if (!isEditing || isMouseMoved) return;
 
         setSelectedIntervals(prevIntervals => {
             const newIntervals = { ...prevIntervals };
@@ -336,7 +364,7 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const hasNextPage = (items, currentPage) => (currentPage + 1) * ITEMS_PER_PAGE < items.length;
-    const hasPrevPage = (currentPage) => currentPage > 0;
+    const hasPrevPage = (items, currentPage) => currentPage > 0;
     const getPaginatedItems = (items, currentPage) => {
         const startIndex = currentPage * ITEMS_PER_PAGE;
         return items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -440,7 +468,7 @@ export default function ActosLiturgicosHorarios() {
                                 <div className="exceptions-header">
                                     <h4>Excepciones - Disponibilidad</h4>
                                     <div className="exceptions-controls">
-                                        {hasPrevPage(disponibilidadPage) && (
+                                        {hasPrevPage(exceptionsDisponibilidad, disponibilidadPage) && (
                                             <MyButtonShortAction
                                                 type="back"
                                                 title="Página anterior"
@@ -473,8 +501,8 @@ export default function ActosLiturgicosHorarios() {
                                             <div className="exception-cell">{exception.hora}</div>
                                             <div className="exception-cell actions-cell">
                                                 <div className="exception-actions">
-                                                    <MyButtonShortAction type="edit" title="Editar excepción" />
-                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" />
+                                                    <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => handleEditException(exception, 'disponibilidad')} />
+                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => handleDeleteException(exception, 'disponibilidad')} />
                                                 </div>
                                             </div>
                                         </div>
@@ -486,7 +514,7 @@ export default function ActosLiturgicosHorarios() {
                                 <div className="exceptions-header">
                                     <h4>Excepciones - No disponibilidad</h4>
                                     <div className="exceptions-controls">
-                                        {hasPrevPage(noDisponibilidadPage) && (
+                                        {hasPrevPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
                                             <MyButtonShortAction
                                                 type="back"
                                                 title="Página anterior"
@@ -501,6 +529,7 @@ export default function ActosLiturgicosHorarios() {
                                         {hasNextPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
                                             <MyButtonShortAction
                                                 type="next"
+                                                title="Página siguiente"
                                                 onClick={() => setNoDisponibilidadPage(prev => prev + 1)}
                                             />
                                         )}
@@ -518,8 +547,8 @@ export default function ActosLiturgicosHorarios() {
                                             <div className="exception-cell">{exception.hora}</div>
                                             <div className="exception-cell actions-cell">
                                                 <div className="exception-actions">
-                                                    <MyButtonShortAction type="edit" title="Editar excepción" />
-                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" />
+                                                    <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => handleEditException(exception, 'noDisponibilidad')} />
+                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => handleDeleteException(exception, 'noDisponibilidad')} />
                                                 </div>
                                             </div>
                                         </div>
@@ -532,23 +561,31 @@ export default function ActosLiturgicosHorarios() {
                     <Modal
                         show={showModal}
                         onClose={handleCancelModal}
-                        title={modalType === 'disponibilidad' ? 'Agregar excepción - Disponibilidad' : 'Agregar excepción - No disponibilidad'}
+                        title={
+                            modalAction === 'add' ? `Agregar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
+                            : modalAction === 'edit' ? `Editar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
+                            : 'Confirmar eliminación'
+                        }
                         onAccept={handleAcceptModal}
                         onCancel={handleCancelModal}
                     >
-                        <form className='form-modal-horarios'>
-                            <div className="Inputs-add">
-                                <label htmlFor="fecha">Fecha</label>
-                                <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
-                                <label>Hora</label>
-                                <div className="time-range">
-                                    <input type="text" className="inputTime" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} placeholder="HH:MM" required />
-                                    <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
+                        {modalAction === 'delete' ? (
+                            <p>¿Estás seguro de que quieres eliminar esta excepción?</p>
+                        ) : (
+                            <form className='form-modal-horarios'>
+                                <div className="Inputs-add">
+                                    <label htmlFor="fecha">Fecha</label>
+                                    <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
+                                    <label>Hora</label>
+                                    <div className="time-range">
+                                        <input type="text" className="inputTime" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} placeholder="HH:MM" required />
+                                        <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
+                                    </div>
+                                    <label htmlFor="motivo">Motivo</label>
+                                    <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
                                 </div>
-                                <label htmlFor="motivo">Motivo</label>
-                                <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
-                            </div>
-                        </form>
+                            </form>
+                        )}
                     </Modal>
                 </div>
             </div>
