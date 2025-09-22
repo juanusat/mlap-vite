@@ -15,6 +15,18 @@ export default function ActosLiturgicosHorarios() {
     const [startRow, setStartRow] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
+    // Establece el lunes previo al día actual como fecha inicial de la semana
+    const getMondayOfCurrentWeek = () => {
+        const today = new Date();
+        const day = today.getDay();
+        // getDay(): 0=Domingo, 1=Lunes, ..., 6=Sábado
+        const diff = day === 0 ? -6 : 1 - day;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + diff);
+        monday.setHours(0, 0, 0, 0);
+        return monday;
+    };
+    const [currentWeekStart, setCurrentWeekStart] = useState(getMondayOfCurrentWeek());
 
     // Estados para el formulario de excepciones
     const [fecha, setFecha] = useState('');
@@ -34,22 +46,46 @@ export default function ActosLiturgicosHorarios() {
 
     const daysOfWeek = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
 
+    const getWeekDates = (startDate) => {
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + i);
+            dates.push(date);
+        }
+        return dates;
+    };
+
+    const formatDate = (date) => {
+        return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    };
+
+    const navigateWeek = (direction) => {
+        setCurrentWeekStart(prev => {
+            const newDate = new Date(prev);
+            newDate.setDate(newDate.getDate() + (direction * 7));
+            return newDate;
+        });
+    };
+
+    const weekDates = getWeekDates(currentWeekStart);
+
     const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '18/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '19/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '20/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '21/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '22/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '23/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '24/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '25/08/2025', hora: '17:00 - 21:00' }
+        { fecha: '17/08/2025', hora: '12:00 - 14:00' },
+        { fecha: '18/08/2025', hora: '12:00 - 14:00' },
+        { fecha: '19/08/2025', hora: '12:00 - 14:00' },
+        { fecha: '20/07/2025', hora: '12:00 - 14:00' },
+        { fecha: '21/07/2025', hora: '12:00 - 14:00' },
+        { fecha: '22/07/2025', hora: '12:00 - 14:00' },
+        { fecha: '23/07/2025', hora: '12:00 - 14:00' },
+        { fecha: '24/07/2025', hora: '12:00 - 14:00' },
+        { fecha: '25/07/2025', hora: '14:00 - 15:00' }
     ]);
 
     const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '18/08/2025', hora: '17:00 - 21:00' },
-        { fecha: '19/08/2025', hora: '17:00 - 21:00' }
+        { fecha: '17/08/2025', hora: '16:00 - 17:00' },
+        { fecha: '18/08/2025', hora: '16:00 - 17:00' },
+        { fecha: '19/08/2025', hora: '16:00 - 17:00' }
     ]);
 
     const handleOpenModal = (type) => {
@@ -93,6 +129,89 @@ export default function ActosLiturgicosHorarios() {
         return selectedIntervals[colIndex].some(interval => {
             return rowIndex >= interval[0] && rowIndex <= interval[1];
         });
+    };
+
+    const hasExceptionForCell = (rowIndex, colIndex) => {
+        const currentDate = weekDates[colIndex];
+        const dateStr = formatDate(currentDate);
+        const timeSlot = timeSlots[rowIndex];
+        
+        const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
+        
+        return allExceptions.some(exception => {
+            if (exception.fecha !== dateStr) return false;
+            
+            const [startTime, endTime] = exception.hora.split(' - ');
+            const [slotStart, slotEnd] = timeSlot.split(' - ');
+            
+            // Convertir horas a minutos para comparación más precisa
+            const parseTime = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            
+            const exceptionStart = parseTime(startTime);
+            const exceptionEnd = parseTime(endTime);
+            const slotStartMin = parseTime(slotStart);
+            const slotEndMin = parseTime(slotEnd);
+            
+            // Verificar si hay solapamiento real entre los intervalos
+            return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+        });
+    };
+
+    const getExceptionTypeForCell = (rowIndex, colIndex) => {
+        const currentDate = weekDates[colIndex];
+        const dateStr = formatDate(currentDate);
+        const timeSlot = timeSlots[rowIndex];
+        
+        const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
+            if (exception.fecha !== dateStr) return false;
+            
+            const [startTime, endTime] = exception.hora.split(' - ');
+            const [slotStart, slotEnd] = timeSlot.split(' - ');
+            
+            // Convertir horas a minutos para comparación más precisa
+            const parseTime = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            
+            const exceptionStart = parseTime(startTime);
+            const exceptionEnd = parseTime(endTime);
+            const slotStartMin = parseTime(slotStart);
+            const slotEndMin = parseTime(slotEnd);
+            
+            // Verificar si hay solapamiento real entre los intervalos
+            return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+        });
+
+        if (hasDisponibilidadException) return 'disponibilidad';
+
+        const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
+            if (exception.fecha !== dateStr) return false;
+            
+            const [startTime, endTime] = exception.hora.split(' - ');
+            const [slotStart, slotEnd] = timeSlot.split(' - ');
+            
+            // Convertir horas a minutos para comparación más precisa
+            const parseTime = (timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+            
+            const exceptionStart = parseTime(startTime);
+            const exceptionEnd = parseTime(endTime);
+            const slotStartMin = parseTime(slotStart);
+            const slotEndMin = parseTime(slotEnd);
+            
+            // Verificar si hay solapamiento real entre los intervalos
+            return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+        });
+
+        if (hasNoDisponibilidadException) return 'noDisponibilidad';
+
+        return null;
     };
 
     const handleCellMouseDown = (rowIndex, colIndex) => {
@@ -229,6 +348,22 @@ export default function ActosLiturgicosHorarios() {
                 <h2 className='title-screen'>Gestionar horario</h2>
                 <div className='app-container'>
                     <div className="horarios-container">
+                        <div className="week-navigation">
+                            <MyButtonShortAction
+                                type="back"
+                                title="Semana anterior"
+                                onClick={() => navigateWeek(-1)}
+                            />
+                            <span className="week-info">
+                                Semana del {formatDate(weekDates[0])} al {formatDate(weekDates[6])}
+                            </span>
+                            <MyButtonShortAction
+                                type="next"
+                                title="Semana siguiente"
+                                onClick={() => navigateWeek(1)}
+                            />
+                        </div>
+                        
                         <div className="horarios-controls">
                             <div className="horarios-edit-control">
                                 <MyButtonMediumIcon
@@ -261,7 +396,10 @@ export default function ActosLiturgicosHorarios() {
                                 <div className="grid-header">
                                     <div className="grid-cell header-cell"></div>
                                     {daysOfWeek.map((day, index) => (
-                                        <div key={index} className="grid-cell header-cell">{day}</div>
+                                        <div key={index} className="grid-cell header-cell">
+                                            <div className="day-name">{day}</div>
+                                            <div className="day-date">{weekDates[index].getDate()}</div>
+                                        </div>
                                     ))}
                                 </div>
 
@@ -270,10 +408,12 @@ export default function ActosLiturgicosHorarios() {
                                         <div className="grid-cell time-cell">{timeSlot}</div>
                                         {daysOfWeek.map((_, colIndex) => {
                                             const isSelected = isCellInInterval(rowIndex, colIndex);
+                                            const hasException = hasExceptionForCell(rowIndex, colIndex);
+                                            const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
                                             return (
                                                 <div
                                                     key={colIndex}
-                                                    className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${isEditing ? 'editable' : ''}`}
+                                                    className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
                                                     data-row={rowIndex}
                                                     data-col={colIndex}
                                                     onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
@@ -281,8 +421,11 @@ export default function ActosLiturgicosHorarios() {
                                                     onMouseUp={() => handleCellMouseUp(rowIndex)}
                                                     onClick={() => handleCellClick(rowIndex, colIndex)}
                                                 >
-                                                    {isSelected && (
+                                                    {isSelected && !hasException && (
                                                         <div className="interval-marker"></div>
+                                                    )}
+                                                    {hasException && (
+                                                        <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
                                                     )}
                                                 </div>
                                             );
