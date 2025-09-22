@@ -348,22 +348,23 @@ export default function ActosLiturgicosHorarios() {
                 <h2 className='title-screen'>Gestionar horario</h2>
                 <div className='app-container'>
                     <div className="horarios-container">
+                        <div className="week-navigation">
+                            <MyButtonShortAction
+                                type="back"
+                                title="Semana anterior"
+                                onClick={() => navigateWeek(-1)}
+                            />
+                            <span className="week-info">
+                                Semana del {formatDate(weekDates[0])} al {formatDate(weekDates[6])}
+                            </span>
+                            <MyButtonShortAction
+                                type="next"
+                                title="Semana siguiente"
+                                onClick={() => navigateWeek(1)}
+                            />
+                        </div>
+                        
                         <div className="horarios-controls">
-                            <div className="week-navigation">
-                                <MyButtonShortAction
-                                    type="back"
-                                    title="Semana anterior"
-                                    onClick={() => navigateWeek(-1)}
-                                />
-                                <span className="week-info">
-                                    Semana del {formatDate(weekDates[0])} al {formatDate(weekDates[6])}
-                                </span>
-                                <MyButtonShortAction
-                                    type="next"
-                                    title="Semana siguiente"
-                                    onClick={() => navigateWeek(1)}
-                                />
-                            </div>
                             <div className="horarios-edit-control">
                                 <MyButtonMediumIcon
                                     icon="MdAccept"
