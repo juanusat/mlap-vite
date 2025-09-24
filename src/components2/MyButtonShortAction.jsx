@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdAddModerator  } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -34,6 +34,9 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'select') {
     icon = <MdTouchApp />;
     className = 'btn-short-select'
+  } else if (type === 'file') {
+    icon = <MdAddModerator  />;
+    className = 'btn-short-file';
   } else {
     icon = null;
     className = '';
