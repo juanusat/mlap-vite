@@ -154,7 +154,7 @@ export default function CuentasGestionar() {
       accessor: (u) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(u)} />
-          <MyButtonShortAction type="add" title="Añadir rol" onClick={() => handleOpenModal(u, "addRole")} />
+          <MyButtonShortAction type="file" title="Añadir rol" onClick={() => handleOpenModal(u, "addRole")} />
           <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleOpenModal(u, "delete")} />
         </MyGroupButtonsActions>
       ),

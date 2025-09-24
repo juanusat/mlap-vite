@@ -16,7 +16,7 @@ export default function ActosLiturgicosHorarios() {
     const [startRow, setStartRow] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
-    
+
     // Establece el lunes previo al día actual como fecha inicial de la semana
     const getMondayOfCurrentWeek = () => {
         const today = new Date();
@@ -169,25 +169,25 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
-        
+
         const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
-        
+
         return allExceptions.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            
+
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-            
+
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            
+
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            
+
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
     };
@@ -196,23 +196,23 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
-        
+
         const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            
+
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-            
+
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            
+
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            
+
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
 
@@ -220,20 +220,20 @@ export default function ActosLiturgicosHorarios() {
 
         const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            
+
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-            
+
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            
+
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            
+
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
 
@@ -391,15 +391,23 @@ export default function ActosLiturgicosHorarios() {
                                 onClick={() => navigateWeek(1)}
                             />
                         </div>
-                        
+
                         <div className="horarios-controls">
                             <div className="horarios-edit-control">
                                 <MyButtonMediumIcon
-                                    icon="MdAccept"
+                                    icon="MdCreate"
                                     text={isEditing ? "Finalizar edición" : "Editar"}
                                     onClick={toggleEditing}
                                     classNameExtra="horarios-btn"
                                 />
+                            </div>
+                            <div className='Leyenda'>
+                                <div className='color-hnormal'></div>
+                                <span>Normal: </span>
+                                <div className='color-hdisponible'></div>
+                                <span>Ex. Disponible: </span>
+                                <div className='color-hno-disponible'></div>
+                                <span>Ex. No Disponible: </span>
                             </div>
                             {isEditing && (
                                 <div className="horarios-actions">
@@ -563,8 +571,8 @@ export default function ActosLiturgicosHorarios() {
                         onClose={handleCancelModal}
                         title={
                             modalAction === 'add' ? `Agregar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
-                            : modalAction === 'edit' ? `Editar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
-                            : 'Confirmar eliminación'
+                                : modalAction === 'edit' ? `Editar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
+                                    : 'Confirmar eliminación'
                         }
                         onAccept={handleAcceptModal}
                         onCancel={handleCancelModal}

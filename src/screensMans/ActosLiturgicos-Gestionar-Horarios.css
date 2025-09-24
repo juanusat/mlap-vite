@@ -51,6 +51,36 @@
 .horarios-edit-control {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+.Leyenda{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  margin-left: 20px;
+}
+
+.color-hnormal {
+  width: 12px;
+  height: 12px;
+  background-color: #b3d7ff;
+  border-radius: 2px;
+}
+
+.color-hdisponible {
+  width: 12px;
+  height: 12px;
+  background-color: #1e3a8a;
+  border-radius: 2px;
+}
+
+.color-hno-disponible {
+  width: 12px;
+  height: 12px;
+  background-color: #d3d3d3;
+  border-radius: 2px;
 }
 
 .horarios-actions {
