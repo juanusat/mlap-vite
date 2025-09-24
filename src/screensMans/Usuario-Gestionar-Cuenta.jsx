@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MyGroupButtonsActions from '../components2/MyGroupButtonsActions';
 import MyButtonShortAction from '../components2/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
+import InputFotoPerfil from '../components2/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
 import '../utils/Usuario-Gestionar.css';
@@ -13,10 +14,13 @@ const GestionCuenta = () => {
         apellidoPaterno: "Pérez",
         apellidoMaterno: "García",
         documentoIdentidad: "12345678",
+        fotoPerfil: "usuario.jpg",
         usuario: "juanperez",
         correo: "juan.perez@ejemplo.com",
         contraseña: "password123"
     });
+
+    const [fotoPerfilData, setFotoPerfilData] = useState(null);
 
     // Estado para el modo de edición de cada sección
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
@@ -29,22 +33,27 @@ const GestionCuenta = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const [showPassword, setShowPassword] = useState(false); 
+    const [showPassword, setShowPassword] = useState(false);
 
     // ----- Handlers para la Información Personal -----
     const handleEditPersonal = () => {
         setIsEditingPersonal(true);
+        setFotoPerfilData(null);
         setTempUserInfo(userInfo);
     };
 
     const handleSavePersonal = () => {
         setIsEditingPersonal(false);
         setUserInfo(tempUserInfo);
+        if (fotoPerfilData) {
+            updatedUserInfo.fotoPerfil = fotoPerfilData.name;
+        }
         console.log("Datos personales guardados:", tempUserInfo);
     };
 
     const handleCancelPersonal = () => {
         setIsEditingPersonal(false);
+        setFotoPerfilData(null);
     };
 
     // ----- Handlers para los Datos de la Cuenta -----
@@ -92,6 +101,10 @@ const GestionCuenta = () => {
         }
     };
 
+    const handleFotoPerfilChange = (data) => {
+        setFotoPerfilData(data); // data.preview ahora contiene la URL para mostrar
+    };
+
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de cuenta</h2>
@@ -111,6 +124,16 @@ const GestionCuenta = () => {
                         <TextInput label="Apellido paterno" value={tempUserInfo.apellidoPaterno} onChange={handleInputChange} name="apellidoPaterno" />
                         <TextInput label="Apellido materno" value={tempUserInfo.apellidoMaterno} onChange={handleInputChange} name="apellidoMaterno" />
                         <TextInput label="Documento de Identidad" value={tempUserInfo.documentoIdentidad} onChange={handleInputChange} name="documentoIdentidad" />
+                        <div className="foto-input-container">
+                            <label className="foto-label">Foto perfil:</label>
+                            <InputFotoPerfil
+                                onChange={handleFotoPerfilChange}
+                                value={fotoPerfilData ? fotoPerfilData.preview : null} // Pasar la URL de la preview
+                                placeholder="Subir foto de perfil de la parroquia"
+                                maxSize={5 * 1024 * 1024} // 5MB
+                                acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
+                            />
+                        </div>
                     </>
                 ) : (
                     <>
@@ -129,6 +152,10 @@ const GestionCuenta = () => {
                         <div className="info-item">
                             <span className="info-label">Documento de identidad:</span>
                             <span className="info-value">{userInfo.documentoIdentidad}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Foto perfil:</span>
+                            <span className="info-value">{userInfo.fotoPerfil}</span>
                         </div>
                     </>
                 )}

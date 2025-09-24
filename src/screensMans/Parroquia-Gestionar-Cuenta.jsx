@@ -15,10 +15,10 @@ const GestionCuenta = () => {
         direccion: "Algarrobos 222, Chiclayo 14008",
         coordenadas: "-6.781771909288489, -79.84091136201245",
         celular: "999888777",
-        colorPrimario: "#DC2626", // Rojo
-        colorSecundario: "#2563EB", // Azul
-        fotoPerfil: "iglesia.jpg", // Aquí podrías poner una URL de imagen si tienes una
-        fotoPortada: "iglesia_portada.jpg", // Aquí podrías poner una URL de imagen si tienes una
+        colorPrimario: "#DC2626", 
+        colorSecundario: "#2563EB", 
+        fotoPerfil: "iglesia.jpg", 
+        fotoPortada: "iglesia_portada.jpg", 
         usuario: "conso",
         correo: "consolacion@parroquia.com",
         contraseña: "password123"
