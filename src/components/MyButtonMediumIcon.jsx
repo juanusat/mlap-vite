@@ -1,5 +1,5 @@
 import React from "react";
-import { MdAdd, MdClose, MdOutlineSaveAs, MdCheck,  MdMailOutline  } from "react-icons/md";
+import { MdAdd, MdClose, MdOutlineSaveAs, MdCheck,  MdMailOutline, MdCreate  } from "react-icons/md";
 import "./MyButtonMediumIcon.css";
 
 const ICONS = {
@@ -7,7 +7,8 @@ const ICONS = {
   MdClose: <MdClose />,
   MdOutlineSaveAs: <MdOutlineSaveAs />,
   MdAccept : <MdCheck />,
-  MdMail : < MdMailOutline  />
+  MdMail : < MdMailOutline  />,
+  MdCreate: <MdCreate />
 };
 
 const ICON_COLORS = {
