@@ -81,3 +81,6 @@
 .btn-short-back{
   color: var(--color-a-600);
 }
+.btn-short-file{
+  color:var(--color-a-400);
+}
