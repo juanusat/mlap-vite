@@ -5,10 +5,114 @@ import Modal from '../components2/Modal';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
+// Componente reutilizable para cada sección de excepciones
+function ExcepcionesSection({
+    title,
+    exceptions,
+    onAdd,
+    onEdit,
+    onDelete,
+    ITEMS_PER_PAGE = 4
+}) {
+    const [activeTab, setActiveTab] = useState('futuras');
+    const [page, setPage] = useState(0);
+
+    // Filtrado por fecha
+    const parseDate = (dateStr) => {
+        const [day, month, year] = dateStr.split('/');
+        const fullYear = year.length === 2 ? '20' + year : year;
+        return new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+    };
+    const isFuture = (dateStr) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return parseDate(dateStr) >= today;
+    };
+    const filterExceptions = (exceptions, tab) => {
+        return exceptions.filter(ex => tab === 'futuras' ? isFuture(ex.fecha) : !isFuture(ex.fecha));
+    };
+
+    const filtered = filterExceptions(exceptions, activeTab);
+    const hasNextPage = (currentPage) => (currentPage + 1) * ITEMS_PER_PAGE < filtered.length;
+    const hasPrevPage = (currentPage) => currentPage > 0;
+    const getPaginatedItems = (currentPage) => {
+        const startIndex = currentPage * ITEMS_PER_PAGE;
+        return filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    };
+
+    // Reset paginación al cambiar de pestaña
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setPage(0);
+    };
+
+    return (
+        <div className="exceptions-section">
+            <div className="exceptions-header">
+                <h4>{title}</h4>
+                <div className="exceptions-tabs">
+                    <button
+                        className={activeTab === 'futuras' ? 'active' : ''}
+                        onClick={() => handleTabChange('futuras')}
+                    >
+                        Próximas
+                    </button>
+                    <button
+                        className={activeTab === 'pasadas' ? 'active' : ''}
+                        onClick={() => handleTabChange('pasadas')}
+                    >
+                        Pasadas
+                    </button>
+                </div>
+                <div className="exceptions-controls">
+                    {hasPrevPage(page) && (
+                        <MyButtonShortAction
+                            type="back"
+                            title="Página anterior"
+                            onClick={() => setPage(prev => prev - 1)}
+                        />
+                    )}
+                    <MyButtonShortAction
+                        type="add"
+                        title={`Agregar ${title.toLowerCase()}`}
+                        onClick={onAdd}
+                    />
+                    {hasNextPage(page) && (
+                        <MyButtonShortAction
+                            type="next"
+                            title="Página siguiente"
+                            onClick={() => setPage(prev => prev + 1)}
+                        />
+                    )}
+                </div>
+            </div>
+            <div className="exceptions-table">
+                <div className="exceptions-table-header">
+                    <div className="exception-cell">Fecha</div>
+                    <div className="exception-cell">Hora</div>
+                    <div className="exception-cell actions-cell"></div>
+                </div>
+                {getPaginatedItems(page).map((exception, index) => (
+                    <div key={index} className="exceptions-table-row">
+                        <div className="exception-cell">{exception.fecha}</div>
+                        <div className="exception-cell">{exception.hora}</div>
+                        <div className="exception-cell actions-cell">
+                            <div className="exception-actions">
+                                <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => onEdit(exception)} />
+                                <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => onDelete(exception)} />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function ActosLiturgicosHorarios() {
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState('disponibilidad'); // 'disponibilidad' o 'noDisponibilidad'
-    const [modalAction, setModalAction] = useState('add'); // 'add', 'edit', o 'delete'
+    const [modalType, setModalType] = useState('disponibilidad');
+    const [modalAction, setModalAction] = useState('add');
     const [isEditing, setIsEditing] = useState(false);
     const [selectedIntervals, setSelectedIntervals] = useState({});
     const [savedIntervals, setSavedIntervals] = useState({});
@@ -17,7 +121,7 @@ export default function ActosLiturgicosHorarios() {
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
 
-    // Establece el lunes previo al día actual como fecha inicial de la semana
+    // Semana actual
     const getMondayOfCurrentWeek = () => {
         const today = new Date();
         const day = today.getDay();
@@ -29,7 +133,7 @@ export default function ActosLiturgicosHorarios() {
     };
     const [currentWeekStart, setCurrentWeekStart] = useState(getMondayOfCurrentWeek());
 
-    // Estados para el formulario de excepciones
+    // Formulario excepciones
     const [fecha, setFecha] = useState('');
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
@@ -37,8 +141,6 @@ export default function ActosLiturgicosHorarios() {
     const [selectedException, setSelectedException] = useState(null);
     const [selectedExceptionType, setSelectedExceptionType] = useState(null);
 
-    const [disponibilidadPage, setDisponibilidadPage] = useState(0);
-    const [noDisponibilidadPage, setNoDisponibilidadPage] = useState(0);
     const ITEMS_PER_PAGE = 4;
 
     const timeSlots = [
@@ -159,7 +261,6 @@ export default function ActosLiturgicosHorarios() {
 
     const isCellInInterval = (rowIndex, colIndex) => {
         if (!selectedIntervals[colIndex]) return false;
-
         return selectedIntervals[colIndex].some(interval => {
             return rowIndex >= interval[0] && rowIndex <= interval[1];
         });
@@ -169,25 +270,19 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
-
         const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
-
         return allExceptions.some(exception => {
             if (exception.fecha !== dateStr) return false;
-
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
     };
@@ -196,49 +291,36 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
-
         const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
-
         if (hasDisponibilidadException) return 'disponibilidad';
-
         const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-
             const [startTime, endTime] = exception.hora.split(' - ');
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-
             const exceptionStart = parseTime(startTime);
             const exceptionEnd = parseTime(endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
-
         if (hasNoDisponibilidadException) return 'noDisponibilidad';
-
         return null;
     };
 
@@ -322,7 +404,6 @@ export default function ActosLiturgicosHorarios() {
 
     const handleCellClick = (rowIndex, colIndex) => {
         if (!isEditing || isMouseMoved) return;
-
         setSelectedIntervals(prevIntervals => {
             const newIntervals = { ...prevIntervals };
             if (!newIntervals[colIndex]) {
@@ -358,16 +439,8 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const handleSave = () => {
-        console.log('Guardando horarios', selectedIntervals);
         setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
         setIsEditing(false);
-    };
-
-    const hasNextPage = (items, currentPage) => (currentPage + 1) * ITEMS_PER_PAGE < items.length;
-    const hasPrevPage = (items, currentPage) => currentPage > 0;
-    const getPaginatedItems = (items, currentPage) => {
-        const startIndex = currentPage * ITEMS_PER_PAGE;
-        return items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     };
 
     return (
@@ -438,7 +511,6 @@ export default function ActosLiturgicosHorarios() {
                                         </div>
                                     ))}
                                 </div>
-
                                 {timeSlots.map((timeSlot, rowIndex) => (
                                     <div key={rowIndex} className="grid-row">
                                         <div className="grid-cell time-cell">{timeSlot}</div>
@@ -472,97 +544,22 @@ export default function ActosLiturgicosHorarios() {
                         </div>
 
                         <div className="exceptions-container">
-                            <div className="exceptions-section">
-                                <div className="exceptions-header">
-                                    <h4>Excepciones - Disponibilidad</h4>
-                                    <div className="exceptions-controls">
-                                        {hasPrevPage(exceptionsDisponibilidad, disponibilidadPage) && (
-                                            <MyButtonShortAction
-                                                type="back"
-                                                title="Página anterior"
-                                                onClick={() => setDisponibilidadPage(prev => prev - 1)}
-                                            />
-                                        )}
-                                        <MyButtonShortAction
-                                            type="add"
-                                            title="Agregar excepción de disponibilidad"
-                                            onClick={() => handleOpenModal('disponibilidad')}
-                                        />
-                                        {hasNextPage(exceptionsDisponibilidad, disponibilidadPage) && (
-                                            <MyButtonShortAction
-                                                type="next"
-                                                title="Página siguiente"
-                                                onClick={() => setDisponibilidadPage(prev => prev + 1)}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="exceptions-table">
-                                    <div className="exceptions-table-header">
-                                        <div className="exception-cell">Fecha</div>
-                                        <div className="exception-cell">Hora</div>
-                                        <div className="exception-cell actions-cell"></div>
-                                    </div>
-                                    {getPaginatedItems(exceptionsDisponibilidad, disponibilidadPage).map((exception, index) => (
-                                        <div key={index} className="exceptions-table-row">
-                                            <div className="exception-cell">{exception.fecha}</div>
-                                            <div className="exception-cell">{exception.hora}</div>
-                                            <div className="exception-cell actions-cell">
-                                                <div className="exception-actions">
-                                                    <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => handleEditException(exception, 'disponibilidad')} />
-                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => handleDeleteException(exception, 'disponibilidad')} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="exceptions-section">
-                                <div className="exceptions-header">
-                                    <h4>Excepciones - No disponibilidad</h4>
-                                    <div className="exceptions-controls">
-                                        {hasPrevPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
-                                            <MyButtonShortAction
-                                                type="back"
-                                                title="Página anterior"
-                                                onClick={() => setNoDisponibilidadPage(prev => prev - 1)}
-                                            />
-                                        )}
-                                        <MyButtonShortAction
-                                            type="add"
-                                            title="Agregar excepción de no disponibilidad"
-                                            onClick={() => handleOpenModal('noDisponibilidad')}
-                                        />
-                                        {hasNextPage(exceptionsNoDisponibilidad, noDisponibilidadPage) && (
-                                            <MyButtonShortAction
-                                                type="next"
-                                                title="Página siguiente"
-                                                onClick={() => setNoDisponibilidadPage(prev => prev + 1)}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="exceptions-table">
-                                    <div className="exceptions-table-header">
-                                        <div className="exception-cell">Fecha</div>
-                                        <div className="exception-cell">Hora</div>
-                                        <div className="exception-cell actions-cell"></div>
-                                    </div>
-                                    {getPaginatedItems(exceptionsNoDisponibilidad, noDisponibilidadPage).map((exception, index) => (
-                                        <div key={index} className="exceptions-table-row">
-                                            <div className="exception-cell">{exception.fecha}</div>
-                                            <div className="exception-cell">{exception.hora}</div>
-                                            <div className="exception-cell actions-cell">
-                                                <div className="exception-actions">
-                                                    <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => handleEditException(exception, 'noDisponibilidad')} />
-                                                    <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => handleDeleteException(exception, 'noDisponibilidad')} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            <ExcepcionesSection
+                                title="Excepciones - Disponibilidad"
+                                exceptions={exceptionsDisponibilidad}
+                                onAdd={() => handleOpenModal('disponibilidad')}
+                                onEdit={exception => handleEditException(exception, 'disponibilidad')}
+                                onDelete={exception => handleDeleteException(exception, 'disponibilidad')}
+                                ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                            />
+                            <ExcepcionesSection
+                                title="Excepciones - No disponibilidad"
+                                exceptions={exceptionsNoDisponibilidad}
+                                onAdd={() => handleOpenModal('noDisponibilidad')}
+                                onEdit={exception => handleEditException(exception, 'noDisponibilidad')}
+                                onDelete={exception => handleDeleteException(exception, 'noDisponibilidad')}
+                                ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                            />
                         </div>
                     </div>
 
