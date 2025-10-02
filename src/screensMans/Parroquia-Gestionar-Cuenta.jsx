@@ -263,7 +263,7 @@ const GestionCuenta = () => {
             <ExpandableContainer
                 title='Datos de la cuenta'
                 type='edit'
-                showDeleteButton="si"
+                showDeleteButton="no"
                 isEditing={isEditingAccount}
                 onEdit={handleEditAccount}
                 onSave={handleSaveAccount}
