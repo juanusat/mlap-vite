@@ -26,53 +26,23 @@ const MatrixModal = ({ modules, permissions, title, onSave, onClose }) => {
   };
 
   return (
-    <div className="matrix-container">
-      <h3>{title}</h3>
-      <table className="permissions-matrix">
-        <thead>
-          <tr>
-            <th>Módulo</th>
-            <th>Ver</th>
-            <th>Añadir</th>
-            <th>Editar</th>
-            <th>Eliminar</th>
-          </tr>
-        </thead>
-        <tbody>
-          {modules.map(module => (
-            <tr key={module.id}>
-              <th scope="row">{module.name}</th>
-              <td>
-                <ToggleSwitch
-                  initialState={matrixState[module.id]?.view}
-                  onToggle={() => handleToggle(module.id, 'view')}
-                />
-              </td>
-              <td>
-                <ToggleSwitch
-                  initialState={matrixState[module.id]?.add}
-                  onToggle={() => handleToggle(module.id, 'add')}
-                />
-              </td>
-              <td>
-                <ToggleSwitch
-                  initialState={matrixState[module.id]?.edit}
-                  onToggle={() => handleToggle(module.id, 'edit')}
-                />
-              </td>
-              <td>
-                <ToggleSwitch
-                  initialState={matrixState[module.id]?.delete}
-                  onToggle={() => handleToggle(module.id, 'delete')}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="buttons-container">
-        <MyButtonMediumIcon text="Cerrar" icon="MdClose" onClick={onClose} />
-        <MyButtonMediumIcon text="Guardar" icon="MdOutlineSaveAs" onClick={handleSave} />
+    <div className="modal-overlay">
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">{title}</h3>
+          <button className="modal-close-btn" onClick={onClose}>
+            &times;
+          </button>
+        </div>
+        <div className="modal-body">
+          {children}
+        </div>
+        {onAccept && onCancel && (
+          <div className="buttons-container">
+            <MyButtonMediumIcon text="Cancelar" icon="MdClose" onClick={onCancel} />
+            <MyButtonMediumIcon text="Aceptar" icon="MdAccept" onClick={onAccept} type="submit" />
+          </div>
+        )}
       </div>
     </div>
   );

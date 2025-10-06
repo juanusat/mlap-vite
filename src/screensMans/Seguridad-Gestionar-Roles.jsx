@@ -5,9 +5,49 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import ToggleSwitch from '../components2/Toggle';
 import Modal from '../components2/Modal';
-import MatrixModal from '../components2/MatrixModal';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css';
+
+const MODULE_STRUCTURE = {
+    'liturgicalActs': { 
+        name: 'Actos Litúrgicos', 
+        submodules: [
+            { id: 'acts', name: 'Gestionar actos litúrgicos' },
+            { id: 'requirements', name: 'Gestionar requisitos' },
+            { id: 'schedules', name: 'Gestionar horarios' },
+            { id: 'reservations', name: 'Gestionar Reservas' },
+        ]
+    },
+    'reservations': { 
+        name: 'Reservas',
+        submodules: [
+            { id: 'pending', name: 'Reservas pendientes' },
+            { id: 'history', name: 'Historial de reservas' },
+            { id: 'bookevent', name: 'Reservar evento' },
+        ]
+    },
+    'security': {
+        name: 'Seguridad',
+        submodules: [
+            { id: 'accounts', name: 'Gestionar cuentas' },
+            { id: 'roles', name: 'Gestionar roles' },
+        ]
+    },
+    'parishes': {
+        name: 'Parroquia',
+        submodules: [
+            { id: 'account', name: 'Gestionar cuenta' },
+            { id: 'chapel', name: 'Gestionar capilla' },
+        ]
+    }
+};
+
+const PERMISSION_ACTIONS = [
+    { key: 'add', label: 'Crear' },
+    { key: 'view', label: 'Ver' },
+    { key: 'edit', label: 'Editar' },
+    { key: 'delete', label: 'Eliminar' }
+];
 
 // --------------------- FORMULARIO ---------------------
 const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
@@ -42,20 +82,17 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 
 // --------------------- PRINCIPAL ---------------------
 export default function RolesGestionar() {
-    const modulesList = [
-        { id: 'liturgicalActs', name: 'Actos liturgicos' },
-        { id: 'users', name: 'Usuario' },
-        { id: 'parishes', name: 'Parroquia' },
-        { id: 'security', name: 'Seguridad' },
-        { id: 'reservations', name: 'Reservas' },
-        { id: 'documentTypes', name: 'Tipo de Documentos' },
-        { id: 'parishApproval', name: 'Aprobar parroquia' }
-    ];
+    const modulesList = Object.keys(MODULE_STRUCTURE).map(key => ({ 
+        id: key, 
+        name: MODULE_STRUCTURE[key].name 
+    }));
 
     const generateMockPermissions = () => {
         const permissions = {};
-        modulesList.forEach(module => {
-            permissions[module.id] = { view: false, add: false, edit: false, delete: false };
+        Object.keys(MODULE_STRUCTURE).forEach(moduleId => {
+            MODULE_STRUCTURE[moduleId].submodules.forEach(submodule => {
+                permissions[`${moduleId}_${submodule.id}`] = { view: false, add: false, edit: false, delete: false };
+            });
         });
         return permissions;
     };
@@ -87,14 +124,34 @@ export default function RolesGestionar() {
         descripcion: ''
     });
 
-    // Para MatrixModal
-    const [showMatrixModal, setShowMatrixModal] = useState(false);
-    const [selectedRol, setSelectedRol] = useState(null);
+    const [selectedModule, setSelectedModule] = useState('');
+    const [selectedSubmodule, setSelectedSubmodule] = useState('');
+    
+    const [permissionsForm, setPermissionsForm] = useState({
+        add: false,
+        view: false,
+        edit: false,
+        delete: false,
+    });
+
 
     // --------------------- HANDLERS FORM ---------------------
     const handleFormChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        
+        if (type === 'checkbox') {
+            setPermissionsForm(prev => ({ ...prev, [name]: checked }));
+        }
+        else if (name === 'selectedModule') {
+            setSelectedModule(value);
+            setSelectedSubmodule('');
+            setPermissionsForm({ add: false, view: false, edit: false, delete: false });
+        } else if (name === 'selectedSubmodule') {
+            setSelectedSubmodule(value);
+            setPermissionsForm({ add: false, view: false, edit: false, delete: false });
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleOpenModal = (rol, action) => {
@@ -111,11 +168,12 @@ export default function RolesGestionar() {
         }
 
         if (action === 'permissions') {
-            setSelectedRol(rol);
-            setShowMatrixModal(true);
-        } else {
-            setShowModal(true);
+            setSelectedModule('');
+            setSelectedSubmodule('');
+            setPermissionsForm({ add: false, view: false, edit: false, delete: false });
         }
+
+        setShowModal(true);
     };
 
     const handleCloseModal = () => {
@@ -123,11 +181,9 @@ export default function RolesGestionar() {
         setCurrentRol(null);
         setModalType(null);
         setFormData({ nombre: '', descripcion: '' });
-    };
-
-    const handleCloseMatrixModal = () => {
-        setShowMatrixModal(false);
-        setSelectedRol(null);
+        setSelectedModule(''); 
+        setSelectedSubmodule('');
+        setPermissionsForm({ add: false, view: false, edit: false, delete: false });
     };
 
     // --------------------- CRUD ---------------------
@@ -160,16 +216,6 @@ export default function RolesGestionar() {
         }
     };
 
-    const onSavePermissions = (rolId, updatedPermissions) => {
-        const updatedRoles = roles.map(rol =>
-            rol.ID === rolId
-                ? { ...rol, Permissions: updatedPermissions }
-                : rol
-        );
-        setRoles(updatedRoles);
-        handleCloseMatrixModal();
-    };
-
     // --------------------- FILTRO ---------------------
     const filteredRoles = roles.filter(rol =>
         Object.values(rol).some(value =>
@@ -177,42 +223,68 @@ export default function RolesGestionar() {
         )
     );
 
-    // --------------------- COLUMNAS ---------------------
-    const columns = [
-        { key: 'ID', header: 'ID', accessor: row => row.ID },
-        { key: 'Rol', header: 'Rol', accessor: row => row.Rol },
-        { key: 'Descripcion', header: 'Descripción', accessor: row => row.Descripcion },
-        {
-            key: 'Estado',
-            header: 'Estado',
-            accessor: row => (
-                <ToggleSwitch
-                    isEnabled={row.Estado}
-                    onToggle={() =>
-                        setRoles(prev =>
-                            prev.map(r =>
-                                r.ID === row.ID ? { ...r, Estado: !r.Estado } : r
-                            )
-                        )
-                    }
-                />
-            )
-        },
-        {
-            key: 'Acciones',
-            header: 'Acciones',
-            accessor: rol => (
-                <MyGroupButtonsActions>
-                    <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
-                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
-                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
-                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
-                </MyGroupButtonsActions>
-            )
-        }
-    ];
+    // --------------------- MODAL: CONTENIDO DE PERMISOS ---------------------
+    const getPermissionsModalContent = () => {
+        const submodules = selectedModule
+            ? MODULE_STRUCTURE[selectedModule].submodules
+            : [];
+            
+        const isPermissionsEnabled = selectedSubmodule !== '';
 
-    // --------------------- MODAL ---------------------
+        return (
+            <div className='Inputs-add'>
+                <label htmlFor="selectedModule">Seleccione un módulo:</label>
+                <select
+                    id="selectedModule"
+                    name="selectedModule"
+                    className="inputModal"
+                    value={selectedModule}
+                    onChange={handleFormChange}
+                    required
+                >
+                    <option value="">-- Seleccionar Módulo --</option>
+                    {modulesList.map(module => (
+                        <option key={module.id} value={module.id}>{module.name}</option>
+                    ))}
+                </select>
+
+                <label htmlFor="selectedSubmodule">Seleccione un sub-módulo:</label>
+                <select
+                    id="selectedSubmodule"
+                    name="selectedSubmodule"
+                    className="inputModal"
+                    value={selectedSubmodule}
+                    onChange={handleFormChange}
+                    disabled={!selectedModule}
+                    required
+                >
+                    <option value="">-- Seleccionar Sub-módulo --</option>
+                    {submodules.map(submodule => (
+                        <option key={submodule.id} value={submodule.id}>{submodule.name}</option>
+                    ))}
+                </select>
+                
+                <div className="permissions-checkboxes">
+                    {PERMISSION_ACTIONS.map(action => (
+                        <div key={action.key} className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                id={action.key}
+                                name={action.key}
+                                checked={permissionsForm[action.key]}
+                                onChange={handleFormChange}
+                                disabled={!isPermissionsEnabled}
+                            />
+                            <label htmlFor={action.key}>{action.label}</label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+
+    // --------------------- MODAL LOGIC ---------------------
     const getModalContentAndActions = () => {
         switch (modalType) {
             case 'view':
@@ -249,12 +321,53 @@ export default function RolesGestionar() {
                     onAccept: confirmDelete,
                     onCancel: handleCloseModal
                 };
+            case 'permissions':
+                return {
+                    title: `Permisos del rol: ${currentRol ? currentRol.Rol : 'N/A'}`,
+                    content: getPermissionsModalContent(),
+                    onAccept: handleCloseModal,
+                    onCancel: handleCloseModal
+                };
             default:
                 return { title: '', content: null, onAccept: null, onCancel: handleCloseModal };
         }
     };
 
     const modalProps = getModalContentAndActions();
+    
+    const columns = [
+        { key: 'ID', header: 'ID', accessor: row => row.ID },
+        { key: 'Rol', header: 'Rol', accessor: row => row.Rol },
+        { key: 'Descripcion', header: 'Descripción', accessor: row => row.Descripcion },
+        {
+            key: 'Estado',
+            header: 'Estado',
+            accessor: row => (
+                <ToggleSwitch
+                    isEnabled={row.Estado}
+                    onToggle={() =>
+                        setRoles(prev =>
+                            prev.map(r =>
+                                r.ID === row.ID ? { ...r, Estado: !r.Estado } : r
+                            )
+                        )
+                    }
+                />
+            )
+        },
+        {
+            key: 'Acciones',
+            header: 'Acciones',
+            accessor: rol => (
+                <MyGroupButtonsActions>
+                    <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
+                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
+                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
+                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
+                </MyGroupButtonsActions>
+            )
+        }
+    ];
 
     // --------------------- RENDER ---------------------
     return (
@@ -277,7 +390,6 @@ export default function RolesGestionar() {
                     columnLeftAlignIndex={[2, 3]}
                 />
             </div>
-
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
@@ -287,20 +399,6 @@ export default function RolesGestionar() {
             >
                 {modalProps.content}
             </Modal>
-
-            {showMatrixModal && selectedRol && (
-                <div className='matrix-cont'>
-                    <div className='cont'>
-                        <MatrixModal
-                            title={`Permisos de: ${selectedRol.Rol}`}
-                            modules={modulesList}
-                            permissions={selectedRol.Permissions}
-                            onSave={(updatedPermissions) => onSavePermissions(selectedRol.ID, updatedPermissions)}
-                            onClose={handleCloseMatrixModal}
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
