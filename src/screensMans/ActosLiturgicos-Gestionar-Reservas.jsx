@@ -14,6 +14,17 @@ const initialUsers = Array.from({ length: 5 }, (_, i) => ({
   nombre: `Usuario ${i + 1}`,
 }));
 
+// AHORA DEFINIDO FUERA: Opciones de capillas para la simulación
+const chapelsOptions = [
+  "Capilla Santa Ana",
+  "Capilla San José Obrero",
+  "Capilla Virgen del Carmen",
+  "Capilla La Candelaria",
+  "Capilla de San Antonio",
+];
+
+// ... (resto de eventsOptions, getRandomDate, initialRequirementsData sin cambios)
+
 const eventsOptions = [
   { nombre: "Bautizo", descripcion: "Ceremonia para el sacramento del bautismo." },
   { nombre: "Primera comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
@@ -44,14 +55,18 @@ const initialRequirementsData = Array.from({ length: 10 }, (_, i) => ({
   nombre: `Requisito ${i + 1}`
 }));
 
-// Generación de datos iniciales con usuarios aleatorios y eventos de la lista
+// Generación de datos iniciales con la propiedad 'capilla'
 const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
   const randomUser = initialUsers[Math.floor(Math.random() * initialUsers.length)];
   const randomEvent = eventsOptions[Math.floor(Math.random() * eventsOptions.length)];
   const randomAmount = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
+  // Accede a la variable chapelsOptions definida arriba
+  const randomChapel = chapelsOptions[Math.floor(Math.random() * chapelsOptions.length)];
+
   return {
     id: i + 1,
     evento: randomEvent.nombre,
+    capilla: randomChapel,
     fecha: getRandomDate(),
     usuarioId: randomUser.id,
     usuarioNombre: randomUser.nombre,
@@ -61,6 +76,10 @@ const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
     monto: randomAmount,
   };
 });
+
+// -------------------------------------------------------------------------
+// Componente principal (la lógica interna para la tabla sigue siendo la misma)
+// -------------------------------------------------------------------------
 
 export default function Reservas() {
   const [reservations, setReservations] = useState(initialReservationsData);
@@ -158,6 +177,8 @@ export default function Reservas() {
     { key: 'id', header: 'ID', accessor: (row) => row.id },
     { key: 'usuarioNombre', header: 'Usuario', accessor: (row) => row.usuarioNombre },
     { key: 'evento', header: 'Evento', accessor: (row) => row.evento },
+    // Columna Capilla (sin cambios)
+    { key: 'capilla', header: 'Capilla', accessor: (row) => row.capilla },
     { key: 'fecha', header: 'Fecha', accessor: (row) => row.fecha },
     { key: 'monto', header: 'Monto', accessor: (row) => `$ ${row.monto.toFixed(2)}` },
     { key: 'estado', header: 'Estado', accessor: (row) => row.estado },
@@ -187,18 +208,23 @@ export default function Reservas() {
                 className="inputModal"
                 id="nombre"
                 value={currentReservation.evento}
-                onChange={(e) => setNombre(e.target.value)}
-                required
                 disabled
               />
+              {/* Campo de Capilla en la vista del modal (sin cambios) */}
+              <label>Capilla</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.capilla}
+                disabled
+              />
+
               <label>Fecha</label>
               <input
                 type="text"
                 className="inputModal"
                 id="nombre"
                 value={currentReservation.fecha}
-                onChange={(e) => setNombre(e.target.value)}
-                required
                 disabled
               />
               <label>Usuario</label>
@@ -207,8 +233,6 @@ export default function Reservas() {
                 className="inputModal"
                 id="nombre"
                 value={currentReservation.usuarioNombre}
-                onChange={(e) => setNombre(e.target.value)}
-                required
                 disabled
               />
               <label>Monto</label>
@@ -217,8 +241,6 @@ export default function Reservas() {
                 className="inputModal"
                 id="nombre"
                 value={`$ ${currentReservation.monto.toFixed(2)}`}
-                onChange={(e) => setNombre(e.target.value)}
-                required 
                 disabled
               />
               <label>Estado</label>
@@ -227,8 +249,6 @@ export default function Reservas() {
                 className="inputModal"
                 id="nombre"
                 value={currentReservation.estado}
-                onChange={(e) => setNombre(e.target.value)}
-                required
                 disabled
               />
             </div>
@@ -237,6 +257,7 @@ export default function Reservas() {
           onCancel: handleCloseModal
         };
       case 'edit':
+        // ... (resto del switch sin cambios)
         if (currentReservation?.estado === 'Reservado') {
           return {
             title: 'Cambiar estado reserva',
@@ -293,8 +314,8 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={displayedReservations}
-            gridColumnsLayout="90px 300px auto 170px 100px 140px 220px"
-            columnLeftAlignIndex={[2, 3]}
+            gridColumnsLayout="90px 200px 250px auto 120px 100px 100px 220px"
+            columnLeftAlignIndex={[2, 3, 4]}
           />
         </div>
         <Modal

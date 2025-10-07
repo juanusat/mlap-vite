@@ -117,3 +117,13 @@
     text-align: center;
 }
 
+.event-name{
+    font-weight: 500;
+    color: #212529;
+    font-size: 17px;
+}
+.event-capilla-name {
+    font-size: 15px;
+    color: #868e96;
+    margin-top: 4px;
+}

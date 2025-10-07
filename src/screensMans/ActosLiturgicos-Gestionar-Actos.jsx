@@ -235,19 +235,19 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
   const [nombre, setNombre] = useState(initialData.nombre || "");
   const [descripcion, setDescripcion] = useState(initialData.descripcion || "");
   const [capilla, setCapilla] = useState(initialData.capilla || "");
-  const [tipo, setTipo] = useState(initialData.tipo || "Privado");
+  // Asume 'Privado' si no hay dato, o si el dato es '-'
+  const defaultTipo = (initialData.personas === "-" || !initialData.tipo) ? "Privado" : "Comunitario";
+  const [tipo, setTipo] = useState(initialData.tipo || defaultTipo);
   const [personas, setPersonas] = useState(initialData.personas === "-" ? "" : initialData.personas || "");
   const [eventSearch, setEventSearch] = useState("");
 
   const handleEventSearchChange = (value) => {
     setEventSearch(value);
-    // si coincide con una opción, rellenar nombre/descripcion automáticamente (modo add)
     const found = eventsOptions.find(e => e.nombre.toLowerCase() === value.toLowerCase());
     if (found) {
       setNombre(found.nombre);
       setDescripcion(found.descripcion);
     } else {
-      // no limpiar nombre/desc automáticamente si el usuario ya los editó en edit mode
       if (mode === "add") {
         setNombre(value);
       }
@@ -256,8 +256,10 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Normalizar personas: dejar '-' si vacío y tipo no comunitario
-    const normalizedPersonas = (tipo === "Comunitario") ? (personas || "") : (personas || "-");
+    
+    // Lógica clave: Si es Privado, guarda el campo personas como '-'
+    const normalizedPersonas = (tipo === "Privado") ? "-" : (personas || ""); 
+    
     onSave({
       nombre,
       descripcion,
@@ -269,8 +271,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
 
   return (
     <form id="event-form" onSubmit={handleSubmit}>
-      {/* En "add" mostramos el buscador/datalist para escoger evento (como antes).
-          En edit/view mostramos directamente el campo nombre (editable o disabled). */}
+      {/* Selector de Evento (Solo en modo Añadir) */}
       {mode === "add" && (
         <div className="Inputs-add">
           <label>Escoger evento</label>
@@ -289,6 +290,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
         </div>
       )}
 
+      {/* Nombre del Evento */}
       <div className="Inputs-add">
         <label htmlFor="nombre">Nombre del evento</label>
         <input
@@ -302,6 +304,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
         />
       </div>
 
+      {/* Descripción */}
       <div className="Inputs-add">
         <label htmlFor="descripcion">Descripción</label>
         <textarea
@@ -314,6 +317,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
         />
       </div>
 
+      {/* Capilla */}
       <div className="Inputs-add">
         <label htmlFor="capilla">Capilla</label>
         <input
@@ -331,6 +335,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
         </datalist>
       </div>
 
+      {/* Tipo de Evento (Radio Buttons) */}
       <div className="Inputs-add">
         <label>Tipo de Evento</label>
         <div className="checkbox-group">
@@ -339,7 +344,10 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
               type="radio"
               name="tipoEvento"
               checked={tipo === "Privado"}
-              onChange={() => setTipo("Privado")}
+              onChange={() => {
+                  setTipo("Privado");
+                  setPersonas(""); // Limpiar personas al cambiar a Privado
+              }}
               disabled={isView}
             />{" "}
             Privado
@@ -357,19 +365,22 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
         </div>
       </div>
 
-      <div className="Inputs-add">
-        <label htmlFor="personas">Número de personas</label>
-        <input
-          type="number"
-          id="personas"
-          className="inputModal"
-          value={personas}
-          onChange={(e) => setPersonas(e.target.value)}
-          disabled={isView}
-          // requerir solo cuando es Comunitario y no estamos en view
-          required={tipo === "Comunitario" && !isView}
-        />
-      </div>
+      {/* CAMPO DE PERSONAS CON LÓGICA CONDICIONAL */}
+      {tipo === "Comunitario" && (
+        <div className="Inputs-add">
+          <label htmlFor="personas">Número de personas</label>
+          <input
+            type="number"
+            id="personas"
+            className="inputModal"
+            value={personas}
+            onChange={(e) => setPersonas(e.target.value)}
+            disabled={isView}
+            required={!isView} // Requerir solo si no es vista y es Comunitario
+          />
+        </div>
+      )}
+      {/* FIN DEL CAMPO CONDICIONAL */}
     </form>
   );
 }
