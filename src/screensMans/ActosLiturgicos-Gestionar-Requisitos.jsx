@@ -9,11 +9,22 @@ import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
 
-// Datos simulados
+// Datos de capillas reintroducidos para simulación
+const chapelsOptions = [
+  "Capilla Santa Ana",
+  "Capilla San José Obrero",
+  "Capilla Virgen del Carmen",
+  "Capilla La Candelaria",
+  "Capilla de San Antonio",
+];
+
+// Datos simulados (¡MODIFICADO para incluir Capilla!)
 const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   nombre: `Evento ${i + 1}`,
   descripcion: `Descripción del Evento ${i + 1}.`,
+  // Se asigna una capilla aleatoria a cada evento
+  capilla: chapelsOptions[Math.floor(Math.random() * chapelsOptions.length)],
 }));
 
 const initialRequirementsData = Array.from({ length: 100 }, (_, i) => ({
@@ -38,11 +49,11 @@ export default function ActosLiturgicosRequisitos() {
 
   const filteredRequirements = selectedEvent
     ? requirements.filter(
-        (req) =>
-          req.eventoId === selectedEvent.id &&
-          (req.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            req.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
+      (req) =>
+        req.eventoId === selectedEvent.id &&
+        (req.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          req.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
     : [];
 
   const filteredEvents = events.filter((event) =>
@@ -238,7 +249,10 @@ export default function ActosLiturgicosRequisitos() {
           >
             <div className="event-cell">
               <span className="event-id">{row.id}</span>
-              <span className="event-name">{row.nombre}</span>
+              <div className="event-info-display"> {/* Contenedor para nombre y capilla */}
+                <span className="event-name">{row.nombre}</span>
+                <div className="event-capilla-name">{row.capilla}</div>
+              </div>
             </div>
           </div>
         ))}
@@ -319,6 +333,7 @@ export default function ActosLiturgicosRequisitos() {
 }
 
 function RequisitoForm({ onSave, req = {}, mode = "add" }) {
+  // ... (RequisitoForm sin cambios, ya que solo maneja Nombre y Descripción del Requisito)
   const [nombre, setNombre] = useState(req.nombre || "");
   const [descripcion, setDescripcion] = useState(req.descripcion || "");
   const [estado] = useState(req.estado || "Activo");
