@@ -1,35 +1,75 @@
-.Inputs-add .permissions-checkboxes {
+.permissions-container-full {
+    max-height: 400px; 
+    overflow-y: auto; 
+}
+
+.permission-module-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.module-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--color-blue-btn);
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--color-principal, #007bff);
+}
+
+.submodule-title {
+    font-size: 1em;
+    font-weight: 600;
+    color: #555;
+    margin: 15px 0 8px 0;
+}
+
+.permissions-checkboxes {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 380px;  
-    max-width: 100%;
-    margin-top: 15px;
-    padding: 10px 0;
-    border-top: 1px solid #ddd;
+    flex-direction: column;
+    padding: 5px 0 10px 15px;
 }
 
 .checkbox-container {
     display: flex;
     align-items: center;
-    margin-right: 15px; 
+    margin-bottom: 5px;
 }
 
 .checkbox-container input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    margin: 0 8px 0 0;
+    width: 16px;
+    height: 16px;
+    margin: 0 10px 0 0;
     cursor: pointer; 
 }
 
 .checkbox-container label {
-    font-weight: 500;
-    color: var(--color-texto-principal, #333); 
+    font-weight: 400;
+    color: #333; 
     cursor: pointer;
+    font-size: 0.95em;
+} 
+
+.collapsible-header {
+    cursor: pointer; 
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    user-select: none; 
 }
 
-.permissions-checkboxes input[type="checkbox"]:disabled + label,
-.permissions-checkboxes input[type="checkbox"]:disabled {
-    cursor: not-allowed;
-    color: #aaa;
+.module-title {
+    margin: 5px 0 5px 0; 
+}
+
+.collapse-icon {
+    margin-right: 10px;
+    font-size: 0.8em;
+    transition: transform 0.2s ease-in-out;
+}
+
+.module-content {
+    padding-left: 15px;
 }
