@@ -5,6 +5,7 @@ import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-ic
 import './MyHeaderAdm.css';
 import '../App.css';
 import NotificacionSimple from './NotificacionSimple';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function MyHeaderAdm() {
   const location = useLocation();
@@ -32,11 +33,27 @@ export default function MyHeaderAdm() {
     setRolActual(rol);
     console.log(`Rol cambiado a: ${rol} en parroquia: ${parroquiaSeleccionada?.nombre}`);
     setPerfilModalOpen(false);
-    
-    // Aquí puedes agregar lógica adicional como:
-    // - Enviar la actualización al servidor
-    // - Actualizar permisos en el contexto global
-    // - Refrescar datos según el nuevo rol
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        console.log('Sesión cerrada exitosamente');
+        window.location.href = '/acceso';
+      } else {
+        console.error('Error al cerrar sesión');
+      }
+    } catch (error) {
+      console.error('Error de red al cerrar sesión:', error);
+    }
   };
 
   // Datos de ejemplo para las notificaciones
@@ -162,7 +179,7 @@ export default function MyHeaderAdm() {
             </div>
 
             <div className="perfil-footer">
-              <button className="btn-logout">
+              <button className="btn-logout" onClick={handleLogout}>
                 <MdLogout />
                 Cerrar sesión
               </button>
