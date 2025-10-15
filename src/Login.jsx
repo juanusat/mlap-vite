@@ -5,16 +5,24 @@ import './App.css';
 import './colors.css';
 import Modal from './components2/Modal';
 import ForgotPassword from './screensMans/ForgotPassword';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
   const API_BASE = import.meta.env.VITE_API_BASE || '';
+
+  React.useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+    }
+  }, [location]);
 
   const apiFetch = async (path, opts = {}) => {
     return fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
@@ -25,28 +33,33 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      const resp = await apiFetch('/api/account/login', {
+      const resp = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await resp.json();
+      
       if (!resp.ok) {
-        // backend may return message or error
         setError(data?.message || data?.error || 'Error al iniciar sesión');
         setLoading(false);
         return;
       }
 
-      // expected data.data.associations and data.data.user_name_full
-      const associations = data?.data?.associations || [];
-      const userFullName = data?.data?.user_name_full || null;
+      const userInfo = data?.data?.user_info || {};
+      const associations = data?.data?.parish_associations || [];
+      const userFullName = userInfo?.full_name || null;
+      const isDioceseUser = data?.data?.is_diocese_user || false;
 
-      // navigate to comenzar and pass associations (parishes) and user name
-      navigate('/comenzar', { state: { associations, userFullName } });
+      navigate('/comenzar', { 
+        state: { 
+          associations, 
+          userFullName, 
+          isDioceseUser 
+        } 
+      });
     } catch (err) {
-      console.error(err);
       setError('No se pudo conectar con el servidor');
     } finally {
       setLoading(false);
@@ -84,7 +97,8 @@ export default function Login() {
         />
         <MainButton type="submit" disabled={loading}>{loading ? 'Ingresando...' : 'Iniciar sesión'}</MainButton>
       </form>
-      {error && <div style={{ color: 'var(--danger, #c00)', marginTop: 8 }}>{error}</div>}
+      {message && <div className="success-message">{message}</div>}
+      {error && <div className="error-message">{error}</div>}
       <div className="mlap-login-links">
         <a
           href=""

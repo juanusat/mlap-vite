@@ -5,14 +5,15 @@ import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-ic
 import './MyHeaderAdm.css';
 import '../App.css';
 import NotificacionSimple from './NotificacionSimple';
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+import useLogout from '../hooks/useLogout';
 
 export default function MyHeaderAdm() {
   const location = useLocation();
+  const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
   const [parroquiaSeleccionada, setParroquiaSeleccionada] = useState(null);
-  const [rolActual, setRolActual] = useState("Administrador"); // Estado para manejar el rol actual
+  const [rolActual, setRolActual] = useState("Administrador");
 
   // Obtener la parroquia seleccionada desde Begin.jsx
   useEffect(() => {
@@ -35,25 +36,8 @@ export default function MyHeaderAdm() {
     setPerfilModalOpen(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        console.log('Sesión cerrada exitosamente');
-      } else {
-        console.error('Error al cerrar sesión');
-        window.location.href = '/acceso'; // nota:remover
-      }
-    } catch (error) {
-      console.error('Error de red al cerrar sesión:', error);
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   // Datos de ejemplo para las notificaciones
