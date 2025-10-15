@@ -47,9 +47,9 @@ export default function MyHeaderAdm() {
 
       if (response.ok) {
         console.log('Sesión cerrada exitosamente');
-        window.location.href = '/acceso';
       } else {
         console.error('Error al cerrar sesión');
+        window.location.href = '/acceso'; // nota:remover
       }
     } catch (error) {
       console.error('Error de red al cerrar sesión:', error);

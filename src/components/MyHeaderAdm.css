@@ -90,7 +90,6 @@ button.btn-nb:hover {
     background-color: var(--color-n-50);
     border-radius: var(--border-radius-s);
     margin-bottom: var(--font-size-xl);
-    width: 300px;
 }
 
 .perfil-foto-grande {
