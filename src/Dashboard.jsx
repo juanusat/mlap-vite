@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useSession from './hooks/useSession';
 import Home from './Home';
 
 export default function Dashboard() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [userContext, setUserContext] = useState(null);
+  const { sessionData, loading } = useSession(() => navigate('/acceso'));
 
-  useEffect(() => {
-    const contextData = location?.state;
-    
-    if (!contextData) {
-      navigate('/acceso');
-      return;
-    }
-
-    setUserContext(contextData);
-  }, [location, navigate]);
-
-  if (!userContext) {
+  if (loading || !sessionData) {
     return (
       <div className="mlap-login-container">
         <div className="loading-message">Cargando...</div>
@@ -26,7 +15,7 @@ export default function Dashboard() {
     );
   }
 
-  const { mode, parish, roles, userFullName } = userContext;
+  const { mode, parish, roles, userFullName } = sessionData;
 
   switch (mode) {
     case 'worker':
