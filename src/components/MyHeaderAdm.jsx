@@ -55,6 +55,11 @@ export default function MyHeaderAdm() {
             <div className="parroquia-actual">
               {loading ? (
                 <span>Cargando...</span>
+              ) : sessionData?.is_diocese_user ? (
+                <>
+                  <span>Diócesis</span>
+                  <span className="rol-actual">Administrador Diocesano</span>
+                </>
               ) : sessionData?.parish ? (
                 <>
                   <span>{sessionData.parish.name}</span>
@@ -123,9 +128,9 @@ export default function MyHeaderAdm() {
 
       {perfilModalOpen && (
         <div className="modal-overlay">
-          <div className={`modal-perfil ${sessionData?.is_parish_admin ? 'parroco-mode' : ''}`}>
+          <div className={`modal-perfil ${sessionData?.is_parish_admin || sessionData?.is_diocese_user ? 'parroco-mode' : ''}`}>
             <div className="modal-perfil-header">
-              <h2>{sessionData?.is_parish_admin ? 'Perfil' : 'Cambiar rol'}</h2>
+              <h2>{sessionData?.is_parish_admin || sessionData?.is_diocese_user ? 'Perfil' : 'Cambiar rol'}</h2>
               <button
                 className="btn-nb"
                 onClick={() => {
@@ -159,17 +164,21 @@ export default function MyHeaderAdm() {
                   <div className="perfil-datos">
                     <h3>{sessionData?.person?.full_name || 'Usuario'}</h3>
                     <div className="perfil-datos-rol">
-                      <p>{sessionData?.parish?.name || 'Modo feligrés'}</p>
+                      <p>{sessionData?.is_diocese_user 
+                          ? 'Diócesis' 
+                          : sessionData?.parish?.name || 'Modo feligrés'}</p>
                       <p>Rol actual: {
-                        sessionData.is_parish_admin 
-                          ? 'Párroco' 
-                          : sessionData?.current_role?.name || 'Sin rol seleccionado'
+                        sessionData.is_diocese_user
+                          ? 'Administrador Diocesano'
+                          : sessionData.is_parish_admin 
+                            ? 'Párroco' 
+                            : sessionData?.current_role?.name || 'Sin rol seleccionado'
                       }</p>
                     </div>
                   </div>
                 </div>
 
-                {!sessionData.is_parish_admin && (
+                {!sessionData.is_parish_admin && !sessionData.is_diocese_user && (
                   <div className="selector-rol">
                     <h4>Seleccionar rol</h4>
                     {sessionData?.parish && sessionData?.available_roles ? (
