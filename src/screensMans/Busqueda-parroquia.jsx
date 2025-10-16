@@ -277,6 +277,7 @@ export default function BuscarParroquia() {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState({});
   const [selectedLocation, setSelectedLocation] = useState(null); 
+  const [selectedByUser, setSelectedByUser] = useState(false);
   const [selectedParroquiaForGrid, setSelectedParroquiaForGrid] = useState(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredLocations, setFilteredLocations] = useState(getAllLocations()); 
@@ -323,7 +324,8 @@ export default function BuscarParroquia() {
     );
     setFilteredLocations(filtered);
     
-    if (searchTerm && !selectedParroquiaForGrid) {
+    // Si no es una selección explícita del usuario, permitir selección automática basada en búsqueda
+    if (!selectedByUser && searchTerm && !selectedParroquiaForGrid) {
       const capillaEncontrada = filtered.find(l => l.tipo === 'capilla');
       if (capillaEncontrada) {
         const parroquiaMadre = parroquiasData.find(p => p.id === capillaEncontrada.parroquiaId);
@@ -334,8 +336,12 @@ export default function BuscarParroquia() {
     }
 
     // Si la ubicación seleccionada no está en los resultados filtrados, deseleccionarla
+    // PERO respetar si la selección fue hecha por el usuario (click)
     if (selectedLocation && !filtered.find(l => l.id === selectedLocation.id && l.tipo === selectedLocation.tipo)) {
-      setSelectedLocation(null);
+      if (!selectedByUser) {
+        setSelectedLocation(null);
+      }
+      // si fue seleccionada por usuario, no hacemos nada (no deseleccionar)
     }
 
     // Si la parroquia seleccionada para el grid no está en las parroquias filtradas, deseleccionarla
@@ -356,7 +362,7 @@ export default function BuscarParroquia() {
     if (map) {
       updateMapMarkers(filtered);
     }
-  }, [searchTerm, map, selectedLocation]);
+  }, [searchTerm, map, selectedLocation, selectedByUser]);
 
   const initMap = () => {
     if (!window.L || !mapRef.current) return;
@@ -435,6 +441,7 @@ export default function BuscarParroquia() {
 
       marker.on('click', () => {
         setSelectedLocation(location);
+        setSelectedByUser(true);
         leafletMap.flyTo([location.latitud, location.longitud], 15);
       });
 
@@ -453,18 +460,22 @@ export default function BuscarParroquia() {
     if (parroquiaId) {
       const parroquia = parroquiasData.find(p => p.id === parroquiaId);
       setSelectedParroquiaForGrid(parroquia);
-      setSelectedLocation(null); // Limpiar selección individual
+      // selección programática: limpiar selección manual previa
+      setSelectedLocation(null);
+      setSelectedByUser(false);
       if (map && parroquia) {
         map.flyTo([parroquia.latitud, parroquia.longitud], 15);
       }
     } else {
       setSelectedParroquiaForGrid(null);
       setSelectedLocation(null);
+      setSelectedByUser(false);
     }
   };
 
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
+    setSelectedByUser(true);
     setSelectedParroquiaForGrid(null); // Limpiar selección del grid
     if (map) {
       map.flyTo([location.latitud, location.longitud], 15);
@@ -552,7 +563,7 @@ export default function BuscarParroquia() {
                       <div className="parishes-list">
                         <h4>
                           {selectedParroquiaForGrid
-                            ? `${selectedParroquiaForGrid.nombre} y sus capillas:`
+                            ? `${selectedParroquiaForGrid.nombre} y todas sus capillas (independiente de la búsqueda):`
                             : searchTerm
                               ? `Resultados encontrados (${filteredLocations.filter(location => currentZoom >= 15 || location.tipo === 'parroquia').length}):`
                               : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
@@ -578,12 +589,8 @@ export default function BuscarParroquia() {
                                   </div>
                                 )}
                               {getCapillasByParroquia(selectedParroquiaForGrid.id)
-                                .filter(capilla => {
-                                  // Filtrar capillas según el término de búsqueda
-                                  if (!searchTerm) return true;
-                                  return capilla.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    capilla.direccion.toLowerCase().includes(searchTerm.toLowerCase());
-                                })
+                                // Mostrar todas las capillas de la parroquia seleccionada
+                                // para que el usuario pueda hacer click aunque no coincidan con la búsqueda
                                 .map(capilla => (
                                   <div
                                     key={`capilla-${capilla.id}`}
@@ -629,6 +636,7 @@ export default function BuscarParroquia() {
                       onClick={() => {
                         setSelectedLocation(null);
                         setSelectedParroquiaForGrid(null);
+                        setSelectedByUser(false);
                       }}
                     >
                       ×
