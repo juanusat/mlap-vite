@@ -191,7 +191,7 @@ export default function EventosLiturgicos() {
 
   return (
     <div className="content-module only-this">
-      <h2 className="title-screen">Gestión de eventos</h2>
+      <h2 className="title-screen">Gestión de actos litúrgicos</h2>
       <div className="app-container">
         <div className="search-add">
           <div className="center-container">
