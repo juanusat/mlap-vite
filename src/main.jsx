@@ -10,6 +10,7 @@ import Dashboard from './Dashboard.jsx';
 import Comenzar from './Begin.jsx';
 import Buscar from './screensMans/Busqueda-parroquia.jsx';
 import VistaPresentacion from './screensMans/VistaPresentacion-Capilla.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 import ActosLiturgicos from './screensMans/ActosLiturgicos-access.jsx';
 import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Actos.jsx';
@@ -53,12 +54,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Navigate to="/acceso" replace />} />
         <Route path="/acceso" element={<Login />} />
         <Route path="/registro" element={<Register />} />
-        <Route path="/comenzar" element={<Comenzar />} />
-        <Route path="/inicio" element={<Dashboard />} />
-        <Route path="/buscar" element={<Buscar />} />
-  <Route path="/capilla" element={<VistaPresentacion />} />
+        <Route path="/comenzar" element={<ProtectedRoute><Comenzar /></ProtectedRoute>} />
+        <Route path="/inicio" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/buscar" element={<ProtectedRoute><Buscar /></ProtectedRoute>} />
+        <Route path="/capilla" element={<ProtectedRoute><VistaPresentacion /></ProtectedRoute>} />
 
-        <Route path="/man-actos-liturgicos" element={<ActosLiturgicos />}>
+        <Route path="/man-actos-liturgicos" element={<ProtectedRoute><ActosLiturgicos /></ProtectedRoute>}>
           <Route path="gestionar-actos" element={<ActosLiturgicosGestionar />} />
           <Route path="gestionar-requisitos" element={<ActosLiturgicosRequisitos />} />
           <Route path="gestionar-horarios" element={<ActosLiturgicosHorarios />} />
@@ -66,27 +67,27 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="reportes" element={<ActosLiturgicosReportes />} />
         </Route>
 
-        <Route path="/man-usuario" element={<Usuario />}>
+        <Route path="/man-usuario" element={<ProtectedRoute><Usuario /></ProtectedRoute>}>
           <Route path="gestionar-cuenta" element={<UsuarioGestionar />} />
         </Route>
 
-        <Route path="/man-parroquia" element={<Parroquia />}>
+        <Route path="/man-parroquia" element={<ProtectedRoute><Parroquia /></ProtectedRoute>}>
           <Route path="gestionar-cuenta" element={<ParroquiaGestionar />} />
           <Route path="gestionar-capilla" element={<ParroquiaGestionarCapilla />} />
         </Route>
 
-        <Route path="/man-seguridad" element={<Seguridad />}>
+        <Route path="/man-seguridad" element={<ProtectedRoute><Seguridad /></ProtectedRoute>}>
           <Route path="cuentas-gestionar" element={<CuentasGestionar />} />
           <Route path="roles-gestionar" element={<RolesGestionar />} />
         </Route>
 
-        <Route path="/man-reservas" element={<Reservas />}>
+        <Route path="/man-reservas" element={<ProtectedRoute><Reservas /></ProtectedRoute>}>
           <Route path="pendientes" element={<ReservasPendientes />} />
           <Route path="historial" element={<ReservasHistorial />} />
           <Route path="reservar" element={<ReservasReservar />} />
         </Route>
 
-        <Route path="/man-diocesis" element={<Diocesis />}>
+        <Route path="/man-diocesis" element={<ProtectedRoute><Diocesis /></ProtectedRoute>}>
           <Route path="gestionar-tipo-doc" element={<TipoDocumentoGestionar />} />
           <Route path="gestionar-cuenta-parroquia" element={<DiocesisGestionarParroquia />} />
           <Route path="gestionar-eventos-generales" element={<DiocesisEventosLiturgicos />} />
