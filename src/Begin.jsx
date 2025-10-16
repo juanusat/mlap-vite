@@ -10,8 +10,6 @@ export default function Begin() {
   const [selectedParroquia, setSelectedParroquia] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [chapels, setChapels] = useState([]);
-  const [loadingChapels, setLoadingChapels] = useState(true);
 
   const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -22,30 +20,6 @@ export default function Begin() {
   const associationsFromState = location?.state?.associations || [];
   const userFullName = location?.state?.userFullName || null;
   const isDioceseUser = location?.state?.isDioceseUser || false;
-
-  React.useEffect(() => {
-    const fetchChapels = async () => {
-      try {
-        setLoadingChapels(true);
-        const chapelsResp = await apiFetch('/api/chapels');
-        const chapelsData = await chapelsResp.json();
-        
-        if (chapelsResp.ok) {
-          setChapels(chapelsData?.data || []);
-        } else {
-          if (chapelsResp.status !== 403) {
-            setError(chapelsData?.message || chapelsData?.error || 'Error al obtener las capillas');
-          }
-        }
-      } catch (err) {
-        setError('No se pudo conectar con el servidor para obtener capillas');
-      } finally {
-        setLoadingChapels(false);
-      }
-    };
-
-    fetchChapels();
-  }, []);
 
   const handleParishSelect = async (parish) => {
     setSelectedParroquia(parish);
@@ -164,29 +138,6 @@ export default function Begin() {
                 disabled={loading}
               >
                 <strong>{parish.name}</strong>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {loadingChapels ? (
-        <div className="loading-message">Cargando capillas disponibles...</div>
-      ) : chapels.length > 0 && (
-        <div>
-          <h4>Capillas disponibles:</h4>
-          <div className="parroquias-list">
-            {chapels.map((chapel) => (
-              <button
-                key={`chapel-${chapel.id}`}
-                className={`parroquia-button ${selectedParroquia?.id === chapel.id ? 'selected' : ''}`}
-                onClick={() => handleParishSelect(chapel)}
-                disabled={loading}
-              >
-                <div>
-                  <strong>{chapel.name}</strong>
-                  {chapel.address && <div className="chapel-address">{chapel.address}</div>}
-                </div>
               </button>
             ))}
           </div>

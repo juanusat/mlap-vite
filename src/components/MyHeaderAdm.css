@@ -247,3 +247,48 @@ button.btn-nb:hover {
     border-radius: 12px;
     font-weight: 600;
 }
+
+/* Estilos para estados de carga y error */
+.loading-state {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--color-n-600);
+}
+
+.error-state {
+    text-align: center;
+    padding: var(--space-l);
+    background-color: var(--color-error-50);
+    border: 1px solid var(--color-error-200);
+    border-radius: var(--border-radius-s);
+    margin: var(--space-s);
+}
+
+.error-state p {
+    color: var(--color-error-700);
+    margin-bottom: var(--space-s);
+}
+
+.btn-retry {
+    background-color: var(--color-error-600);
+    color: var(--color-n-0);
+    border: none;
+    padding: var(--space-xs) var(--space-s);
+    border-radius: var(--border-radius-s);
+    cursor: pointer;
+    font-size: var(--font-size-s);
+    transition: background-color 0.2s;
+}
+
+.btn-retry:hover {
+    background-color: var(--color-error-700);
+}
+
+/* Estilo para modal cuando es párroco (sin selector de roles) */
+.modal-perfil.parroco-mode {
+    max-height: auto;
+}
+
+.modal-perfil.parroco-mode .perfil-info {
+    margin-bottom: var(--space-m);
+}

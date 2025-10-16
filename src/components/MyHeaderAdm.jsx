@@ -1,39 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 import logoWhite from './../assets/logo-mlap-white.svg';
 import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-icons/md";
 import './MyHeaderAdm.css';
 import '../App.css';
 import NotificacionSimple from './NotificacionSimple';
 import useLogout from '../hooks/useLogout';
+import useSession from '../hooks/useSession';
 
 export default function MyHeaderAdm() {
-  const location = useLocation();
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
-  const [parroquiaSeleccionada, setParroquiaSeleccionada] = useState(null);
-  const [rolActual, setRolActual] = useState("Administrador");
+  
+  // Usar el hook personalizado para manejar la sesión
+  const { sessionData, loading, error, refetch, changeRole, clearError } = useSession(logout);
 
-  // Obtener la parroquia seleccionada desde Begin.jsx
-  useEffect(() => {
-    if (location.state && location.state.parroquia) {
-      setParroquiaSeleccionada(location.state.parroquia);
+  const handleRolSelect = async (rol) => {
+    try {
+      console.log(`Cambiando rol a: ${rol.name} en parroquia: ${sessionData?.parish?.name}`);
+      await changeRole(rol.id);
+      setPerfilModalOpen(false);
+    } catch (error) {
+      // El error ya se maneja en el hook useSession
+      console.error('Error al cambiar rol:', error);
     }
-  }, [location.state]);
-
-  // Datos de ejemplo para el usuario
-  const usuario = {
-    nombre: "María García",
-    foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    roles: ["Administrador", "Secretario", "Párroco", "Diácono", "Coordinador"], // Roles disponibles para la parroquia seleccionada
-  };
-
-  const handleRolSelect = (rol) => {
-    // Actualizar el rol actual
-    setRolActual(rol);
-    console.log(`Rol cambiado a: ${rol} en parroquia: ${parroquiaSeleccionada?.nombre}`);
-    setPerfilModalOpen(false);
   };
 
   const handleLogout = () => {
@@ -63,8 +53,23 @@ export default function MyHeaderAdm() {
           </div>
           <div className="mlap-home-header-bar" style={{ color: '#fff' }}>
             <div className="parroquia-actual">
-              <span>{parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'Sin parroquia seleccionada'}</span>
-              <span className="rol-actual">{rolActual}</span>
+              {loading ? (
+                <span>Cargando...</span>
+              ) : sessionData?.parish ? (
+                <>
+                  <span>{sessionData.parish.name}</span>
+                  <span className="rol-actual">
+                    {sessionData.is_parish_admin 
+                      ? 'Párroco' 
+                      : sessionData.current_role 
+                        ? sessionData.current_role.name 
+                        : 'Sin rol seleccionado'
+                    }
+                  </span>
+                </>
+              ) : (
+                <span>Modo feligrés</span>
+              )}
             </div>
             <button
               role="button"
@@ -80,7 +85,11 @@ export default function MyHeaderAdm() {
               aria-label="usuario"
               onClick={() => setPerfilModalOpen(true)}
             >
-              <img src={usuario.foto} alt="Foto de perfil" className="perfil-foto" />
+              <img 
+                src={sessionData?.person?.profile_photo || "https://randomuser.me/api/portraits/women/44.jpg"} 
+                alt="Foto de perfil" 
+                className="perfil-foto" 
+              />
             </button>
           </div>
         </div>
@@ -114,9 +123,9 @@ export default function MyHeaderAdm() {
 
       {perfilModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-perfil">
+          <div className={`modal-perfil ${sessionData?.is_parish_admin ? 'parroco-mode' : ''}`}>
             <div className="modal-perfil-header">
-              <h2>Cambiar rol</h2>
+              <h2>{sessionData?.is_parish_admin ? 'Perfil' : 'Cambiar rol'}</h2>
               <button
                 className="btn-nb"
                 onClick={() => {
@@ -128,46 +137,75 @@ export default function MyHeaderAdm() {
               </button>
             </div>
 
-            <div className="perfil-info">
-              <img src={usuario.foto} alt="Foto de perfil" className="perfil-foto-grande" />
-              <div className="perfil-datos">
-                <h3>{usuario.nombre}</h3>
-                <div className="perfil-datos-rol">
-                  <p>{parroquiaSeleccionada ? parroquiaSeleccionada.nombre : 'No seleccionada'}</p>
-                  <p>Rol actual: {rolActual}</p>
-                </div>
+            {loading ? (
+              <div className="loading-state">
+                <p>Cargando información de la sesión...</p>
               </div>
-            </div>
-
-            <div className="selector-rol">
-              <h4>Seleccionar rol</h4>
-              {parroquiaSeleccionada ? (
-                <div className="lista-roles">
-                  {usuario.roles.map((rol) => (
-                    <button
-                      key={rol}
-                      className={`rol-item ${rol === rolActual ? 'rol-activo' : ''}`}
-                      onClick={() => handleRolSelect(rol)}
-                      disabled={rol === rolActual}
-                    >
-                      {rol}
-                      {rol === rolActual && <span className="rol-badge">Actual</span>}
-                    </button>
-                  ))}
+            ) : error ? (
+              <div className="error-state">
+                <p>Error al cargar la información: {error}</p>
+                <button onClick={refetch} className="btn-retry">
+                  Reintentar
+                </button>
+              </div>
+            ) : sessionData ? (
+              <>
+                <div className="perfil-info">
+                  <img 
+                    src={sessionData?.person?.profile_photo || "https://randomuser.me/api/portraits/women/44.jpg"} 
+                    alt="Foto de perfil" 
+                    className="perfil-foto-grande" 
+                  />
+                  <div className="perfil-datos">
+                    <h3>{sessionData?.person?.full_name || 'Usuario'}</h3>
+                    <div className="perfil-datos-rol">
+                      <p>{sessionData?.parish?.name || 'Modo feligrés'}</p>
+                      <p>Rol actual: {
+                        sessionData.is_parish_admin 
+                          ? 'Párroco' 
+                          : sessionData?.current_role?.name || 'Sin rol seleccionado'
+                      }</p>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="sin-parroquia">
-                  <p>Por favor, selecciona una parroquia desde la página de inicio</p>
-                </div>
-              )}
-            </div>
 
-            <div className="perfil-footer">
-              <button className="btn-logout" onClick={handleLogout}>
-                <MdLogout />
-                Cerrar sesión
-              </button>
-            </div>
+                {!sessionData.is_parish_admin && (
+                  <div className="selector-rol">
+                    <h4>Seleccionar rol</h4>
+                    {sessionData?.parish && sessionData?.available_roles ? (
+                      <div className="lista-roles">
+                        {sessionData.available_roles.map((rol) => (
+                          <button
+                            key={rol.id}
+                            className={`rol-item ${rol.id === sessionData.current_role?.id ? 'rol-activo' : ''}`}
+                            onClick={() => handleRolSelect(rol)}
+                            disabled={rol.id === sessionData.current_role?.id}
+                          >
+                            {rol.name}
+                            {rol.id === sessionData.current_role?.id && <span className="rol-badge">Actual</span>}
+                          </button>
+                        ))}
+                      </div>
+                    ) : sessionData?.parish === null ? (
+                      <div className="sin-parroquia">
+                        <p>Estás en modo feligrés. No hay roles disponibles.</p>
+                      </div>
+                    ) : (
+                      <div className="sin-parroquia">
+                        <p>Por favor, selecciona una parroquia desde la página de inicio</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="perfil-footer">
+                  <button className="btn-logout" onClick={handleLogout}>
+                    <MdLogout />
+                    Cerrar sesión
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
       )}
