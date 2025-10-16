@@ -1,52 +1,107 @@
-import React, { useState } from "react";
-import { InputField, MainButton, SecondaryButton } from './components/UI';
+import React, { useState, useEffect } from "react";
+import { InputField, MainButton } from './components/UI';
 import logo from './assets/logo-mlap-color.svg';
 import './App.css';
 import './colors.css';
-import Modal from './components2/Modal';
 import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nombres: '',
-    apellidoPaterno: '',
-    apellidoMaterno: '',
-    correo: '',
-    tipoDocumento: '',
-    numeroDocumento: '',
-    usuario: '',
-    contrasena: '',
+    first_names: '',
+    paternal_surname: '',
+    maternal_surname: '',
+    email: '',
+    document_type_id: '',
+    document: '',
+    username: '',
+    password: '',
     confirmarContrasena: '',
   });
 
+  const [documentTypes, setDocumentTypes] = useState([]);
   const [passwordError, setPasswordError] = useState('');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const API_BASE = import.meta.env.VITE_API_BASE || '';
+
+  const apiFetch = async (path, opts = {}) => {
+    return fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
+  };
+
+  useEffect(() => {
+    const mockDocumentTypes = [
+      { id: 1, name: 'DNI' },
+      { id: 2, name: 'C.E.' },
+      { id: 3, name: 'Pasaporte' }
+    ];
+    setDocumentTypes(mockDocumentTypes);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
 
-    if (name === 'confirmarContrasena' || name === 'contrasena') {
-      if (name === 'contrasena' && value !== formData.confirmarContrasena && formData.confirmarContrasena !== '') {
-        setPasswordError('Las contrasenas no coinciden.');
-      } else if (name === 'confirmarContrasena' && value !== formData.contrasena) {
-        setPasswordError('Las contrasenas no coinciden.');
+    if (name === 'confirmarContrasena' || name === 'password') {
+      if (name === 'password' && value !== formData.confirmarContrasena && formData.confirmarContrasena !== '') {
+        setPasswordError('Las contraseñas no coinciden.');
+      } else if (name === 'confirmarContrasena' && value !== formData.password) {
+        setPasswordError('Las contraseñas no coinciden.');
       } else {
         setPasswordError('');
       }
     }
   };
 
-  const handleRegistrationSubmit = (e) => {
+  const handleRegistrationSubmit = async (e) => {
     e.preventDefault();
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      setPasswordError('Las contrasenas no coinciden. Por favor, verifícalas.');
+    setError('');
+    setPasswordError('');
+
+    if (formData.password !== formData.confirmarContrasena) {
+      setPasswordError('Las contraseñas no coinciden. Por favor, verifícalas.');
       return;
     }
-    setPasswordError('');
-    console.log('Datos de registro:', formData);
-    setShowSuccessModal(true);
+
+    setLoading(true);
+
+    try {
+      const registerData = {
+        first_names: formData.first_names,
+        paternal_surname: formData.paternal_surname,
+        maternal_surname: formData.maternal_surname,
+        email: formData.email,
+        document_type_id: parseInt(formData.document_type_id),
+        document: formData.document,
+        username: formData.username,
+        password: formData.password,
+      };
+
+      const resp = await apiFetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        setError(data?.message || data?.error || 'Error al crear la cuenta');
+        return;
+      }
+
+      navigate('/acceso', { 
+        state: { 
+          message: 'Cuenta creada exitosamente. Puedes iniciar sesión.' 
+        } 
+      });
+
+    } catch (err) {
+      setError('No se pudo conectar con el servidor');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLoginRedirect = () => {
@@ -63,80 +118,81 @@ export default function Register() {
       
       <form className="mlap-login-form" onSubmit={handleRegistrationSubmit}>
         <InputField
-          name="nombres"
+          name="first_names"
           type="text"
           placeholder="Nombres"
-          value={formData.nombres}
+          value={formData.first_names}
           onChange={handleInputChange}
           required
         />
         
         <InputField
-          name="apellidoPaterno"
+          name="paternal_surname"
           type="text"
           placeholder="Apellido paterno"
-          value={formData.apellidoPaterno}
+          value={formData.paternal_surname}
           onChange={handleInputChange}
           required
         />
         
         <InputField
-          name="apellidoMaterno"
+          name="maternal_surname"
           type="text"
           placeholder="Apellido materno"
-          value={formData.apellidoMaterno}
+          value={formData.maternal_surname}
           onChange={handleInputChange}
-          required
         />
         
         <InputField
-          name="correo"
+          name="email"
           type="email"
           placeholder="Correo electrónico"
-          value={formData.correo}
+          value={formData.email}
           onChange={handleInputChange}
           required
         />
 
         <div className="mlap-document-container">
           <select
-            name="tipoDocumento"
-            value={formData.tipoDocumento}
+            name="document_type_id"
+            value={formData.document_type_id}
             onChange={handleInputChange}
             className="mlap-select"
             required
           >
-            <option value="TIPO DE DOCUMENTO">Tipo de documento</option>
-            <option value="DNI">DNI</option>
-            <option value="CE">C.E.</option>
-            <option value="PASSPORT">Pasaporte</option>
+            <option value="">Tipo de documento</option>
+            {documentTypes.map(type => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
           </select>
           
           <InputField
-            name="numeroDocumento"
+            name="document"
             type="text"
             placeholder="Número de documento"
-            value={formData.numeroDocumento}
+            value={formData.document}
             onChange={handleInputChange}
-            disabled={!formData.tipoDocumento}
+            disabled={!formData.document_type_id}
             required
           />
         </div>
         
         <InputField
-          name="usuario"
+          name="username"
           type="text"
           placeholder="Usuario"
-          value={formData.usuario}
+          value={formData.username}
           onChange={handleInputChange}
           required
         />
         
         <InputField
-          name="contrasena"
+          name="password"
           type="password"
           placeholder="Contraseña"
-          value={formData.contrasena}
+          value={formData.password}
           onChange={handleInputChange}
           required
         />
@@ -151,10 +207,16 @@ export default function Register() {
         />
         
         {passwordError && (
-          <p className="mlap-error-message">{passwordError}</p>
+          <p className="error-message">{passwordError}</p>
         )}
 
-        <MainButton type="submit" onClick={e => {handleLoginRedirect();}}>Registrarse</MainButton>
+        {error && (
+          <p className="error-message">{error}</p>
+        )}
+
+        <MainButton type="submit" disabled={loading}>
+          {loading ? 'Creando cuenta...' : 'Registrarse'}
+        </MainButton>
       </form>
       
       <div className="mlap-login-links">
@@ -169,10 +231,6 @@ export default function Register() {
           ¿Ya tienes una cuenta? Iniciar sesión
         </a>
       </div>
-      
-      
-
-      
     </div>
   );
 }

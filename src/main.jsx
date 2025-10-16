@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import Home from './Home.jsx';
+import Dashboard from './Dashboard.jsx';
 import Comenzar from './Begin.jsx';
 import Buscar from './screensMans/Busqueda-parroquia.jsx';
 import VistaPresentacion from './screensMans/VistaPresentacion-Capilla.jsx';
@@ -49,11 +50,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<Navigate to="/acceso" replace />} />
         <Route path="/acceso" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="/comenzar" element={<Comenzar />} />
-        <Route path="/inicio" element={<Home />} />
+        <Route path="/inicio" element={<Dashboard />} />
         <Route path="/buscar" element={<Buscar />} />
   <Route path="/capilla" element={<VistaPresentacion />} />
 
