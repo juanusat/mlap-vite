@@ -3,8 +3,12 @@ import ScreenMan from '../components/ScreenMan';
 import { MdBook, MdListAlt, MdSchedule, MdBookmark, MdAssessment } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Actos.css';
+import { useEffect } from "react";
 
 export default function ActosLiturgicos() {
+  useEffect(() => {
+    document.title = "MLAP | Actos litúrgicos";
+  }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-actos-liturgicos';
   

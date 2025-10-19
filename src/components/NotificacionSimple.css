@@ -3,10 +3,30 @@
   border-bottom: var(--border-width-s) solid var(--color-n-200);
   cursor: pointer;
   transition: background-color 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-m);
 }
 
 .notificacion-simple:hover {
-background-color: rgba(var(--color-n-900-rgb), 0.1);
+  background-color: rgba(var(--color-n-900-rgb), 0.1);
+}
+
+.notificacion-simple.no-leida {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid var(--color-p-500);
+}
+
+.notificacion-simple.leida {
+  opacity: 0.7;
+}
+
+.notificacion-contenido {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .notificacion-mensaje {
@@ -14,9 +34,39 @@ background-color: rgba(var(--color-n-900-rgb), 0.1);
   color: var(--color-n-900);
 }
 
+.notificacion-simple.no-leida .notificacion-mensaje {
+  font-weight: 600;
+}
+
 .notificacion-fecha {
   font-size: var(--font-size-body);
   color: var(--color-n-600);
+}
+
+.notificacion-btn-marcar-leida {
+  background-color: transparent;
+  color: var(--color-p-500);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.notificacion-btn-marcar-leida:hover {
+  color: var(--color-p-600);
+  background-color: rgba(var(--color-p-500-rgb, 59, 130, 246), 0.1);
+  transform: scale(1.1);
+}
+
+.notificacion-btn-marcar-leida:active {
+  transform: scale(0.95);
 }
 
 /* Contenedor modal de notificaciones */

@@ -7,6 +7,7 @@ import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
+import { useEffect } from "react";
 
 const chapelsOptions = [
   "Capilla Santa Ana",
@@ -42,6 +43,9 @@ const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 export default function EventosLiturgicos() {
+  useEffect(() => {
+    document.title = "MLAP | Gestionar actos litúrgicos";
+  }, []);
   const [events, setEvents] = useState(initialEventsData);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);

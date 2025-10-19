@@ -31,18 +31,26 @@ export default function MyHeaderAdm() {
   };
 
   // Datos de ejemplo para las notificaciones
-  const notificaciones = [
-    { id: 1, mensaje: "Nueva solicitud de documento pendiente de revisión", fecha: "Hace 5 minutos" },
-    { id: 2, mensaje: "Documento aprobado: DNI-001", fecha: "Hace 1 hora" },
-    { id: 3, mensaje: "Actualización del sistema completada", fecha: "Hace 2 horas" },
-    { id: 4, mensaje: "Nuevo usuario registrado en el sistema", fecha: "Hace 3 horas" },
-    { id: 5, mensaje: "Mantenimiento programado para mañana", fecha: "Hace 4 horas" },
-    { id: 6, mensaje: "Reporte mensual disponible", fecha: "Hace 5 horas" },
-    { id: 7, mensaje: "Nueva política de documentación publicada", fecha: "Hace 6 horas" },
-    { id: 8, mensaje: "Recordatorio: Reunión de equipo", fecha: "Hace 7 horas" },
-    { id: 9, mensaje: "Actualización de permisos completada", fecha: "Hace 8 horas" },
-    { id: 10, mensaje: "Backup del sistema realizado con éxito", fecha: "Hace 9 horas" },
-  ];
+  const [notificaciones, setNotificaciones] = useState([
+    { id: 1, mensaje: "Nueva solicitud de documento pendiente de revisión", fecha: "Hace 5 minutos", leida: false },
+    { id: 2, mensaje: "Documento aprobado: DNI-001", fecha: "Hace 1 hora", leida: false },
+    { id: 3, mensaje: "Actualización del sistema completada", fecha: "Hace 2 horas", leida: true },
+    { id: 4, mensaje: "Nuevo usuario registrado en el sistema", fecha: "Hace 3 horas", leida: false },
+    { id: 5, mensaje: "Mantenimiento programado para mañana", fecha: "Hace 4 horas", leida: true },
+    { id: 6, mensaje: "Reporte mensual disponible", fecha: "Hace 5 horas", leida: true },
+    { id: 7, mensaje: "Nueva política de documentación publicada", fecha: "Hace 6 horas", leida: false },
+    { id: 8, mensaje: "Recordatorio: Reunión de equipo", fecha: "Hace 7 horas", leida: true },
+    { id: 9, mensaje: "Actualización de permisos completada", fecha: "Hace 8 horas", leida: true },
+    { id: 10, mensaje: "Backup del sistema realizado con éxito", fecha: "Hace 9 horas", leida: true },
+  ]);
+
+  const handleMarcarLeida = (notifId) => {
+    setNotificaciones(prev => 
+      prev.map(notif => 
+        notif.id === notifId ? { ...notif, leida: true } : notif
+      )
+    );
+  };
 
   return (
     <>
@@ -119,6 +127,8 @@ export default function MyHeaderAdm() {
                   key={notif.id}
                   mensaje={notif.mensaje}
                   fecha={notif.fecha}
+                  leida={notif.leida}
+                  onMarcarLeida={() => handleMarcarLeida(notif.id)}
                 />
               ))}
             </div>
