@@ -4,6 +4,9 @@ import useSession from './hooks/useSession';
 import Home from './Home';
 
 export default function Dashboard() {
+  React.useEffect(() => {
+    document.title = "MLAP | Bienvenida";
+  }, []);
   const navigate = useNavigate();
   const { sessionData, loading } = useSession(() => navigate('/acceso'));
 
