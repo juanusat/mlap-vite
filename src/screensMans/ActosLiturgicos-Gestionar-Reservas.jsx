@@ -111,6 +111,18 @@ export default function Reservas() {
     setShowModal(true);
   };
 
+  const handleBlock = (reservation) => {
+    setCurrentReservation(reservation);
+    setModalType('block');
+    setShowModal(true);
+  };
+
+  const handleTime = (reservation) => {
+    setCurrentReservation(reservation);
+    setModalType('time');
+    setShowModal(true);
+  };
+
   const handleAccept = () => {
     if (currentReservation) {
       setReservations(prevReservations =>
@@ -154,6 +166,17 @@ export default function Reservas() {
     }
   };
 
+  const handleFulfill = () => {
+    if (currentReservation) {
+      setReservations(prevReservations =>
+        prevReservations.map(res =>
+          res.id === currentReservation.id ? { ...res, estado: 'Cumplido' } : res
+        )
+      );
+      handleCloseModal();
+    }
+  };
+
   const handleToggleRequirement = (reqId) => {
     if (!currentReservation) return;
     const updatedRequirements = currentReservation.requisitos.map(req =>
@@ -186,9 +209,17 @@ export default function Reservas() {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
-          <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
+          {row.estado !== 'Cumplido' && row.estado !== 'Rechazado' && (
+            <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
+          )}
           {row.estado === 'En progreso' && (
             <MyButtonShortAction type="key" title="Ver Requisitos" onClick={() => handleOpenSidebar(row)} />
+          )}
+          {(row.estado === 'En progreso' || row.estado === 'Completado') && (
+            <MyButtonShortAction type="time" title="Reprogramar" onClick={() => handleTime(row)} />
+          )}
+          {(row.estado === 'Reservado' || row.estado === 'En progreso' || row.estado === 'Completado') && (
+            <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
           )}
         </MyGroupButtonsActions>
       )
@@ -260,32 +291,68 @@ export default function Reservas() {
         // ... (resto del switch sin cambios)
         if (currentReservation?.estado === 'Reservado') {
           return {
-            title: 'Cambiar estado reserva',
+            title: 'Confirmar reserva',
             content: currentReservation && (
               <div>
-                <h4>Cambiar estado de la reserva #{currentReservation.id}</h4>
+                <h4>¿Desea confirmar la reserva #{currentReservation.id}?</h4>
                 <p> <strong>Estado actual:</strong> {currentReservation.estado}</p>
               </div>
             ),
             onAccept: handleAccept,
-            onCancel: handleReject
+            onCancel: handleCloseModal
           };
         } else if (currentReservation?.estado === 'En progreso') {
           return {
-            title: 'Completar Reserva',
+            title: 'Completar reserva',
             content: currentReservation && (
               <div>
-                <h4>Confirmar finalización de la reserva #{currentReservation.id}</h4>
+                <h4>¿Desea completar la reserva #{currentReservation.id}?</h4>
                 <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
               </div>
             ),
             onAccept: handleComplete,
             onCancel: handleCloseModal
           };
+        } else if (currentReservation?.estado === 'Completado') {
+          return {
+            title: 'Reserva cumplida',
+            content: currentReservation && (
+              <div>
+                <h4>¿Desea marcar como cumplida la reserva #{currentReservation.id}?</h4>
+                <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
+              </div>
+            ),
+            onAccept: handleFulfill,
+            onCancel: handleCloseModal
+          };
         }
+        break;
+      case 'block':
         return {
-          title: 'Editar estado de reserva',
-          content: null,
+          title: 'Rechazar reserva',
+          content: currentReservation && (
+            <div>
+              <h4>¿Está seguro que desea rechazar la reserva #{currentReservation.id}?</h4>
+              <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
+              <p>Esta acción cambiará el estado a "Rechazado".</p>
+            </div>
+          ),
+          onAccept: handleReject,
+          onCancel: handleCloseModal
+        };
+      case 'time':
+        return {
+          title: 'Reprogramar reserva',
+          content: currentReservation && (
+            <div className='form-modal-horarios'>
+              <div className="Inputs-add">
+                <label htmlFor="fecha">Fecha</label>
+                <input type="date" className="input_date" id="fecha" required />
+                <label htmlFor="hora">Hora</label>
+                <input type="time" className="input_time" id="hora" required />
+              </div>
+            </div>
+          ),
           onAccept: handleCloseModal,
           onCancel: handleCloseModal
         };
@@ -314,7 +381,7 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={displayedReservations}
-            gridColumnsLayout="90px 200px 250px auto 120px 100px 100px 220px"
+            gridColumnsLayout="90px 180px 230px auto 120px 100px 130px 240px"
             columnLeftAlignIndex={[2, 3, 4]}
           />
         </div>
