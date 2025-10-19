@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MyButtonShortAction from '../components2/MyButtonShortAction';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import Modal from '../components2/Modal';
+import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -174,24 +175,77 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const weekDates = getWeekDates(currentWeekStart);
-
-    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '12:00 - 14:00', motivo: 'Mantenimiento' },
-        { fecha: '18/08/2025', hora: '12:00 - 14:00', motivo: 'Limpieza profunda' },
-        { fecha: '19/08/2025', hora: '12:00 - 14:00', motivo: 'Evento especial' },
-        { fecha: '20/07/2025', hora: '12:00 - 14:00', motivo: 'Reunión de personal' },
-        { fecha: '21/07/2025', hora: '12:00 - 14:00', motivo: 'Capacitación' },
-        { fecha: '22/07/2025', hora: '12:00 - 14:00', motivo: 'Misa especial' },
-        { fecha: '23/07/2025', hora: '12:00 - 14:00', motivo: 'Retiro' },
-        { fecha: '24/07/2025', hora: '12:00 - 14:00', motivo: 'Visita pastoral' },
-        { fecha: '25/07/2025', hora: '14:00 - 15:00', motivo: 'Confesiones' }
+    // Capillas (mock data). Replace with backend fetch when available.
+    const [capillas, setCapillas] = useState([
+        {
+            id: 1,
+            nombre: 'Capilla San José',
+            exceptionsDisponibilidad: [
+                { fecha: '17/08/2025', hora: '12:00 - 14:00', motivo: 'Mantenimiento' }
+            ],
+            exceptionsNoDisponibilidad: [
+                { fecha: '18/08/2025', hora: '16:00 - 17:00', motivo: 'Vacaciones' }
+            ],
+            savedIntervals: {}
+        },
+        {
+            id: 2,
+            nombre: 'Capilla Santa María',
+            exceptionsDisponibilidad: [
+                { fecha: '19/08/2025', hora: '12:00 - 14:00', motivo: 'Evento especial' }
+            ],
+            exceptionsNoDisponibilidad: [
+                { fecha: '20/07/2025', hora: '12:00 - 14:00', motivo: 'Reunión de personal' }
+            ],
+            savedIntervals: {}
+        },
+        {
+            id: 3,
+            nombre: 'Capilla San Miguel',
+            exceptionsDisponibilidad: [],
+            exceptionsNoDisponibilidad: [],
+            savedIntervals: {}
+        }
     ]);
 
-    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([
-        { fecha: '17/08/2025', hora: '16:00 - 17:00', motivo: 'Vacaciones' },
-        { fecha: '18/08/2025', hora: '16:00 - 17:00', motivo: 'Viaje' },
-        { fecha: '19/08/2025', hora: '16:00 - 17:00', motivo: 'Enfermedad' }
-    ]);
+    const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(0);
+    const [showPanelLateral, setShowPanelLateral] = useState(false);
+
+    // Estados por capilla (se sincronizan con `capillas[selectedCapillaIndex]`)
+    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState(() => {
+        return capillas[0]?.exceptionsDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsDisponibilidad)) : [];
+    });
+    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState(() => {
+        return capillas[0]?.exceptionsNoDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsNoDisponibilidad)) : [];
+    });
+
+    // sincronizar al cambiar la capilla seleccionada
+    useEffect(() => {
+        const cap = capillas[selectedCapillaIndex];
+        if (!cap) return;
+        setExceptionsDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsDisponibilidad || [])));
+        setExceptionsNoDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsNoDisponibilidad || [])));
+        setSavedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
+        setSelectedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
+        setIsEditing(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedCapillaIndex]);
+
+    // persistir cambios locales en el array `capillas`
+    useEffect(() => {
+        setCapillas(prev => {
+            const next = [...prev];
+            if (!next[selectedCapillaIndex]) return prev;
+            next[selectedCapillaIndex] = {
+                ...next[selectedCapillaIndex],
+                exceptionsDisponibilidad: JSON.parse(JSON.stringify(exceptionsDisponibilidad)),
+                exceptionsNoDisponibilidad: JSON.parse(JSON.stringify(exceptionsNoDisponibilidad)),
+                savedIntervals: JSON.parse(JSON.stringify(savedIntervals || {}))
+            };
+            return next;
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [exceptionsDisponibilidad, exceptionsNoDisponibilidad, savedIntervals, selectedCapillaIndex]);
 
     const handleOpenModal = (type) => {
         setModalType(type);
@@ -444,10 +498,9 @@ export default function ActosLiturgicosHorarios() {
     };
 
     return (
-        <>
-            <div className="content-module only-this">
-                <h2 className='title-screen'>Gestionar horario</h2>
-                <div className='app-container'>
+        <div className="content-module only-this">
+            <h2 className='title-screen'>Gestionar horario - {capillas[selectedCapillaIndex].nombre}</h2>
+            <div className='app-container'>
                     <div className="horarios-container">
                         <div className="week-navigation">
                             <MyButtonShortAction
@@ -474,6 +527,8 @@ export default function ActosLiturgicosHorarios() {
                                     classNameExtra="horarios-btn"
                                 />
                             </div>
+
+                           
                             <div className='Leyenda'>
                                 <div className='color-hnormal'></div>
                                 <span>Normal: </span>
@@ -482,6 +537,16 @@ export default function ActosLiturgicosHorarios() {
                                 <div className='color-hno-disponible'></div>
                                 <span>Ex. No Disponible: </span>
                             </div>
+
+                             <div className="capillas-button-container">
+                                <MyButtonMediumIcon
+                                    icon="MdOutlineTouchApp"
+                                    text="Capillas"
+                                    onClick={() => setShowPanelLateral(prev => !prev)}
+                                    classNameExtra="horarios-btn"
+                                />
+                            </div>
+
                             {isEditing && (
                                 <div className="horarios-actions">
                                     <MyButtonMediumIcon
@@ -500,100 +565,116 @@ export default function ActosLiturgicosHorarios() {
                             )}
                         </div>
 
+                        {/* Panel lateral: listado de capillas */}
+                        {showPanelLateral && (
+                            <MyPanelLateralConfig title="Capillas">
+                                <div className="panel-config-actions">
+                                    {capillas.map((cap, idx) => (
+                                        <button
+                                            key={cap.id}
+                                            onClick={() => { setSelectedCapillaIndex(idx); setShowPanelLateral(false); }}
+                                            className={`capilla-btn ${idx === selectedCapillaIndex ? 'active' : ''}`}
+                                        >
+                                            {cap.nombre}
+                                        </button>
+                                    ))}
+                                </div>
+                            </MyPanelLateralConfig>
+                        )}
+
                         <div className="horarios-grid-container">
-                            <div className="horarios-grid">
-                                <div className="grid-header">
-                                    <div className="grid-cell header-cell"></div>
-                                    {daysOfWeek.map((day, index) => (
-                                        <div key={index} className="grid-cell header-cell">
-                                            <div className="day-name">{day}</div>
-                                            <div className="day-date">{weekDates[index].getDate()}</div>
+                                <div className="horarios-grid">
+                                    <div className="grid-header">
+                                        <div className="grid-cell header-cell"></div>
+                                        {daysOfWeek.map((day, index) => (
+                                            <div key={index} className="grid-cell header-cell">
+                                                <div className="day-name">{day}</div>
+                                                <div className="day-date">{weekDates[index].getDate()}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {timeSlots.map((timeSlot, rowIndex) => (
+                                        <div key={rowIndex} className="grid-row">
+                                            <div className="grid-cell time-cell">{timeSlot}</div>
+                                            {daysOfWeek.map((_, colIndex) => {
+                                                const isSelected = isCellInInterval(rowIndex, colIndex);
+                                                const hasException = hasExceptionForCell(rowIndex, colIndex);
+                                                const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
+                                                return (
+                                                    <div
+                                                        key={colIndex}
+                                                        className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
+                                                        data-row={rowIndex}
+                                                        data-col={colIndex}
+                                                        onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
+                                                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                                        onMouseUp={() => handleCellMouseUp(rowIndex)}
+                                                        onClick={() => handleCellClick(rowIndex, colIndex)}
+                                                    >
+                                                        {isSelected && !hasException && (
+                                                            <div className="interval-marker"></div>
+                                                        )}
+                                                        {hasException && (
+                                                            <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     ))}
                                 </div>
-                                {timeSlots.map((timeSlot, rowIndex) => (
-                                    <div key={rowIndex} className="grid-row">
-                                        <div className="grid-cell time-cell">{timeSlot}</div>
-                                        {daysOfWeek.map((_, colIndex) => {
-                                            const isSelected = isCellInInterval(rowIndex, colIndex);
-                                            const hasException = hasExceptionForCell(rowIndex, colIndex);
-                                            const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
-                                            return (
-                                                <div
-                                                    key={colIndex}
-                                                    className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
-                                                    data-row={rowIndex}
-                                                    data-col={colIndex}
-                                                    onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
-                                                    onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                                    onMouseUp={() => handleCellMouseUp(rowIndex)}
-                                                    onClick={() => handleCellClick(rowIndex, colIndex)}
-                                                >
-                                                    {isSelected && !hasException && (
-                                                        <div className="interval-marker"></div>
-                                                    )}
-                                                    {hasException && (
-                                                        <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
                             </div>
-                        </div>
 
-                        <div className="exceptions-container">
-                            <ExcepcionesSection
-                                title="Excepciones - Disponibilidad"
-                                exceptions={exceptionsDisponibilidad}
-                                onAdd={() => handleOpenModal('disponibilidad')}
-                                onEdit={exception => handleEditException(exception, 'disponibilidad')}
-                                onDelete={exception => handleDeleteException(exception, 'disponibilidad')}
-                                ITEMS_PER_PAGE={ITEMS_PER_PAGE}
-                            />
-                            <ExcepcionesSection
-                                title="Excepciones - No disponibilidad"
-                                exceptions={exceptionsNoDisponibilidad}
-                                onAdd={() => handleOpenModal('noDisponibilidad')}
-                                onEdit={exception => handleEditException(exception, 'noDisponibilidad')}
-                                onDelete={exception => handleDeleteException(exception, 'noDisponibilidad')}
-                                ITEMS_PER_PAGE={ITEMS_PER_PAGE}
-                            />
-                        </div>
+                            <div className="exceptions-container">
+                                <ExcepcionesSection
+                                    title="Excepciones - Disponibilidad"
+                                    exceptions={exceptionsDisponibilidad}
+                                    onAdd={() => handleOpenModal('disponibilidad')}
+                                    onEdit={exception => handleEditException(exception, 'disponibilidad')}
+                                    onDelete={exception => handleDeleteException(exception, 'disponibilidad')}
+                                    ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                                />
+                                <ExcepcionesSection
+                                    title="Excepciones - No disponibilidad"
+                                    exceptions={exceptionsNoDisponibilidad}
+                                    onAdd={() => handleOpenModal('noDisponibilidad')}
+                                    onEdit={exception => handleEditException(exception, 'noDisponibilidad')}
+                                    onDelete={exception => handleDeleteException(exception, 'noDisponibilidad')}
+                                    ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                                />
+                            </div>
+
+                            <Modal
+                                show={showModal}
+                                onClose={handleCancelModal}
+                                title={
+                                    modalAction === 'add' ? `Agregar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
+                                        : modalAction === 'edit' ? `Editar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
+                                            : 'Confirmar eliminación'
+                                }
+                                onAccept={handleAcceptModal}
+                                onCancel={handleCancelModal}
+                            >
+                                {modalAction === 'delete' ? (
+                                    <p>¿Estás seguro de que quieres eliminar esta excepción?</p>
+                                ) : (
+                                    <form className='form-modal-horarios'>
+                                        <div className="Inputs-add">
+                                            <label htmlFor="fecha">Fecha</label>
+                                            <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
+                                            <label>Hora</label>
+                                            <div className="time-range">
+                                                <input type="text" className="inputTime" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} placeholder="HH:MM" required />
+                                                <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
+                                            </div>
+                                            <label htmlFor="motivo">Motivo</label>
+                                            <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
+                                        </div>
+                                    </form>
+                                )}
+                            </Modal>
                     </div>
-
-                    <Modal
-                        show={showModal}
-                        onClose={handleCancelModal}
-                        title={
-                            modalAction === 'add' ? `Agregar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
-                                : modalAction === 'edit' ? `Editar excepción - ${modalType === 'disponibilidad' ? 'Disponibilidad' : 'No disponibilidad'}`
-                                    : 'Confirmar eliminación'
-                        }
-                        onAccept={handleAcceptModal}
-                        onCancel={handleCancelModal}
-                    >
-                        {modalAction === 'delete' ? (
-                            <p>¿Estás seguro de que quieres eliminar esta excepción?</p>
-                        ) : (
-                            <form className='form-modal-horarios'>
-                                <div className="Inputs-add">
-                                    <label htmlFor="fecha">Fecha</label>
-                                    <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
-                                    <label>Hora</label>
-                                    <div className="time-range">
-                                        <input type="text" className="inputTime" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} placeholder="HH:MM" required />
-                                        <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
-                                    </div>
-                                    <label htmlFor="motivo">Motivo</label>
-                                    <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
-                                </div>
-                            </form>
-                        )}
-                    </Modal>
                 </div>
             </div>
-        </>
     );
 }
