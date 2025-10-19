@@ -1,5 +1,6 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdAddModerator  } from "react-icons/md";
+import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdBlock, 
+  MdAddModerator, MdAccessTime  } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title }) {
@@ -37,6 +38,12 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'file') {
     icon = <MdAddModerator  />;
     className = 'btn-short-file';
+  } else if (type === 'block') {
+    icon = <MdBlock />;
+    className = 'btn-short-block';
+  } else if (type === 'time') {
+    icon = <MdAccessTime />;
+    className = 'btn-short-time';
   } else {
     icon = null;
     className = '';

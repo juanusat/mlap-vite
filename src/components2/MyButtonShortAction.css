@@ -84,3 +84,11 @@
 .btn-short-file{
   color:var(--color-a-400);
 }
+
+.btn-short-block {
+  color: var(--color-error-700);
+}
+
+.btn-short-time {
+  color: var(--color-a-600);
+}
