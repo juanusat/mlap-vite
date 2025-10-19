@@ -1,5 +1,44 @@
+.panel-lateral-config {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100vh;
+  background-color: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.panel-lateral-title {
+  padding: 20px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+}
+
+.panel-lateral-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
 .panel-config-actions {
   display: flex;
-  gap: var(--space-s);
+  flex-direction: column;
+  gap: 8px;
 }
 
