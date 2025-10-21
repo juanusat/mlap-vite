@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DynamicTable from "../components2/Tabla";
+import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";

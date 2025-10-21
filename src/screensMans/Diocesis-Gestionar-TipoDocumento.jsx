@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../components/UI.css';
 import '../utils/spacing.css';
-import DynamicTable from "../components2/Tabla";
+import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components2/Toggle";
 import Modal from "../components2/Modal";
