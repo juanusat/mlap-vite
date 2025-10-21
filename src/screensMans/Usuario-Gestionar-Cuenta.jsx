@@ -4,7 +4,7 @@ import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
-import ExpandableContainer from '../components2/Contenedor-Desplegable';
+import ExpandableContainer from '../components/Contenedor-Desplegable';
 import '../utils/Usuario-Gestionar.css';
 
 const GestionCuenta = () => {
