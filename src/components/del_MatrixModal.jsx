@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; // Importamos useEffect
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import MyButtonMediumIcon from "./MyButtonMediumIcon";
 import ToggleSwitch from '../components2/Toggle';
 import './MatrixModal.css';
 
