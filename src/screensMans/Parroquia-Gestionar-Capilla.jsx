@@ -5,7 +5,7 @@ import ToggleSwitch from "../components/Toggle";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
-import InputFotoPerfil from '../components2/inputFotoPerfil';
+import InputFotoPerfil from '../components/inputFotoPerfil';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Parroquia-Gestionar-Capilla.css';
 

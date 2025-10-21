@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
-import InputFotoPerfil from '../components2/inputFotoPerfil';
+import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
 import '../utils/Usuario-Gestionar.css';

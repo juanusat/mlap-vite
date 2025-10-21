@@ -4,7 +4,7 @@ import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components2/Contenedor-Desplegable';
-import InputFotoPerfil from '../components2/inputFotoPerfil';
+import InputFotoPerfil from '../components/inputFotoPerfil';
 import InputColorPicker from '../components2/inputColorPicker';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
