@@ -16,7 +16,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState('');
-  const API_BASE = import.meta.env.VITE_API_BASE || '';
+  const API_BASE = import.meta.env.SERVER_BACKEND_URL || '';
 
   React.useEffect(() => {
     if (location.state?.message) {
