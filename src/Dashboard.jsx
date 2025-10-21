@@ -37,7 +37,7 @@ function WorkerDashboard({ parish, roles, userFullName }) {
   const [selectedRole, setSelectedRole] = useState(null);
 
   const handleRoleSelection = async (roleId) => {
-    const API_BASE = import.meta.env.VITE_API_BASE || '';
+    const API_BASE = import.meta.env.SERVER_BACKEND_URL || '';
     
     try {
       const resp = await fetch(`${API_BASE}/api/auth/select-role`, {
