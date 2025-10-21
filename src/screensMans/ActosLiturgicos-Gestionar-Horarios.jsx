@@ -111,6 +111,10 @@ function ExcepcionesSection({
 }
 
 export default function ActosLiturgicosHorarios() {
+      React.useEffect(() => {
+        document.title = "MLAP | Gestionar horarios";
+      }, []);
+
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('disponibilidad');
     const [modalAction, setModalAction] = useState('add');

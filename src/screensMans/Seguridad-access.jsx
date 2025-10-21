@@ -5,6 +5,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Seguridad.css';
 
 export default function Seguridad() {
+    React.useEffect(() => {
+    document.title = "MLAP | Módulo seguridad";
+  }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-seguridad';
 

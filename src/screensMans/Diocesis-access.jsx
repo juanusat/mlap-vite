@@ -5,6 +5,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Actos.css'; // puedes usar el mismo CSS para mantener consistencia
 
 export default function Diocesis() {
+    React.useEffect(() => {
+    document.title = "MLAP | Módulo diócesis";
+  }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-diocesis';
 

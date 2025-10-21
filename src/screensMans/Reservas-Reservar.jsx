@@ -4,6 +4,10 @@ import '../components/MyButtonMediumIcon.css';
 import './Reservas-Reservar.css';
 
 export default function ReservasReservar() {
+      React.useEffect(() => {
+        document.title = "MLAP | Reservar evento";
+      }, []);
+    
     return (
         <>
             <div className="content-module only-this">
