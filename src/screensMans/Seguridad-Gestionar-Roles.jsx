@@ -3,7 +3,7 @@ import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
-import ToggleSwitch from '../components2/Toggle';
+import ToggleSwitch from '../components/Toggle';
 import Modal from '../components2/Modal';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css'; 

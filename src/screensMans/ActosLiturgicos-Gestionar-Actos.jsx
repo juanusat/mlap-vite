@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
-import ToggleSwitch from "../components2/Toggle";
+import ToggleSwitch from "../components/Toggle";
 import Modal from "../components2/Modal";
 import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
 import MyButtonShortAction from "../components2/MyButtonShortAction";
