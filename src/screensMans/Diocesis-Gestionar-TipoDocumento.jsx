@@ -24,6 +24,9 @@ const initialDocs = [
 ];
 
 export default function TipoDocumentoGestionar() {
+    React.useEffect(() => {
+    document.title = "MLAP | Gestionar tipos de documentos";
+  }, []);
   const [docs, setDocs] = useState(initialDocs);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);

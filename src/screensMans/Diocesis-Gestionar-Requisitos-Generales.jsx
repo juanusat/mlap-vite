@@ -78,6 +78,10 @@ const TableEventsWithClick = ({ data, handleRowClickEvent }) => {
 
 // Componente principal de gestión de requisitos
 export default function DiocesisRequisitosGestionarSoloBarra() {
+      React.useEffect(() => {
+    document.title = "MLAP | Gestionar requisitos generales";
+  }, []);
+    
     const [requirements, setRequirements] = useState(initialRequirementsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);

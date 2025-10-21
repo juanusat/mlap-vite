@@ -5,6 +5,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Reservas.css';
 
 export default function Reservas() {
+    React.useEffect(() => {
+      document.title = "MLAP | Módulo reservas";
+    }, []);
 
   const location = useLocation();
   const isBasePath = location.pathname === '/man-reservas';

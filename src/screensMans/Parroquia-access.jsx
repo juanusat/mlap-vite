@@ -5,7 +5,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Parroquia.css';
 
 export default function Parroquia() {
-
+    React.useEffect(() => {
+    document.title = "MLAP | Módulo parroquia";
+  }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-parroquia';
 

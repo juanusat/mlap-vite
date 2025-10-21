@@ -59,6 +59,10 @@ const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
 });
 
 export default function ReservasPendientes() {
+    React.useEffect(() => {
+      document.title = "MLAP | Reservas pendientes";
+    }, []);
+  
   const [reservations, setReservations] = useState(initialReservationsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);

@@ -46,6 +46,9 @@ const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function DiocesisEventosLiturgicos() {
+      React.useEffect(() => {
+    document.title = "MLAP | Gestionar eventos generales";
+  }, []);
     const [events, setEvents] = useState(initialEventsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);

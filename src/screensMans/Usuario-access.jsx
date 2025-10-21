@@ -5,6 +5,10 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Usuario.css';
 
 export default function Usuario() {
+    React.useEffect(() => {
+    document.title = "MLAP | Módulo usuario";
+  }, []);
+  
   const location = useLocation();
   const isBasePath = location.pathname === '/man-usuario';
 
