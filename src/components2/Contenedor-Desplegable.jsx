@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Contenedor-Desplegable.css';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
-import MyGroupButtonsActions from '../components2/MyGroupButtonsActions';
+import MyButtonShortAction from '../components/MyButtonShortAction';
+import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 
 const ExpandableContainer = ({ title, children, type, showDeleteButton, isEditing, onEdit, onSave, onCancel }) => {

@@ -3,7 +3,7 @@ import { InputField, MainButton, SecondaryButton } from './components/UI';
 import logo from './assets/logo-mlap-color.svg';
 import './App.css';
 import './colors.css';
-import Modal from './components2/Modal';
+import Modal from './components/Modal';
 import ForgotPassword from './screensMans/ForgotPassword';
 import { useNavigate, useLocation } from 'react-router-dom';
 

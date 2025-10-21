@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MyGroupButtonsActions from '../components2/MyGroupButtonsActions';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
+import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
+import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import InputFotoPerfil from '../components2/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';

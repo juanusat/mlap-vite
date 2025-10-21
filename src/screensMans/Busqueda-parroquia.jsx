@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MyBarSearchGen from '../components/MyBarSearchGen';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
+import MyButtonShortAction from '../components/MyButtonShortAction';
 import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
 import './Busqueda-parroquia.css';
