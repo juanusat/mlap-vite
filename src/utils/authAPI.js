@@ -1,4 +1,4 @@
-const API_BASE_URL = `${import.meta.env.SERVER_BACKEND_URL}/api`;
+const API_BASE_URL = `${import.meta.env.VITE_SERVER_BACKEND_URL}/api`;
 export const getSessionInfo = async () => {
   const response = await fetch(`${API_BASE_URL}/auth/session`, {
     method: 'GET',

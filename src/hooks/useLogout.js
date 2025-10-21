@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function useLogout() {
   const navigate = useNavigate();
-  const API_BASE = import.meta.env.SERVER_BACKEND_URL || '';
+  const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
 
   const logout = async () => {
     try {

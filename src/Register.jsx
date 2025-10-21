@@ -24,7 +24,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_BASE = import.meta.env.SERVER_BACKEND_URL || '';
+  const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
 
   const apiFetch = async (path, opts = {}) => {
     return fetch(`${API_BASE}${path}`, { credentials: 'include', ...opts });
