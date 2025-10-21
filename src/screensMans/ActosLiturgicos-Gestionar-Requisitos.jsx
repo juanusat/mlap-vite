@@ -36,6 +36,10 @@ const initialRequirementsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function ActosLiturgicosRequisitos() {
+    React.useEffect(() => {
+    document.title = "MLAP | Gestionar requisitos";
+  }, []);
+
   const [requirements, setRequirements] = useState(initialRequirementsData);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -333,7 +337,7 @@ export default function ActosLiturgicosRequisitos() {
 }
 
 function RequisitoForm({ onSave, req = {}, mode = "add" }) {
-  // ... (RequisitoForm sin cambios, ya que solo maneja Nombre y Descripción del Requisito)
+
   const [nombre, setNombre] = useState(req.nombre || "");
   const [descripcion, setDescripcion] = useState(req.descripcion || "");
   const [estado] = useState(req.estado || "Activo");

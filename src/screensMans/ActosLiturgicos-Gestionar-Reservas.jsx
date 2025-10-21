@@ -82,6 +82,10 @@ const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
 // -------------------------------------------------------------------------
 
 export default function Reservas() {
+    React.useEffect(() => {
+      document.title = "MLAP | Gestionar reservas";
+    }, []);
+  
   const [reservations, setReservations] = useState(initialReservationsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);

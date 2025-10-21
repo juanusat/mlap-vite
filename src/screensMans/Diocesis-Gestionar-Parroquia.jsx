@@ -20,7 +20,9 @@ const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function Parroquia() {
-
+      React.useEffect(() => {
+    document.title = "MLAP | Gestionar parroquias";
+  }, []);
     const [events, setEvents] = useState(initialEventsData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);

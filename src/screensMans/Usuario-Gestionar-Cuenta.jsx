@@ -8,7 +8,9 @@ import ExpandableContainer from '../components2/Contenedor-Desplegable';
 import '../utils/Usuario-Gestionar.css';
 
 const GestionCuenta = () => {
-    // Estado para la información del usuario
+      React.useEffect(() => {
+    document.title = "MLAP | Mi cuenta";
+  }, []);
     const [userInfo, setUserInfo] = useState({
         nombres: "Juan",
         apellidoPaterno: "Pérez",

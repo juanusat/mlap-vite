@@ -9,7 +9,10 @@ import InputColorPicker from '../components2/inputColorPicker';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {
-    // Estado para la información del usuario
+      React.useEffect(() => {
+    document.title = "MLAP | Gestionar cuenta parroquia";
+  }, []);
+
     const [userInfo, setUserInfo] = useState({
         nombres: "Parroquia Nuestra Señora de la Consolación",
         direccion: "Algarrobos 222, Chiclayo 14008",

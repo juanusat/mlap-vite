@@ -69,6 +69,10 @@ const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
 });
 
 export default function ReservasHistorial() {
+    React.useEffect(() => {
+      document.title = "MLAP | Historial de reservas";
+    }, []);
+  
   const [reservations, setReservations] = useState(initialReservationsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);

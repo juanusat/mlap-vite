@@ -21,6 +21,10 @@ const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
 }));
 
 export default function GestionCapillas() {
+    React.useEffect(() => {
+    document.title = "MLAP | Gestionar capillas";
+  }, []);
+  
   const [chapels, setChapels] = useState(initialChapelsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);

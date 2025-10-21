@@ -8,8 +8,6 @@ import Modal from '../components2/Modal';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css'; 
 
-// --------------------- ESTRUCTURA DE PERMISOS GRANULAR ---------------------
-// (La estructura PERMISSIONS_STRUCTURE es la misma que ya tienes)
 const PERMISSIONS_STRUCTURE = {
     'ACTOS_LITURGICOS': { 
         name: 'Actos Litúrgicos', 
@@ -176,7 +174,9 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 
 // --------------------- PRINCIPAL ---------------------
 export default function RolesGestionar() {
-    
+      React.useEffect(() => {
+    document.title = "MLAP | Gestionar roles";
+  }, []);
     const generateMockPermissions = () => {
         return getAllPermissionIds();
     };

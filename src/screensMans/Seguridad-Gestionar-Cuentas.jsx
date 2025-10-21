@@ -25,6 +25,9 @@ const initialUsers = Array.from({ length: 20 }, (_, i) => {
 });
 
 export default function CuentasGestionar() {
+    React.useEffect(() => {
+    document.title = "MLAP | Gestionar cuentas";
+  }, []);
   const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
