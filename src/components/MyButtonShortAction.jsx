@@ -1,9 +1,9 @@
 import React from 'react';
 import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdBlock, 
-  MdAddModerator, MdAccessTime  } from "react-icons/md";
+  MdAddModerator, MdAccessTime , MdOutlineKeyboardArrowDown } from "react-icons/md";
 import './MyButtonShortAction.css';
 
-export default function MyButtonShortAction({ type, onClick, title }) {
+export default function MyButtonShortAction({ type, onClick, title, classNameCustom = '' }) {
   let icon, className;
   if (type === 'edit') {
     icon = <MdCreate />;
@@ -44,12 +44,15 @@ export default function MyButtonShortAction({ type, onClick, title }) {
   } else if (type === 'time') {
     icon = <MdAccessTime />;
     className = 'btn-short-time';
+  } else if (type === 'arrowDown') {
+    icon = <MdOutlineKeyboardArrowDown />;
+    className = 'btn-short-arrowfold';
   } else {
     icon = null;
     className = '';
   }
   return (
-      <button className={`my-btn-short-action ${className}`} onClick={onClick} title={title}>
+      <button className={`my-btn-short-action ${className} ${classNameCustom}`} onClick={onClick} title={title}>
         {icon}
       </button>
 

@@ -17,10 +17,10 @@ const ExpandableContainer = ({ title, children, type, showDeleteButton, isEditin
                 <h2 className="expandable-title">{title}</h2>
                 <MyGroupButtonsActions>
                     <MyButtonShortAction 
-                        type='view' 
+                        type='arrowDown' 
                         title='Ver' 
                         onClick={toggleExpand} 
-                        className={`expandable-icon ${isExpanded ? 'expanded' : ''}`} 
+                        classNameCustom={`expandable-icon ${isExpanded ? 'expanded' : ''}`} 
                     />
                     <MyButtonShortAction type={type} title='Editar' onClick={onEdit} />
                     {showDeleteButton === 'si' && <MyButtonShortAction type='delete' title='Eliminar' />}
