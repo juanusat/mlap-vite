@@ -12,7 +12,7 @@
 }
 hr {
     border-style: solid;
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--color-n-100);
     border-width: var(--space-0);
     border-block-start-width: var(--border-width-m);
 }

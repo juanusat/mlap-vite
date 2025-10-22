@@ -66,7 +66,7 @@ input[type="time"] {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: var(--color-n-0);
 }
 
 .reserva-actions {
@@ -94,17 +94,17 @@ input[type="time"] {
 
 .reserva-btn-aceptar {
     background-color: #1a75b8 !important;
-    color: white !important;
+    color: var(--color-n-0) !important;
     text-transform: uppercase;
 }
 
 .reserva-btn-cancelar {
     background-color: #a21e1e !important;
-    color: white !important;
+    color: var(--color-n-0) !important;
     text-transform: uppercase;
 }
 
 .reserva-btn-aceptar svg,
 .reserva-btn-cancelar svg {
-    color: white !important;
+    color: var(--color-n-0) !important;
 }

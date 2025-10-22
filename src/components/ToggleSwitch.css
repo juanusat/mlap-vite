@@ -19,7 +19,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--color-n-75);
   transition: .4s;
 }
 
@@ -30,16 +30,16 @@
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: var(--color-n-0);
   transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: #4CAF50; /* Green when checked */
+  background-color: var(--color-green-btn); /* Green when checked */
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #4CAF50;
+  box-shadow: 0 0 1px var(--color-green-btn);
 }
 
 input:checked + .slider:before {

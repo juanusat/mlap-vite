@@ -1,5 +1,5 @@
 .expandable-container {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-grey-50);
   border-radius: 8px;
   margin: 1em;
   overflow: hidden;

@@ -419,7 +419,7 @@ export default function BuscarParroquia() {
           box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         ">
           <div style="
-            color: white;
+            color: var(--color-n-0);
             font-weight: bold;
             font-size: ${isParroquia ? '12px' : '10px'};
             transform: rotate(45deg);

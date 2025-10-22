@@ -1,4 +1,6 @@
-
+:root{
+    --color-parish: #ff0048;
+}
 
 /* Header con imagen de fondo */
 .vp-chapel-header {
@@ -11,7 +13,7 @@
 }
 .vp-header-overlay {
     width: 100%;
-    background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%);
+    background: linear-gradient(180deg, rgba(17, 255, 0, 0.25) 0%, rgba(255, 0, 234, 0.55) 100%);
     padding: 1rem 1rem 1rem 2.5rem;
     display: flex;
     align-items: flex-end;

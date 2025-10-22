@@ -45,13 +45,13 @@
 }
 
 .color-display-button:hover:not(.disabled) {
-  border-color: #6366f1;
+  border-color: var(--color-a-300);
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .color-display-button:focus {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--color-a-300);
   outline-offset: 2px;
 }
 
