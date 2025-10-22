@@ -17,5 +17,5 @@
 .panel-lateral-header h2 {
     margin: 0;
     font-size: var(--font-size-l);
-    color: #343a40;
+    color: var(--color-n-700);
 }
