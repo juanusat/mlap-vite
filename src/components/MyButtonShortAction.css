@@ -14,7 +14,7 @@
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--border-radius-s);
   transition: background 0.2s;
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--color-gris-short);
   display: grid;
   place-items: center;
 }
@@ -24,7 +24,7 @@
 }
 
 .btn-short-edit:hover {
-  background: #e3f2fd;
+  background: var(--color-b-100);
 }
 
 .btn-short-delete {
@@ -40,7 +40,7 @@
 }
 
 .btn-short-refresh:hover {
-  background: #e3f2fd;
+  background: var(--color-b-100);
 }
 
 .btn-short-add {
@@ -48,7 +48,7 @@
 }
 
 .btn-short-add:hover {
-  background-color: #e3f2fd;
+  background-color: var(--color-b-100);
 }
 
 .btn-short-close {
@@ -72,7 +72,7 @@
 }
 
 .btn-short-select:hover {
-  background-color: #e3f2fd;
+  background-color: var(--color-b-100);
 }
 
 .btn-short-next{

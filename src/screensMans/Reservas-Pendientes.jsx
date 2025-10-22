@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import DynamicTable from "../components2/Tabla";
-import SearchBar from "../components2/SearchBar";
-import Modal from "../components2/Modal";
-import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
-import MyButtonShortAction from "../components2/MyButtonShortAction";
+import DynamicTable from "../components/Tabla";
+import SearchBar from "../components/SearchBar";
+import Modal from "../components/Modal";
+import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
+import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";

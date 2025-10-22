@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import DynamicTable from "../components2/Tabla";
-import SearchBar from "../components2/SearchBar";
-import ToggleSwitch from "../components2/Toggle";
-import Modal from "../components2/Modal";
-import MyGroupButtonsActions from "../components2/MyGroupButtonsActions";
-import MyButtonShortAction from "../components2/MyButtonShortAction";
+import DynamicTable from "../components/Tabla";
+import SearchBar from "../components/SearchBar";
+import ToggleSwitch from "../components/Toggle";
+import Modal from "../components/Modal";
+import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
+import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import '../utils/Estilos-Generales-1.css';

@@ -11,14 +11,14 @@
 }
 
 .horarios-header h3 {
-  font-size: 22px;
+  font-size: var(--font-size-l);
   font-weight: bold;
   margin-bottom: 8px;
 }
 
 .horarios-header hr {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-n-25);
   margin: 0;
 }
 
@@ -42,8 +42,8 @@
 
 .week-info {
   font-weight: bold;
-  font-size: 16px;
-  color: #333;
+  font-size: var(--font-size-s);
+  color: var(--color-n-700);
   min-width: 250px;
   text-align: center;
 }
@@ -62,8 +62,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  color: #333;
+  font-size: var(--font-size-body);
+  color: var(--color-n-700);
   margin-left: 20px;
 }
 
@@ -84,7 +84,7 @@
 .color-hno-disponible {
   width: 12px;
   height: 12px;
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   border-radius: 2px;
 }
 
@@ -102,7 +102,7 @@
   width: 100%;
   overflow-x: auto;
   margin-bottom: 20px;
-  background-color: white;
+  background-color: var(--color-n-0);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -124,7 +124,7 @@
 
 .grid-cell {
   display: table-cell;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-n-25);
   padding: 10px;
   text-align: center;
 }
@@ -135,19 +135,19 @@
 }
 
 .day-name {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: bold;
 }
 
 .day-date {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: #666;
   margin-top: 2px;
 }
 
 .time-cell {
-  background-color: #eee;
-  font-size: 14px;
+  background-color: var(--color-grey-palido);
+  font-size: var(--font-size-body);
   min-width: 100px;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .day-cell.exception {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   cursor: not-allowed;
 }
 
@@ -181,7 +181,7 @@
 }
 
 .day-cell.exception-no-disponibilidad {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   cursor: not-allowed;
 }
 
@@ -203,7 +203,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   z-index: 2;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .exception-marker-no-disponibilidad {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
 }
 
 .day-cell.dragging {
@@ -243,7 +243,7 @@
 
 .exceptions-section {
   flex: 1;
-  background-color: white;
+  background-color: var(--color-n-0);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -255,12 +255,12 @@
   align-items: center;
   padding: 10px 15px;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-n-25);
 }
 
 .exceptions-header h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--font-size-s);
 }
 
 .exceptions-controls {
@@ -282,13 +282,13 @@
 .exceptions-table-header {
   display: flex;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-n-25);
   font-weight: bold;
 }
 
 .exceptions-table-row {
   display: flex;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-grey-palido);
 }
 
 .exception-cell {
@@ -319,12 +319,12 @@
 .inputTime , .input-text-area{
     padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-grey-50);
     width: 380px;  
     max-width: 100%;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     outline: none;
-    background-color: white;
+    background-color: var(--color-n-0);
     color: black;
 }
 .inputTime{
@@ -345,7 +345,7 @@
 .exceptions-tabs button {
     padding: 6px 16px;
     border: none;
-    background: #eee;
+    background: var(--color-grey-palido);
     cursor: pointer;
     border-radius: 4px 4px 0 0;
     font-weight: bold;
@@ -370,7 +370,7 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-s);
   transition: all 0.2s ease;
   width: 100%;
   color: black;

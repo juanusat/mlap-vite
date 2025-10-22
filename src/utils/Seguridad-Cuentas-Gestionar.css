@@ -5,17 +5,17 @@
 .sidebar-list-item {
     display: flex;
     justify-content: space-between;
-    font-size: 18px;
+    font-size: var(--font-size-m);
 }
 .panel-lateral-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-n-25);
     padding: 0px 0px 10px 0px;
 }
 .panel-lateral-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--font-size-l);
     color: #343a40;
 }

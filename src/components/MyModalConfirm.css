@@ -10,7 +10,7 @@
   left:var(--size-0);
   width: 100vw;
   height: var(--min-height);
-  background: rgba(0,0,0,0.4);
+  background: var(--color-n-1000);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +20,7 @@
   background: var(--color-n-0);
   padding: var(--space-xl) var(--space-3xl);
   border-radius: var(--border-radius-body);
-  box-shadow: var(--size-0) 2px 16px rgba(0,0,0,0.18);
+  box-shadow: var(--size-0) 2px 16px var(--color-n-1000);
   min-width: var(--min-width);
   text-align: center;
 }

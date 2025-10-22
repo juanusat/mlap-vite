@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MyButtonShortAction from "../components2/MyButtonShortAction";
+import MyButtonShortAction from "../components/MyButtonShortAction";
 import './Tabla.css';
 
 const DynamicTable = ({ columns, data, itemsPerPage = 10, gridColumnsLayout = '', columnLeftAlignIndex = [] }) => {

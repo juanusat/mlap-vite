@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: var(--color-n-1000);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,10 +12,10 @@
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: var(--color-n-0);
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px var(--color-n-1000);
     width: 90%;
     max-width: 450px;
     animation: fadeIn 0.3s ease-out;
@@ -34,8 +34,8 @@
 
 .modal-header h3 {
     margin: 0 0 10px;
-    font-size: 22px;
-    color: #333;
+    font-size: var(--font-size-2p);
+    color: var(--color-n-700);
 }
 
 .modal-body {
@@ -44,23 +44,23 @@
 
 .modal-body p {
     margin-top: 0;
-    color: #000000;
+    color: var(--color-n-1000);
 }
 
 .modal-input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-n-25);
     border-radius: 5px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     box-sizing: border-box;
-    background-color: #ffffff;
-    color: black;
+    background-color: var(--color-n-0);
+    color: var(--color-n-1000);
 }
 
 .modal-input:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--color-a-400);
 }
 
 .modal-footer {
@@ -74,25 +74,25 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: var(--font-size-body);
     font-weight: 500;
     transition: background-color 0.2s ease;
 }
 
 .btn-cancel {
-    background-color: #e0e0e0;
-    color: #666;
+    background-color: var(--color-n-0);
+    color: var(--color-n-300);
 }
 
 .btn-cancel:hover {
-    background-color: #d5d5d5;
+    background-color: var(--color-n-100);
 }
 
 .btn-confirm {
-    background-color: #007bff;
-    color: #fff;
+    background-color: var(--color-b-400);
+    color: var(--color-n-0);
 }
 
 .btn-confirm:hover {
-    background-color: #0056b3;
+    background-color: var(--color-a-400);
 }

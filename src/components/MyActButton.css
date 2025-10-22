@@ -1,27 +1,27 @@
 .acto-button {
-    background-color: #007bff; /* Azul base */
-    color: white; /* Texto blanco */
+    background-color: var(--color-a-300); /* Azul base */
+    color: var(--color-n-0); /* Texto blanco */
     padding: 10px 20px; /* Relleno del botón */
     border: none; /* Sin borde */
     border-radius: 8px; /* Bordes redondeados */
-    font-size: 16px; /* Tamaño de fuente */
+    font-size: var(--font-size-s); /* Tamaño de fuente */
     font-weight: bold; /* Negrita */
     cursor: pointer; /* Cursor de puntero al pasar por encima */
     transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones suaves */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    box-shadow: 0 2px 4px var(--color-n-1000); /* Sombra sutil */
     min-width: 120px; /* Asegura un ancho mínimo para todos los botones */
     text-align: center;
 }
 
 .acto-button:hover {
-    background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+    background-color: var(--color-a-400); /* Azul más oscuro al pasar el ratón */
     transform: translateY(-2px); /* Pequeño efecto de elevación */
 }
 
 /* Estilo cuando el botón está activo/seleccionado */
 .acto-button.selected {
-    background-color: #004085; /* Azul aún más oscuro para el seleccionado */
+    background-color: var(--color-a-600); /* Azul aún más oscuro para el seleccionado */
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-    border: 2px solid #002752; /* Borde para el seleccionado */
+    border: 2px solid var(--color-a-700); /* Borde para el seleccionado */
     transform: translateY(0); /* Resetea la elevación si se selecciona */
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
+import MyButtonMediumIcon from "./MyButtonMediumIcon";
 import './Modal.css';
 
 const Modal = ({ show, onClose, children, title, onAccept, onCancel }) => {

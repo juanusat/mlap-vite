@@ -17,12 +17,12 @@
 
 .info-label {
   font-weight: 500;
-  color: #777;
+  color: var(--color-n-300);
   letter-spacing: 0.5px;
 }
 
 .info-value {
-  color: #333;
+  color: var(--color-n-700);
   font-weight: 400;
 }
 

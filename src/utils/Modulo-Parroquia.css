@@ -1,7 +1,7 @@
 .modulo-container {
   width: 95%;
   margin: 2rem auto;
-  background: #ffffff;
+  background: var(--color-n-0);
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
@@ -12,26 +12,26 @@
 .modulo-header {
   text-align: start;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #eaeaea;
+  border-bottom: 2px solid var(--color-n-80);
   padding-bottom: 1.5rem;
 }
 
 .modulo-title {
-  font-size: 2.2rem;
+  font-size: var(--font-size-xd);
   font-weight: 700;
   color: #006633; /* Verde institucional para parroquia */
   margin-bottom: 0.5rem;
 }
 
 .modulo-subtitle {
-  font-size: 1.1rem;
-  color: #555;
+  font-size: var(--font-size-m);
+  color: var(--color-n-500);
   max-width: 750px;
 }
 
 .modulo-content {
   line-height: 1.8;
-  font-size: 1rem;
+  font-size: var(--font-size-s);
   margin-bottom: 2.5rem;
   text-align: justify;
   color: #444;
@@ -45,7 +45,7 @@
 }
 
 .destacados-title {
-  font-size: 1.4rem;
+  font-size: var(--font-size-2p);
   font-weight: 600;
   color: #006633;
   margin-bottom: 1rem;
@@ -56,13 +56,13 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   display: grid;
   gap: 0.8rem;
 }
 
 .destacados-list li {
-  background: #fff;
+  background: var(--color-n-0);
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 1px solid #e2e8f0;

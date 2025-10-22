@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import MyGroupButtonsActions from '../components2/MyGroupButtonsActions';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
+import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
+import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
-import ExpandableContainer from '../components2/Contenedor-Desplegable';
-import InputFotoPerfil from '../components2/inputFotoPerfil';
-import InputColorPicker from '../components2/inputColorPicker';
+import ExpandableContainer from '../components/Contenedor-Desplegable';
+import InputFotoPerfil from '../components/inputFotoPerfil';
+import InputColorPicker from '../components/inputColorPicker';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {

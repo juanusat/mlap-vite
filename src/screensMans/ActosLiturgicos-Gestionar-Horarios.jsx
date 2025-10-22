@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
+import MyButtonShortAction from '../components/MyButtonShortAction';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
-import Modal from '../components2/Modal';
+import Modal from '../components/Modal';
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';

@@ -12,14 +12,14 @@
 }
 
 .reserva-label {
-    font-size: 18px;
+    font-size: var(--font-size-m);
     font-weight: bold;
     text-align: left;
     padding-right: 10px;
 }
 
 .reserva-value {
-    font-size: 18px;
+    font-size: var(--font-size-m);
     text-align: left;
 }
 
@@ -27,9 +27,9 @@
     width: 100%;
     max-width: 500px;
     padding: 8px 15px;
-    font-size: 16px;
-    border: 1px solid #000;
-    color: black;
+    font-size: var(--font-size-s);
+    border: 1px solid var(--color-n-1000);
+    color: var(--color-n-1000);
     border-radius: 0;
     box-sizing: border-box;
     cursor: pointer;
@@ -39,8 +39,8 @@
     width: 100%;
     max-width: 500px;
     padding: 8px 15px;
-    font-size: 16px;
-    border: 1px solid #000;
+    font-size: var(--font-size-s);
+    border: 1px solid var(--color-n-1000);
     border-radius: 0;
     box-sizing: border-box;
     cursor: pointer;
@@ -66,7 +66,7 @@ input[type="time"] {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: var(--color-n-0);
 }
 
 .reserva-actions {
@@ -78,7 +78,7 @@ input[type="time"] {
 /* Estilos para los botones */
 .reserva-actions .my-button-medium-icon {
     min-width: 180px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     padding: 10px 30px;
     border: none;
     box-shadow: none;
@@ -89,22 +89,22 @@ input[type="time"] {
 
 .reserva-actions .my-button-medium-icon svg {
     margin-right: 10px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
 }
 
 .reserva-btn-aceptar {
-    background-color: #1a75b8 !important;
-    color: white !important;
+    background-color: var(--color-a-350) !important;
+    color: var(--color-n-0) !important;
     text-transform: uppercase;
 }
 
 .reserva-btn-cancelar {
-    background-color: #a21e1e !important;
-    color: white !important;
+    background-color: var(--color-error-750) !important;
+    color: var(--color-n-0) !important;
     text-transform: uppercase;
 }
 
 .reserva-btn-aceptar svg,
 .reserva-btn-cancelar svg {
-    color: white !important;
+    color: var(--color-n-0) !important;
 }

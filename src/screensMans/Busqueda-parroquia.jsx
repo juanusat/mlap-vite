@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MyBarSearchGen from '../components/MyBarSearchGen';
-import MyButtonShortAction from '../components2/MyButtonShortAction';
+import MyButtonShortAction from '../components/MyButtonShortAction';
 import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
 import './Busqueda-parroquia.css';
@@ -419,7 +419,7 @@ export default function BuscarParroquia() {
           box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         ">
           <div style="
-            color: white;
+            color: var(--color-n-0);
             font-weight: bold;
             font-size: ${isParroquia ? '12px' : '10px'};
             transform: rotate(45deg);

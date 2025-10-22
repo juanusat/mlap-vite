@@ -9,7 +9,7 @@
 .image-preview {
   max-width: 100%; /* La imagen no se saldrá del contenedor */
   max-height: 200px; /* Tamaño máximo para evitar que sea muy grande */
-  border: 1px solid #ccc; /* Un borde sutil para enmarcarla */
+  border: 1px solid var(--color-grey-50); /* Un borde sutil para enmarcarla */
   border-radius: 8px; /* Bordes redondeados */
   object-fit: contain; /* Asegura que la imagen completa se vea sin distorsión */
 }
@@ -28,7 +28,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.25rem 0.75rem;
-  border: 2px solid var(--color-grey-50);
+  border: 2px solid var(--color-n-100);
   border-radius: var(--border-radius-s);
   background: var(--color-n-50);
   transition: all 0.2s ease;
@@ -36,18 +36,18 @@
 
 .file-input-wrapper:hover {
   border-color: var(--color-a-400);
-  background-color: #f9fafb;
+  background-color: var(--color-a-100);
 }
 
 .file-input-wrapper.dragging {
   border-color: var(--color-a-400);
-  background-color: #ede9fe;
+  background-color: var(--color-n-0);
   border-style: dashed;
 }
 
 .file-input-wrapper.disabled {
   background-color: var(--color-a-100);
-  border-color: #d1d5db;
+  border-color: var(--color-grey-50);
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -62,12 +62,12 @@
 
 .file-select-button {
   background-color: var(--color-a-300);
-  color: white;
+  color: var(--color-n-0);
   border: none;
   padding: 0.5rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   transition: background-color 0.2s ease;
   white-space: nowrap;
@@ -78,13 +78,13 @@
 }
 
 .file-select-button:disabled {
-  background-color: #9ca3af;
+  background-color: var(--color-grey-50);
   cursor: not-allowed;
 }
 
 .file-name {
   flex: 1;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: #374151;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -97,12 +97,12 @@
 
 .remove-file-btn {
   background-color: var(--color-error-500);
-  color: white;
+  color: var(--color-n-50);
   border: none;
   padding: 0.5rem 1.25rem;
   border-radius: var(--border-radius-xs);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   transition: background-color 0.2s ease;
 }
 
@@ -115,8 +115,8 @@
 }
 
 .file-info small {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-n-300);
   line-height: 1.4;
 }
 
@@ -127,17 +127,17 @@
   gap: 0.5rem;
   margin-top: 0.5rem;
   padding: 0.5rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
+  background-color: var(--color-n-50);
+  border: 1px solid var(--color-error-300);
   border-radius: 4px;
-  color: #dc2626;
-  font-size: 14px;
+  color: var(--color-error-600);
+  font-size: var(--font-size-body);
   line-height: 1.4;
 }
 
 .error-message svg {
   flex-shrink: 0;
-  color: #dc2626;
+  color: var(--color-error-600);
 }
 
 /* Responsive Design */
@@ -156,9 +156,9 @@
   .file-name {
     text-align: center;
     padding: 0.25rem;
-    background-color: #f9fafb;
+    background-color: var(--color-n-50);
     border-radius: 4px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-n-50);
   }
 }
 
