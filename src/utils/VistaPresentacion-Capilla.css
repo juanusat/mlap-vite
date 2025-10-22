@@ -29,7 +29,7 @@
     color: var(--color-n-0);
     font-size: var(--font-size-xd);
     font-weight: 700;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    text-shadow: 0 2px 12px var(--color-sombra-1);
     margin: 0;
 }
 
@@ -37,7 +37,7 @@
 .vp-main-content {
     background: var(--color-n-10);
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 24px var(--color-sombra-2);
     padding-bottom: 2rem;
 }
 
@@ -52,7 +52,7 @@
     min-width: 320px;
     background: var(--color-n-0);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px var(--color-sombra-3);
     padding: 0 1.5rem 1.5rem 1.5rem;
 }
 .vp-contact-list {
@@ -77,7 +77,7 @@
     min-width: 260px;
     background: var(--color-n-0);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px var(--color-sombra-3);
     padding: 0 1.5rem 1.5rem 1.5rem;
     margin-bottom: 1rem;
 }
@@ -94,13 +94,13 @@
 .vp-event-card {
     background: var(--color-n-10);
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px var(--color-sombra-3);
     padding: 1.2rem 1rem 1rem 1rem;
     border-left: 5px solid var(--color-a-370);
     transition: box-shadow 0.2s;
 }
 .vp-event-card:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    box-shadow: 0 4px 16px var(--color-sombra-4);
 }
 .vp-event-card h4 {
     margin: 0 0 0.3rem 0;
@@ -129,7 +129,7 @@
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 0.2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px var(--color-sombra-3);
 }
 
 .vp-event-card-btn-row {

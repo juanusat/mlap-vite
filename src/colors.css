@@ -62,6 +62,10 @@
   --color-semi-gris: rgba(0,0,0,0.25);
   --color-semi-gris-oscuro: rgba(0,0,0,0.55);
   --color-gris-short: rgba(0, 0, 0, 0.06);
+  --color-sombra-1:rgba(0,0,0,0.25);
+  --color-sombra-2:rgba(0,0,0,0.07);
+  --color-sombra-3:rgba(0,0,0,0.04);
+  --color-sombra-4:rgba(0,0,0,0.10);
   /* espaciado */
   --size-0: 0;
   --space-0: 0px;

@@ -325,7 +325,6 @@
     font-size: var(--font-size-s);
     outline: none;
     background-color: var(--color-n-0);
-    color: black;
 }
 .inputTime{
   width: 50%;
@@ -373,7 +372,7 @@
   font-size: var(--font-size-s);
   transition: all 0.2s ease;
   width: 100%;
-  color: black;
+  color: var(--color-n-1000);
 }
 
 .capilla-btn:hover {
