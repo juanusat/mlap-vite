@@ -20,12 +20,12 @@
   width: 75%;
 }
 
-.expandable-icon {
+.expandable-icon svg {
   font-size: var(--font-size-xl);
   transition: transform 0.3s ease;
 }
 
-.expandable-icon.expanded {
+.expandable-icon.expanded svg {
   transform: rotate(180deg);
 }
 
