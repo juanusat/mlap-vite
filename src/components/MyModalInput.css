@@ -50,7 +50,7 @@
 .modal-input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-n-25);
     border-radius: 5px;
     font-size: var(--font-size-s);
     box-sizing: border-box;
@@ -90,7 +90,7 @@
 
 .btn-confirm {
     background-color: var(--color-b-400);
-    color: #fff;
+    color: var(--color-n-0);
 }
 
 .btn-confirm:hover {

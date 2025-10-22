@@ -18,7 +18,7 @@
 
 .horarios-header hr {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-n-25);
   margin: 0;
 }
 
@@ -43,7 +43,7 @@
 .week-info {
   font-weight: bold;
   font-size: var(--font-size-s);
-  color: #333;
+  color: var(--color-n-700);
   min-width: 250px;
   text-align: center;
 }
@@ -63,7 +63,7 @@
   align-items: center;
   gap: 8px;
   font-size: var(--font-size-body);
-  color: #333;
+  color: var(--color-n-700);
   margin-left: 20px;
 }
 
@@ -84,7 +84,7 @@
 .color-hno-disponible {
   width: 12px;
   height: 12px;
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   border-radius: 2px;
 }
 
@@ -124,7 +124,7 @@
 
 .grid-cell {
   display: table-cell;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-n-25);
   padding: 10px;
   text-align: center;
 }
@@ -146,7 +146,7 @@
 }
 
 .time-cell {
-  background-color: #eee;
+  background-color: var(--color-grey-palido);
   font-size: var(--font-size-body);
   min-width: 100px;
 }
@@ -171,7 +171,7 @@
 }
 
 .day-cell.exception {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   cursor: not-allowed;
 }
 
@@ -181,7 +181,7 @@
 }
 
 .day-cell.exception-no-disponibilidad {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   cursor: not-allowed;
 }
 
@@ -203,7 +203,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
   z-index: 2;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .exception-marker-no-disponibilidad {
-  background-color: #d3d3d3;
+  background-color: var(--color-n-75);
 }
 
 .day-cell.dragging {
@@ -255,7 +255,7 @@
   align-items: center;
   padding: 10px 15px;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-n-25);
 }
 
 .exceptions-header h4 {
@@ -282,13 +282,13 @@
 .exceptions-table-header {
   display: flex;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-n-25);
   font-weight: bold;
 }
 
 .exceptions-table-row {
   display: flex;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-grey-palido);
 }
 
 .exception-cell {
@@ -345,7 +345,7 @@
 .exceptions-tabs button {
     padding: 6px 16px;
     border: none;
-    background: #eee;
+    background: var(--color-grey-palido);
     cursor: pointer;
     border-radius: 4px 4px 0 0;
     font-weight: bold;

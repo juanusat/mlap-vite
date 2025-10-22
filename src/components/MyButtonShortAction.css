@@ -24,7 +24,7 @@
 }
 
 .btn-short-edit:hover {
-  background: #e3f2fd;
+  background: var(--color-b-100);
 }
 
 .btn-short-delete {
@@ -40,7 +40,7 @@
 }
 
 .btn-short-refresh:hover {
-  background: #e3f2fd;
+  background: var(--color-b-100);
 }
 
 .btn-short-add {

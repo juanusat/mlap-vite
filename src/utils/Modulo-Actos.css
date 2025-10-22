@@ -1,7 +1,7 @@
 .modulo-container {
   width: 95%;
   margin: 2rem auto;
-  background: #ffffff;
+  background: var(--color-n-0);
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
@@ -12,7 +12,7 @@
 .modulo-header {
   text-align: start;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #eaeaea;
+  border-bottom: 2px solid var(--color-n-80);
   padding-bottom: 1.5rem;
 }
 
@@ -25,7 +25,7 @@
 
 .modulo-subtitle {
   font-size: var(--font-size-m);
-  color: #555;
+  color: var(--color-n-500);
   max-width: 750px;
   margin: 0;
 }
@@ -63,7 +63,7 @@
 }
 
 .destacados-list li {
-  background: #fff;
+  background: var(--color-n-0);
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 1px solid #e2e8f0;

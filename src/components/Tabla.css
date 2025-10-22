@@ -31,7 +31,7 @@
 .grid-table-cell {
   background-color: #f9f9f9;
   padding: 12px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-n-25);
   text-align: center;
 }
 

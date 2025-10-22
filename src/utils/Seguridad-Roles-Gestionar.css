@@ -22,7 +22,7 @@
 .submodule-title {
     font-size: var(--font-size-s);
     font-weight: 600;
-    color: #555;
+    color: var(--color-n-500);
     margin: 15px 0 8px 0;
 }
 
@@ -47,7 +47,7 @@
 
 .checkbox-container label {
     font-weight: 400;
-    color: #333; 
+    color: var(--color-n-700); 
     cursor: pointer;
     font-size: var(--font-size-s);
 } 
