@@ -62,7 +62,7 @@ input[type="time"]::-webkit-datetime-edit {
 /* Asegurarse de que los selectores tengan un aspecto consistente en diferentes navegadores */
 input[type="date"],
 input[type="time"] {
-    color: black;
+    var(--color-n-1000);
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;

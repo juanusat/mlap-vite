@@ -70,14 +70,14 @@
 .color-hnormal {
   width: 12px;
   height: 12px;
-  background-color: #b3d7ff;
+  background-color: var(--color-b-200);
   border-radius: 2px;
 }
 
 .color-hdisponible {
   width: 12px;
   height: 12px;
-  background-color: #1e3a8a;
+  background-color: var(--color-a-320);
   border-radius: 2px;
 }
 
@@ -115,7 +115,7 @@
 
 .grid-header {
   display: table-row;
-  background-color: #f8f9fa;
+  background-color: var(--color-n-10);
 }
 
 .grid-row {
@@ -131,7 +131,7 @@
 
 .header-cell {
   font-weight: bold;
-  background-color: #f8f9fa;
+  background-color: var(--color-n-10);
 }
 
 .day-name {
@@ -141,7 +141,7 @@
 
 .day-date {
   font-size: var(--font-size-xs);
-  color: #666;
+  color: var(--color-n-300);
   margin-top: 2px;
 }
 
@@ -163,11 +163,11 @@
 }
 
 .day-cell.editable:hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-n-50);
 }
 
 .day-cell.selected {
-  background-color: #b3d7ff;
+  background-color: var(--color-b-100);
 }
 
 .day-cell.exception {
@@ -176,7 +176,7 @@
 }
 
 .day-cell.exception-disponibilidad {
-  background-color: #1e3a8a;
+  background-color: var(--color-a-370);
   cursor: not-allowed;
 }
 
@@ -186,15 +186,15 @@
 }
 
 .day-cell.exception:hover {
-  background-color: #c0c0c0;
+  background-color: var(--color-n-x1);
 }
 
 .day-cell.exception-disponibilidad:hover {
-  background-color: #1e40af;
+  background-color: var(--color-a-370);
 }
 
 .day-cell.exception-no-disponibilidad:hover {
-  background-color: #c0c0c0;
+  background-color: var(--color-n-x1);
 }
 
 .exception-marker {
@@ -208,7 +208,7 @@
 }
 
 .exception-marker-disponibilidad {
-  background-color: #1e3a8a;
+  background-color: var(--color-a-320);
 }
 
 .exception-marker-no-disponibilidad {
@@ -216,8 +216,8 @@
 }
 
 .day-cell.dragging {
-  background-color: #d1e6ff;
-  border: 1px dashed #4a8eff;
+  background-color: var(--color-b-100);
+  border: 1px dashed var(--color-a-350);
 }
 
 .interval-marker {
@@ -254,7 +254,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  background-color: #f8f9fa;
+  background-color: var(--color-n-15);
   border-bottom: 1px solid var(--color-n-25);
 }
 
@@ -281,7 +281,7 @@
 
 .exceptions-table-header {
   display: flex;
-  background-color: #f8f9fa;
+  background-color: var(--color-n-10);
   border-bottom: 1px solid var(--color-n-25);
   font-weight: bold;
 }
@@ -325,7 +325,6 @@
     font-size: var(--font-size-s);
     outline: none;
     background-color: var(--color-n-0);
-    color: black;
 }
 .inputTime{
   width: 50%;
@@ -345,16 +344,15 @@
 .exceptions-tabs button {
     padding: 6px 16px;
     border: none;
-    background: var(--color-n-0);
-    color: black;
+    background: var(--color-n-100);
     cursor: pointer;
     border-radius: 4px 4px 0 0;
     border: 1px solid var(--color-n-25) ;
     font-weight: bold;
 }
 .exceptions-tabs button.active {
-    background: #d1eaff;
-    color: var(--color-a-350);
+    background: var(--color-b-200);
+    color: var(--color-a-370);
 }
 
 /* Botón de capillas */
@@ -375,17 +373,17 @@
   font-size: var(--font-size-s);
   transition: all 0.2s ease;
   width: 100%;
-  color: black;
+  color: var(--color-n-1000);
 }
 
 .capilla-btn:hover {
-  background: #f5f5f5;
-  border: 1px solid #1e3a8a;
+  background: var(--color-n-50);
+  border: 1px solid var(--color-a-320);
 }
 
 .capilla-btn.active {
-  border: 1px solid #1e3a8a;
-  background: #e7f0ff;
-  color: #1e3a8a;
+  border: 1px solid var(--color-a-320);
+  background: var(--color-b-100);
+  color: var(--color-a-320);
   font-weight: 500;
 }

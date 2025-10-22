@@ -111,11 +111,11 @@
 
 .error-message {
   margin-top: 1rem;
-  color: var(--color-danger-500, #dc3545);
-  background-color: var(--color-danger-50, #f8d7da);
+  color: var(--color-danger-500);
+  background-color: var(--color-danger-50);
   padding: 0.75rem;
   border-radius: var(--border-radius-s);
-  border: 1px solid var(--color-danger-200, #f5c6cb);
+  border: 1px solid var(--color-danger-200);
 }
 
 /* Responsive */

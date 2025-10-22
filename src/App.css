@@ -209,25 +209,25 @@
 
 .mlap-error-message,
 .error-message {
-  color: var(--color-error-600, #dc3545);
+  color: var(--color-error-600);
   font-size: var(--font-size-xs);
   text-align: center;
   margin: var(--space-xs) 0;
-  background: var(--color-error-50, #f8d7da);
+  background: var(--color-error-50);
   padding: var(--space-xs);
   border-radius: var(--border-radius-xs);
-  border: 1px solid var(--color-error-200, #f5c6cb);
+  border: 1px solid var(--color-error-200);
 }
 
 .success-message {
-  color: var(--color-success-600, #28a745);
+  color: var(--color-success-600);
   font-size: var(--font-size-xs);
   text-align: center;
   margin: var(--space-xs) 0;
-  background: var(--color-success-50, #d4edda);
+  background: var(--color-success-50);
   padding: var(--space-xs);
   border-radius: var(--border-radius-xs);
-  border: 1px solid var(--color-success-200, #c3e6cb);
+  border: 1px solid var(--color-success-200);
 }
 
 .mlap-login-info-text {

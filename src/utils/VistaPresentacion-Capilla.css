@@ -29,15 +29,15 @@
     color: var(--color-n-0);
     font-size: var(--font-size-xd);
     font-weight: 700;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    text-shadow: 0 2px 12px var(--color-sombra-1);
     margin: 0;
 }
 
 /* Contenedor principal */
 .vp-main-content {
-    background: #f8fafc;
+    background: var(--color-n-10);
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 24px var(--color-sombra-2);
     padding-bottom: 2rem;
 }
 
@@ -52,7 +52,7 @@
     min-width: 320px;
     background: var(--color-n-0);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px var(--color-sombra-3);
     padding: 0 1.5rem 1.5rem 1.5rem;
 }
 .vp-contact-list {
@@ -65,7 +65,7 @@
 }
 .vp-contact-list > div {
     padding-bottom:1rem;
-    border-bottom: 1px solid #e3e8ee;
+    border-bottom: 1px solid var(--color-n-75);
 }
 .vp-contact-list > div:last-child {
     border-bottom: none;
@@ -77,14 +77,14 @@
     min-width: 260px;
     background: var(--color-n-0);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px var(--color-sombra-3);
     padding: 0 1.5rem 1.5rem 1.5rem;
     margin-bottom: 1rem;
 }
 .vp-events-section h3 {
     font-weight: 600;
     margin-bottom: 1.2rem;
-    color: #003366;
+    color: var(--color-a-370);
 }
 .vp-event-cards {
     display: flex;
@@ -92,24 +92,24 @@
     gap: 1.2rem;
 }
 .vp-event-card {
-    background: linear-gradient(135deg, #f5f9fc 60%, #eaf1fa 100%);
+    background: var(--color-n-10);
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px var(--color-sombra-3);
     padding: 1.2rem 1rem 1rem 1rem;
-    border-left: 5px solid #003366;
+    border-left: 5px solid var(--color-a-370);
     transition: box-shadow 0.2s;
 }
 .vp-event-card:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    box-shadow: 0 4px 16px var(--color-sombra-4);
 }
 .vp-event-card h4 {
     margin: 0 0 0.3rem 0;
     font-size: var(--font-size-m);
-    color: #003366;
+    color: var(--color-a-370);
 }
 .vp-event-card .event-type {
     font-size: var(--font-size-base);
-    color: #1a237e;
+    color: var(--color-a-700);
     font-weight: 500;
     margin-bottom: 0.2rem;
 }
@@ -129,7 +129,7 @@
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 0.2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px var(--color-sombra-3);
 }
 
 .vp-event-card-btn-row {

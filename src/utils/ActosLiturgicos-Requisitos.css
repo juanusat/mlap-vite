@@ -68,7 +68,7 @@
 .panel-lateral-header h2 {
     margin: 0;
     font-size: var(--font-size-l);
-    color: #343a40;
+    color: var(--color-n-700);
 }
 
 .texto-evento {
@@ -93,12 +93,12 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    border-bottom: 1px solid var(--color-grey-palido);
+    border-bottom: 1px solid var(--color-n-75);
     transition: background 0.2s;
 }
 
 .event-row:hover {
-    background-color: #f1f3f5;
+    background-color: var(--color-n-75);
 }
 
 .event-cell {
@@ -111,7 +111,7 @@
 
 .event-id {
     font-weight: bold;
-    color: #495057;
+    color: var(--color-n-700);
     padding: 2px 8px;
     min-width: 32px;
     text-align: center;
@@ -119,11 +119,11 @@
 
 .event-name{
     font-weight: 500;
-    color: #212529;
+    color: var(--color-n-900);
     font-size: var(--font-size-m);
 }
 .event-capilla-name {
     font-size: var(--font-size-s);
-    color: #868e96;
+    color: var(--color-n-500);
     margin-top: 4px;
 }
