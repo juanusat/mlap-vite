@@ -311,7 +311,6 @@ export default function Reservas() {
             content: currentReservation && (
               <div>
                 <h4>¿Desea completar la reserva #{currentReservation.id}?</h4>
-                <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
               </div>
             ),
             onAccept: handleComplete,
@@ -323,7 +322,6 @@ export default function Reservas() {
             content: currentReservation && (
               <div>
                 <h4>¿Desea marcar como cumplida la reserva #{currentReservation.id}?</h4>
-                <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
               </div>
             ),
             onAccept: handleFulfill,
@@ -336,9 +334,7 @@ export default function Reservas() {
           title: 'Rechazar reserva',
           content: currentReservation && (
             <div>
-              <h4>¿Está seguro que desea rechazar la reserva #{currentReservation.id}?</h4>
-              <p>Estado actual: <strong>{currentReservation.estado}</strong></p>
-              <p>Esta acción cambiará el estado a "Rechazado".</p>
+              <h4>¿Está seguro que desea rechazar la reserva #{currentReservation.id}?</h4> 
             </div>
           ),
           onAccept: handleReject,
@@ -400,9 +396,8 @@ export default function Reservas() {
         </Modal>
       </div>
       {showSidebar && currentReservation && (
-        <MyPanelLateralConfig>
-          <div className="panel-lateral-header">
-            <h2 className="sidebar-title">{`Detalles de la Reserva #${currentReservation.id}`}</h2>
+        <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`}>
+          <div className="panel-lateral-close-btn">
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">

@@ -347,6 +347,7 @@
     background: var(--color-n-100);
     cursor: pointer;
     border-radius: 4px 4px 0 0;
+    border: 1px solid var(--color-n-25) ;
     font-weight: bold;
 }
 .exceptions-tabs button.active {

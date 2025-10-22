@@ -5,7 +5,6 @@ import ToggleSwitch from "../components/Toggle";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
-import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import '../utils/Estilos-Generales-1.css';
 import "../utils/ActosLiturgicos-Requisitos.css";
@@ -255,8 +254,8 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                 return {
                     title: 'Confirmar eliminación',
                     content: currentRequirement && (
-                        <div className="Inputs-add">
-                            <input type="text" className="inputModal" placeholder="¿Deseas eliminar el requisito?" disabled />
+                        <div>
+                            <h4>¿Deseas eliminar el requisito "{currentRequirement.nombre}"?</h4>
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -333,12 +332,10 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
             {showPanel && (
                 <>
-                    <MyPanelLateralConfig>
-                        <div className="panel-lateral-header">
-                            <h2>Seleccionar evento</h2>
+                    <MyPanelLateralConfig title="Seleccionar evento">
+                        <div className="panel-lateral-close-btn">
                             <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
                         </div>
-                        <br />
                         <div className="sidebar-search">
                             <SearchBar onSearchChange={setSearchTermEvent} />
                         </div>

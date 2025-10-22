@@ -189,8 +189,8 @@ export default function TipoDocumentoGestionar() {
         return {
           title: 'Eliminar documento',
           content: currentDoc && (
-            <div className='Inputs-add'>
-              <label htmlFor="deleteConfirmation" className="inputModal" disabled>¿Deseas eliminar el documento?</label>
+            <div>
+              <h4>¿Deseas eliminar el documento?</h4>
             </div>
           ),
           onAccept: confirmDelete,

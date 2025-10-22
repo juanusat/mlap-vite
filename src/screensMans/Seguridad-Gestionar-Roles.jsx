@@ -433,10 +433,10 @@ export default function RolesGestionar() {
                 return {
                     title: 'Eliminar rol',
                     content: currentRol && (
-                        <div className='Inputs-add'>
-                            <label className="inputModal" disabled>
+                        <div>
+                            <h4>
                                 ¿Deseas eliminar el rol con ID {currentRol.ID}?
-                            </label>
+                            </h4>
                         </div>
                     ),
                     onAccept: confirmDelete,

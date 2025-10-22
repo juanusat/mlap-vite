@@ -191,7 +191,7 @@ export default function CuentasGestionar() {
       case "delete":
         return {
           title: "Eliminar usuario",
-          content: <h4>¿Deseas eliminar este usuario permanentemente?</h4>,
+          content: <h4>¿Deseas eliminar este usuario vinculado?</h4>,
           onAccept: confirmDelete,
           onCancel: handleCloseModal
         };
@@ -233,9 +233,8 @@ export default function CuentasGestionar() {
       </Modal>
 
       {showSidebar && currentUser && (
-        <MyPanelLateralConfig>
-          <div className="panel-lateral-header">
-            <h2 className="sidebar-title">{`Roles de ${currentUser.username}`}</h2>
+        <MyPanelLateralConfig title={`Roles de ${currentUser.username}`}>
+          <div className="panel-lateral-close-btn">
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">

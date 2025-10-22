@@ -197,8 +197,8 @@ export default function DiocesisEventosLiturgicos() {
                 return {
                     title: 'Confirmar eliminación',
                     content: currentEvent && (
-                        <div className='Inputs-add'>
-                            <input type="text" className="inputModal" placeholder="¿Deseas eliminar el evento?" disabled />
+                        <div >
+                            <h4>¿Deseas eliminar el evento "{currentEvent.nombre}"?</h4>
                         </div>
                     ),
                     onAccept: confirmDelete,

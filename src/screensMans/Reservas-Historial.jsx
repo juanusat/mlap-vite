@@ -136,9 +136,8 @@ export default function ReservasHistorial() {
         </div>
       </div>
       {showSidebar && currentReservation && (
-        <MyPanelLateralConfig>
-          <div className="panel-lateral-header">
-            <h2 className="sidebar-title">{`Detalles de la Reserva #${currentReservation.id}`}</h2>
+        <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`}>
+          <div className="panel-lateral-close-btn">
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">
