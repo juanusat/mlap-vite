@@ -4,20 +4,104 @@
     background: var(--color-b-500,var(--color-n-0));
     border-right: var(--border-width-s) solid var(--color-n-50);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease-in-out;
 }
+
 .titleModule {
     font-size: var(--font-size-body);
     padding-inline: var(--space-s);
     font-weight: bold;
 }
+
 hr {
     border-style: solid;
     border-color: var(--color-n-0);
     border-width: var(--space-0);
     border-block-start-width: var(--border-width-m);
 }
+
 .mlap-home-sidebar-nav {
     display: grid;
     grid-template-columns: var(--grid-t-col);
     gap: var(--space-0);
+}
+
+/* Overlay para cerrar el menú - oculto por defecto */
+.aside-overlay {
+    display: none;
+}
+
+/* Estilos responsive para móvil */
+@media (max-width: 768px) {
+    /* El aside se oculta por defecto en móvil */
+    .screenman-aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 56px); /* Altura total menos la altura del header */
+        margin-top: 56px; /* Altura del header */
+        z-index: 1001;
+        transform: translateX(-100%);
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    /* Cuando está abierto, se muestra */
+    .screenman-aside.open {
+        transform: translateX(0);
+    }
+
+    /* Overlay oscuro cuando el menú está abierto */
+    .aside-overlay {
+        display: block;
+        position: fixed;
+        top: 56px; /* Comienza después del header */
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+/* Tableta - punto de quiebre medio */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .screenman-aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 56px);
+        margin-top: 56px;
+        z-index: 1001;
+        transform: translateX(-100%);
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    .screenman-aside.open {
+        transform: translateX(0);
+    }
+
+    .aside-overlay {
+        display: block;
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+    }
 }
