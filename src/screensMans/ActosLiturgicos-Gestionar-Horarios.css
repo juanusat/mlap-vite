@@ -11,7 +11,7 @@
 }
 
 .horarios-header h3 {
-  font-size: 22px;
+  font-size: var(--font-size-l);
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -42,7 +42,7 @@
 
 .week-info {
   font-weight: bold;
-  font-size: 16px;
+  font-size: var(--font-size-s);
   color: #333;
   min-width: 250px;
   text-align: center;
@@ -62,7 +62,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: #333;
   margin-left: 20px;
 }
@@ -135,19 +135,19 @@
 }
 
 .day-name {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: bold;
 }
 
 .day-date {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: #666;
   margin-top: 2px;
 }
 
 .time-cell {
   background-color: #eee;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   min-width: 100px;
 }
 
@@ -260,7 +260,7 @@
 
 .exceptions-header h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--font-size-s);
 }
 
 .exceptions-controls {
@@ -322,7 +322,7 @@
     border: 1px solid #ccc;
     width: 380px;  
     max-width: 100%;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     outline: none;
     background-color: white;
     color: black;
@@ -370,7 +370,7 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-s);
   transition: all 0.2s ease;
   width: 100%;
   color: black;

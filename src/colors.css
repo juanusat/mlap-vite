@@ -85,12 +85,16 @@
   --font-size-big: 51px;
   --font-size-body: 14px;
   --font-size-header: 42px;
+  --font-size-z: 28px;
+  --font-size-2p: 22px;
   --font-size-l: 20px;
   --font-size-m: 18px;
   --font-size-s: 16px;
   --font-size-xl: 24px;
   --font-size-xxl: 32px;
+  --font-size-xd: 36px;
   --font-size-xs: 12px;
+  --font-size-xxs: 10px;
   --font-weight-big: 700;
   --font-weight-bold: 700;
   --font-weight-estandar: 500;
@@ -98,6 +102,7 @@
   --font-weight-small: 400;
   --letter-spacing-m: 2px;
   --letter-spacing-s: 1px;
+
 
 
   /* ancho y alto */

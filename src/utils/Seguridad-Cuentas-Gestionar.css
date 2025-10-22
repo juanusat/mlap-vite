@@ -5,7 +5,7 @@
 .sidebar-list-item {
     display: flex;
     justify-content: space-between;
-    font-size: 18px;
+    font-size: var(--font-size-m);
 }
 .panel-lateral-header {
     display: flex;
@@ -16,6 +16,6 @@
 }
 .panel-lateral-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--font-size-l);
     color: #343a40;
 }

@@ -17,14 +17,14 @@
 }
 
 .modulo-title {
-  font-size: 2.2rem;
+  font-size: var(--font-size-xd);
   font-weight: 700;
   color: #003366; /* Azul empresarial */
   margin-bottom: 0.5rem;
 }
 
 .modulo-subtitle {
-  font-size: 1.1rem;
+  font-size: var(--font-size-m);
   color: #555;
   max-width: 750px;
   margin: 0;
@@ -32,7 +32,7 @@
 
 .modulo-content {
   line-height: 1.8;
-  font-size: 1rem;
+  font-size: var(--font-size-s);
   margin-bottom: 2.5rem;
   text-align: justify;
   color: #444;
@@ -46,7 +46,7 @@
 }
 
 .destacados-title {
-  font-size: 1.4rem;
+  font-size: var(--font-size-2p);
   font-weight: 600;
   color: #003366;
   margin-bottom: 1rem;
@@ -57,7 +57,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-s);
   display: grid;
   gap: 0.8rem;
 }

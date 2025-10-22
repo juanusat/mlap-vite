@@ -12,14 +12,14 @@
 }
 
 .reserva-label {
-    font-size: 18px;
+    font-size: var(--font-size-m);
     font-weight: bold;
     text-align: left;
     padding-right: 10px;
 }
 
 .reserva-value {
-    font-size: 18px;
+    font-size: var(--font-size-m);
     text-align: left;
 }
 
@@ -27,7 +27,7 @@
     width: 100%;
     max-width: 500px;
     padding: 8px 15px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     border: 1px solid #000;
     color: black;
     border-radius: 0;
@@ -39,7 +39,7 @@
     width: 100%;
     max-width: 500px;
     padding: 8px 15px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     border: 1px solid #000;
     border-radius: 0;
     box-sizing: border-box;
@@ -78,7 +78,7 @@ input[type="time"] {
 /* Estilos para los botones */
 .reserva-actions .my-button-medium-icon {
     min-width: 180px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
     padding: 10px 30px;
     border: none;
     box-shadow: none;
@@ -89,7 +89,7 @@ input[type="time"] {
 
 .reserva-actions .my-button-medium-icon svg {
     margin-right: 10px;
-    font-size: 16px;
+    font-size: var(--font-size-s);
 }
 
 .reserva-btn-aceptar {

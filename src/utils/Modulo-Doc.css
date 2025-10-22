@@ -9,7 +9,7 @@
 }
 
 .modulo-title {
-  font-size: 28px;
+  font-size: var(--font-size-z);
   font-weight: 700;
   color: #2c3e50;
   margin-bottom: 20px;
@@ -18,7 +18,7 @@
 }
 
 .modulo-content {
-  font-size: 16px;
+  font-size: var(--font-size-s);
   color: #555;
   line-height: 1.6;
 }

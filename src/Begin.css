@@ -11,7 +11,7 @@
 }
 
 .mlap-login-container h3 {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   color: var(--color-n-700);
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -20,7 +20,7 @@
 .mlap-login-container p {
   color: var(--color-n-500);
   margin-bottom: 2rem;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 /* Lista de parroquias */
@@ -96,7 +96,7 @@
 }
 
 .chapel-address {
-  font-size: 0.9em;
+  font-size: var(--font-size-body);
   opacity: 0.8;
   color: var(--color-n-600);
 }
@@ -127,7 +127,7 @@
 
   .parroquia-button {
     padding: 0.875rem 1rem;
-    font-size: 0.9rem;
+    font-size: var(--font-size-body);
   }
 
 

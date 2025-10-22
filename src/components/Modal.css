@@ -31,12 +31,12 @@
 }
 
 .modal-title {
-  font-size: 18px;
+  font-size: var(--font-size-m);
   color: #333;
 }
 
 .modal-body {
-  font-size: 1em;
+  font-size: var(--font-size-s);
   line-height: 1.6;
   color: #444;
   max-width: 380px;
@@ -46,7 +46,7 @@
 .modal-close-btn {
   background: none;
   border: none;
-  font-size: 2em;
+  font-size: var(--font-size-2xl);
   font-weight: bold;
   cursor: pointer;
   color: #888;

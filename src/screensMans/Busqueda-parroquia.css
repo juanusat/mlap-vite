@@ -57,7 +57,7 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--color-n-700);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
 }
 
 .parroquia-select {
@@ -66,7 +66,7 @@
   border: 1px solid var(--color-grey-50);
   border-radius: 5px;
   background: white;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-n-900);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -83,7 +83,7 @@
   color: var(--color-n-700);
   border: 1px solid var(--color-grey-50);
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -105,7 +105,7 @@
 .parishes-list h4 {
   margin: 0 0 1rem 0;
   color: var(--color-n-700);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
@@ -135,21 +135,21 @@
 .parish-card h5 {
   margin: 0 0 0.25rem 0;
   color: var(--color-primary-700);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-weight: 600;
 }
 
 .parish-card p {
   margin: 0 0 0.5rem 0;
   color: var(--color-n-600);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
 }
 
 .location-type {
   display: inline-block;
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -185,14 +185,14 @@
 .parish-info-header h3 {
   margin: 0;
   color: var(--color-primary-700);
-  font-size: 1.1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
 .close-panel-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   cursor: pointer;
   color: var(--color-grey-500);
   padding: 0;
@@ -221,7 +221,7 @@
 
 .parish-basic-info p {
   margin: 0.5rem 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   line-height: 1.4;
 }
 
@@ -234,7 +234,7 @@
 .parish-events h4 {
   margin: 0 0 0.75rem 0;
   color: var(--color-n-700);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
@@ -261,7 +261,7 @@
 .event-name {
   font-weight: 500;
   color: var(--color-n-700);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
 }
 
 /* Acciones de la parroquia */
@@ -281,7 +281,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
 }
 
 .btn-ver-perfil:hover {
@@ -331,7 +331,7 @@
   
   .btn-ver-perfil {
     padding: 0.875rem 1rem;
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
   
   .parishes-grid {
@@ -343,15 +343,15 @@
   }
   
   .parish-card h5 {
-    font-size: 0.85rem;
+    font-size: var(--font-size-body);
   }
   
   .parish-card p {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
   
   .location-type {
-    font-size: 0.65rem;
+    font-size: var(--font-size-xxs);
     padding: 0.15rem 0.4rem;
   }
 }
@@ -363,7 +363,7 @@
   padding: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--color-n-600);
   text-align: center;
 }
