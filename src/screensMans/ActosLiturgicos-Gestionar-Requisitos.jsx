@@ -179,7 +179,7 @@ export default function ActosLiturgicosRequisitos() {
       case "delete":
         return {
           title: "Confirmar eliminación",
-          content: <h3>¿Estás seguro que quieres eliminar este requisito?</h3>,
+          content: <h4>¿Estás seguro que quieres eliminar este requisito?</h4>,
           onAccept: confirmDelete,
           onCancel: handleCloseModal,
         };

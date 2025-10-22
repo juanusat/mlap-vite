@@ -660,7 +660,7 @@ export default function ActosLiturgicosHorarios() {
                                 onCancel={handleCancelModal}
                             >
                                 {modalAction === 'delete' ? (
-                                    <p>¿Estás seguro de que quieres eliminar esta excepción?</p>
+                                    <h4>¿Estás seguro de que quieres eliminar esta excepción?</h4>
                                 ) : (
                                     <form className='form-modal-horarios'>
                                         <div className="Inputs-add">
