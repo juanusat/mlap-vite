@@ -31,48 +31,6 @@ hr {
     display: none;
 }
 
-/* === RESPONSIVE PARA MÓVILES === */
-/* Celulares pequeños: 320px*/
-@media (max-width: 321px) {
-    .screenman-aside {
-        position: absolute;
-        top: 87px; /* Comienza justo después del header */
-        left: 0;
-        bottom: 0; /* Se extiende hasta el final */
-        width: 70%;
-        max-width: 70%;
-        min-width: 70%;
-        height: 250%;
-        z-index: 1001;
-        transform: translateX(-100%);
-    }
-
-    .screenman-aside.open {
-        transform: translateX(0);
-    }
-
-    .aside-overlay {
-        display: block;
-        position: absolute;
-        top: 87px; /* Comienza después del header */
-        height: 3200%;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-}
 
 /* Celulares pequeños: 320px - 360px */
 @media (max-width: 360px) {
