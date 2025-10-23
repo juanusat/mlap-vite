@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MyHeaderAdm from "./MyHeaderAdm";
 import MyAsideGen from "./MyAsideGen";
 import MyPanelLateralConfig from "./MyPanelLateralConfig";
@@ -7,6 +7,10 @@ import "./ScreenMan.css";
 
 const ScreenMan = ({ children, title, options }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [title, options]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

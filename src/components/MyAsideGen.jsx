@@ -26,8 +26,6 @@ export default function MyAsideGen({ title, options = [], isOpen, onToggle }) {
           ))}
         </nav>
       </aside>
-      
-      {/* Overlay para cerrar el menú al hacer click fuera */}
       {isOpen && (
         <div 
           className="aside-overlay" 
