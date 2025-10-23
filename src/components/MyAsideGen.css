@@ -32,17 +32,17 @@ hr {
 }
 
 /* === RESPONSIVE PARA MÓVILES === */
-
-/* Celulares pequeños: 320px - 360px */
-@media (max-width: 360px) {
+/* Celulares pequeños: 320px*/
+@media (max-width: 321px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 87px; /* Comienza justo después del header */
         left: 0;
+        bottom: 0; /* Se extiende hasta el final */
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: calc(100vh - 87px); /* Altura total menos el header */
+        height: 250%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -53,8 +53,51 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
         top: 87px; /* Comienza después del header */
+        height: 3200%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+/* Celulares pequeños: 320px - 360px */
+@media (max-width: 360px) {
+    .screenman-aside {
+        position: absolute;
+        top: 87px; /* Comienza justo después del header */
+        left: 0;
+        bottom: 0; /* Se extiende hasta el final */
+        width: 70%;
+        max-width: 70%;
+        min-width: 70%;
+        height: 180%;
+        z-index: 1001;
+        transform: translateX(-100%);
+    }
+
+    .screenman-aside.open {
+        transform: translateX(0);
+    }
+
+    .aside-overlay {
+        display: block;
+        position: absolute;
+        top: 87px; /* Comienza después del header */
+        height: 180%;
         left: 0;
         right: 0;
         bottom: 0;
@@ -76,13 +119,14 @@ hr {
 /* Celulares medianos: 361px - 393px */
 @media (min-width: 361px) and (max-width: 393px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 47px;
         left: 0;
+        bottom: 0;
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: calc(100vh - 47px);
+        height: 180%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -93,7 +137,8 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
+        height: 180%;
         top: 47px;
         left: 0;
         right: 0;
@@ -107,13 +152,14 @@ hr {
 /* Celulares grandes: 394px - 428px */
 @media (min-width: 394px) and (max-width: 428px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 47px;
         left: 0;
+        bottom: 0;
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: calc(100vh - 47px);
+        height: 180%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -124,7 +170,8 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
+        height: 180%;
         top: 47px;
         left: 0;
         right: 0;
@@ -138,13 +185,14 @@ hr {
 /* Celulares extra grandes y tablets pequeñas: 429px - 767px */
 @media (min-width: 429px) and (max-width: 767px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 47px;
         left: 0;
+        bottom: 0;
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: calc(100vh - 47px);
+        
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -155,7 +203,7 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
         top: 47px;
         left: 0;
         right: 0;
@@ -171,13 +219,14 @@ hr {
 /* Tablets: 768px - 834px */
 @media (min-width: 768px) and (max-width: 834px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 48px;
         left: 0;
+        bottom: 0;
         width: 65%;
         max-width: 65%;
         min-width: 65%;
-        height: calc(100vh - 48px);
+        height: 140%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -188,7 +237,8 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
+        height: 140%;
         top: 48px;
         left: 0;
         right: 0;
@@ -202,13 +252,14 @@ hr {
 /* Tablets grandes: 835px - 1024px */
 @media (min-width: 835px) and (max-width: 1024px) {
     .screenman-aside {
-        position: fixed;
+        position: absolute;
         top: 48px;
         left: 0;
+        bottom: 0;
         width: 60%;
         max-width: 60%;
         min-width: 60%;
-        height: calc(100vh - 48px);
+        height: 120%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -219,7 +270,8 @@ hr {
 
     .aside-overlay {
         display: block;
-        position: fixed;
+        position: absolute;
+        height: 120%;
         top: 48px;
         left: 0;
         right: 0;
