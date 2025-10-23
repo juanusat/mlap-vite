@@ -43,16 +43,25 @@
   overflow-y: auto;
 }
 
+/* Panel selector de parroquia que ocupa toda la altura */
+.parish-selector-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+}
+
 /* Estilos para el panel selector por defecto */
 .parish-selector {
   display: flex;
-  margin-bottom: 1.5rem;
+  justify-content: center;
   align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
   gap: 10px;
-
-}
-
-.parish-selector label {
+  margin-bottom: 1.5rem;
+}.parish-selector label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -61,11 +70,11 @@
 }
 
 .parroquia-select {
-  flex: 1;
+  flex: 0 0 60%;
   padding: 0.75rem;
   border: 1px solid var(--color-grey-50);
   border-radius: 5px;
-  background: white;
+  background: var(--color-n-0);
   font-size: var(--font-size-body);
   color: var(--color-n-900);
   cursor: pointer;
@@ -78,6 +87,7 @@
 }
 
 .clear-selection-btn {
+  flex: 0 0 40%;
   padding: 0.5rem 1rem;
   background-color: var(--color-n-50);
   color: var(--color-n-700);
@@ -211,12 +221,11 @@
 }
 
 .parish-info-content {
-  height: 100%;
+  flex: 1;
   padding: 1rem 0px 1rem 0px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-
 }
 
 .parish-basic-info p {
