@@ -401,7 +401,7 @@ export default function BuscarParroquia() {
       // Crear iconos diferentes para parroquias y capillas
       const isParroquia = location.tipo === 'parroquia';
       const iconColor = isParroquia ? 'red' : 'blue';
-      const iconSize = isParroquia ? [25, 41] : [20, 32];
+      const iconSize = isParroquia ? [35, 35] : [32, 32];
 
       // Crear marcador personalizado
       const customIcon = window.L.divIcon({
