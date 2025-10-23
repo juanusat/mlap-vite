@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { InputField, MainButton } from './components/UI';
 import logo from './assets/logo-mlap-color.svg';
 import './App.css';
-import './colors.css';
 import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
