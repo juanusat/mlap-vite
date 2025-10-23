@@ -7,14 +7,6 @@ import MyAsideButton1 from './MyAsideButton1';
 export default function MyAsideGen({ title, options = [], isOpen, onToggle }) {
   return (
     <>
-      {/* Overlay para cerrar el menú al hacer click fuera */}
-      {isOpen && (
-        <div 
-          className="aside-overlay" 
-          onClick={onToggle}
-        />
-      )}
-
       <aside className={`screenman-aside py-2 px-2 ${isOpen ? 'open' : ''}`}>
         <MyAsideButton1 href="/inicio" icon={<MdOutlineHome />} onClick={onToggle}>
           Inicio
@@ -34,6 +26,12 @@ export default function MyAsideGen({ title, options = [], isOpen, onToggle }) {
           ))}
         </nav>
       </aside>
+      {isOpen && (
+        <div 
+          className="aside-overlay" 
+          onClick={onToggle}
+        />
+      )}
     </>
   );
 }

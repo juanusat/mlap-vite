@@ -1,21 +1,38 @@
 .screenman-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr;
     min-height: var(--min-height);
+    height: 100vh;
+    overflow: hidden;
+    max-height: -webkit-fill-available;
 }
 
 .screenman-main {
-    display: flex;
-    flex: 1;
-    background: var(--background, --color-n-50);
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-n-50);
+    position: relative;
+    display: grid;
+}
+
+@media (min-width: 1025px) {
+    .screenman-main {
+        grid-template-columns: minmax(200px, 350px) 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .screenman-main {
+        grid-template-columns: 1fr;
+    }
 }
 
 .screenman-article {
-    flex: 1;
+    height: 100%;
     background: var(--article-bg, --color-n-50);
     display: grid;
     grid-template-columns: var(--grid-t-col) var( --grid-t-col-4);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .screenman-article:not(:has(.panel-lateral-config)) {
