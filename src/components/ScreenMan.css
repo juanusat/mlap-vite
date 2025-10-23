@@ -10,7 +10,21 @@
 .screenman-main {
     height: 100%;
     overflow: hidden;
-    background: var(--background, --color-n-50);
+    background: var(--color-n-50);
+    position: relative;
+    display: grid;
+}
+
+@media (min-width: 1025px) {
+    .screenman-main {
+        grid-template-columns: minmax(200px, 350px) 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .screenman-main {
+        grid-template-columns: 1fr;
+    }
 }
 
 .screenman-article {
