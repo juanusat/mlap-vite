@@ -34,44 +34,6 @@ hr {
 
 /* Celulares pequeños: 320px - 360px */
 @media (max-width: 360px) {
-    .screenman-aside {
-        position: absolute;
-        top: 87px; /* Comienza justo después del header */
-        left: 0;
-        bottom: 0; /* Se extiende hasta el final */
-        width: 70%;
-        max-width: 70%;
-        min-width: 70%;
-        height: 180%;
-        z-index: 1001;
-        transform: translateX(-100%);
-    }
-
-    .screenman-aside.open {
-        transform: translateX(0);
-    }
-
-    .aside-overlay {
-        display: block;
-        position: absolute;
-        top: 87px; /* Comienza después del header */
-        height: 180%;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
 }
 
 /* Celulares medianos: 361px - 393px */
@@ -84,7 +46,6 @@ hr {
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: 180%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -96,7 +57,6 @@ hr {
     .aside-overlay {
         display: block;
         position: absolute;
-        height: 180%;
         top: 47px;
         left: 0;
         right: 0;
@@ -117,7 +77,6 @@ hr {
         width: 70%;
         max-width: 70%;
         min-width: 70%;
-        height: 180%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -129,7 +88,6 @@ hr {
     .aside-overlay {
         display: block;
         position: absolute;
-        height: 180%;
         top: 47px;
         left: 0;
         right: 0;
@@ -184,7 +142,6 @@ hr {
         width: 65%;
         max-width: 65%;
         min-width: 65%;
-        height: 140%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -196,7 +153,6 @@ hr {
     .aside-overlay {
         display: block;
         position: absolute;
-        height: 140%;
         top: 48px;
         left: 0;
         right: 0;
@@ -217,7 +173,6 @@ hr {
         width: 60%;
         max-width: 60%;
         min-width: 60%;
-        height: 120%;
         z-index: 1001;
         transform: translateX(-100%);
     }
@@ -229,7 +184,6 @@ hr {
     .aside-overlay {
         display: block;
         position: absolute;
-        height: 120%;
         top: 48px;
         left: 0;
         right: 0;

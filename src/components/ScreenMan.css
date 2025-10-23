@@ -1,21 +1,24 @@
 .screenman-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr;
     min-height: var(--min-height);
+    height: 100vh;
+    overflow: hidden;
+    max-height: -webkit-fill-available;
 }
 
 .screenman-main {
-    display: flex;
-    flex: 1;
+    height: 100%;
+    overflow: hidden;
     background: var(--background, --color-n-50);
 }
 
 .screenman-article {
-    flex: 1;
+    height: 100%;
     background: var(--article-bg, --color-n-50);
     display: grid;
     grid-template-columns: var(--grid-t-col) var( --grid-t-col-4);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .screenman-article:not(:has(.panel-lateral-config)) {
