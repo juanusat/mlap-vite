@@ -7,7 +7,7 @@ import NotificacionSimple from './NotificacionSimple';
 import useLogout from '../hooks/useLogout';
 import useSession from '../hooks/useSession';
 
-export default function MyHeaderAdm() {
+export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
@@ -57,6 +57,16 @@ export default function MyHeaderAdm() {
       <header className="mlap-home-header py-1" style={{ background: 'var(--color-a-500)' }}>
         <div className="maxWCont">
           <div className="mlap-home-header-logo">
+            {/* Botón hamburguesa para móvil */}
+            <button 
+              className="aside-hamburger-btn" 
+              onClick={onMenuToggle}
+              aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            >
+              <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+              <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+              <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
+            </button>
             <img src={logoWhite} alt="MLAP Logo" style={{ height: 36 }} />
           </div>
           <div className="mlap-home-header-bar" style={{ color: '#fff' }}>

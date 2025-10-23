@@ -4,6 +4,12 @@
     justify-content: space-between;
 }
 
+.mlap-home-header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+}
+
 .mlap-home-header-bar {
     display: flex;
     align-items: center;
@@ -56,6 +62,55 @@ button.btn-nb:hover {
     height: var(--width-estandar);
     object-fit: cover;
     border-radius: var(--border-radius-p);
+}
+
+/* Botón hamburguesa - oculto por defecto en desktop */
+.aside-hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 28px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1002;
+    position: relative;
+}
+
+.aside-hamburger-btn:focus {
+    outline: none;
+}
+
+.hamburger-line {
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-n-0, #fff);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Animación del icono hamburguesa cuando está abierto */
+.aside-hamburger-btn .hamburger-line:nth-child(1).open {
+    transform: translateY(10.5px) rotate(45deg);
+}
+
+.aside-hamburger-btn .hamburger-line:nth-child(2).open {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.aside-hamburger-btn .hamburger-line:nth-child(3).open {
+    transform: translateY(-10.5px) rotate(-45deg);
+}
+
+/* Mostrar el botón hamburguesa en dispositivos móviles */
+@media (max-width: 1024px) {
+    .aside-hamburger-btn {
+        display: flex;
+    }
 }
 
 /* Estilos del modal de perfil */
