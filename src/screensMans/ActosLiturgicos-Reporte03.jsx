@@ -1,7 +1,7 @@
 import React from 'react';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import '../components/MyButtonMediumIcon.css';
-import './Reservas-Reservar.css';
+import "../utils/ActosLiturgicos-Reporte03.css";
 
 export default function Reporte03A() {
       React.useEffect(() => {

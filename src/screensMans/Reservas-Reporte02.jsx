@@ -1,11 +1,11 @@
 import React from 'react';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import '../components/MyButtonMediumIcon.css';
-import './Reservas-Reservar.css';
+import "../utils/Reservas-Reporte02.css";
 
 export default function Reporte02R() {
       React.useEffect(() => {
-        document.title = "MLAP | Reservar evento";
+        document.title = "MLAP | Reporte 02-Reservas";
       }, []);
     
     return (
