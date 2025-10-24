@@ -35,6 +35,7 @@
   height: 100%;
   overflow: hidden;
 }
+
 .parish-details-panel {
   flex: 1;
   display: flex;
@@ -61,7 +62,9 @@
   width: 100%;
   gap: 10px;
   margin-bottom: 1.5rem;
-}.parish-selector label {
+}
+
+.parish-selector label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -109,9 +112,11 @@
   line-height: 1.5;
   margin-bottom: 1.5rem;
 }
+
 .parishes-list {
   height: 320px;
 }
+
 .parishes-list h4 {
   margin: 0 0 1rem 0;
   color: var(--color-n-700);
@@ -307,17 +312,17 @@
     flex-direction: column;
     height: 100%;
   }
-  
+
   .map-container {
     flex: 1;
     height: 400px;
   }
-  
+
   .parish-info-panel {
     flex: 1;
     max-height: 400px;
   }
-  
+
   .map-container div {
     border-radius: 8px 8px 0 0;
   }
@@ -328,37 +333,37 @@
     flex: 1;
     height: 300px;
   }
-  
+
   .parish-info-panel {
     flex: 1;
     max-height: 350px;
   }
-  
+
   .event-item {
     padding: 0.5rem 0.75rem;
   }
-  
+
   .btn-ver-perfil {
     padding: 0.875rem 1rem;
     font-size: var(--font-size-base);
   }
-  
+
   .parishes-grid {
     max-height: 200px;
   }
-  
+
   .parish-card {
     padding: 0.5rem;
   }
-  
+
   .parish-card h5 {
     font-size: var(--font-size-body);
   }
-  
+
   .parish-card p {
     font-size: var(--font-size-xs);
   }
-  
+
   .location-type {
     font-size: var(--font-size-xxs);
     padding: 0.15rem 0.4rem;
@@ -425,6 +430,13 @@
     width: 100%;
     order: 2;
   }
+
+  .parish-selector {
+    justify-content: start;
+    flex-wrap: wrap;
+
+  }
+
 }
 
 /* Celulares medianos: 361px - 393px */
