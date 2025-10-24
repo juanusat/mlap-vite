@@ -17,26 +17,33 @@ import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Ac
 import ActosLiturgicosRequisitos from './screensMans/ActosLiturgicos-Gestionar-Requisitos.jsx';
 import ActosLiturgicosHorarios from './screensMans/ActosLiturgicos-Gestionar-Horarios.jsx';
 import ActosLiturgicosReservas from './screensMans/ActosLiturgicos-Gestionar-Reservas.jsx';
-import ActosLiturgicosReportes from './screensMans/ActosLiturgicos-Reportes.jsx';
+import Reporte01A from './screensMans/ActosLiturgicos-Reporte01.jsx';
+import Reporte02A from './screensMans/ActosLiturgicos-Reporte02.jsx';
+import Reporte03A from './screensMans/ActosLiturgicos-Reporte03.jsx';
 
 
 import Reservas from './screensMans/Reservas-access.jsx';
 import ReservasPendientes from './screensMans/Reservas-Pendientes.jsx';
 import ReservasHistorial from './screensMans/Reservas-Historial.jsx';
 import ReservasReservar from './screensMans/Reservas-Reservar.jsx';
+import Reporte01R from './screensMans/Reservas-Reporte01.jsx';
+import Reporte02R from './screensMans/Reservas-Reporte02.jsx';
 
 import Seguridad from './screensMans/Seguridad-access.jsx';
 import CuentasGestionar from './screensMans/Seguridad-Gestionar-Cuentas.jsx';
 import RolesGestionar from './screensMans/Seguridad-Gestionar-Roles.jsx';
+import Reporte01S from './screensMans/Seguridad-Reporte01.jsx';
 
 
 import Usuario from './screensMans/Usuario-access.jsx';
 import UsuarioGestionar from './screensMans/Usuario-Gestionar-Cuenta.jsx';
+import Reporte01U from './screensMans/Usuario-Reporte01.jsx';
 
 
 import Parroquia from './screensMans/Parroquia-access.jsx';
 import ParroquiaGestionarCapilla from './screensMans/Parroquia-Gestionar-Capilla.jsx';
 import ParroquiaGestionar from './screensMans/Parroquia-Gestionar-Cuenta.jsx';
+import Reporte01P from './screensMans/Parroquia-Reporte01.jsx';
 
 
 import Diocesis from './screensMans/Diocesis-access.jsx';
@@ -44,6 +51,7 @@ import TipoDocumentoGestionar from './screensMans/Diocesis-Gestionar-TipoDocumen
 import DiocesisGestionarParroquia from './screensMans/Diocesis-Gestionar-Parroquia.jsx';
 import DiocesisEventosLiturgicos from './screensMans/Diocesis-Gestionar-Eventos-Generales.jsx'
 import DiocesisRequisitosGestionarSoloBarra from './screensMans/Diocesis-Gestionar-Requisitos-Generales.jsx'
+import Reporte01D from './screensMans/Diocesis-Reporte01.jsx';
 
 
 
@@ -64,27 +72,34 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="gestionar-requisitos" element={<ActosLiturgicosRequisitos />} />
           <Route path="gestionar-horarios" element={<ActosLiturgicosHorarios />} />
           <Route path="gestionar-reservas" element={<ActosLiturgicosReservas />} />
-          <Route path="reportes" element={<ActosLiturgicosReportes />} />
+          <Route path="reporte01-a" element={<Reporte01A />} />
+          <Route path="reporte02-a" element={<Reporte02A />} />
+          <Route path="reporte03-a" element={<Reporte03A />} />
         </Route>
 
         <Route path="/man-usuario" element={<ProtectedRoute><Usuario /></ProtectedRoute>}>
           <Route path="gestionar-cuenta" element={<UsuarioGestionar />} />
+          <Route path="reporte01-u" element={<Reporte01U />} />
         </Route>
 
         <Route path="/man-parroquia" element={<ProtectedRoute><Parroquia /></ProtectedRoute>}>
           <Route path="gestionar-cuenta" element={<ParroquiaGestionar />} />
           <Route path="gestionar-capilla" element={<ParroquiaGestionarCapilla />} />
+          <Route path="reporte01-p" element={<Reporte01P />} />
         </Route>
 
         <Route path="/man-seguridad" element={<ProtectedRoute><Seguridad /></ProtectedRoute>}>
           <Route path="cuentas-gestionar" element={<CuentasGestionar />} />
           <Route path="roles-gestionar" element={<RolesGestionar />} />
+          <Route path="reporte01-s" element={<Reporte01S />} />
         </Route>
 
         <Route path="/man-reservas" element={<ProtectedRoute><Reservas /></ProtectedRoute>}>
           <Route path="pendientes" element={<ReservasPendientes />} />
           <Route path="historial" element={<ReservasHistorial />} />
           <Route path="reservar" element={<ReservasReservar />} />
+          <Route path="reporte01-r" element={<Reporte01R />} />
+          <Route path="reporte02-r" element={<Reporte02R />} />
         </Route>
 
         <Route path="/man-diocesis" element={<ProtectedRoute><Diocesis /></ProtectedRoute>}>
@@ -92,6 +107,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="gestionar-cuenta-parroquia" element={<DiocesisGestionarParroquia />} />
           <Route path="gestionar-eventos-generales" element={<DiocesisEventosLiturgicos />} />
           <Route path="gestionar-requisitos-generales" element={<DiocesisRequisitosGestionarSoloBarra />} />
+          <Route path="reporte01-d" element={<Reporte01D />} />
         </Route>
       </Routes>
     </BrowserRouter>

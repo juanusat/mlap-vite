@@ -1,7 +1,7 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdDomainVerification } from "react-icons/md";
-import { Outlet, useLocation } from 'react-router-dom';
+import { href, Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Actos.css'; // puedes usar el mismo CSS para mantener consistencia
 
 export default function Diocesis() {
@@ -15,7 +15,8 @@ export default function Diocesis() {
     { href: 'gestionar-tipo-doc', icon: <MdDomainVerification />, label: 'Gestionar tipos documentos' },
     { href: 'gestionar-cuenta-parroquia', icon: <MdDomainVerification />, label: 'Gestionar parroquias' },
     { href: 'gestionar-eventos-generales', icon: <MdDomainVerification />, label: 'Gestionar eventos generales' },
-    { href: 'gestionar-requisitos-generales', icon: <MdDomainVerification />, label: 'Gestionar requisitos generales' }
+    { href: 'gestionar-requisitos-generales', icon: <MdDomainVerification />, label: 'Gestionar requisitos generales' },
+    {href: 'reporte01-d', icon: <MdDomainVerification />, label: 'Reporte 01' },
   ];
 
   return (

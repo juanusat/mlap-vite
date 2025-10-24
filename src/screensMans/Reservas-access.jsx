@@ -16,6 +16,9 @@ export default function Reservas() {
     { href: 'pendientes', icon: <MdPendingActions />, label: 'Reservas pendientes' },
     { href: 'historial', icon: <MdHistory />, label: 'Historial de reservas' },
     { href: 'reservar', icon: <MdPendingActions />, label: 'Reservar evento' },
+    { href: 'reporte01-r', icon: <MdPendingActions />, label: 'Reporte 01' },
+    { href: 'reporte02-r', icon: <MdPendingActions />, label: 'Reporte 02' },
+
   ];
 
   return (

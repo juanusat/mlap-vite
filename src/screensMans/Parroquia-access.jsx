@@ -14,6 +14,7 @@ export default function Parroquia() {
   const options = [
     { href: 'gestionar-cuenta', icon: <MdAccountBalance />, label: 'Gestionar cuenta' },
     { href: 'gestionar-capilla', icon: <MdHomeFilled />, label: 'Gestionar capilla' },
+    { href: 'reporte01-p', icon: <MdAccountBalance />, label: 'Reporte 01' },
   ];
 
   return (

@@ -17,7 +17,9 @@ export default function ActosLiturgicos() {
     { href: 'gestionar-requisitos', icon: <MdListAlt />, label: 'Gestionar requisitos' },
     { href: 'gestionar-horarios', icon: <MdSchedule />, label: 'Gestionar horarios' },
     { href: 'gestionar-reservas',icon: <MdBook />, label: 'Gestionar reservas' },
-    { href: 'reportes', icon: <MdAssessment />,label: 'Reportes' },
+    { href: 'reporte01-a', icon: <MdAssessment />,label: 'Reporte 01' },
+    { href: 'reporte02-a', icon: <MdAssessment />,label: 'Reporte 02' },
+    { href: 'reporte03-a', icon: <MdAssessment />,label: 'Reporte 03' },
   ];
   
   return (
