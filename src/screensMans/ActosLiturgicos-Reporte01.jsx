@@ -13,7 +13,7 @@ export default function Reporte01A() {
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reporte 01: eventos realizados por capilla</h2>
                 <div className='app-container'>
-                    
+                     
                 </div>
             </div>
         </>
