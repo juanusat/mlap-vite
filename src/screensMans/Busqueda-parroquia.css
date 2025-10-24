@@ -8,17 +8,17 @@
 
 .map-container-wrapper {
   display: grid;
-  grid-template-columns: auto 750px;
+  grid-template-columns: 45% 55%;
   width: 100%;
   height: 100%;
   border-radius: 8px;
   overflow: hidden;
-  gap: 20px;
+  gap: 10px;
 }
 
 .map-container {
-  flex: 0 0 45%;
   position: relative;
+  width: 100%;
 }
 
 .map-container div {
@@ -35,6 +35,7 @@
   height: 100%;
   overflow: hidden;
 }
+
 .parish-details-panel {
   flex: 1;
   display: flex;
@@ -43,13 +44,23 @@
   overflow-y: auto;
 }
 
+/* Panel selector de parroquia que ocupa toda la altura */
+.parish-selector-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+}
+
 /* Estilos para el panel selector por defecto */
 .parish-selector {
   display: flex;
-  margin-bottom: 1.5rem;
   align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
   gap: 10px;
-
+  margin-bottom: 1.5rem;
 }
 
 .parish-selector label {
@@ -61,11 +72,11 @@
 }
 
 .parroquia-select {
-  flex: 1;
+  flex: 0 0 57.5%;
   padding: 0.75rem;
   border: 1px solid var(--color-grey-50);
   border-radius: 5px;
-  background: white;
+  background: var(--color-n-0);
   font-size: var(--font-size-body);
   color: var(--color-n-900);
   cursor: pointer;
@@ -78,6 +89,7 @@
 }
 
 .clear-selection-btn {
+  flex: 0 0 40%;
   padding: 0.5rem 1rem;
   background-color: var(--color-n-50);
   color: var(--color-n-700);
@@ -99,9 +111,7 @@
   line-height: 1.5;
   margin-bottom: 1.5rem;
 }
-.parishes-list {
-  height: 320px;
-}
+
 .parishes-list h4 {
   margin: 0 0 1rem 0;
   color: var(--color-n-700);
@@ -113,7 +123,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  height: 280px;
+  height: auto;
   overflow-y: auto;
 }
 
@@ -211,12 +221,11 @@
 }
 
 .parish-info-content {
-  height: 100%;
+  flex: 1;
   padding: 1rem 0px 1rem 0px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-
 }
 
 .parish-basic-info p {
@@ -292,70 +301,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .map-container-wrapper {
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .map-container {
-    flex: 1;
-    height: 400px;
-  }
-  
-  .parish-info-panel {
-    flex: 1;
-    max-height: 400px;
-  }
-  
-  .map-container div {
-    border-radius: 8px 8px 0 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .map-container {
-    flex: 1;
-    height: 300px;
-  }
-  
-  .parish-info-panel {
-    flex: 1;
-    max-height: 350px;
-  }
-  
-  .event-item {
-    padding: 0.5rem 0.75rem;
-  }
-  
-  .btn-ver-perfil {
-    padding: 0.875rem 1rem;
-    font-size: var(--font-size-base);
-  }
-  
-  .parishes-grid {
-    max-height: 200px;
-  }
-  
-  .parish-card {
-    padding: 0.5rem;
-  }
-  
-  .parish-card h5 {
-    font-size: var(--font-size-body);
-  }
-  
-  .parish-card p {
-    font-size: var(--font-size-xs);
-  }
-  
-  .location-type {
-    font-size: var(--font-size-xxs);
-    padding: 0.15rem 0.4rem;
-  }
-}
-
 /* Información adicional sobre zoom */
 .zoom-info {
   background: var(--color-n-50);
@@ -394,4 +339,259 @@
 
 .leaflet-popup-content b {
   color: var(--color-primary-700);
+}
+
+/* === RESPONSIVE PARA MÓVILES Y TABLETS === */
+
+/* Celulares pequeños: 320px - 360px */
+@media (max-width: 360px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    order: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .zoom-info {
+    order: 2;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 3;
+  }
+
+  .parish-selector-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .parish-info-header {
+    order: 1;
+  }
+
+  .parish-info-content {
+    display: flex;
+    flex-direction: column;
+    order: 2;
+  }
+
+  .parish-selector {
+    flex-direction: column;
+    gap: 10px;
+    order: 1;
+  }
+
+  .instructions {
+    order: 3;
+  }
+
+  .parishes-list {
+    order: 2;
+    height: 200px;
+  }
+
+  .parroquia-select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .clear-selection-btn {
+    flex: 1;
+    width: 100%;
+  }
+
+  .parishes-grid {
+    max-height: 200px;
+  }
+}
+
+/* Celulares medianos: 361px - 393px */
+@media (min-width: 361px) and (max-width: 393px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    order: 1;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 2;
+  }
+
+  .parish-selector {
+    flex-direction: column;
+    gap: 10px;
+    
+  }
+
+  .parroquia-select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .clear-selection-btn {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+/* Celulares grandes: 394px - 428px */
+@media (min-width: 394px) and (max-width: 428px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    order: 1;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 2;
+  }
+
+  .parish-selector {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .parroquia-select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .clear-selection-btn {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+/* Celulares extra grandes y tablets pequeñas: 429px - 767px */
+@media (min-width: 429px) and (max-width: 768px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    order: 1;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 2;
+    flex: 1;
+  }
+
+  .parish-selector {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .parroquia-select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .clear-selection-btn {
+    flex: 1;
+    width: 100%;
+  }
+  .map-container {
+    flex: 1;
+    height: 300px;
+  }
+
+  .event-item {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .btn-ver-perfil {
+    padding: 0.875rem 1rem;
+    font-size: var(--font-size-base);
+  }
+
+  .parishes-grid {
+    max-height: 200px;
+  }
+
+  .parish-card {
+    padding: 0.5rem;
+  }
+
+  .parish-card h5 {
+    font-size: var(--font-size-body);
+  }
+
+  .parish-card p {
+    font-size: var(--font-size-xs);
+  }
+
+  .location-type {
+    font-size: var(--font-size-xxs);
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+/* Tablets: 768px - 834px */
+@media (min-width: 769px) and (max-width: 834px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    order: 1;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 2;
+  }
+}
+
+/* Tablets grandes: 835px - 1024px */
+@media (min-width: 835px) and (max-width: 1024px) {
+  .map-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 450px;
+    flex: 1;
+    order: 1;
+  }
+
+  .parish-info-panel {
+    width: 100%;
+    order: 2;
+    flex: 1;
+    max-height: 400px;
+  }
+  .map-container div {
+    border-radius: 8px 8px 0 0;
+  }
 }

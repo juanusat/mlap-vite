@@ -14,13 +14,13 @@
     display: flex;
     align-items: stretch;
     justify-content: space-between;
-    width: 100%;
     margin-bottom: 20px;
+    gap: 12px;
+    overflow: hidden;
+    border-color: var(--color-n-25);
 }
 
 .center-container {
-    flex: 1;
-    display: flex;
     justify-content: center;
 }
 
@@ -28,6 +28,27 @@
 .search-add.my-group-buttons-actions{
     align-items: stretch;
 } 
+
+/* Estilo específico cuando search-add contiene texto-evento */
+.search-add:has(.texto-evento) {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    border: black;
+}
+
+.search-add:has(.texto-evento) .texto-evento {
+    grid-row: 1;
+}
+
+.search-add:has(.texto-evento) .center-container {
+    grid-row: 2;
+}
+
+.search-add:has(.texto-evento) .right-container {
+    grid-row: 2;
+}
 
 .Inputs-edit {
     display: flex;
@@ -65,4 +86,10 @@ textarea.inputModal{
 .Inputs-add label {
     margin-top: 10px
             
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        height: auto;
+    }
 }

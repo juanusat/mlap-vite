@@ -73,9 +73,8 @@
 
 .texto-evento {
     display: flex;
-    justify-content: center;
+    margin-left: 10px;
     align-items: center;
-    width: 200px;
     font-weight: bold;
     font-size: var(--font-size-s);
 }
