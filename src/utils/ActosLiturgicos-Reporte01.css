@@ -1,3 +1,325 @@
-/* Estilos específicos para el Reporte 01 de Actos Litúrgicos */
-/* Los estilos del gráfico están en GroupedBarChart.css */
+/* === CONTENEDOR PRINCIPAL === */
+.reporte01-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
+/* === WRAPPER DE GRÁFICO Y RESUMEN === */
+.chart-summary-wrapper {
+    display: flex;
+    gap: 30px;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chart-section {
+    flex: 1;
+    min-width: 0;
+    height: 350px; /* Altura explícita para el contenedor de ECharts */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+/* === SECCIÓN DE RESUMEN === */
+.summary-section {
+    min-width: 250px;
+    max-width: 300px;
+    background: #fdfdfd;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0px;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 0px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.summary-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary-indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.bautismo-indicator {
+    background-color: #EF9A9A;
+}
+
+.matrimonio-indicator {
+    background-color: #64B5F6;
+}
+
+.confirmacion-indicator {
+    background-color: #81C784;
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.summary-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* === DIVISOR === */
+.summary-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+    margin: 10px 0;
+}
+
+/* === TOTAL === */
+.summary-total {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.total-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+    opacity: 0.9;
+}
+
+.total-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* === LEYENDA DEL GRÁFICO (para ECharts) === */
+.chart-legend-section {
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre los ítems de la leyenda */
+    align-items: flex-start; /* Alinea los ítems a la izquierda */
+}
+
+/* No necesitamos un título específico para la leyenda si ECharts ya la genera o si la integramos visualmente */
+/* .chart-legend-title { ... } */
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.chart-legend-item .summary-indicator {
+    width: 16px;
+    height: 16px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+    .chart-summary-wrapper {
+        flex-direction: column;
+        gap: 25px;
+        padding: 25px;
+    }
+
+    .summary-section {
+        max-width: 100%;
+        min-width: 100%;
+        flex-direction: row; /* Coloca los items de resumen en fila */
+        flex-wrap: wrap; /* Permite que los items se envuelvan */
+        justify-content: space-around; /* Distribuye los items */
+        align-items: flex-start;
+    }
+
+    .summary-title {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .summary-item {
+        flex: 1 1 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+        margin-bottom: 15px;
+    }
+
+    .summary-total {
+        width: 100%;
+        margin-top: 0;
+    }
+    
+    .chart-legend-section {
+        order: -1; /* Mueve la leyenda al principio en pantallas pequeñas si es necesario */
+        border-top: none;
+        padding-top: 0;
+        flex-direction: row; /* Leyenda en fila */
+        justify-content: center; /* Centra los items de la leyenda */
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .chart-legend-item {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .reporte01-container {
+        padding: 15px;
+    }
+
+    .chart-summary-wrapper {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .summary-section {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .summary-title {
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+    }
+
+    .summary-item {
+        padding: 10px;
+        flex: 1 1 calc(100% - 10px);
+        max-width: calc(100% - 10px);
+    }
+
+    .summary-label {
+        font-size: 0.85rem;
+    }
+
+    .summary-value {
+        font-size: 1.2rem;
+    }
+
+    .total-label {
+        font-size: 0.9rem;
+    }
+
+    .total-value {
+        font-size: 1.6rem;
+    }
+
+    .chart-legend-section {
+        gap: 15px;
+    }
+    .chart-legend-item {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reporte01-container {
+        padding: 10px;
+    }
+
+    .chart-summary-wrapper {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .summary-section {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .summary-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .summary-item {
+        padding: 8px;
+        gap: 10px;
+    }
+
+    .summary-indicator {
+        width: 16px;
+        height: 16px;
+    }
+
+    .summary-label {
+        font-size: 0.8rem;
+    }
+
+    .summary-value {
+        font-size: 1.1rem;
+    }
+
+    .summary-total {
+        padding: 15px;
+    }
+
+    .total-label {
+        font-size: 0.85rem;
+    }
+
+    .total-value {
+        font-size: 1.4rem;
+    }
+
+    .chart-legend-section {
+        gap: 10px;
+    }
+    .chart-legend-item {
+        font-size: 0.8rem;
+    }
+}

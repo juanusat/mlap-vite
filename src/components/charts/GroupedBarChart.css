@@ -1,280 +1,246 @@
-.grouped-chart-wrapper {
+/* === CONTENEDOR PRINCIPAL === */
+.grouped-bar-chart {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    height: 300px; /* Ajustado para que se vea más parecido al figma */
+    padding: 20px 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* === EJE Y === */
+.y-axis {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 80px; /* Reducido para ahorrar espacio */
+    padding-right: 10px;
+    position: relative; /* Para posicionar la etiqueta correctamente */
 }
 
-/* Leyenda */
-.grouped-chart-legend {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 2rem;
-    padding: 1.5rem;
-    background-color: #f9f9f9;
-    border-radius: 6px;
-}
-
-.grouped-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.grouped-legend-color {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    border: 2px solid #333;
-}
-
-.grouped-legend-item span {
-    font-size: var(--font-size-base);
+.y-axis-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
     font-weight: 600;
-    color: #333;
-}
-
-/* Contenedor principal del gráfico */
-.grouped-bar-chart-main {
-    display: flex;
-    gap: 1rem;
-    position: relative;
-    padding-left: 3rem;
-}
-
-/* Eje Y */
-.grouped-chart-y-axis {
-    display: flex;
-    position: relative;
-    margin-left: 120px;
-}
-
-.grouped-y-axis-title {
-    position: absolute;
-    left: -120px;
+    font-size: 0.8rem; /* Ajustado */
+    color: #555;
+    position: absolute; /* Posicionamiento absoluto */
+    left: 0;
     top: 50%;
-    transform: rotate(-90deg) translateX(-50%);
-    transform-origin: left center;
-    font-size: var(--font-size-base);
-    color: #333;
+    transform: translateY(-50%) rotate(180deg) translateX(50%); /* Centrar y rotar */
     white-space: nowrap;
-    font-weight: bold;
 }
 
-.grouped-y-axis-values {
+.y-axis-values {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-right: 1rem;
-    height: 400px;
-    border-right: 3px solid #000;
+    height: 100%;
+    padding-bottom: 20px; /* Espacio para las etiquetas del eje X */
+    padding-top: 5px; /* Pequeño ajuste visual */
 }
 
-.grouped-y-axis-value {
-    font-size: var(--font-size-s);
-    color: #666;
+.y-axis-tick {
+    height: 0;
+    line-height: 0;
     text-align: right;
-    line-height: 1;
-    font-weight: 600;
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
 }
 
-/* Área de barras */
-.grouped-bars-area {
+.y-axis-number {
+    font-size: 0.75rem; /* Ajustado */
+    color: #777;
+    font-weight: 500;
+    position: relative;
+    right: 5px; /* Alinea los números un poco más a la derecha del borde */
+}
+
+/* === ÁREA DE GRÁFICO === */
+.chart-area {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #ccc; /* Bordes más sutiles */
+    border-bottom: 1px solid #ccc; /* Bordes más sutiles */
+    padding-bottom: 20px; /* Espacio para las etiquetas del eje X */
+}
+
+/* === LÍNEAS DE GRILLA === */
+.grid-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; /* Ocupa todo el espacio para la grilla */
+    display: flex;
+    flex-direction: column-reverse; /* Para que las líneas se alineen con los ticks del Y axis */
+    justify-content: flex-start; /* Empieza desde abajo */
+    pointer-events: none;
+}
+
+.grid-line {
+    height: 1px;
+    background-color: #eee; /* Líneas de grilla más sutiles */
+    width: 100%;
+    position: absolute; /* Posicionamiento absoluto para controlar la altura */
+    left: 0;
+}
+
+/* === CONTENEDOR DE BARRAS === */
+.bars-container {
+    flex: 1;
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
-    gap: 4rem;
-    flex: 1;
-    height: 400px;
-    border-bottom: 3px solid #000;
-    position: relative;
-    padding: 0 2rem;
+    padding: 0 15px; /* Ajustado */
+    gap: 20px; /* Espacio entre grupos de barras */
 }
 
-/* Grupo de barras */
-.grouped-bar-group {
+.bar-group {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.grouped-bars-set {
-    display: flex;
+    gap: 4px; /* Espacio entre barras individuales */
     align-items: flex-end;
-    gap: 0.3rem;
-    height: 100%;
+    flex: 1;
+    max-width: 80px; /* Ancho máximo por grupo para controlar el tamaño */
 }
 
-.grouped-bar-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 60px;
-    height: 100%;
-    position: relative;
-}
-
-.grouped-bar {
+/* === BARRAS === */
+.bar {
     width: 100%;
-    min-height: 50px;
-    border: 2px solid #000;
-    border-bottom: 3px solid #000;
+    border-radius: 2px 2px 0 0; /* Bordes más sutiles */
     transition: all 0.3s ease;
-    position: absolute;
-    bottom: 0;
-    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sutil sombra para dar profundidad */
+    border: 1px solid rgba(0,0,0,0.05); /* Borde suave para el contraste */
+    min-height: 2px; /* Asegura que la barra sea visible incluso con valor 0 */
 }
 
-.grouped-bar:hover {
-    opacity: 0.8;
-    transform: scaleY(1.02);
+.bar:hover {
+    opacity: 0.9; /* Opacidad al pasar el mouse */
+    transform: translateY(-3px); /* Pequeño efecto hover */
 }
 
-/* Tooltips */
-.grouped-bar-tooltip {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: var(--font-size-xs);
-    white-space: nowrap;
-    z-index: 1000;
-    margin-bottom: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Eliminamos .bar-value ya que no se usará dentro de la barra */
+/* .bar-value { ... } */
+
+/* Colores de las barras */
+.bar-bautismo {
+    background-color: #ef9a9a; /* Color ajustado */
 }
 
-.grouped-bar-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.9);
+.bar-matrimonio {
+    background-color: #64b5f6; /* Color ajustado */
 }
 
-.grouped-bar:hover .grouped-bar-tooltip {
-    display: block;
+.bar-confirmacion {
+    background-color: #81c784; /* Color ajustado */
 }
 
-.grouped-bar-tooltip strong {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: var(--font-size-s);
+/* === EJE X === */
+.x-axis-labels {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 15px 0 15px; /* Ajustado */
+    gap: 20px; /* Espacio entre etiquetas del eje X */
+    border-top: 1px solid #ccc; /* Línea del eje X */
+    margin-top: -1px; /* Para que se superponga con el border-bottom del chart-area */
 }
 
-/* Etiquetas de grupo */
-.grouped-bar-group-label {
+.x-axis-label {
+    flex: 1;
     text-align: center;
-    font-size: var(--font-size-base);
-    color: #333;
-    font-weight: 700;
-    margin-top: 0.5rem;
-    max-width: 180px;
-    line-height: 1.2;
+    font-weight: 600;
+    font-size: 0.85rem; /* Ajustado */
+    color: #555;
+    max-width: 80px; /* Ancho máximo para cada etiqueta */
+    word-wrap: break-word; /* Permite que el texto se rompa en varias líneas */
 }
 
-/* Responsive */
+/* === RESPONSIVE === */
 @media (max-width: 1024px) {
-    .grouped-chart-wrapper {
-        padding: 1.5rem;
+    .grouped-bar-chart {
+        height: 280px;
     }
-
-    .grouped-bars-area {
-        gap: 2rem;
+    .y-axis {
+        min-width: 70px;
     }
-
-    .grouped-bar-item {
-        width: 50px;
+    .y-axis-label {
+        font-size: 0.75rem;
+    }
+    .y-axis-number {
+        font-size: 0.7rem;
+    }
+    .bar-group {
+        gap: 3px;
+        max-width: 70px;
+    }
+    .bars-container {
+        gap: 15px;
+        padding: 0 10px;
+    }
+    .x-axis-label {
+        font-size: 0.8rem;
+        max-width: 70px;
     }
 }
 
 @media (max-width: 768px) {
-    .grouped-chart-wrapper {
-        padding: 1rem;
-        overflow-x: auto;
+    .grouped-bar-chart {
+        height: 250px;
     }
-
-    .grouped-chart-legend {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+    .y-axis {
+        min-width: 60px;
     }
-
-    .grouped-bar-chart-main {
-        min-width: 700px;
+    .y-axis-label {
+        font-size: 0.7rem;
     }
-
-    .grouped-bars-area {
-        gap: 1.5rem;
-        height: 300px;
+    .y-axis-number {
+        font-size: 0.65rem;
     }
-
-    .grouped-y-axis-values {
-        height: 300px;
+    .bar-group {
+        gap: 2px;
+        max-width: 60px;
     }
-
-    .grouped-bar-item {
-        width: 45px;
+    .bars-container {
+        gap: 10px;
+        padding: 0 8px;
     }
-
-    .grouped-chart-y-axis {
-        margin-left: 100px;
-    }
-
-    .grouped-y-axis-title {
-        left: -100px;
+    .x-axis-label {
+        font-size: 0.7rem;
+        max-width: 60px;
     }
 }
 
 @media (max-width: 480px) {
-    .grouped-chart-wrapper {
-        padding: 0.5rem;
+    .grouped-bar-chart {
+        height: 200px;
+        padding: 10px 0;
     }
-
-    .grouped-chart-legend {
-        gap: 0.75rem;
+    .y-axis {
+        min-width: 50px;
+        padding-right: 5px;
     }
-
-    .grouped-legend-item span {
-        font-size: var(--font-size-s);
+    .y-axis-label {
+        font-size: 0.65rem;
     }
-
-    .grouped-legend-color {
-        width: 16px;
-        height: 16px;
+    .y-axis-number {
+        font-size: 0.6rem;
     }
-
-    .grouped-bar-chart-main {
-        min-width: 600px;
+    .bar-group {
+        gap: 1px;
+        max-width: 50px;
     }
-
-    .grouped-bar-item {
-        width: 40px;
+    .bars-container {
+        gap: 5px;
+        padding: 0 5px;
     }
-
-    .grouped-bar-group-label {
-        font-size: var(--font-size-s);
+    .x-axis-labels {
+        padding: 5px 5px 0 5px;
     }
-
-    .grouped-chart-y-axis {
-        margin-left: 80px;
-    }
-
-    .grouped-y-axis-title {
-        left: -80px;
-        font-size: var(--font-size-s);
+    .x-axis-label {
+        font-size: 0.65rem;
+        max-width: 50px;
     }
 }
