@@ -55,10 +55,6 @@ export default function Reporte01D() {
               
               <div className="report-actions">
                 <MyButtonMediumIcon 
-                  text="Exportar PDF"
-                  iconName="download"
-                />
-                <MyButtonMediumIcon 
                   text="Actualizar"
                   iconName="refresh"
                   onClick={fetchReportData}

@@ -1,0 +1,239 @@
+.reporte02-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Filtros de fecha */
+.date-filters {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.date-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.date-label {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.date-filter-group .form-group {
+    margin: 0;
+}
+
+.date-filter-group input[type="date"] {
+    padding: 0.6rem 1rem;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: var(--font-size-base);
+    min-width: 180px;
+    background-color: white;
+    transition: border-color 0.3s ease;
+}
+
+.date-filter-group input[type="date"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.date-filter-group input[type="date"]:hover {
+    border-color: #999;
+}
+
+/* Contenedor del gráfico de líneas */
+.line-chart-container {
+    display: flex;
+    gap: 1rem;
+    padding: 2rem;
+    padding-left: 3rem;
+    padding-bottom: 4rem;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+/* Eje Y */
+.chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 1rem;
+    height: 450px;
+    border-right: 3px solid #000;
+    margin-left: 140px;
+    position: relative;
+}
+
+.y-axis-title {
+    position: absolute;
+    left: -130px;
+    top: 50%;
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: left center;
+    font-size: var(--font-size-s);
+    color: #666;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.y-axis-value {
+    font-size: var(--font-size-xs);
+    color: #666;
+    text-align: right;
+    line-height: 1;
+}
+
+/* Área del gráfico */
+.line-chart-area {
+    flex: 1;
+    height: 450px;
+    border-bottom: 3px solid #000;
+    position: relative;
+    overflow: visible;
+}
+
+.line-chart-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Puntos del gráfico */
+.chart-point {
+    cursor: pointer;
+    transition: r 0.3s ease, fill 0.3s ease;
+}
+
+.chart-point:hover {
+    r: 12;
+    fill: #C62828;
+}
+
+/* Tooltips */
+.point-tooltip {
+    display: none;
+    position: absolute;
+    transform: translate(-50%, -100%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    z-index: 1000;
+    margin-top: -12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.point-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.chart-point:hover + .point-tooltip,
+.line-chart-area:hover .point-tooltip {
+    display: none;
+}
+
+.point-tooltip strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: var(--font-size-s);
+}
+
+/* Eje X */
+.chart-x-axis {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.x-axis-label {
+    text-align: center;
+    font-size: var(--font-size-base);
+    color: #666;
+    font-weight: bold;
+}
+
+/* Hover effect mejorado para puntos */
+.line-chart-area svg {
+    overflow: visible;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .date-filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .date-filter-group input[type="date"] {
+        width: 100%;
+    }
+
+    .line-chart-container {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    .line-chart-area {
+        min-width: 600px;
+        height: 350px;
+    }
+
+    .chart-y-axis {
+        height: 350px;
+        margin-left: 110px;
+    }
+
+    .y-axis-title {
+        left: -100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .reporte02-container {
+        padding: 1rem;
+    }
+
+    .chart-y-axis {
+        margin-left: 90px;
+    }
+
+    .y-axis-title {
+        left: -80px;
+        font-size: 0.7rem;
+    }
+
+    .y-axis-value {
+        font-size: 0.65rem;
+    }
+}
