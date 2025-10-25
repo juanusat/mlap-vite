@@ -1,0 +1,65 @@
+.reporte-seguridad-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Estilos adicionales para la tabla de frecuencia de roles */
+.reporte-seguridad-container .grid-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reporte-seguridad-container .grid-header {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid #ddd;
+}
+
+.reporte-seguridad-container .grid-table-cell {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.reporte-seguridad-container .align-left {
+    text-align: left;
+    padding-left: 1.5rem;
+}
+
+.reporte-seguridad-container .row-par {
+    background-color: #fafafa;
+}
+
+.reporte-seguridad-container .row-impar {
+    background-color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reporte-seguridad-container {
+        padding: 1rem;
+    }
+
+    .reporte-seguridad-container .grid-container {
+        font-size: var(--font-size-s);
+    }
+
+    .reporte-seguridad-container .grid-header,
+    .reporte-seguridad-container .grid-table-cell {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reporte-seguridad-container {
+        padding: 0.5rem;
+    }
+
+    .reporte-seguridad-container .grid-header,
+    .reporte-seguridad-container .grid-table-cell {
+        padding: 0.5rem;
+    }
+}

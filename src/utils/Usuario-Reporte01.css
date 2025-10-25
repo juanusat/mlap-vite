@@ -1,0 +1,123 @@
+.reporte-usuario-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Información del reporte */
+.reporte-info {
+    background-color: #f0f8ff;
+    border-left: 4px solid #4FC3F7;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+}
+
+.reporte-info p {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: #333;
+}
+
+/* Estilos para la tabla de cambios en la cuenta */
+.reporte-usuario-container .grid-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reporte-usuario-container .grid-header {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reporte-usuario-container .grid-header:hover {
+    background-color: #ebebeb;
+}
+
+.reporte-usuario-container .grid-table-cell {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.reporte-usuario-container .align-left {
+    text-align: left;
+    padding-left: 1.5rem;
+}
+
+.reporte-usuario-container .row-par {
+    background-color: #fafafa;
+}
+
+.reporte-usuario-container .row-impar {
+    background-color: white;
+}
+
+/* Estilos para la columna de fecha */
+.reporte-usuario-container .grid-table-cell:last-child {
+    text-align: center;
+    color: #666;
+    font-size: var(--font-size-s);
+}
+
+.reporte-usuario-container .grid-header:last-child {
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reporte-usuario-container {
+        padding: 1rem;
+    }
+
+    .reporte-info {
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .reporte-info p {
+        font-size: var(--font-size-s);
+    }
+
+    .reporte-usuario-container .grid-container {
+        font-size: var(--font-size-s);
+    }
+
+    .reporte-usuario-container .grid-header,
+    .reporte-usuario-container .grid-table-cell {
+        padding: 0.75rem;
+    }
+
+    .reporte-usuario-container .align-left {
+        padding-left: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reporte-usuario-container {
+        padding: 0.5rem;
+    }
+
+    .reporte-info {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .reporte-info p {
+        font-size: var(--font-size-xs);
+    }
+
+    .reporte-usuario-container .grid-header,
+    .reporte-usuario-container .grid-table-cell {
+        padding: 0.5rem;
+    }
+
+    .reporte-usuario-container .grid-table-cell:last-child {
+        font-size: 0.7rem;
+    }
+}

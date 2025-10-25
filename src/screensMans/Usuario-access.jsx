@@ -14,6 +14,7 @@ export default function Usuario() {
 
   const options = [
     { href: 'gestionar-cuenta', icon: <MdPerson />, label: 'Mi cuenta' },
+    { href: 'reporte01-u', icon: <MdPerson />, label: 'Reporte 01: Cambios en la cuenta' },
   ];
 
   return (

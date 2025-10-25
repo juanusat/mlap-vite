@@ -14,6 +14,7 @@ export default function Seguridad() {
   const options = [
     { href: 'cuentas-gestionar', icon: <MdAccountBox />, label: 'Gestionar cuentas' },
     { href: 'roles-gestionar', icon: <MdRecentActors />, label: 'Gestionar roles' },
+    { href: 'reporte01-s', icon: <MdRecentActors />, label: 'Reporte 01' },
   ];
 
   return (
