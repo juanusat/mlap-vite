@@ -9,10 +9,10 @@ export default function Reporte01A() {
 
     // Datos del gráfico agrupado por capilla
     const chapelData = [
-        { name: 'Capilla Santa Ana', bautismo: 65, matrimonio: 98, confirmacion: 85 },
-        { name: 'Capilla San José', bautismo: 65, matrimonio: 95, confirmacion: 88 },
-        { name: 'Capilla María Auxiliadora', bautismo: 63, matrimonio: 98, confirmacion: 87 },
-        { name: 'Capilla San Miguel', bautismo: 65, matrimonio: 98, confirmacion: 86 }
+        { name: 'Capilla Santa Ana', bautismo: 93, matrimonio: 132, confirmacion: 112 },
+        { name: 'Capilla San José', bautismo: 93, matrimonio: 132, confirmacion: 112 },
+        { name: 'Capilla María Auxiliadora', bautismo: 93, matrimonio: 132, confirmacion: 112 },
+        { name: 'Capilla San Miguel', bautismo: 93, matrimonio: 132, confirmacion: 112 }
     ];
 
     // Categorías de eventos
@@ -30,8 +30,8 @@ export default function Reporte01A() {
                     <GroupedBarChart 
                         data={chapelData}
                         categories={eventCategories}
-                        yAxisLabel="Cantidad de reservas"
-                        maxValue={100}
+                        yAxisLabel="Cantidad de reservas realizadas"
+                        maxValue={140}
                         yAxisStep={20}
                     />
                 </div>

@@ -66,11 +66,6 @@ export default function GroupedBarChart({
                                     const value = group[category.key] || 0;
                                     const heightPercentage = (value / maxValue) * 100;
                                     
-                                    // Debug: verificar valores
-                                    if (groupIndex === 0 && categoryIndex === 0) {
-                                        console.log('Valor:', value, 'Max:', maxValue, 'Altura %:', heightPercentage);
-                                    }
-                                    
                                     return (
                                         <div key={categoryIndex} className="grouped-bar-item">
                                             <div 
