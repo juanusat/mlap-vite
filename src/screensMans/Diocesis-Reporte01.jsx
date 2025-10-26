@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import DonutChart from '../components/charts/DonutChart';
-import '../components/MyButtonMediumIcon.css';
 import "../utils/Diocesis-Reporte01.css";
 
 export default function Reporte01D() {
@@ -52,14 +50,6 @@ export default function Reporte01D() {
                 data={chartData}
                 title="Eventos generales más usados en capillas"
               />
-              
-              <div className="report-actions">
-                <MyButtonMediumIcon 
-                  text="Actualizar"
-                  iconName="refresh"
-                  onClick={fetchReportData}
-                />
-              </div>
             </div>
           )}
         </div>
