@@ -18,7 +18,7 @@ export default function GroupedBarChart({ data, categories }) {
             show: false // La leyenda se mostrará en el summary-section, no en el gráfico
         },
         grid: {
-            left: '15%',
+            left: '10%',
             right: '4%',
             bottom: '3%',
             containLabel: true,
@@ -46,10 +46,10 @@ export default function GroupedBarChart({ data, categories }) {
             type: 'value',
             name: 'Cantidad de reservas realizadas',
             nameLocation: 'middle',
-            nameGap: 80,
+            nameGap: 50,
             nameTextStyle: {
                 color: '#000',
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: 'bold'
             },
             nameRotate: 90,
