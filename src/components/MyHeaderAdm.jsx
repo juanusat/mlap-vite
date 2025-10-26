@@ -7,6 +7,8 @@ import NotificacionSimple from './NotificacionSimple';
 import useLogout from '../hooks/useLogout';
 import useSession from '../hooks/useSession';
 
+const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
+
 export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
@@ -28,6 +30,20 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const getProfilePhotoUrl = (photoFilename, personData) => {
+    // Si no hay foto, generar avatar con iniciales
+    if (!photoFilename) {
+      const name = personData?.full_name || 'Usuario';
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7C3AED&color=fff&size=200`;
+    }
+    // Si es una URL completa, usarla directamente
+    if (photoFilename.startsWith('http://') || photoFilename.startsWith('https://')) {
+      return photoFilename;
+    }
+    // Si es un nombre de archivo, construir la URL completa
+    return `${API_URL}/uploads/${photoFilename}`;
   };
 
   // Datos de ejemplo para las notificaciones
@@ -109,9 +125,9 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               onClick={() => setPerfilModalOpen(true)}
             >
               <img 
-                src={sessionData?.person?.profile_photo || "https://randomuser.me/api/portraits/women/44.jpg"} 
+                src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)} 
                 alt="Foto de perfil" 
-                className="perfil-foto" 
+                className="perfil-foto"
               />
             </button>
           </div>
@@ -177,9 +193,9 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               <>
                 <div className="perfil-info">
                   <img 
-                    src={sessionData?.person?.profile_photo || "https://randomuser.me/api/portraits/women/44.jpg"} 
+                    src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)} 
                     alt="Foto de perfil" 
-                    className="perfil-foto-grande" 
+                    className="perfil-foto-grande"
                   />
                   <div className="perfil-datos">
                     <h3>{sessionData?.person?.full_name || 'Usuario'}</h3>
