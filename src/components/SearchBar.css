@@ -18,7 +18,6 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
   background: var(--color-n-0);
   color: var(--color-n-1000);
-  border-color: rgb(255, 0, 0);
 }
 
 .search-input::placeholder {
