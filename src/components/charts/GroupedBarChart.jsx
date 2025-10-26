@@ -18,13 +18,13 @@ export default function GroupedBarChart({ data, categories }) {
             show: false // La leyenda se mostrará en el summary-section, no en el gráfico
         },
         grid: {
-            left: '3%',
+            left: '15%',
             right: '4%',
             bottom: '3%',
             containLabel: true,
-            show: true, // Mostrar el grid para las líneas horizontales
-            borderColor: '#ccc', // Color del borde del grid
-            borderWidth: 1 // Ancho del borde del grid
+            show: true,
+            borderColor: '#ccc',
+            borderWidth: 1
         },
         xAxis: {
             type: 'category',
@@ -46,12 +46,13 @@ export default function GroupedBarChart({ data, categories }) {
             type: 'value',
             name: 'Cantidad de reservas realizadas',
             nameLocation: 'middle',
-            nameGap: 60,
+            nameGap: 80,
             nameTextStyle: {
-                color: '#333',
-                fontSize: 13,
+                color: '#000',
+                fontSize: 14,
                 fontWeight: 'bold'
             },
+            nameRotate: 90,
             axisLine: {
                 show: true, // Mostrar la línea del eje Y
                 lineStyle: {
