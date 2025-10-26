@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import ToggleSwitch from '../components/Toggle';
 import Modal from '../components/Modal';
+import useSession from '../hooks/useSession';
+import useLogout from '../hooks/useLogout';
+import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css'; 
 
@@ -174,35 +177,18 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 
 // --------------------- PRINCIPAL ---------------------
 export default function RolesGestionar() {
-      React.useEffect(() => {
-    document.title = "MLAP | Gestionar roles";
-  }, []);
-    const generateMockPermissions = () => {
-        return getAllPermissionIds();
-    };
+    const logout = useLogout();
+    const { sessionData } = useSession(logout);
+    
+    useEffect(() => {
+        document.title = "MLAP | Gestionar roles";
+    }, []);
 
-    const generateMockData = (count) => {
-        const data = [];
-        for (let i = 1; i <= count; i++) {
-            const initialPermissions = generateMockPermissions();
-            if (i === 1) {
-                Object.keys(initialPermissions).forEach(key => initialPermissions[key] = true);
-            }
-            
-            data.push({
-                ID: i,
-                Rol: `Rol de Ejemplo ${i}`,
-                Descripcion: `Descripción del rol de ejemplo número ${i}.`,
-                Estado: i % 2 === 0,
-                Permissions: initialPermissions,
-            });
-        }
-        return data;
-    };
-
-    // --------------------- ESTADOS ---------------------
     const [searchTerm, setSearchTerm] = useState('');
-    const [roles, setRoles] = useState(generateMockData(20));
+    const [roles, setRoles] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState(null);
@@ -213,12 +199,50 @@ export default function RolesGestionar() {
         descripcion: ''
     });
     
-    const [permissionsForm, setPermissionsForm] = useState(generateMockPermissions());
-    
-    // NUEVO ESTADO: Rastrea qué módulos están colapsados. Inicialmente todos abiertos (false)
+    const [permissionsForm, setPermissionsForm] = useState({});
+    const [availablePermissions, setAvailablePermissions] = useState([]);
     const [collapsedModules, setCollapsedModules] = useState({});
 
-    // --------------------- LÓGICA DE COLAPSO ---------------------
+    useEffect(() => {
+        if (sessionData?.parish?.id) {
+            loadRoles();
+        }
+    }, [sessionData, currentPage]);
+
+    const loadRoles = async () => {
+        if (!sessionData?.parish?.id) return;
+        
+        try {
+            setLoading(true);
+            const data = searchTerm 
+                ? await roleService.searchRoles(sessionData.parish.id, currentPage, 10, searchTerm)
+                : await roleService.listRoles(sessionData.parish.id, currentPage, 10);
+            
+            setRoles(data.roles.map(role => ({
+                ID: role.role_id,
+                Rol: role.name,
+                Descripcion: role.description,
+                Estado: role.active
+            })));
+            setTotalPages(data.total_pages);
+        } catch (error) {
+            console.error('Error al cargar roles:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (searchTerm !== '') {
+                setCurrentPage(1);
+                loadRoles();
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
+
     const toggleModule = (moduleId) => {
         setCollapsedModules(prev => ({
             ...prev,
@@ -226,44 +250,51 @@ export default function RolesGestionar() {
         }));
     };
 
-    // --------------------- LÓGICA DE PERMISOS ---------------------
-
-    const loadPermissions = (rol) => {
-        if (!rol) {
-            setPermissionsForm(generateMockPermissions());
+    const loadPermissions = async (rol) => {
+        if (!rol || !sessionData?.parish?.id) {
+            setPermissionsForm({});
             return;
         }
-        setPermissionsForm({ ...generateMockPermissions(), ...rol.Permissions });
-        
-        // Inicializa el estado de colapso: todos abiertos por defecto
-        const initialCollapseState = Object.keys(PERMISSIONS_STRUCTURE).reduce((acc, moduleId) => {
-            acc[moduleId] = false;
-            return acc;
-        }, {});
-        setCollapsedModules(initialCollapseState);
+
+        try {
+            const permissions = await roleService.getRolePermissions(sessionData.parish.id, rol.ID);
+            setAvailablePermissions(permissions);
+            
+            const permissionsMap = {};
+            permissions.forEach(perm => {
+                permissionsMap[perm.code] = perm.granted;
+            });
+            setPermissionsForm(permissionsMap);
+            
+            const initialCollapseState = Object.keys(PERMISSIONS_STRUCTURE).reduce((acc, moduleId) => {
+                acc[moduleId] = false;
+                return acc;
+            }, {});
+            setCollapsedModules(initialCollapseState);
+        } catch (error) {
+            console.error('Error al cargar permisos:', error);
+        }
     };
 
-    const handleSavePermissions = () => {
-        if (!currentRol) {
+    const handleSavePermissions = async () => {
+        if (!currentRol || !sessionData?.parish?.id) {
             handleCloseModal();
             return;
         }
 
-        setRoles(prevRoles => prevRoles.map(rol => {
-            if (rol.ID === currentRol.ID) {
-                return {
-                    ...rol,
-                    Permissions: permissionsForm
-                };
-            }
-            return rol;
-        }));
+        try {
+            const permissions = availablePermissions.map(perm => ({
+                permission_id: perm.permission_id,
+                granted: permissionsForm[perm.code] || false
+            }));
 
-        handleCloseModal();
+            await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error al guardar permisos:', error);
+        }
     };
 
-
-    // --------------------- HANDLERS FORM ---------------------
     const handleFormChange = (e) => {
         const { name, type, checked } = e.target;
         
@@ -290,7 +321,7 @@ export default function RolesGestionar() {
         if (action === 'permissions') {
             loadPermissions(rol);
         } else {
-             setPermissionsForm(generateMockPermissions()); 
+            setPermissionsForm({});
         }
 
         setShowModal(true);
@@ -301,39 +332,47 @@ export default function RolesGestionar() {
         setCurrentRol(null);
         setModalType(null);
         setFormData({ nombre: '', descripcion: '' });
-        setPermissionsForm(generateMockPermissions());
-        setCollapsedModules({}); // Resetear el estado de colapso al cerrar
+        setPermissionsForm({});
+        setCollapsedModules({});
     };
 
     // --------------------- CRUD (Rol) ---------------------
-    const handleSave = () => {
-        // ... (código handleSave sin cambios) ...
-        if (modalType === 'add') {
-            const newRol = {
-                ID: roles.length > 0 ? Math.max(...roles.map(r => r.ID)) + 1 : 1,
-                Rol: formData.nombre,
-                Descripcion: formData.descripcion,
-                Estado: true,
-                Permissions: generateMockPermissions(),
-            };
-            setRoles(prev => [...prev, newRol]);
-        } else if (modalType === 'edit' && currentRol) {
-            setRoles(prev =>
-                prev.map(r =>
-                    r.ID === currentRol.ID
-                        ? { ...r, Rol: formData.nombre, Descripcion: formData.descripcion }
-                        : r
-                )
-            );
+    const handleSave = async () => {
+        if (!sessionData?.parish?.id) return;
+
+        try {
+            if (modalType === 'add') {
+                await roleService.createRole(sessionData.parish.id, formData.nombre, formData.descripcion);
+            } else if (modalType === 'edit' && currentRol) {
+                await roleService.updateRole(sessionData.parish.id, currentRol.ID, formData.nombre, formData.descripcion);
+            }
+            handleCloseModal();
+            loadRoles();
+        } catch (error) {
+            console.error('Error al guardar rol:', error);
         }
-        handleCloseModal();
     };
 
-    const confirmDelete = () => {
-        // ... (código confirmDelete sin cambios) ...
-        if (currentRol) {
-            setRoles(prev => prev.filter(r => r.ID !== currentRol.ID));
+    const confirmDelete = async () => {
+        if (!currentRol || !sessionData?.parish?.id) return;
+
+        try {
+            await roleService.deleteRole(sessionData.parish.id, currentRol.ID);
             handleCloseModal();
+            loadRoles();
+        } catch (error) {
+            console.error('Error al eliminar rol:', error);
+        }
+    };
+
+    const handleToggle = async (rolId, currentStatus) => {
+        if (!sessionData?.parish?.id) return;
+
+        try {
+            await roleService.updateRoleStatus(sessionData.parish.id, rolId, !currentStatus);
+            loadRoles();
+        } catch (error) {
+            console.error('Error al cambiar estado del rol:', error);
         }
     };
 
@@ -466,13 +505,7 @@ export default function RolesGestionar() {
             accessor: row => (
                 <ToggleSwitch
                     isEnabled={row.Estado}
-                    onToggle={() =>
-                        setRoles(prev =>
-                            prev.map(r =>
-                                r.ID === row.ID ? { ...r, Estado: !r.Estado } : r
-                            )
-                        )
-                    }
+                    onToggle={() => handleToggle(row.ID, row.Estado)}
                 />
             )
         },
@@ -490,7 +523,6 @@ export default function RolesGestionar() {
         }
     ];
 
-    // --------------------- RENDER ---------------------
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de roles</h2>
@@ -504,12 +536,16 @@ export default function RolesGestionar() {
                     </MyGroupButtonsActions>
                 </div>
 
-                <DynamicTable
-                    columns={columns}
-                    data={filteredRoles}
-                    gridColumnsLayout="90px 380px 1fr 140px 220px"
-                    columnLeftAlignIndex={[2, 3]}
-                />
+                {loading ? (
+                    <p>Cargando roles...</p>
+                ) : (
+                    <DynamicTable
+                        columns={columns}
+                        data={roles}
+                        gridColumnsLayout="90px 380px 1fr 140px 220px"
+                        columnLeftAlignIndex={[2, 3]}
+                    />
+                )}
             </div>
             <Modal
                 show={showModal}
