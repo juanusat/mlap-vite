@@ -13,7 +13,6 @@
     background: white;
     border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .chart-section {
@@ -120,7 +119,7 @@
     flex-direction: column;
     gap: 5px;
     padding: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--color-b-500);
     border-radius: 8px;
     text-align: center;
     margin-top: 5px;

@@ -67,6 +67,7 @@
     padding: 0 1rem;
     border-bottom: 3px solid #000;
     position: relative;
+    margin-bottom: 3rem;
 }
 
 .bar-wrapper {
@@ -77,16 +78,16 @@
     max-width: 150px;
     height: 100%;
     position: relative;
+    justify-content: flex-end;
 }
 
 .bar {
     width: 100%;
     min-height: 20px;
     border: 2px solid #000;
-    border-bottom: 3px solid #000;
+    border-bottom: none;
     transition: all 0.3s ease;
-    position: absolute;
-    bottom: 0;
+    position: relative;
 }
 
 .bar:hover {
@@ -138,9 +139,10 @@
     line-height: 1.3;
     max-width: 120px;
     position: absolute;
-    bottom: -2.5rem;
+    bottom: -3rem;
     left: 50%;
     transform: translateX(-50%);
+    width: 100%;
 }
 
 /* Responsive */
