@@ -1,91 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
+import { getUserAccount, updatePersonalInfo, updateCredentials } from '../services/userService';
 import '../utils/Usuario-Gestionar.css';
 
 const GestionCuenta = () => {
-      React.useEffect(() => {
-    document.title = "MLAP | Mi cuenta";
-  }, []);
+    useEffect(() => {
+        document.title = "MLAP | Mi cuenta";
+        loadUserData();
+    }, []);
+
     const [userInfo, setUserInfo] = useState({
-        nombres: "Juan",
-        apellidoPaterno: "Pérez",
-        apellidoMaterno: "García",
-        documentoIdentidad: "12345678",
-        fotoPerfil: "usuario.jpg",
-        usuario: "juanperez",
-        correo: "juan.perez@ejemplo.com",
-        contraseña: "password123"
+        nombres: "",
+        apellidoPaterno: "",
+        apellidoMaterno: "",
+        documentoIdentidad: "",
+        fotoPerfil: "",
+        usuario: "",
+        correo: "",
+        contraseña: ""
     });
 
     const [fotoPerfilData, setFotoPerfilData] = useState(null);
-
-    // Estado para el modo de edición de cada sección
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingAccount, setIsEditingAccount] = useState(false);
-
-    // Estado temporal para guardar los datos antes de confirmar la edición
     const [tempUserInfo, setTempUserInfo] = useState({});
-
-    // Estado para la confirmación de la contraseña y el mensaje de error
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
-
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    // ----- Handlers para la Información Personal -----
+    const loadUserData = async () => {
+        try {
+            setLoading(true);
+            const response = await getUserAccount();
+            const data = response.data;
+            
+            setUserInfo({
+                nombres: data.first_names,
+                apellidoPaterno: data.paternal_surname,
+                apellidoMaterno: data.maternal_surname || "",
+                documentoIdentidad: data.document,
+                fotoPerfil: data.profile_photo || "",
+                usuario: data.username,
+                correo: data.email,
+                contraseña: "********"
+            });
+        } catch (err) {
+            setError("Error al cargar los datos del usuario");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleEditPersonal = () => {
         setIsEditingPersonal(true);
         setFotoPerfilData(null);
         setTempUserInfo(userInfo);
     };
 
-    const handleSavePersonal = () => {
-        setIsEditingPersonal(false);
-        setUserInfo(tempUserInfo);
-        if (fotoPerfilData) {
-            updatedUserInfo.fotoPerfil = fotoPerfilData.name;
+    const handleSavePersonal = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            
+            const updateData = {
+                first_names: tempUserInfo.nombres,
+                paternal_surname: tempUserInfo.apellidoPaterno,
+                maternal_surname: tempUserInfo.apellidoMaterno,
+                document: tempUserInfo.documentoIdentidad,
+            };
+            
+            if (fotoPerfilData && fotoPerfilData.file) {
+                updateData.profile_photo = fotoPerfilData.file;
+            }
+            
+            await updatePersonalInfo(updateData);
+            
+            setIsEditingPersonal(false);
+            await loadUserData();
+        } catch (err) {
+            setError(err.message || "Error al actualizar la información personal");
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
-        console.log("Datos personales guardados:", tempUserInfo);
     };
 
     const handleCancelPersonal = () => {
         setIsEditingPersonal(false);
         setFotoPerfilData(null);
+        setError("");
     };
 
-    // ----- Handlers para los Datos de la Cuenta -----
     const handleEditAccount = () => {
         setIsEditingAccount(true);
         setTempUserInfo(userInfo);
-        // Limpiar estados de error y confirmación al entrar en modo de edición
         setConfirmPassword("");
         setPasswordError("");
     };
 
-    const handleSaveAccount = () => {
-        // Verificar si las contraseñas coinciden solo si se está editando la contraseña
-        if (tempUserInfo.contraseña && tempUserInfo.contraseña !== confirmPassword) {
+    const handleSaveAccount = async () => {
+        if (tempUserInfo.contraseña && tempUserInfo.contraseña !== "********" && tempUserInfo.contraseña !== confirmPassword) {
             setPasswordError("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
-            return; // Detener la ejecución de la función si hay un error
+            return;
         }
 
-        setIsEditingAccount(false);
-        setUserInfo(tempUserInfo);
-        setPasswordError(""); // Limpiar el mensaje de error al guardar con éxito
-        console.log("Datos de la cuenta guardados:", tempUserInfo);
+        try {
+            setLoading(true);
+            setError("");
+            
+            const updateData = {
+                username: tempUserInfo.usuario,
+                email: tempUserInfo.correo,
+            };
+            
+            if (tempUserInfo.contraseña && tempUserInfo.contraseña !== "********") {
+                updateData.new_password = tempUserInfo.contraseña;
+            }
+            
+            await updateCredentials(updateData);
+            
+            setIsEditingAccount(false);
+            setPasswordError("");
+            await loadUserData();
+        } catch (err) {
+            setError(err.message || "Error al actualizar los datos de la cuenta");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancelAccount = () => {
         setIsEditingAccount(false);
-        setPasswordError(""); // Limpiar el mensaje de error al cancelar
+        setPasswordError("");
+        setError("");
     };
 
-    // Handler para cambios en los inputs
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setTempUserInfo(prevInfo => ({
@@ -94,22 +152,26 @@ const GestionCuenta = () => {
         }));
     };
 
-    // Handler específico para el campo de confirmar contraseña
     const handleConfirmPasswordChange = (e) => {
         setConfirmPassword(e.target.value);
-        // Opcional: Limpiar el error si las contraseñas coinciden mientras se escribe
         if (e.target.value === tempUserInfo.contraseña) {
             setPasswordError("");
         }
     };
 
     const handleFotoPerfilChange = (data) => {
-        setFotoPerfilData(data); // data.preview ahora contiene la URL para mostrar
+        setFotoPerfilData(data);
     };
+
+    if (loading && !userInfo.nombres) {
+        return <div className="content-module only-this"><p>Cargando...</p></div>;
+    }
 
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de cuenta</h2>
+
+            {error && <div className="error-message">{error}</div>}
 
             <ExpandableContainer
                 title='Información personal'
@@ -130,9 +192,9 @@ const GestionCuenta = () => {
                             <label className="foto-label">Foto perfil:</label>
                             <InputFotoPerfil
                                 onChange={handleFotoPerfilChange}
-                                value={fotoPerfilData ? fotoPerfilData.preview : null} // Pasar la URL de la preview
+                                value={fotoPerfilData ? fotoPerfilData.preview : null}
                                 placeholder="Subir foto de perfil de la parroquia"
-                                maxSize={5 * 1024 * 1024} // 5MB
+                                maxSize={5 * 1024 * 1024}
                                 acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
                             />
                         </div>
@@ -157,7 +219,7 @@ const GestionCuenta = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">Foto perfil:</span>
-                            <span className="info-value">{userInfo.fotoPerfil}</span>
+                            <span className="info-value">{userInfo.fotoPerfil || "No asignada"}</span>
                         </div>
                     </>
                 )}
