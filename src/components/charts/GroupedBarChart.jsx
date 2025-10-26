@@ -45,11 +45,11 @@ export default function GroupedBarChart({ data, categories }) {
         yAxis: {
             type: 'value',
             name: 'Cantidad de reservas realizadas',
-            nameLocation: 'middle', // Centra el título del eje Y
-            nameGap: 50, // Espacio entre el título y el eje
+            nameLocation: 'middle',
+            nameGap: 60,
             nameTextStyle: {
-                color: '#555',
-                fontSize: 12,
+                color: '#333',
+                fontSize: 13,
                 fontWeight: 'bold'
             },
             axisLine: {

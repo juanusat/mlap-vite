@@ -10,28 +10,28 @@ export default function Reporte01A() {
     // Datos de ejemplo de reservas por capilla
     const reservasData = [
         {
-            capilla: 'Capilla1',
+            capilla: 'Capilla Santa Ana',
+            bautismo: 120,
+            matrimonio: 55,
+            confirmacion: 72
+        },
+        {
+            capilla: 'Capilla Santa Clara',
             bautismo: 93,
-            matrimonio: 132,
+            matrimonio: 170,
             confirmacion: 112
         },
         {
-            capilla: 'Capilla2',
-            bautismo: 93,
-            matrimonio: 132,
-            confirmacion: 112
+            capilla: 'Capilla Santa Cruz',
+            bautismo: 88,
+            matrimonio: 150,
+            confirmacion: 120
         },
         {
-            capilla: 'Capilla3',
-            bautismo: 93,
-            matrimonio: 132,
-            confirmacion: 112
-        },
-        {
-            capilla: 'Cap4',
-            bautismo: 93,
-            matrimonio: 132,
-            confirmacion: 112
+            capilla: 'Capilla Santa Teresa',
+            bautismo: 30,
+            matrimonio: 42,
+            confirmacion: 101
         }
     ];
 
