@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -6,61 +6,113 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import useSession from '../hooks/useSession';
+import useLogout from '../hooks/useLogout';
+import * as parishWorkerService from '../services/parishWorkerService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Seguridad-Cuentas-Gestionar.css";
 
-const allRoles = ["Administrador", "Secretario", "Vicario", "Editor"];
-
-// Simulación de usuarios iniciales
-const initialUsers = Array.from({ length: 20 }, (_, i) => {
-  const userRoles = [allRoles[i % allRoles.length]];
-  return {
-    id: i + 1,
-    username: `Usuario${i + 1}`,
-    lastName: `Apellido${i + 1}`,
-    email: `usuario${i + 1}@example.com`,
-    isEnabled: true,
-    roles: userRoles,
-  };
-});
-
 export default function CuentasGestionar() {
-    React.useEffect(() => {
+  useEffect(() => {
     document.title = "MLAP | Gestionar cuentas";
   }, []);
-  const [users, setUsers] = useState(initialUsers);
+
+  const logout = useLogout();
+  const { sessionData, loading: sessionLoading } = useSession(logout);
+  
+  const [workers, setWorkers] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentWorker, setCurrentWorker] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [workerRoles, setWorkerRoles] = useState([]);
+  const [availableRoles, setAvailableRoles] = useState([]);
 
-  // Estado de formulario
   const [formData, setFormData] = useState({
     email: '',
-    role: ''
+    role_id: ''
   });
+
+  const parishId = sessionData?.parish?.id;
+
+  useEffect(() => {
+    if (parishId) {
+      loadWorkers();
+      loadAvailableRoles();
+    }
+  }, [parishId, currentPage]);
+
+  const loadWorkers = async () => {
+    if (!parishId) return;
+    
+    try {
+      setLoading(true);
+      setError('');
+      
+      let response;
+      if (searchTerm) {
+        response = await parishWorkerService.searchWorkers(parishId, currentPage, 10, searchTerm);
+      } else {
+        response = await parishWorkerService.listWorkers(parishId, currentPage, 10);
+      }
+      
+      setWorkers(response.data.workers);
+      setTotalPages(response.data.total_pages);
+    } catch (err) {
+      setError(err.message || 'Error al cargar trabajadores');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAvailableRoles = async () => {
+    if (!parishId) return;
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_BACKEND_URL}/api/parish/${parishId}/roles`, {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableRoles(data.data || []);
+      }
+    } catch (err) {
+      console.error('Error al cargar roles:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        setCurrentPage(1);
+        loadWorkers();
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      loadWorkers();
+    }
+  }, [searchTerm]);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const filteredUsers = users.filter((user) =>
-    Object.values(user).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
-  // Abrir modal según acción
-  const handleOpenModal = (user, action) => {
-    setCurrentUser(user);
+  const handleOpenModal = (worker, action) => {
+    setCurrentWorker(worker);
     setModalType(action);
 
     if (action === "invite") {
-      setFormData({ email: '', role: '' });
-    } else if (action === "addRole" && user) {
-      setFormData({ email: user.email, role: '' });
+      setFormData({ email: '', role_id: '' });
+    } else if (action === "addRole" && worker) {
+      setFormData({ email: worker.email, role_id: '' });
     }
 
     setShowModal(true);
@@ -68,103 +120,123 @@ export default function CuentasGestionar() {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setCurrentUser(null);
+    setCurrentWorker(null);
     setModalType(null);
-    setFormData({ email: '', role: '' });
+    setFormData({ email: '', role_id: '' });
   };
 
-  const handleViewRoles = (user) => {
-    setCurrentUser(user);
+  const handleViewRoles = async (worker) => {
+    setCurrentWorker(worker);
     setShowSidebar(true);
+    
+    try {
+      const response = await parishWorkerService.listWorkerRoles(worker.association_id, 1, 50);
+      setWorkerRoles(response.data.active_roles || []);
+    } catch (err) {
+      console.error('Error al cargar roles:', err);
+      setWorkerRoles([]);
+    }
   };
 
   const handleCloseSidebar = () => {
     setShowSidebar(false);
-    setCurrentUser(null);
+    setCurrentWorker(null);
+    setWorkerRoles([]);
   };
 
-  // Guardar cambios en modal
-  const handleSave = () => {
-    if (modalType === "invite") {
-      const newUser = {
-        id: users.length + 1,
-        username: formData.email.split('@')[0],
-        lastName: '',
-        email: formData.email,
-        isEnabled: true,
-        roles: ['Secretario'],
-      };
-      setUsers(prev => [...prev, newUser]);
-    } else if (modalType === "addRole" && currentUser) {
-      setUsers(prev =>
-        prev.map(u =>
-          u.id === currentUser.id ? { ...u, roles: [...u.roles, formData.role] } : u
-        )
-      );
-    }
-    handleCloseModal();
-  };
-
-  const confirmDelete = () => {
-    if (currentUser) {
-      setUsers(prev => prev.filter(u => u.id !== currentUser.id));
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      
+      if (modalType === "invite") {
+        await parishWorkerService.inviteWorker(parishId, formData.email);
+        await loadWorkers();
+      } else if (modalType === "addRole" && currentWorker) {
+        await parishWorkerService.assignRole(currentWorker.association_id, formData.role_id);
+        await loadWorkers();
+      }
+      
       handleCloseModal();
+    } catch (err) {
+      setError(err.message || 'Error al realizar la operación');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteRole = (role) => {
-    if (!currentUser) return;
-    setUsers(prev =>
-      prev.map(u =>
-        u.id === currentUser.id
-          ? { ...u, roles: u.roles.filter(r => r !== role) }
-          : u
-      )
-    );
-    setCurrentUser(prev => ({
-      ...prev,
-      roles: prev.roles.filter(r => r !== role)
-    }));
+  const confirmDelete = async () => {
+    if (!currentWorker) return;
+    
+    try {
+      setLoading(true);
+      await parishWorkerService.deleteAssociation(currentWorker.association_id);
+      await loadWorkers();
+      handleCloseModal();
+    } catch (err) {
+      setError(err.message || 'Error al eliminar la asociación');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleToggle = (id) => {
-    setUsers(prev =>
-      prev.map(u =>
-        u.id === id ? { ...u, isEnabled: !u.isEnabled } : u
-      )
-    );
+  const handleDeleteRole = async (userRoleId) => {
+    try {
+      setLoading(true);
+      await parishWorkerService.revokeRole(userRoleId);
+      
+      const response = await parishWorkerService.listWorkerRoles(currentWorker.association_id, 1, 50);
+      setWorkerRoles(response.data.active_roles || []);
+    } catch (err) {
+      setError(err.message || 'Error al revocar el rol');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Columnas de tabla
+  const handleToggle = async (worker) => {
+    try {
+      setLoading(true);
+      await parishWorkerService.updateAssociationStatus(worker.association_id, !worker.active);
+      await loadWorkers();
+    } catch (err) {
+      setError(err.message || 'Error al actualizar el estado');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
-    { key: 'id', header: 'ID', accessor: (u) => u.id },
-    { key: 'username', header: 'Nombre', accessor: (u) => u.username },
-    { key: 'lastName', header: 'Apellidos', accessor: (u) => u.lastName },
-    { key: 'email', header: 'Correo', accessor: (u) => u.email },
+    { key: 'association_id', header: 'ID', accessor: (w) => w.association_id },
+    { key: 'first_names', header: 'Nombre', accessor: (w) => w.first_names },
+    { key: 'paternal_surname', header: 'Apellidos', accessor: (w) => w.paternal_surname },
+    { key: 'email', header: 'Correo', accessor: (w) => w.email },
     {
       key: 'estado',
       header: 'Estado',
-      accessor: (u) => (
+      accessor: (w) => (
         <ToggleSwitch
-          isEnabled={u.isEnabled}
-          onToggle={() => handleToggle(u.id)}
+          isEnabled={w.active}
+          onToggle={() => handleToggle(w)}
         />
       ),
     },
     {
       key: 'acciones',
       header: 'Acciones',
-      accessor: (u) => (
+      accessor: (w) => (
         <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(u)} />
-          <MyButtonShortAction type="file" title="Añadir rol" onClick={() => handleOpenModal(u, "addRole")} />
-          <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleOpenModal(u, "delete")} />
+          <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
+          <MyButtonShortAction type="file" title="Añadir rol" onClick={() => handleOpenModal(w, "addRole")} />
+          <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleOpenModal(w, "delete")} />
         </MyGroupButtonsActions>
       ),
     },
   ];
 
-  // Contenido de modal dinámico
   const getModalContentAndActions = () => {
     switch (modalType) {
       case "invite":
@@ -182,7 +254,7 @@ export default function CuentasGestionar() {
               formData={formData}
               handleFormChange={handleFormChange}
               mode="addRole"
-              availableRoles={allRoles.filter(r => !currentUser?.roles.includes(r))}
+              availableRoles={availableRoles}
             />
           ),
           onAccept: handleSave,
@@ -202,10 +274,21 @@ export default function CuentasGestionar() {
 
   const modalProps = getModalContentAndActions();
 
+  if (sessionLoading || loading) {
+    return <div className="content-module only-this"><p>Cargando...</p></div>;
+  }
+
+  if (!parishId) {
+    return <div className="content-module only-this"><p>No se ha seleccionado una parroquia</p></div>;
+  }
+
   return (
     <>
       <div className="content-module only-this">
         <h2 className="title-screen">Gestión de cuentas</h2>
+        
+        {error && <div className="error-message">{error}</div>}
+        
         <div className="app-container">
           <div className="search-add">
             <div className="center-container">
@@ -215,7 +298,7 @@ export default function CuentasGestionar() {
           </div>
           <DynamicTable
             columns={columns}
-            data={filteredUsers}
+            data={workers}
             gridColumnsLayout="90px 350px 380px 1fr 140px 220px"
             columnLeftAlignIndex={[2, 3, 4]}
           />
@@ -232,16 +315,16 @@ export default function CuentasGestionar() {
         {modalProps.content}
       </Modal>
 
-      {showSidebar && currentUser && (
-        <MyPanelLateralConfig title={`Roles de ${currentUser.username}`}>
+      {showSidebar && currentWorker && (
+        <MyPanelLateralConfig title={`Roles de ${currentWorker.first_names}`}>
           <div className="panel-lateral-close-btn">
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">
-            {currentUser.roles.map((r) => (
-              <div key={`${currentUser.id}-${r}`} className="sidebar-list-item">
-                {r}
-                <MyButtonShortAction type="delete" title="Eliminar rol" onClick={() => handleDeleteRole(r)} />
+            {workerRoles.map((role) => (
+              <div key={role.user_role_id} className="sidebar-list-item">
+                {role.role_name}
+                <MyButtonShortAction type="delete" title="Eliminar rol" onClick={() => handleDeleteRole(role.user_role_id)} />
               </div>
             ))}
           </div>
@@ -251,7 +334,6 @@ export default function CuentasGestionar() {
   );
 }
 
-// Formulario reutilizable
 const UserForm = ({ formData, handleFormChange, mode, availableRoles = [] }) => {
   return (
     <div className="Inputs-add">
@@ -272,19 +354,19 @@ const UserForm = ({ formData, handleFormChange, mode, availableRoles = [] }) => 
 
       {mode === "addRole" && (
         <>
-          <label htmlFor="role">Selecciona un rol:</label>
+          <label htmlFor="role_id">Selecciona un rol:</label>
           <select
-            id="role"
-            name="role"
+            id="role_id"
+            name="role_id"
             className="inputModal"
-            value={formData.role}
+            value={formData.role_id}
             onChange={handleFormChange}
             required
           >
             <option value="">Seleccione un rol</option>
-            {availableRoles.map((r) => (
-              <option key={r} value={r}>
-                {r}
+            {availableRoles.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
               </option>
             ))}
           </select>
