@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../components/UI.css';
 import '../utils/spacing.css';
 import DynamicTable from "../components/Tabla";
@@ -8,37 +8,47 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import "../utils/Estilos-Generales-1.css";
-
-const initialDocs = [
-  { id: 1, nombre: 'DNI', estado: 'Activo', descripcion: 'Documento nacional de identidad', nombreCorto: 'DNI' },
-  { id: 2, nombre: 'Pasaporte', estado: 'Activo', descripcion: 'Pasaporte internacional', nombreCorto: 'PI' },
-  { id: 3, nombre: 'Carnet de extranjería', estado: 'Baja', descripcion: 'Carnet de extranjería', nombreCorto: 'CE' },
-  { id: 4, nombre: 'Licencia de conducir', estado: 'Activo', descripcion: 'Licencia de conducir vehicular', nombreCorto: 'LC' },
-  { id: 5, nombre: 'Cédula de identidad', estado: 'Activo', descripcion: 'Documento para ciudadanos extranjeros', nombreCorto: 'CI' },
-  { id: 6, nombre: 'Tarjeta de residencia', estado: 'Baja', descripcion: 'Tarjeta para residentes temporales', nombreCorto: 'TR' },
-  { id: 7, nombre: 'Certificado de nacimiento', estado: 'Activo', descripcion: 'Documento que certifica el nacimiento', nombreCorto: 'CN' },
-  { id: 8, nombre: 'Permiso de trabajo', estado: 'Activo', descripcion: 'Permiso para trabajar en el país', nombreCorto: 'PT' },
-  { id: 9, nombre: 'Visa de estudiante', estado: 'Baja', descripcion: 'Visa para estudios académicos', nombreCorto: 'VE' },
-  { id: 10, nombre: 'Carnet de sanidad', estado: 'Activo', descripcion: 'Certificado de salud', nombreCorto: 'CS' },
-  { id: 11, nombre: 'Declaración jurada', estado: 'Activo', descripcion: 'Documento legal', nombreCorto: 'DJ' },
-];
+import * as documentTypeService from '../services/documentTypeService';
 
 export default function TipoDocumentoGestionar() {
-    React.useEffect(() => {
+  useEffect(() => {
     document.title = "MLAP | Gestionar tipos de documentos";
+    loadDocumentTypes();
   }, []);
-  const [docs, setDocs] = useState(initialDocs);
+
+  const [docs, setDocs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [currentDoc, setCurrentDoc] = useState(null);
   const [modalType, setModalType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Nuevo estado para gestionar los datos del formulario
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    nombreCorto: ''
+    name: '',
+    description: '',
+    code: ''
   });
+
+  const loadDocumentTypes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await documentTypeService.listDocumentTypes(1, 100);
+      setDocs(response.data);
+    } catch (err) {
+      if (err.message.includes('403') || err.message.includes('Prohibido')) {
+        setError('No tienes permisos para acceder a esta funcionalidad. Requiere acceso de nivel diócesis.');
+      } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+        setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      } else {
+        setError(err.message);
+      }
+      console.error('Error al cargar tipos de documentos:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -54,18 +64,17 @@ export default function TipoDocumentoGestionar() {
   const handleOpenModal = (doc, action) => {
     setCurrentDoc(doc);
     setModalType(action);
-    // Cargar los datos del documento en el estado del formulario
     if (doc) {
       setFormData({
-        nombre: doc.nombre,
-        descripcion: doc.descripcion,
-        nombreCorto: doc.nombreCorto
+        name: doc.name,
+        description: doc.description,
+        code: doc.code
       });
     } else {
       setFormData({
-        nombre: '',
-        descripcion: '',
-        nombreCorto: ''
+        name: '',
+        description: '',
+        code: ''
       });
     }
     setShowModal(true);
@@ -76,9 +85,9 @@ export default function TipoDocumentoGestionar() {
     setCurrentDoc(null);
     setModalType(null);
     setFormData({
-      nombre: '',
-      descripcion: '',
-      nombreCorto: ''
+      name: '',
+      description: '',
+      code: ''
     });
   };
 
@@ -98,39 +107,74 @@ export default function TipoDocumentoGestionar() {
     handleOpenModal(null, 'add');
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (currentDoc) {
-      setDocs(prevDocs => prevDocs.filter(doc => doc.id !== currentDoc.id));
+      try {
+        setLoading(true);
+        setError(null);
+        await documentTypeService.deleteDocumentType(currentDoc.id);
+        await loadDocumentTypes();
+        handleCloseModal();
+      } catch (err) {
+        if (err.message.includes('403') || err.message.includes('Prohibido')) {
+          setError('No tienes permisos para eliminar tipos de documentos.');
+        } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+          setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        } else {
+          setError(err.message);
+        }
+        console.error('Error al eliminar:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      if (modalType === 'add') {
+        await documentTypeService.createDocumentType(formData);
+      } else if (modalType === 'edit' && currentDoc) {
+        await documentTypeService.updateDocumentType(currentDoc.id, formData);
+      }
+      
+      await loadDocumentTypes();
       handleCloseModal();
+    } catch (err) {
+      if (err.message.includes('403') || err.message.includes('Prohibido')) {
+        setError('No tienes permisos para realizar esta operación.');
+      } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+        setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      } else {
+        setError(err.message);
+      }
+      console.error('Error al guardar:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSave = () => {
-    if (modalType === 'add') {
-      const newDoc = {
-        ...formData,
-        id: docs.length > 0 ? Math.max(...docs.map(d => d.id)) + 1 : 1,
-        estado: 'Activo'
-      };
-      setDocs(prevDocs => [...prevDocs, newDoc]);
-    } else if (modalType === 'edit' && currentDoc) {
-      setDocs(prevDocs =>
-        prevDocs.map(doc =>
-          doc.id === currentDoc.id ? { ...doc, ...formData } : doc
-        )
-      );
+  const handleToggle = async (docId, currentStatus) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await documentTypeService.updateDocumentTypeStatus(docId, !currentStatus);
+      await loadDocumentTypes();
+    } catch (err) {
+      if (err.message.includes('403') || err.message.includes('Prohibido')) {
+        setError('No tienes permisos para cambiar el estado de tipos de documentos.');
+      } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+        setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      } else {
+        setError(err.message);
+      }
+      console.error('Error al cambiar estado:', err);
+    } finally {
+      setLoading(false);
     }
-    handleCloseModal();
-  };
-
-  const handleToggle = (docId) => {
-    setDocs(prevDocs =>
-      prevDocs.map(doc =>
-        doc.id === docId
-          ? { ...doc, estado: doc.estado === 'Activo' ? 'Baja' : 'Activo' }
-          : doc
-      )
-    );
   };
 
   const columns = [
@@ -138,17 +182,17 @@ export default function TipoDocumentoGestionar() {
       header: 'ID',
       accessor: (doc) => doc.id
     },
-    { key: 'nombre',
+    { key: 'name',
       header: 'Nombre',
-      accessor: (doc) => doc.nombre,
+      accessor: (doc) => doc.name,
     },
-    { key: 'descripcion',
+    { key: 'description',
       header: 'Descripción',
-      accessor: (doc) => doc.descripcion,
+      accessor: (doc) => doc.description,
     },
-    { key: 'estado',
+    { key: 'active',
       header: 'Estado',
-      accessor: (doc) => <ToggleSwitch isEnabled={doc.estado === 'Activo'} onToggle={() => handleToggle(doc.id)} />,
+      accessor: (doc) => <ToggleSwitch isEnabled={doc.active} onToggle={() => handleToggle(doc.id, doc.active)} />,
     },
     { key: 'acciones',
       header: 'Acciones',
@@ -212,6 +256,8 @@ export default function TipoDocumentoGestionar() {
     <>
       <div className="content-module only-this">
         <h2 className='title-screen'>Tipos de documentos</h2>
+        {error && <div className="error-message">{error}</div>}
+        {loading && <div className="loading-message">Cargando...</div>}
         <div className="app-container">
           <div className="search-add">
             <div className="center-container">
@@ -245,34 +291,34 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
   return (
     <div>
       <div className="Inputs-add">
-        <label htmlFor="nombre">Nombre:</label>
+        <label htmlFor="name">Nombre:</label>
         <input
           type="text"
           className="inputModal"
-          id="nombre"
-          name="nombre"
-          value={formData.nombre}
+          id="name"
+          name="name"
+          value={formData.name}
           onChange={handleFormChange}
           disabled={isViewMode}
           required
         />
-        <label htmlFor="descripcion">Descripción:</label>
+        <label htmlFor="description">Descripción:</label>
         <textarea
           className="inputModal"
-          id="descripcion"
-          name="descripcion"
-          value={formData.descripcion}
+          id="description"
+          name="description"
+          value={formData.description}
           onChange={handleFormChange}
           disabled={isViewMode}
           required
         />
-        <label htmlFor="nombreCorto">Nombre corto:</label>
+        <label htmlFor="code">Nombre corto:</label>
         <input
           type="text"
           className="inputModal"
-          id="nombreCorto"
-          name="nombreCorto"
-          value={formData.nombreCorto}
+          id="code"
+          name="code"
+          value={formData.code}
           onChange={handleFormChange}
           disabled={isViewMode}
           required
