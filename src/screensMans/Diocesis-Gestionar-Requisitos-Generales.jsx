@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -8,28 +8,28 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import '../utils/Estilos-Generales-1.css';
 import "../utils/ActosLiturgicos-Requisitos.css";
+import * as requirementService from '../services/baseRequirementService';
 
-// Componente reutilizable para el formulario de requisitos
 const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
     return (
         <div className="Inputs-add">
-            <label htmlFor="nombre">Nombre:</label>
+            <label htmlFor="name">Nombre:</label>
             <input
                 type="text"
                 className="inputModal"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="descripcion">Descripción:</label>
+            <label htmlFor="description">Descripción:</label>
             <textarea
                 className="inputModal"
-                id="descripcion"
-                name="descripcion"
-                value={formData.descripcion}
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
@@ -38,22 +38,6 @@ const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
     );
 };
 
-// Datos iniciales de ejemplo para eventos y requisitos
-const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
-    id: i + 1,
-    nombre: `Evento ${i + 1}`,
-    descripcion: `Descripción del Evento ${i + 1}.`,
-}));
-
-const initialRequirementsData = Array.from({ length: 100 }, (_, i) => ({
-    id: i + 1,
-    eventoId: (i % 20) + 1,
-    nombre: `Requisito ${i + 1}`,
-    descripcion: `Descripción del Requisito ${i + 1}.`,
-    estado: (i + 1) % 2 === 0 ? 'Activo' : 'Inactivo',
-}));
-
-// Componente de tabla con capacidad de clic para eventos
 const TableEventsWithClick = ({ data, handleRowClickEvent }) => {
     return (
         <div className="table-container">
@@ -66,7 +50,7 @@ const TableEventsWithClick = ({ data, handleRowClickEvent }) => {
                     >
                         <div className="event-cell">
                             <span className="event-id">{row.id}</span>
-                            <span className="event-name">{row.nombre}</span>
+                            <span className="event-name">{row.name}</span>
                         </div>
                     </div>
                 ))}
@@ -75,44 +59,79 @@ const TableEventsWithClick = ({ data, handleRowClickEvent }) => {
     );
 };
 
-// Componente principal de gestión de requisitos
 export default function DiocesisRequisitosGestionarSoloBarra() {
-      React.useEffect(() => {
-    document.title = "MLAP | Gestionar requisitos generales";
-  }, []);
+    React.useEffect(() => {
+        document.title = "MLAP | Gestionar requisitos generales";
+    }, []);
     
-    const [requirements, setRequirements] = useState(initialRequirementsData);
+    const [requirements, setRequirements] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [currentRequirement, setCurrentRequirement] = useState(null);
     const [modalType, setModalType] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
-        nombre: '',
-        descripcion: ''
+        name: '',
+        description: ''
     });
 
-    const [events, setEvents] = useState(initialEventsData);
+    const [events, setEvents] = useState([]);
     const [showPanel, setShowPanel] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [searchTermEvent, setSearchTermEvent] = useState('');
+
+    useEffect(() => {
+        loadEvents();
+    }, []);
+
+    useEffect(() => {
+        if (selectedEvent) {
+            loadRequirements();
+        }
+    }, [selectedEvent]);
+
+    const loadEvents = async () => {
+        try {
+            const response = await requirementService.listEventsForSelect();
+            setEvents(response.data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const loadRequirements = async () => {
+        if (!selectedEvent) return;
+        
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await requirementService.listRequirements(selectedEvent.id, 1, 100);
+            setRequirements(response.data);
+        } catch (err) {
+            setError(err.message);
+            if (err.message.includes('autenticación') || err.message.includes('sesión')) {
+                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            } else if (err.message.includes('permisos') || err.message.includes('autorizado')) {
+                setError('No tienes permisos para acceder a esta sección.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const filteredRequirements = selectedEvent ?
-        requirements.filter(req =>
-            req.eventoId === selectedEvent.id &&
-            (req.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                req.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-        : [];
+    const filteredRequirements = requirements.filter(req =>
+        req.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        req.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const filteredEvents = events.filter(event =>
-        Object.values(event).some(value =>
-            String(value).toLowerCase().includes(searchTermEvent.toLowerCase())
-        )
+        event.name.toLowerCase().includes(searchTermEvent.toLowerCase())
     );
 
     const handleSelectEvent = () => {
@@ -125,13 +144,12 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
     const handleAddRequirement = () => {
         if (!selectedEvent) {
-            setModalType('message');
-            setShowModal(true);
+            setError('Por favor, selecciona un evento primero');
             return;
         }
         setCurrentRequirement(null);
         setModalType('add');
-        setFormData({ nombre: '', descripcion: '' });
+        setFormData({ name: '', description: '' });
         setShowModal(true);
     };
 
@@ -139,15 +157,15 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         setShowModal(false);
         setCurrentRequirement(null);
         setModalType(null);
-        setFormData({ nombre: '', descripcion: '' });
+        setFormData({ name: '', description: '' });
     };
 
     const handleViewRequirement = (req) => {
         setCurrentRequirement(req);
         setModalType('view');
         setFormData({
-            nombre: req.nombre,
-            descripcion: req.descripcion
+            name: req.name,
+            description: req.description
         });
         setShowModal(true);
     };
@@ -156,8 +174,8 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         setCurrentRequirement(req);
         setModalType('edit');
         setFormData({
-            nombre: req.nombre,
-            descripcion: req.descripcion
+            name: req.name,
+            description: req.description
         });
         setShowModal(true);
     };
@@ -168,30 +186,37 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         setShowModal(true);
     };
 
-    const confirmDelete = () => {
-        if (currentRequirement) {
-            setRequirements(prevReqs => prevReqs.filter(req => req.id !== currentRequirement.id));
+    const confirmDelete = async () => {
+        if (!currentRequirement || !selectedEvent) return;
+
+        try {
+            await requirementService.deleteRequirement(selectedEvent.id, currentRequirement.id);
+            setRequirements(prevReqs => prevReqs.filter(r => r.id !== currentRequirement.id));
             handleCloseModal();
+        } catch (err) {
+            setError(err.message);
         }
     };
 
-    const handleSave = () => {
-        if (modalType === 'add') {
-            const newReq = {
-                ...formData,
-                id: requirements.length > 0 ? Math.max(...requirements.map(r => r.id)) + 1 : 1,
-                eventoId: selectedEvent.id,
-                estado: 'Activo'
-            };
-            setRequirements(prevReqs => [...prevReqs, newReq]);
-        } else if (modalType === 'edit' && currentRequirement) {
-            setRequirements(prevReqs =>
-                prevReqs.map(req =>
-                    req.id === currentRequirement.id ? { ...req, ...formData } : req
-                )
-            );
+    const handleSave = async () => {
+        if (!selectedEvent) return;
+
+        try {
+            if (modalType === 'add') {
+                const response = await requirementService.createRequirement(selectedEvent.id, formData);
+                setRequirements(prevReqs => [...prevReqs, response.data]);
+            } else if (modalType === 'edit' && currentRequirement) {
+                const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, formData);
+                setRequirements(prevReqs =>
+                    prevReqs.map(r =>
+                        r.id === currentRequirement.id ? response.data : r
+                    )
+                );
+            }
+            handleCloseModal();
+        } catch (err) {
+            setError(err.message);
         }
-        handleCloseModal();
     };
 
     const handleRowClickEvent = (event) => {
@@ -199,26 +224,35 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         setShowPanel(false);
     };
 
-    const handleToggle = (requirementId) => {
-        setRequirements(prevRequirements =>
-            prevRequirements.map(req =>
-                req.id === requirementId
-                    ? { ...req, estado: req.estado === 'Activo' ? 'Inactivo' : 'Activo' }
-                    : req
-            )
-        );
+    const handleToggle = async (requirementId) => {
+        if (!selectedEvent) return;
+        
+        const requirement = requirements.find(r => r.id === requirementId);
+        if (!requirement) return;
+
+        try {
+            const newStatus = !requirement.active;
+            await requirementService.updateRequirementStatus(selectedEvent.id, requirementId, newStatus);
+            setRequirements(prevReqs =>
+                prevReqs.map(r =>
+                    r.id === requirementId ? { ...r, active: newStatus } : r
+                )
+            );
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     const requirementColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
-        { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
-        { key: 'descripcion', header: 'Descripción', accessor: (row) => row.descripcion },
+        { key: 'name', header: 'Nombre', accessor: (row) => row.name },
+        { key: 'description', header: 'Descripción', accessor: (row) => row.description },
         {
-            key: 'estado',
+            key: 'active',
             header: 'Estado',
             accessor: (row) => (
                 <ToggleSwitch
-                    isEnabled={row.estado === 'Activo'}
+                    isEnabled={row.active}
                     onToggle={() => handleToggle(row.id)}
                 />
             ),
@@ -255,7 +289,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                     title: 'Confirmar eliminación',
                     content: currentRequirement && (
                         <div>
-                            <h4>¿Deseas eliminar el requisito "{currentRequirement.nombre}"?</h4>
+                            <h4>¿Deseas eliminar el requisito "{currentRequirement.name}"?</h4>
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -266,13 +300,6 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                     title: 'Añadir requisito',
                     content: <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
                     onAccept: handleSave,
-                    onCancel: handleCloseModal
-                };
-            case 'message':
-                return {
-                    title: 'Seleccionar evento',
-                    content: <p>Por favor, selecciona un evento primero.</p>,
-                    onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             default:
@@ -291,10 +318,15 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Gestión de requisitos generales</h2>
+                {error && (
+                    <div style={{ padding: '10px', marginBottom: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px' }}>
+                        {error}
+                    </div>
+                )}
                 <div className="app-container">
                     <div className="search-add">
                         <div className="texto-evento">
-                            <label>{selectedEvent ? `Requisitos de: ${selectedEvent.nombre}` : ''}</label>
+                            <label>{selectedEvent ? `Requisitos de: ${selectedEvent.name}` : ''}</label>
                         </div>
                         <div className="center-container">
                             <SearchBar onSearchChange={setSearchTerm} />
@@ -306,7 +338,9 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                             </MyGroupButtonsActions>
                         </div>
                     </div>
-                    {selectedEvent ? (
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>Cargando requisitos...</div>
+                    ) : selectedEvent ? (
                         <DynamicTable
                             columns={requirementColumns}
                             data={filteredRequirements}
