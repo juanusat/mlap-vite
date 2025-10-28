@@ -40,6 +40,8 @@ export default function Login() {
 
       const data = await resp.json();
       
+      console.log('Login frontend - full response:', data);
+      
       if (!resp.ok) {
         setError(data?.message || data?.error || 'Error al iniciar sesión');
         setLoading(false);
@@ -50,6 +52,10 @@ export default function Login() {
       const associations = data?.data?.parish_associations || [];
       const userFullName = userInfo?.full_name || null;
       const isDioceseUser = data?.data?.is_diocese_user || false;
+
+      console.log('Login frontend - associations:', associations);
+      console.log('Login frontend - userFullName:', userFullName);
+      console.log('Login frontend - isDioceseUser:', isDioceseUser);
 
       navigate('/comenzar', { 
         state: { 

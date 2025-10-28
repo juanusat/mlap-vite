@@ -20,6 +20,11 @@ export default function Begin() {
   const userFullName = location?.state?.userFullName || null;
   const isDioceseUser = location?.state?.isDioceseUser || false;
 
+  console.log('Begin - location.state:', location?.state);
+  console.log('Begin - associationsFromState:', associationsFromState);
+  console.log('Begin - userFullName:', userFullName);
+  console.log('Begin - isDioceseUser:', isDioceseUser);
+
   const handleParishSelect = async (parish) => {
     setSelectedParroquia(parish);
     setError(null);
