@@ -325,17 +325,20 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode }) => {
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="password">Clave:</label>
-            <input
-                type="password"
-                className="inputModal"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleFormChange}
-                disabled={isViewMode}
-                required={!isViewMode && !formData.id}
-            />
+            {!isViewMode && (
+                <>
+                    <label htmlFor="password">Clave:</label>
+                    <input
+                        type="password"
+                        className="inputModal"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleFormChange}
+                        required={!formData.id}
+                    />
+                </>
+            )}
         </div>
     );
 };
