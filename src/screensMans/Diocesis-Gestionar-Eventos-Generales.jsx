@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -7,28 +7,29 @@ import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
+import * as eventService from '../services/eventService';
 
 // Componente reutilizable para los formularios de eventos
 const EventoForm = ({ formData, handleFormChange, isViewMode }) => {
     return (
         <div className="Inputs-add">
-            <label htmlFor="nombre">Nombre:</label>
+            <label htmlFor="name">Nombre:</label>
             <input
                 type="text"
                 className="inputModal"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="descripcion">Descripción:</label>
+            <label htmlFor="description">Descripción:</label>
             <textarea
                 className="inputModal"
-                id="descripcion"
-                name="descripcion"
-                value={formData.descripcion}
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
@@ -46,19 +47,44 @@ const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 export default function DiocesisEventosLiturgicos() {
-      React.useEffect(() => {
-    document.title = "MLAP | Gestionar eventos generales";
-  }, []);
-    const [events, setEvents] = useState(initialEventsData);
+    React.useEffect(() => {
+        document.title = "MLAP | Gestionar eventos generales";
+    }, []);
+
+    const [events, setEvents] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [modalType, setModalType] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const [formData, setFormData] = useState({
-        nombre: '',
-        descripcion: ''
+        name: '',
+        description: ''
     });
+
+    useEffect(() => {
+        loadEvents();
+    }, []);
+
+    const loadEvents = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await eventService.listEvents(1, 100);
+            setEvents(response.data);
+        } catch (err) {
+            setError(err.message);
+            if (err.message.includes('autenticación') || err.message.includes('sesión')) {
+                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            } else if (err.message.includes('permisos') || err.message.includes('autorizado')) {
+                setError('No tienes permisos para acceder a esta sección.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
@@ -71,22 +97,29 @@ export default function DiocesisEventosLiturgicos() {
         )
     );
 
-    const handleToggle = (eventId) => {
-        setEvents(prevEvents =>
-            prevEvents.map(event =>
-                event.id === eventId
-                    ? { ...event, estado: event.estado === 'Activo' ? 'Pendiente' : 'Activo' }
-                    : event
-            )
-        );
+    const handleToggle = async (eventId) => {
+        const event = events.find(e => e.id === eventId);
+        if (!event) return;
+
+        try {
+            const newStatus = !event.active;
+            await eventService.updateEventStatus(eventId, newStatus);
+            setEvents(prevEvents =>
+                prevEvents.map(e =>
+                    e.id === eventId ? { ...e, active: newStatus } : e
+                )
+            );
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
         setFormData({
-            nombre: event.nombre,
-            descripcion: event.descripcion
+            name: event.name,
+            description: event.description
         });
         setShowModal(true);
     };
@@ -95,8 +128,8 @@ export default function DiocesisEventosLiturgicos() {
         setCurrentEvent(event);
         setModalType('edit');
         setFormData({
-            nombre: event.nombre,
-            descripcion: event.descripcion
+            name: event.name,
+            description: event.description
         });
         setShowModal(true);
     };
@@ -111,8 +144,8 @@ export default function DiocesisEventosLiturgicos() {
         setCurrentEvent(null);
         setModalType('add');
         setFormData({
-            nombre: '',
-            descripcion: ''
+            name: '',
+            description: ''
         });
         setShowModal(true);
     };
@@ -122,46 +155,52 @@ export default function DiocesisEventosLiturgicos() {
         setCurrentEvent(null);
         setModalType(null);
         setFormData({
-            nombre: '',
-            descripcion: ''
+            name: '',
+            description: ''
         });
     };
 
-    const confirmDelete = () => {
-        if (currentEvent) {
-            setEvents(prevEvents => prevEvents.filter(event => event.id !== currentEvent.id));
+    const confirmDelete = async () => {
+        if (!currentEvent) return;
+
+        try {
+            await eventService.deleteEvent(currentEvent.id);
+            setEvents(prevEvents => prevEvents.filter(e => e.id !== currentEvent.id));
             handleCloseModal();
+        } catch (err) {
+            setError(err.message);
         }
     };
 
-    const handleSave = () => {
-        if (modalType === 'add') {
-            const newEvent = {
-                ...formData,
-                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
-                estado: 'Activo'
-            };
-            setEvents(prevEvents => [...prevEvents, newEvent]);
-        } else if (modalType === 'edit' && currentEvent) {
-            setEvents(prevEvents =>
-                prevEvents.map(event =>
-                    event.id === currentEvent.id ? { ...event, ...formData } : event
-                )
-            );
+    const handleSave = async () => {
+        try {
+            if (modalType === 'add') {
+                const response = await eventService.createEvent(formData);
+                setEvents(prevEvents => [...prevEvents, response.data]);
+            } else if (modalType === 'edit' && currentEvent) {
+                const response = await eventService.updateEvent(currentEvent.id, formData);
+                setEvents(prevEvents =>
+                    prevEvents.map(e =>
+                        e.id === currentEvent.id ? response.data : e
+                    )
+                );
+            }
+            handleCloseModal();
+        } catch (err) {
+            setError(err.message);
         }
-        handleCloseModal();
     };
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
-        { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
-        { key: 'descripcion', header: 'Descripción', accessor: (row) => row.descripcion },
+        { key: 'name', header: 'Nombre', accessor: (row) => row.name },
+        { key: 'description', header: 'Descripción', accessor: (row) => row.description },
         {
-            key: 'estado',
+            key: 'active',
             header: 'Estado',
             accessor: (row) => (
                 <ToggleSwitch
-                    isEnabled={row.estado === 'Activo'}
+                    isEnabled={row.active}
                     onToggle={() => handleToggle(row.id)}
                 />
             ),
@@ -198,7 +237,7 @@ export default function DiocesisEventosLiturgicos() {
                     title: 'Confirmar eliminación',
                     content: currentEvent && (
                         <div >
-                            <h4>¿Deseas eliminar el evento "{currentEvent.nombre}"?</h4>
+                            <h4>¿Deseas eliminar el evento "{currentEvent.name}"?</h4>
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -226,19 +265,28 @@ export default function DiocesisEventosLiturgicos() {
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de eventos generales</h2>
-            <div className="app-container">
-                <div className="search-add">
-                    <div className="center-container">
-                        <SearchBar onSearchChange={setSearchTerm} />
-                    </div>
-                    <MyGroupButtonsActions>
-                        <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
-                    </MyGroupButtonsActions>
+            {error && (
+                <div style={{ padding: '10px', marginBottom: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px' }}>
+                    {error}
                 </div>
-                <DynamicTable columns={eventColumns} data={filteredEvents}
-                    gridColumnsLayout="90px 380px 1fr 140px 220px"
-                    columnLeftAlignIndex={[2, 3]} />
-            </div>
+            )}
+            {loading ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>Cargando eventos...</div>
+            ) : (
+                <div className="app-container">
+                    <div className="search-add">
+                        <div className="center-container">
+                            <SearchBar onSearchChange={setSearchTerm} />
+                        </div>
+                        <MyGroupButtonsActions>
+                            <MyButtonShortAction type="add" onClick={handleAddEvent} title="Añadir" />
+                        </MyGroupButtonsActions>
+                    </div>
+                    <DynamicTable columns={eventColumns} data={filteredEvents}
+                        gridColumnsLayout="90px 380px 1fr 140px 220px"
+                        columnLeftAlignIndex={[2, 3]} />
+                </div>
+            )}
             <Modal
                 show={showModal}
                 onClose={handleCloseModal}
