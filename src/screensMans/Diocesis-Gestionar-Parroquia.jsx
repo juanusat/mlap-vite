@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -8,33 +8,48 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyButtonMediumIcon from "../components/MyButtonMediumIcon";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Diocesis-Gestionar-Parroquia.css";
-
-// Datos iniciales de ejemplo con usuario y clave
-const initialEventsData = Array.from({ length: 100 }, (_, i) => ({
-    id: i + 1,
-    nombre: `Parroquia ${i + 1}`,
-    correo: `correo${i + 1}@parroquia.com`,
-    usuario: `usuario${i + 1}`,
-    clave: `clave${i + 1}`,
-    estado: (i + 1) % 2 === 0 ? 'Activo' : 'Pendiente',
-}));
+import * as parishService from '../services/parishService';
 
 export default function Parroquia() {
-      React.useEffect(() => {
+  useEffect(() => {
     document.title = "MLAP | Gestionar parroquias";
+    loadParishes();
   }, []);
-    const [events, setEvents] = useState(initialEventsData);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [currentEvent, setCurrentEvent] = useState(null);
-    const [modalType, setModalType] = useState(null);
 
-    const [formData, setFormData] = useState({
-        nombre: '',
-        correo: '',
-        usuario: '',
-        clave: ''
-    });
+  const [events, setEvents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [modalType, setModalType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    username: '',
+    password: ''
+  });
+
+  const loadParishes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await parishService.listParishes(1, 100);
+      setEvents(response.data);
+    } catch (err) {
+      if (err.message.includes('403') || err.message.includes('Prohibido')) {
+        setError('No tienes permisos para acceder a esta funcionalidad. Requiere acceso de nivel diócesis.');
+      } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+        setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      } else {
+        setError(err.message);
+      }
+      console.error('Error al cargar parroquias:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
@@ -47,24 +62,34 @@ export default function Parroquia() {
         )
     );
 
-    const handleToggle = (eventId) => {
-        setEvents(prevEvents =>
-            prevEvents.map(event =>
-                event.id === eventId
-                    ? { ...event, estado: event.estado === 'Activo' ? 'Pendiente' : 'Activo' }
-                    : event
-            )
-        );
+    const handleToggle = async (eventId, currentStatus) => {
+        try {
+            setLoading(true);
+            setError(null);
+            await parishService.updateParishStatus(eventId, !currentStatus);
+            await loadParishes();
+        } catch (err) {
+            if (err.message.includes('403') || err.message.includes('Prohibido')) {
+                setError('No tienes permisos para cambiar el estado de parroquias.');
+            } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            } else {
+                setError(err.message);
+            }
+            console.error('Error al cambiar estado:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
         setFormData({
-            nombre: event.nombre,
-            correo: event.correo,
-            usuario: event.usuario || '',
-            clave: event.clave || ''
+            name: event.name,
+            email: event.email,
+            username: event.username || '',
+            password: ''
         });
         setShowModal(true);
     };
@@ -73,10 +98,10 @@ export default function Parroquia() {
         setCurrentEvent(event);
         setModalType('edit');
         setFormData({
-            nombre: event.nombre,
-            correo: event.correo,
-            usuario: event.usuario || '',
-            clave: event.clave || ''
+            name: event.name,
+            email: event.email,
+            username: event.username || '',
+            password: ''
         });
         setShowModal(true);
     };
@@ -91,10 +116,10 @@ export default function Parroquia() {
         setCurrentEvent(null);
         setModalType('add');
         setFormData({
-            nombre: '',
-            correo: '',
-            usuario: '',
-            clave: ''
+            name: '',
+            email: '',
+            username: '',
+            password: ''
         });
         setShowModal(true);
     };
@@ -104,49 +129,74 @@ export default function Parroquia() {
         setCurrentEvent(null);
         setModalType(null);
         setFormData({
-            nombre: '',
-            correo: '',
-            usuario: '',
-            clave: ''
+            name: '',
+            email: '',
+            username: '',
+            password: ''
         });
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (currentEvent) {
-            setEvents(prevEvents => prevEvents.filter(event => event.id !== currentEvent.id));
-            handleCloseModal();
+            try {
+                setLoading(true);
+                setError(null);
+                await parishService.deleteParish(currentEvent.id);
+                await loadParishes();
+                handleCloseModal();
+            } catch (err) {
+                if (err.message.includes('403') || err.message.includes('Prohibido')) {
+                    setError('No tienes permisos para eliminar parroquias.');
+                } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+                    setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                } else {
+                    setError(err.message);
+                }
+                console.error('Error al eliminar:', err);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
-    const handleSave = () => {
-        if (modalType === 'add') {
-            const newEvent = {
-                ...formData,
-                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
-                estado: 'Pendiente'
-            };
-            setEvents(prevEvents => [...prevEvents, newEvent]);
-        } else if (modalType === 'edit' && currentEvent) {
-            setEvents(prevEvents =>
-                prevEvents.map(event =>
-                    event.id === currentEvent.id ? { ...event, ...formData } : event
-                )
-            );
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            if (modalType === 'add') {
+                await parishService.createParish(formData);
+            } else if (modalType === 'edit' && currentEvent) {
+                await parishService.updateParish(currentEvent.id, formData);
+            }
+            
+            await loadParishes();
+            handleCloseModal();
+        } catch (err) {
+            if (err.message.includes('403') || err.message.includes('Prohibido')) {
+                setError('No tienes permisos para realizar esta operación.');
+            } else if (err.message.includes('401') || err.message.includes('autorizado')) {
+                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+            } else {
+                setError(err.message);
+            }
+            console.error('Error al guardar:', err);
+        } finally {
+            setLoading(false);
         }
-        handleCloseModal();
     };
 
     const eventColumns = [
         { key: 'id', header: 'ID', accessor: (row) => row.id },
-        { key: 'nombre', header: 'Nombre', accessor: (row) => row.nombre },
-        { key: 'correo', header: 'Correo', accessor: (row) => row.correo },
+        { key: 'name', header: 'Nombre', accessor: (row) => row.name },
+        { key: 'email', header: 'Correo', accessor: (row) => row.email },
         {
-            key: 'estado',
+            key: 'active',
             header: 'Estado',
             accessor: (row) => (
                 <ToggleSwitch
-                    isEnabled={row.estado === 'Activo'}
-                    onToggle={() => handleToggle(row.id)}
+                    isEnabled={row.active}
+                    onToggle={() => handleToggle(row.id, row.active)}
                 />
             ),
         },
@@ -182,7 +232,7 @@ export default function Parroquia() {
                     title: 'Confirmar eliminación',
                     content: currentEvent && (
                         <div >
-                            <h4>¿Deseas eliminar la parroquia "{currentEvent.nombre}"?</h4>
+                            <h4>¿Deseas eliminar la parroquia "{currentEvent.name}"?</h4>
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -210,6 +260,8 @@ export default function Parroquia() {
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de parroquias</h2>
+            {error && <div className="error-message">{error}</div>}
+            {loading && <div className="loading-message">Cargando...</div>}
             <div className="app-container">
                 <div className="search-add">
                     <div className="center-container">
@@ -240,49 +292,49 @@ export default function Parroquia() {
 const ParroquiaForm = ({ formData, handleFormChange, isViewMode }) => {
     return (
         <div className="Inputs-add">
-            <label htmlFor="nombre">Nombre:</label>
+            <label htmlFor="name">Nombre:</label>
             <input
                 type="text"
                 className="inputModal"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="correo">Correo:</label>
+            <label htmlFor="email">Correo:</label>
             <input
-                type="text"
+                type="email"
                 className="inputModal"
-                id="correo"
-                name="correo"
-                value={formData.correo}
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="usuario">Usuario:</label>
+            <label htmlFor="username">Usuario:</label>
             <input
                 type="text"
                 className="inputModal"
-                id="usuario"
-                name="usuario"
-                value={formData.usuario}
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="clave">Clave:</label>
+            <label htmlFor="password">Clave:</label>
             <input
                 type="password"
                 className="inputModal"
-                id="clave"
-                name="clave"
-                value={formData.clave}
+                id="password"
+                name="password"
+                value={formData.password}
                 onChange={handleFormChange}
                 disabled={isViewMode}
-                required
+                required={!isViewMode && !formData.id}
             />
         </div>
     );
