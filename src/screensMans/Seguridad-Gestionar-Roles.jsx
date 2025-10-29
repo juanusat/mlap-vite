@@ -18,28 +18,28 @@ const PERMISSIONS_STRUCTURE = {
             'ACTOS': {
                 name: 'Gestionar actos litúrgicos',
                 permissions: [
-                    { id: 'C_ACTOS_LITURGICOS', name: 'Crear acto litúrgicos' },
+                    { id: 'C_ACTOS_LITURGICOS_ACTOS', name: 'Crear acto litúrgicos' },
                     { id: 'U_ESTADO_ACTOS_LITURGICOS', name: 'Actualizar estado acto litúrgicos' },
-                    { id: 'R_ACTOS_LITURGICOS', name: 'Leer acto litúrgicos' },
-                    { id: 'U_ACTOS_LITURGICOS', name: 'Actualizar acto litúrgicos' },
-                    { id: 'D_ACTOS_LITURGICOS', name: 'Eliminar acto litúrgicos' },
+                    { id: 'R_ACTOS_LITURGICOS_ACTOS', name: 'Leer acto litúrgicos' },
+                    { id: 'U_ACTOS_LITURGICOS_ACTOS', name: 'Actualizar acto litúrgicos' },
+                    { id: 'D_ACTOS_LITURGICOS_ACTOS', name: 'Eliminar acto litúrgicos' },
                 ]
             },
             'REQUISITOS': {
                 name: 'Gestionar requisitos',
                 permissions: [
-                    { id: 'C_REQUISITOS', name: 'Crear requisitos' },
-                    { id: 'U_ESTADO_REQUISITOS', name: 'Actualizar estado requisitos' },
-                    { id: 'R_REQUISITOS', name: 'Leer requisitos' },
-                    { id: 'U_REQUISITOS', name: 'Actualizar requisitos' },
-                    { id: 'D_REQUISITOS', name: 'Eliminar requisitos' },
+                    { id: 'C_ACTOS_LITURGICOS_REQ', name: 'Crear requisitos' },
+                    { id: 'U_ESTADO_REQ_ACTOS_LIT', name: 'Actualizar estado requisitos' },
+                    { id: 'R_ACTOS_LITURGICOS_REQ', name: 'Leer requisitos' },
+                    { id: 'U_ACTOS_LITURGICOS_REQ', name: 'Actualizar requisitos' },
+                    { id: 'D_ACTOS_LITURGICOS_REQ', name: 'Eliminar requisitos' },
                 ]
             },
             'HORARIOS': {
                 name: 'Gestionar horarios',
                 permissions: [
-                    { id: 'C_HORARIO', name: 'Crear horario' },
-                    { id: 'U_HORARIO', name: 'Actualizar horario' },
+                    { id: 'C_ACTOS_LITURGICOS_HORA', name: 'Crear horario' },
+                    { id: 'U_ACTOS_LITURGICOS_HORA', name: 'Actualizar horario' },
                     { id: 'C_EXCEP_DISP', name: 'Crear Excepción - Disponibilidad' },
                     { id: 'U_EXCEP_DISP', name: 'Actualizar Excepción - Disponibilidad' },
                     { id: 'D_EXCEP_DISP', name: 'Eliminar Excepción - Disponibilidad' },
@@ -51,8 +51,8 @@ const PERMISSIONS_STRUCTURE = {
             'RESERVAS': {
                 name: 'Gestionar Reservas',
                 permissions: [
-                    { id: 'R_RESERVAS_ACTOS', name: 'Leer reservas' },
-                    { id: 'U_RESERVAS_ACTOS', name: 'Actualizar reservas' },
+                    { id: 'R_ACTOS_LITURGICOS_RESER', name: 'Leer reservas' },
+                    { id: 'U_ACTOS_LITURGICOS_RESER', name: 'Actualizar reservas' },
                 ]
             },
         }
@@ -63,19 +63,19 @@ const PERMISSIONS_STRUCTURE = {
             'PENDIENTES': {
                 name: 'Reservas pendientes',
                 permissions: [
-                    { id: 'D_RESERVA_PENDIENTE', name: 'Eliminar reserva' },
+                    { id: 'D_RESERVAS_PEND', name: 'Eliminar reserva' },
                 ]
             },
             'HISTORIAL': {
                 name: 'Historial de reservas',
                 permissions: [
-                    { id: 'R_RESERVA_HISTORIAL', name: 'Leer reserva' },
+                    { id: 'R_RESERVAS_HIST', name: 'Leer reserva' },
                 ]
             },
             'RESERVAR': {
                 name: 'Reservar evento',
                 permissions: [
-                    { id: 'C_RESERVA_EVENTO', name: 'Crear reserva' },
+                    { id: 'C_RESERVAS_EVENTO', name: 'Crear reserva' },
                 ]
             },
         }
@@ -86,22 +86,22 @@ const PERMISSIONS_STRUCTURE = {
             'CUENTAS': {
                 name: 'Gestionar cuentas',
                 permissions: [
-                    { id: 'C_ASOC_USUARIO', name: 'Crear asociacion usuario' },
-                    { id: 'U_ESTADO_ASOC_USUARIO', name: 'Actualizar estado asociacion usuario' },
-                    { id: 'R_ASOC_USUARIO', name: 'Leer asociacion usuario' },
-                    { id: 'C_ROL_ASOC_USUARIO', name: 'Crear rol - asosiacion usuario' },
-                    { id: 'D_ASOC_USUARIO', name: 'Eliminar asosiacion usuario' },
+                    { id: 'C_SEGURIDAD_ASOC_USER', name: 'Crear asociacion usuario' },
+                    { id: 'U_ESTADO_ASOC_USER', name: 'Actualizar estado asociacion usuario' },
+                    { id: 'R_SEGURIDAD_ASOC_USER', name: 'Leer asociacion usuario' },
+                    { id: 'C_ROL_ASOC_USER', name: 'Crear rol - asosiacion usuario' },
+                    { id: 'D_SEGURIDAD_ASOC_USER', name: 'Eliminar asosiacion usuario' },
                 ]
             },
             'ROLES': {
                 name: 'Gestionar roles',
                 permissions: [
-                    { id: 'C_ROL', name: 'Crear rol' },
+                    { id: 'C_SEGURIDAD_ROL', name: 'Crear rol' },
                     { id: 'U_ESTADO_ROL', name: 'Actualizar estado rol' },
-                    { id: 'R_ROL', name: 'Leer rol' },
-                    { id: 'U_ROL_PERMISOS', name: 'Actualizar rol - permisos' },
-                    { id: 'U_ROL_DATA', name: 'Actualizar rol' },
-                    { id: 'D_ROL', name: 'Eliminar rol' },
+                    { id: 'R_SEGURIDAD_ROL', name: 'Leer rol' },
+                    { id: 'U_SEGURIDAD_ROL_PERMS', name: 'Actualizar rol - permisos' },
+                    { id: 'U_SEGURIDAD_ROL_DATA', name: 'Actualizar rol' },
+                    { id: 'D_SEGURIDAD_ROL', name: 'Eliminar rol' },
                 ]
             },
         }
@@ -112,20 +112,20 @@ const PERMISSIONS_STRUCTURE = {
             'CUENTA': {
                 name: 'Gestionar cuenta',
                 permissions: [
-                    { id: 'R_INFO_PARROQUIA', name: 'Leer información de la parroquia' },
-                    { id: 'U_INFO_PARROQUIA', name: 'Actualizar información de la parroquia' },
-                    { id: 'R_DATOS_CUENTA', name: 'Leer Datos de la cuenta' },
-                    { id: 'U_DATOS_CUENTA', name: 'Actualizar Datos de la cuenta' },
+                    { id: 'R_PARROQUIA_INFO', name: 'Leer información de la parroquia' },
+                    { id: 'U_PARROQUIA_INFO', name: 'Actualizar información de la parroquia' },
+                    { id: 'R_PARROQUIA_DATOS_CUENTA', name: 'Leer Datos de la cuenta' },
+                    { id: 'U_PARROQUIA_DATOS_CUENTA', name: 'Actualizar Datos de la cuenta' },
                 ]
             },
             'CAPILLA': {
                 name: 'Gestionar capilla',
                 permissions: [
-                    { id: 'C_CAPILLA', name: 'Crear capilla' },
+                    { id: 'C_PARROQUIA_CAPILLA', name: 'Crear capilla' },
                     { id: 'U_ESTADO_CAPILLA', name: 'Actualizar estado capilla' },
-                    { id: 'R_CAPILLA', name: 'Leer capilla' },
-                    { id: 'U_CAPILLA', name: 'Actualizar capilla' },
-                    { id: 'D_CAPILLA', name: 'Eliminar capilla' },
+                    { id: 'R_PARROQUIA_CAPILLA', name: 'Leer capilla' },
+                    { id: 'U_PARROQUIA_CAPILLA', name: 'Actualizar capilla' },
+                    { id: 'D_PARROQUIA_CAPILLA', name: 'Eliminar capilla' },
                 ]
             },
         }
@@ -214,9 +214,12 @@ export default function RolesGestionar() {
         
         try {
             setLoading(true);
-            const data = searchTerm 
-                ? await roleService.searchRoles(sessionData.parish.id, currentPage, 10, searchTerm)
-                : await roleService.listRoles(sessionData.parish.id, currentPage, 10);
+            let data;
+            if (searchTerm) {
+                data = await roleService.searchRoles(sessionData.parish.id, currentPage, 10, searchTerm);
+            } else {
+                data = await roleService.listRoles(sessionData.parish.id, currentPage, 10);
+            }
             
             setRoles(data.roles.map(role => ({
                 ID: role.role_id,
@@ -227,17 +230,20 @@ export default function RolesGestionar() {
             setTotalPages(data.total_pages);
         } catch (error) {
             console.error('Error al cargar roles:', error);
+            setRoles([]);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
+        if (!sessionData?.parish?.id) return;
+        
         const timeoutId = setTimeout(() => {
             if (searchTerm !== '') {
                 setCurrentPage(1);
-                loadRoles();
             }
+            loadRoles();
         }, 500);
 
         return () => clearTimeout(timeoutId);
@@ -253,17 +259,25 @@ export default function RolesGestionar() {
     const loadPermissions = async (rol) => {
         if (!rol || !sessionData?.parish?.id) {
             setPermissionsForm({});
+            setAvailablePermissions([]);
             return;
         }
 
         try {
+            setLoading(true);
             const permissions = await roleService.getRolePermissions(sessionData.parish.id, rol.ID);
+            
+            console.log('Permisos recibidos del backend:', permissions);
+            
             setAvailablePermissions(permissions);
             
             const permissionsMap = {};
             permissions.forEach(perm => {
                 permissionsMap[perm.code] = perm.granted;
             });
+            
+            console.log('Mapa de permisos:', permissionsMap);
+            
             setPermissionsForm(permissionsMap);
             
             const initialCollapseState = Object.keys(PERMISSIONS_STRUCTURE).reduce((acc, moduleId) => {
@@ -273,6 +287,11 @@ export default function RolesGestionar() {
             setCollapsedModules(initialCollapseState);
         } catch (error) {
             console.error('Error al cargar permisos:', error);
+            alert('Error al cargar permisos: ' + error.message);
+            setPermissionsForm({});
+            setAvailablePermissions([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -283,15 +302,24 @@ export default function RolesGestionar() {
         }
 
         try {
+            setLoading(true);
+            
             const permissions = availablePermissions.map(perm => ({
                 permission_id: perm.permission_id,
                 granted: permissionsForm[perm.code] || false
             }));
 
-            await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
+            console.log('Permisos a guardar:', permissions);
+            console.log('Estado del formulario:', permissionsForm);
+
+            const result = await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
+            console.log('Resultado del guardado:', result);
             handleCloseModal();
         } catch (error) {
             console.error('Error al guardar permisos:', error);
+            alert('Error al guardar permisos: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -341,15 +369,19 @@ export default function RolesGestionar() {
         if (!sessionData?.parish?.id) return;
 
         try {
+            setLoading(true);
             if (modalType === 'add') {
                 await roleService.createRole(sessionData.parish.id, formData.nombre, formData.descripcion);
             } else if (modalType === 'edit' && currentRol) {
                 await roleService.updateRole(sessionData.parish.id, currentRol.ID, formData.nombre, formData.descripcion);
             }
             handleCloseModal();
-            loadRoles();
+            await loadRoles();
         } catch (error) {
             console.error('Error al guardar rol:', error);
+            alert('Error al guardar rol: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -357,11 +389,15 @@ export default function RolesGestionar() {
         if (!currentRol || !sessionData?.parish?.id) return;
 
         try {
+            setLoading(true);
             await roleService.deleteRole(sessionData.parish.id, currentRol.ID);
             handleCloseModal();
-            loadRoles();
+            await loadRoles();
         } catch (error) {
             console.error('Error al eliminar rol:', error);
+            alert('Error al eliminar rol: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -369,19 +405,18 @@ export default function RolesGestionar() {
         if (!sessionData?.parish?.id) return;
 
         try {
+            setLoading(true);
             await roleService.updateRoleStatus(sessionData.parish.id, rolId, !currentStatus);
-            loadRoles();
+            await loadRoles();
         } catch (error) {
             console.error('Error al cambiar estado del rol:', error);
+            alert('Error al cambiar estado: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // --------------------- FILTRO ---------------------
-    const filteredRoles = roles.filter(rol =>
-        Object.values(rol).some(value =>
-            String(value).toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+
 
     // --------------------- MODAL: CONTENIDO DE PERMISOS ---------------------
     const getPermissionsModalContent = () => {
