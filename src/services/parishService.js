@@ -112,3 +112,41 @@ export const deleteParish = async (id) => {
 
   return await handleResponse(response);
 };
+
+export const getParishAccount = async () => {
+  const response = await fetch(`${API_URL}/api/parish/account`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await handleResponse(response);
+};
+
+export const updateParishAccountInfo = async (data) => {
+  const response = await fetch(`${API_URL}/api/parish/account/info`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return await handleResponse(response);
+};
+
+export const updateParishAccountCredentials = async (data) => {
+  const response = await fetch(`${API_URL}/api/parish/account/credentials`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return await handleResponse(response);
+};

@@ -299,7 +299,7 @@ export default function CuentasGestionar() {
           <DynamicTable
             columns={columns}
             data={workers}
-            gridColumnsLayout="90px 350px 380px 1fr 140px 220px"
+            gridColumnsLayout="70px 350px 380px 1fr 140px 220px"
             columnLeftAlignIndex={[2, 3, 4]}
           />
         </div>
