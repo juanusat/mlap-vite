@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
@@ -6,107 +6,175 @@ import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import InputColorPicker from '../components/inputColorPicker';
+import * as parishService from '../services/parishService';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {
-      React.useEffect(() => {
-    document.title = "MLAP | Gestionar cuenta parroquia";
-  }, []);
+    useEffect(() => {
+        document.title = "MLAP | Gestionar cuenta parroquia";
+        loadAccountData();
+    }, []);
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const [userInfo, setUserInfo] = useState({
-        nombres: "Parroquia Nuestra Señora de la Consolación",
-        direccion: "Algarrobos 222, Chiclayo 14008",
-        coordenadas: "-6.781771909288489, -79.84091136201245",
-        celular: "999888777",
-        colorPrimario: "#DC2626", 
-        colorSecundario: "#2563EB", 
-        fotoPerfil: "iglesia.jpg", 
-        fotoPortada: "iglesia_portada.jpg", 
-        usuario: "conso",
-        correo: "consolacion@parroquia.com",
-        contraseña: "password123"
+        nombres: "",
+        direccion: "",
+        coordenadas: "",
+        celular: "",
+        colorPrimario: "#b1b1b1", 
+        colorSecundario: "#424242", 
+        fotoPerfil: "", 
+        fotoPortada: "", 
+        usuario: "",
+        correo: "",
+        contraseña: ""
     });
 
-    // Estados para los datos de las fotos (ahora guardan la URL de la preview y el archivo)
     const [fotoPerfilData, setFotoPerfilData] = useState(null);
     const [fotoPortadaData, setFotoPortadaData] = useState(null);
 
-    // Estado para el modo de edición de cada sección
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingAccount, setIsEditingAccount] = useState(false);
 
-    // Estado temporal para guardar los datos antes de confirmar la edición
     const [tempUserInfo, setTempUserInfo] = useState({});
 
-    // Estado para la confirmación de la contraseña y el mensaje de error
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const [showPassword, setShowPassword] = useState(false); 
+    const [showPassword, setShowPassword] = useState(false);
 
-    // ----- Handlers para la Información Personal -----
+    const loadAccountData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await parishService.getParishAccount();
+            const { info, credentials } = response.data;
+            
+            setUserInfo({
+                nombres: info.name || "",
+                direccion: info.address || "",
+                coordenadas: info.coordinates || "",
+                celular: info.phone || "",
+                colorPrimario: info.primary_color || "#b1b1b1",
+                colorSecundario: info.secondary_color || "#424242",
+                fotoPerfil: info.profile_photo || "",
+                fotoPortada: info.cover_photo || "",
+                usuario: credentials.username || "",
+                correo: credentials.email || "",
+                contraseña: ""
+            });
+        } catch (err) {
+            setError(err.message || 'Error al cargar los datos de la cuenta');
+            console.error('Error al cargar cuenta:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleEditPersonal = () => {
         setIsEditingPersonal(true);
         setTempUserInfo(userInfo);
-        // Limpiar los datos de fotos al empezar a editar
         setFotoPerfilData(null);
         setFotoPortadaData(null);
     };
 
-    const handleSavePersonal = () => {
-        // Lógica de guardado...
-        setIsEditingPersonal(false);
-        // Actualizar userInfo con los datos de las fotos si están disponibles
-        const updatedUserInfo = { ...tempUserInfo };
-        // Si hay datos de la nueva foto, actualizamos el nombre del archivo
-        if (fotoPerfilData) {
-            updatedUserInfo.fotoPerfil = fotoPerfilData.name;
+    const handleSavePersonal = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const updateData = {
+                name: tempUserInfo.nombres,
+                address: tempUserInfo.direccion,
+                coordinates: tempUserInfo.coordenadas,
+                phone: tempUserInfo.celular,
+                primary_color: tempUserInfo.colorPrimario,
+                secondary_color: tempUserInfo.colorSecundario
+            };
+
+            if (fotoPerfilData && fotoPerfilData.name) {
+                updateData.profile_photo = fotoPerfilData.name;
+            }
+            if (fotoPortadaData && fotoPortadaData.name) {
+                updateData.cover_photo = fotoPortadaData.name;
+            }
+
+            await parishService.updateParishAccountInfo(updateData);
+            
+            setIsEditingPersonal(false);
+            await loadAccountData();
+            
+        } catch (err) {
+            setError(err.message || 'Error al actualizar la información');
+            console.error('Error al guardar información personal:', err);
+        } finally {
+            setLoading(false);
         }
-        if (fotoPortadaData) {
-            updatedUserInfo.fotoPortada = fotoPortadaData.name;
-        }
-        setUserInfo(updatedUserInfo);
-        console.log("Datos personales guardados:", updatedUserInfo);
-        // Aquí podrías enviar los archivos (fotoPerfilData.file, fotoPortadaData.file)
-        // a una API para su subida al servidor
-        console.log("Archivo foto perfil:", fotoPerfilData?.file);
-        console.log("Archivo foto portada:", fotoPortadaData?.file);
-        console.log("Color primario:", updatedUserInfo.colorPrimario);
-        console.log("Color secundario:", updatedUserInfo.colorSecundario);
     };
 
     const handleCancelPersonal = () => {
         setIsEditingPersonal(false);
-        // Limpiar los datos de fotos al cancelar
         setFotoPerfilData(null);
         setFotoPortadaData(null);
     };
 
-    // ----- Handlers para los Datos de la Cuenta -----
     const handleEditAccount = () => {
         setIsEditingAccount(true);
         setTempUserInfo(userInfo);
-        // Limpiar estados de error y confirmación al entrar en modo de edición
         setConfirmPassword("");
+        setCurrentPassword("");
         setPasswordError("");
     };
 
-    const handleSaveAccount = () => {
-        // Verificar si las contraseñas coinciden solo si se está editando la contraseña
+    const handleSaveAccount = async () => {
         if (tempUserInfo.contraseña && tempUserInfo.contraseña !== confirmPassword) {
             setPasswordError("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
-            return; // Detener la ejecución de la función si hay un error
+            return;
         }
 
-        setIsEditingAccount(false);
-        setUserInfo(tempUserInfo);
-        setPasswordError(""); // Limpiar el mensaje de error al guardar con éxito
-        console.log("Datos de la cuenta guardados:", tempUserInfo);
+        if (!currentPassword) {
+            setPasswordError("Debes ingresar tu contraseña actual para realizar cambios.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError(null);
+
+            const updateData = {
+                username: tempUserInfo.usuario,
+                email: tempUserInfo.correo,
+                current_password: currentPassword
+            };
+
+            if (tempUserInfo.contraseña) {
+                updateData.new_password = tempUserInfo.contraseña;
+            }
+
+            await parishService.updateParishAccountCredentials(updateData);
+
+            setIsEditingAccount(false);
+            setPasswordError("");
+            setCurrentPassword("");
+            setConfirmPassword("");
+            await loadAccountData();
+
+        } catch (err) {
+            setPasswordError(err.message || 'Error al actualizar las credenciales');
+            console.error('Error al guardar credenciales:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancelAccount = () => {
         setIsEditingAccount(false);
-        setPasswordError(""); // Limpiar el mensaje de error al cancelar
+        setPasswordError("");
+        setCurrentPassword("");
+        setConfirmPassword("");
     };
 
     // Handler para cambios en los inputs
@@ -274,10 +342,18 @@ const GestionCuenta = () => {
             >
                 {isEditingAccount ? (
                     <>
+                        <TextInput 
+                            label="Contraseña actual" 
+                            placeholder='Contraseña actual (requerida)' 
+                            onChange={(e) => setCurrentPassword(e.target.value)} 
+                            value={currentPassword} 
+                            name="contraseñaActual" 
+                            type='password' 
+                        />
                         <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
                         <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
-                        <TextInput label="Nueva contraseña" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
-                        <TextInput label="Confirmar contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
+                        <TextInput label="Nueva contraseña (opcional)" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
+                        <TextInput label="Confirmar nueva contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
                         {passwordError && <p className="error-message">{passwordError}</p>}
                     </>
                 ) : (
@@ -294,13 +370,16 @@ const GestionCuenta = () => {
                             <span className="info-label">Contraseña:</span>
                             <div className="password-display">
                                 <span className="info-value">
-                                    {showPassword ? userInfo.contraseña : '********'}
+                                    ********
                                 </span>
                             </div>
                         </div>
                     </>
                 )}
             </ExpandableContainer>
+
+            {loading && <div className="loading-message">Cargando...</div>}
+            {error && <div className="error-message">{error}</div>}
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -6,30 +6,37 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import InputFotoPerfil from '../components/inputFotoPerfil';
+import * as chapelService from '../services/chapelService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Parroquia-Gestionar-Capilla.css';
 
-const initialChapelsData = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  parish_id: 1,
-  name: `Capilla ${i + 1}`,
-  address: `Dirección de la Capilla ${i + 1}`,
-  phone: i+""+i+i+""+i+i+""+i+i+""+i+""+i,
-  profile_photo: "",
-  cover_photo: "",
-  active: (i + 1) % 2 === 0,
-}));
-
 export default function GestionCapillas() {
-    React.useEffect(() => {
+  useEffect(() => {
     document.title = "MLAP | Gestionar capillas";
+    loadChapels();
   }, []);
   
-  const [chapels, setChapels] = useState(initialChapelsData);
+  const [chapels, setChapels] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [currentChapel, setCurrentChapel] = useState(null);
   const [modalType, setModalType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const loadChapels = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await chapelService.searchChapels(1, 100, '');
+      setChapels(response.data);
+    } catch (err) {
+      setError(err.message || 'Error al cargar las capillas');
+      console.error('Error al cargar capillas:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredChapels = chapels.filter((chapel) =>
     Object.values(chapel).some((value) =>
@@ -37,14 +44,18 @@ export default function GestionCapillas() {
     )
   );
 
-  const handleToggle = (chapelId) => {
-    setChapels(prevChapels =>
-      prevChapels.map(chapel =>
-        chapel.id === chapelId
-          ? { ...chapel, active: !chapel.active }
-          : chapel
-      )
-    );
+  const handleToggle = async (chapelId, currentStatus) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await chapelService.updateChapelStatus(chapelId, !currentStatus);
+      await loadChapels();
+    } catch (err) {
+      setError(err.message || 'Error al cambiar el estado');
+      console.error('Error al cambiar estado:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openModal = (type, chapel = null) => {
@@ -59,25 +70,42 @@ export default function GestionCapillas() {
     setModalType(null);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (currentChapel) {
-      setChapels(prevChapels => prevChapels.filter(chapel => chapel.id !== currentChapel.id));
-      handleCloseModal();
+      try {
+        setLoading(true);
+        setError(null);
+        await chapelService.deleteChapel(currentChapel.id);
+        await loadChapels();
+        handleCloseModal();
+      } catch (err) {
+        setError(err.message || 'Error al eliminar la capilla');
+        console.error('Error al eliminar:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleSave = (chapelData) => {
-    if (modalType === 'add') {
-      const newChapel = { ...chapelData, id: chapels.length + 1, parish_id: 1, active: true };
-      setChapels(prevChapels => [...prevChapels, newChapel]);
-    } else if (modalType === 'edit' && currentChapel) {
-      setChapels(prevChapels =>
-        prevChapels.map(chapel =>
-          chapel.id === currentChapel.id ? { ...chapel, ...chapelData } : chapel
-        )
-      );
+  const handleSave = async (chapelData) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (modalType === 'add') {
+        await chapelService.createChapel(chapelData);
+      } else if (modalType === 'edit' && currentChapel) {
+        await chapelService.updateChapel(currentChapel.id, chapelData);
+      }
+
+      await loadChapels();
+      handleCloseModal();
+    } catch (err) {
+      setError(err.message || 'Error al guardar la capilla');
+      console.error('Error al guardar:', err);
+    } finally {
+      setLoading(false);
     }
-    handleCloseModal();
   };
 
   const chapelColumns = [
@@ -90,7 +118,7 @@ export default function GestionCapillas() {
       accessor: (row) => (
         <ToggleSwitch
           isEnabled={row.active}
-          onToggle={() => handleToggle(row.id)}
+          onToggle={() => handleToggle(row.id, row.active)}
         />
       ),
     },
@@ -149,6 +177,8 @@ export default function GestionCapillas() {
   return (
     <div className="content-module only-this">
       <h2 className='title-screen'>Gestión de capillas</h2>
+      {error && <div className="error-message">{error}</div>}
+      {loading && <div className="loading-message">Cargando...</div>}
       <div className="app-container">
         <div className="search-add">
           <div className="center-container">
