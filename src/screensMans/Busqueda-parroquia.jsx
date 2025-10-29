@@ -319,15 +319,26 @@ export default function BuscarParroquia() {
         return;
       }
 
-      console.log('Parroquia seleccionada:', selectedParish);
-      console.log('Todas las ubicaciones:', allLocations);
-
-      // Filtrar solo las capillas que pertenecen a esta parroquia desde allLocations
-      const chapels = allLocations.filter(loc => 
-        loc.tipo === 'capilla' && loc.parroquiaPadreId === parishId
-      );
+      // Usar el endpoint selectParish SOLO para obtener las capillas
+      // pero usar selectedParish (de allLocations) para la parroquia principal
+      const response = await publicChurchService.selectParish(parishId);
       
-      console.log('Capillas filtradas para parroquia ID', parishId, ':', chapels);
+      let chapels = [];
+      if (response.data && response.data.chapels) {
+        chapels = response.data.chapels.map(ch => ({
+          id: ch.id,
+          nombre: ch.name,
+          direccion: ch.address,
+          tipo: 'capilla',
+          parroquiaId: parishId,
+          coordinates: ch.coordinates,
+          latitud: parseCoordinates(ch.coordinates)[0],
+          longitud: parseCoordinates(ch.coordinates)[1]
+        }));
+      }
+      
+      console.log('Parroquia correcta:', selectedParish);
+      console.log('Capillas obtenidas del API:', chapels);
       
       setSelectedParroquiaForGrid(selectedParish);
       setParishChapels(chapels);
