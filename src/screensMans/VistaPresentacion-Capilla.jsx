@@ -46,6 +46,32 @@ export default function VistaPresentacion() {
         }
     }, [chapelId]);
 
+    useEffect(() => {
+        if (profileData && profileData.primary_color && profileData.secondary_color) {
+            let styleElement = document.getElementById('parish-colors-style');
+            
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = 'parish-colors-style';
+                document.head.appendChild(styleElement);
+            }
+            
+            styleElement.textContent = `
+                :root {
+                    --parent-parish-color-primary: ${profileData.primary_color};
+                    --parent-parish-color-secondary: ${profileData.secondary_color};
+                }
+            `;
+        }
+
+        return () => {
+            const styleElement = document.getElementById('parish-colors-style');
+            if (styleElement) {
+                styleElement.remove();
+            }
+        };
+    }, [profileData]);
+
     if (loading) {
         return (
             <ScreenMan title="Capillas" options={options}>
@@ -94,7 +120,7 @@ export default function VistaPresentacion() {
                     }}
                 >
                     <div className="vp-header-overlay">
-                        <div>
+                        <div className="vp-chapel-profile-photo">
                             {profileData.profile_photo && (
                                 <img src={getImageUrl(profileData.profile_photo)} alt="Chapel Profile" />
                             )}

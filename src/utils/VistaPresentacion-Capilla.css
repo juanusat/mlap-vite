@@ -5,24 +5,48 @@
 /* Header con imagen de fondo */
 .vp-chapel-header {
     min-height: 30vh;
-    display: flex;
-    align-items: flex-end;
     overflow: hidden;
     position: relative;
 }
+.vp-chapel-profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 4px;
+    border-color: var(--parent-parish-color-primary);
+    overflow: hidden;
+    flex-shrink: 0;
+}
 .vp-header-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    height: 100%;
     width: 100%;
-    background: linear-gradient(180deg, rgba(17, 255, 0, 0.25) 0%, rgba(255, 0, 234, 0.55) 100%);
     padding: 1rem 1rem 1rem 2.5rem;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
     gap: 30px;
 }
+.vp-header-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.8;
+    background: linear-gradient(180deg, var(--parent-parish-color-primary) 0%, var(--parent-parish-color-secondary) 100%);
+    z-index: -1;
+}
 .vp-header-overlay img{
-    width: 110px;
-    height: 90px;
-    border-radius: 10%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .vp-chapel-title {
     color: var(--color-n-0);
