@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ScreenMan from "../components/ScreenMan";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getChapelProfile } from "../services/publicChurchService";
 import "../utils/VistaPresentacion-Capilla.css";
 import "../utils/Estilos-Generales-1.css";
@@ -21,10 +21,15 @@ const getImageUrl = (filename) => {
 
 export default function VistaPresentacion() {
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const chapelId = searchParams.get('id');
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const handleReserve = (eventVariantId) => {
+        navigate(`/man-reservas/reservar?eventId=${eventVariantId}`);
+    };
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -155,7 +160,12 @@ export default function VistaPresentacion() {
                                             <p className="event-details">{event.variant_description}</p>
                                         </div>
                                         <div className="vp-event-card-btn-row">
-                                            <button className="mlap-home-reserve-btn">Reservar</button>
+                                            <button 
+                                                className="mlap-home-reserve-btn"
+                                                onClick={() => handleReserve(event.event_variant_id)}
+                                            >
+                                                Reservar
+                                            </button>
                                         </div>
                                     </div>
                                 ))
