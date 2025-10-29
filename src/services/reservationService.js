@@ -73,3 +73,49 @@ export const getAvailableSlots = async (eventVariantId, startDate, endDate) => {
 
   return await handleResponse(response);
 };
+
+export const getPendingReservations = async (page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/client/reservations/pending/list`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const searchPendingReservations = async (searchEventName, page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/client/reservations/pending/search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      search_event_name: searchEventName,
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const cancelReservation = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/client/reservations/${reservationId}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+

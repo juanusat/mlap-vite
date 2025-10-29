@@ -125,7 +125,7 @@ export default function ReservasReservar() {
             
             alert(response.data.confirmation_message);
             
-            navigate('/dashboard');
+            navigate('/man-reservas/pendientes');
             
         } catch (err) {
             console.error('Error al crear reserva:', err);
