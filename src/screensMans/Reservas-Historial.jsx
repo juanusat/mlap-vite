@@ -4,93 +4,87 @@ import SearchBar from "../components/SearchBar";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import { 
+  getHistoryReservations, 
+  searchHistoryReservations,
+  getReservationDetails
+} from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
-
-const eventsOptions = [
-  { nombre: "Bautizo", descripcion: "Ceremonia para el sacramento del bautismo." },
-  { nombre: "Primera comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
-  { nombre: "Confirmación", descripcion: "Ceremonia para el sacramento de la confirmación." },
-  { nombre: "Matrimonio", descripcion: "Celebración del sacramento del matrimonio." },
-  { nombre: "Funeral", descripcion: "Misa en memoria de un difunto." },
-  { nombre: "Misa dominical", descripcion: "Misa habitual del domingo." },
-  { nombre: "Adoración Eucarística", descripcion: "Tiempo de oración y adoración al Santísimo Sacramento." },
-  { nombre: "Vigilia de Oración", descripcion: "Noche de oración antes de una festividad o evento importante." },
-  { nombre: "Retiro espiritual", descripcion: "Jornada de reflexión y crecimiento espiritual." },
-  { nombre: "Catequesis", descripcion: "Clases de formación religiosa." },
-  { nombre: "Confesión", descripcion: "Sacramento de la penitencia y la reconciliación." },
-  { nombre: "Unción de los Enfermos", descripcion: "Sacramento para aquellos que se enfrentan a una enfermedad o ancianidad." },
-  { nombre: "Rosario en comunidad", descripcion: "Oración del rosario en grupo." },
-  { nombre: "Via Crucis", descripcion: "Meditación sobre la pasión de Cristo." },
-  { nombre: "Reunión de grupo de oración", descripcion: "Encuentro semanal para orar juntos." }
-];
-
-const getRandomDate = () => {
-  const start = new Date(2024, 0, 1);
-  const end = new Date(2024, 11, 31);
-  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  return randomDate.toLocaleDateString();
-};
-
-const initialRequirementsData = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  nombre: `Requisito ${i + 1}`
-}));
-
-const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
-  const randomEvent = eventsOptions[Math.floor(Math.random() * eventsOptions.length)];
-  const randomAmount = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
-
-  let estado;
-  const randomStatus = Math.random();
-  if (randomStatus < 0.6) {
-    estado = "Finalizado";
-  } else if (randomStatus < 0.8) {
-    estado = "Rechazado";
-  } else {
-    estado = "Cancelado";
-  }
-
-  const requisitosCompletados = initialRequirementsData.map(req => ({
-    ...req,
-    // Todos los requisitos están completados si el estado es 'Finalizado'
-    completado: estado === "Finalizado" ? true : Math.random() > 0.5,
-  }));
-
-  return {
-    id: i + 1,
-    evento: randomEvent.nombre,
-    fecha: getRandomDate(),
-    estado: estado,
-    pagoCompletado: estado === "Finalizado" ? true : false,
-    requisitos: requisitosCompletados,
-    monto: randomAmount,
-  };
-});
 
 export default function ReservasHistorial() {
     React.useEffect(() => {
       document.title = "MLAP | Historial de reservas";
     }, []);
   
-  const [reservations, setReservations] = useState(initialReservationsData);
+  const [reservations, setReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentReservation, setCurrentReservation] = useState(null);
-  const [displayedReservations, setDisplayedReservations] = useState(initialReservationsData);
+  const [displayedReservations, setDisplayedReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const limit = 10;
+
+  // Cargar historial de reservas
   useEffect(() => {
-    const filteredData = reservations.filter((reservation) =>
-      Object.values(reservation).some((value) =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-    setDisplayedReservations(filteredData);
-  }, [reservations, searchTerm]);
+    loadReservations();
+  }, [currentPage]);
 
-  const handleOpenSidebar = (reservation) => {
-    setCurrentReservation(reservation);
-    setShowSidebar(true);
+  const loadReservations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      let response;
+      if (searchTerm.trim()) {
+        response = await searchHistoryReservations(searchTerm, currentPage, limit);
+      } else {
+        response = await getHistoryReservations(currentPage, limit);
+      }
+
+      setReservations(response.data);
+      setDisplayedReservations(response.data);
+      
+      if (response.meta) {
+        setTotalPages(response.meta.total_pages);
+        setTotalRecords(response.meta.total_records);
+      }
+    } catch (err) {
+      console.error('Error al cargar historial:', err);
+      setError(err.message || 'Error al cargar el historial de reservas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Buscar cuando cambia el término de búsqueda
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setCurrentPage(1);
+      loadReservations();
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
+  const handleOpenSidebar = async (reservation) => {
+    try {
+      setLoading(true);
+      const details = await getReservationDetails(reservation.id);
+      setCurrentReservation(details.data);
+      setShowSidebar(true);
+    } catch (err) {
+      console.error('Error al cargar detalles:', err);
+      alert(err.message || 'Error al cargar detalles de la reserva');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseSidebar = () => {
@@ -100,10 +94,30 @@ export default function ReservasHistorial() {
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
-    { key: 'evento', header: 'Evento', accessor: (row) => row.evento },
-    { key: 'fecha', header: 'Fecha', accessor: (row) => row.fecha },
-    { key: 'monto', header: 'Monto', accessor: (row) => `$ ${row.monto.toFixed(2)}` },
-    { key: 'estado', header: 'Estado', accessor: (row) => row.estado },
+    { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
+    { 
+      key: 'event_date', 
+      header: 'Fecha', 
+      accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
+    },
+    { 
+      key: 'paid_amount', 
+      header: 'Monto', 
+      accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
+    },
+    { 
+      key: 'status', 
+      header: 'Estado', 
+      accessor: (row) => {
+        const statusMap = {
+          'COMPLETED': 'Completado',
+          'FULFILLED': 'Finalizado',
+          'CANCELLED': 'Cancelado',
+          'REJECTED': 'Rechazado'
+        };
+        return statusMap[row.status] || row.status;
+      }
+    },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
@@ -122,17 +136,70 @@ export default function ReservasHistorial() {
       <div className="content-module only-this">
         <h2 className='title-screen'>Historial de Reservas</h2>
         <div className="app-container">
-          <div className="search-add">
-            <div className="center-container">
-              <SearchBar onSearchChange={setSearchTerm} />
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              Cargando historial...
             </div>
-          </div>
-          <DynamicTable
-            columns={reservationColumns}
-            data={displayedReservations}
-            gridColumnsLayout="90px 1fr 170px 100px 140px 220px"
-            columnLeftAlignIndex={[2]}
-          />
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
+              {error}
+            </div>
+          ) : (
+            <>
+              <div className="search-add">
+                <div className="center-container">
+                  <SearchBar 
+                    onSearchChange={setSearchTerm}
+                    placeholder="Buscar por nombre de evento..."
+                  />
+                </div>
+              </div>
+              
+              {displayedReservations.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <p>No hay reservas en el historial</p>
+                </div>
+              ) : (
+                <>
+                  <DynamicTable
+                    columns={reservationColumns}
+                    data={displayedReservations}
+                    gridColumnsLayout="90px 1fr 170px 100px 140px 220px"
+                    columnLeftAlignIndex={[2]}
+                  />
+                  
+                  {totalPages > 1 && (
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center',
+                      gap: '10px',
+                      marginTop: '20px',
+                      padding: '10px'
+                    }}>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        style={{ padding: '5px 15px' }}
+                      >
+                        Anterior
+                      </button>
+                      <span>
+                        Página {currentPage} de {totalPages} ({totalRecords} registros)
+                      </span>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        style={{ padding: '5px 15px' }}
+                      >
+                        Siguiente
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
       {showSidebar && currentReservation && (
@@ -141,25 +208,41 @@ export default function ReservasHistorial() {
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">
-            <p><strong>Evento:</strong> {currentReservation.evento}</p>
-            <p><strong>Fecha:</strong> {currentReservation.fecha}</p>
-            <p><strong>Monto:</strong> $ {currentReservation.monto.toFixed(2)}</p>
-            <p><strong>Estado:</strong> {currentReservation.estado}</p>
-            <p><strong>Pago:</strong> {currentReservation.pagoCompletado ? "Completado" : "Pendiente"}</p>
+            <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
+            <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
+            <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Estado:</strong> {
+              currentReservation.status === 'COMPLETED' ? 'Completado' :
+              currentReservation.status === 'FULFILLED' ? 'Finalizado' :
+              currentReservation.status === 'CANCELLED' ? 'Cancelado' :
+              currentReservation.status === 'REJECTED' ? 'Rechazado' :
+              currentReservation.status
+            }</p>
+            <p><strong>Pago:</strong> {currentReservation.payment_status}</p>
+            {currentReservation.chapel && (
+              <>
+                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
+                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
+              </>
+            )}
             <hr className="divider-sidebar" />
             <h3 className="sidebar-subtitle">Requisitos</h3>
-            {currentReservation.requisitos.map(req => (
-              <div key={req.id} className="sidebar-list-item requirement-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={req.completado}
-                    disabled
-                  />
-                  <span>{req.nombre}</span>
-                </label>
-              </div>
-            ))}
+            {currentReservation.requirements && currentReservation.requirements.length > 0 ? (
+              currentReservation.requirements.map((req, index) => (
+                <div key={index} className="sidebar-list-item requirement-item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={req.completed}
+                      disabled
+                    />
+                    <span>{req.name}</span>
+                  </label>
+                </div>
+              ))
+            ) : (
+              <p>No hay requisitos registrados</p>
+            )}
           </div>
         </MyPanelLateralConfig>
       )}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logoWhite from './../assets/logo-mlap-white.svg';
 import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-icons/md";
 import './MyHeaderAdm.css';
@@ -10,6 +11,7 @@ import useSession from '../hooks/useSession';
 const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
 export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
+  const navigate = useNavigate();
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
@@ -83,7 +85,13 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
               <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
             </button>
-            <img src={logoWhite} alt="MLAP Logo" style={{ height: 36 }} />
+            <button 
+              className="btn-nb logo-btn" 
+              onClick={() => navigate('/inicio')}
+              aria-label="Ir a inicio"
+            >
+              <img src={logoWhite} alt="MLAP Logo" style={{ height: 36 }} />
+            </button>
           </div>
           <div className="mlap-home-header-bar" style={{ color: '#fff' }}>
             <div className="parroquia-actual">

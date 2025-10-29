@@ -4,106 +4,76 @@ import SearchBar from "../components/SearchBar";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
-import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import { 
+  getPendingReservations, 
+  searchPendingReservations, 
+  cancelReservation 
+} from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
 
-const initialUsers = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 1,
-  nombre: `Usuario ${i + 1}`,
-}));
-
-const eventsOptions = [
-  { nombre: "Bautizo", descripcion: "Ceremonia para el sacramento del bautismo." },
-  { nombre: "Primera comunión", descripcion: "Recibimiento del sacramento de la Eucaristía por primera vez." },
-  { nombre: "Confirmación", descripcion: "Ceremonia para el sacramento de la confirmación." },
-  { nombre: "Matrimonio", descripcion: "Celebración del sacramento del matrimonio." },
-  { nombre: "Funeral", descripcion: "Misa en memoria de un difunto." },
-  { nombre: "Misa dominical", descripcion: "Misa habitual del domingo." },
-  { nombre: "Adoración Eucarística", descripcion: "Tiempo de oración y adoración al Santísimo Sacramento." },
-  { nombre: "Vigilia de Oración", descripcion: "Noche de oración antes de una festividad o evento importante." },
-  { nombre: "Retiro espiritual", descripcion: "Jornada de reflexión y crecimiento espiritual." },
-  { nombre: "Catequesis", descripcion: "Clases de formación religiosa." },
-  { nombre: "Confesión", descripcion: "Sacramento de la penitencia y la reconciliación." },
-  { nombre: "Unción de los Enfermos", descripcion: "Sacramento para aquellos que se enfrentan a una enfermedad o ancianidad." },
-  { nombre: "Rosario en comunidad", descripcion: "Oración del rosario en grupo." },
-  { nombre: "Via Crucis", descripcion: "Meditación sobre la pasión de Cristo." },
-  { nombre: "Reunión de grupo de oración", descripcion: "Encuentro semanal para orar juntos." }
-];
-
-const getRandomDate = () => {
-  const start = new Date(2025, 0, 1);
-  const end = new Date(2025, 11, 31);
-  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  return randomDate.toLocaleDateString();
-};
-
-const initialRequirementsData = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  nombre: `Requisito ${i + 1}`
-}));
-
-const initialReservationsData = Array.from({ length: 40 }, (_, i) => {
-  const randomUser = initialUsers[Math.floor(Math.random() * initialUsers.length)];
-  const randomEvent = eventsOptions[Math.floor(Math.random() * eventsOptions.length)];
-  const randomAmount = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
-  return {
-    id: i + 1,
-    evento: randomEvent.nombre,
-    fecha: getRandomDate(),
-    estado: 'Reservado',
-    pagoCompletado: false,
-    requisitos: initialRequirementsData.map(req => ({ ...req, completado: false })),
-    monto: randomAmount,
-  };
-});
-
 export default function ReservasPendientes() {
-    React.useEffect(() => {
-      document.title = "MLAP | Reservas pendientes";
-    }, []);
+  React.useEffect(() => {
+    document.title = "MLAP | Reservas pendientes";
+  }, []);
   
-  const [reservations, setReservations] = useState(initialReservationsData);
+  const [reservations, setReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [currentReservation, setCurrentReservation] = useState(null);
-  const [displayedReservations, setDisplayedReservations] = useState(initialReservationsData);
+  const [displayedReservations, setDisplayedReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const limit = 10;
 
   // Estados para el modal de confirmación
   const [showModal, setShowModal] = useState(false);
   const [reservationToDelete, setReservationToDelete] = useState(null);
 
+  // Cargar reservas pendientes
   useEffect(() => {
-    const filteredData = reservations.filter((reservation) =>
-      Object.values(reservation).some((value) =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-    setDisplayedReservations(filteredData);
-  }, [reservations, searchTerm]);
+    loadReservations();
+  }, [currentPage]);
 
-  const handleOpenSidebar = (reservation) => {
-    setCurrentReservation(reservation);
-    setShowSidebar(true);
+  const loadReservations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      let response;
+      if (searchTerm.trim()) {
+        response = await searchPendingReservations(searchTerm, currentPage, limit);
+      } else {
+        response = await getPendingReservations(currentPage, limit);
+      }
+
+      setReservations(response.data);
+      setDisplayedReservations(response.data);
+      
+      if (response.meta) {
+        setTotalPages(response.meta.total_pages);
+        setTotalRecords(response.meta.total_records);
+      }
+    } catch (err) {
+      console.error('Error al cargar reservas:', err);
+      setError(err.message || 'Error al cargar las reservas pendientes');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCloseSidebar = () => {
-    setShowSidebar(false);
-    setCurrentReservation(null);
-  };
+  // Buscar cuando cambia el término de búsqueda
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setCurrentPage(1); // Reset a la primera página al buscar
+      loadReservations();
+    }, 500);
 
-  const handleToggleRequirement = (reqId) => {
-    if (!currentReservation) return;
-    const updatedRequirements = currentReservation.requisitos.map(req =>
-      req.id === reqId ? { ...req, completado: !req.completado } : req
-    );
-    setCurrentReservation({ ...currentReservation, requisitos: updatedRequirements });
-  };
-
-  const handleTogglePayment = () => {
-    if (!currentReservation) return;
-    setCurrentReservation({ ...currentReservation, pagoCompletado: !currentReservation.pagoCompletado });
-  };
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   // Función para abrir el modal de confirmación
   const handleDeleteReservation = (reservation) => {
@@ -118,33 +88,56 @@ export default function ReservasPendientes() {
   };
 
   // Función que se ejecuta al confirmar la eliminación
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (reservationToDelete) {
-      const updatedReservations = reservations.filter(
-        (reservation) => reservation.id !== reservationToDelete.id
-      );
-      setReservations(updatedReservations);
-      handleCloseModal();
+      try {
+        await cancelReservation(reservationToDelete.id);
+        
+        // Recargar la lista de reservas
+        await loadReservations();
+        
+        handleCloseModal();
+        alert('La reserva ha sido cancelada exitosamente');
+      } catch (err) {
+        console.error('Error al cancelar reserva:', err);
+        alert(err.message || 'Error al cancelar la reserva');
+      }
     }
   };
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
-    { key: 'evento', header: 'Evento', accessor: (row) => row.evento },
-    { key: 'fecha', header: 'Fecha', accessor: (row) => row.fecha },
-    { key: 'monto', header: 'Monto', accessor: (row) => `$ ${row.monto.toFixed(2)}` },
-    { key: 'estado', header: 'Estado', accessor: (row) => row.estado },
+    { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
+    { 
+      key: 'event_date', 
+      header: 'Fecha', 
+      accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
+    },
+    { 
+      key: 'paid_amount', 
+      header: 'Monto Pagado', 
+      accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
+    },
+    { 
+      key: 'status', 
+      header: 'Estado', 
+      accessor: (row) => {
+        const statusMap = {
+          'RESERVED': 'Reservado',
+          'IN_PROGRESS': 'En progreso',
+          'CANCELLED': 'Cancelado'
+        };
+        return statusMap[row.status] || row.status;
+      }
+    },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction
             type="delete"
-            title="Eliminar"
+            title="Cancelar"
             onClick={() => handleDeleteReservation(row)}
           />
-          {row.estado === 'En progreso' && (
-            <MyButtonShortAction type="key" title="Ver Requisitos" onClick={() => handleOpenSidebar(row)} />
-          )}
         </MyGroupButtonsActions>
       )
     },
@@ -155,64 +148,83 @@ export default function ReservasPendientes() {
       <div className="content-module only-this">
         <h2 className='title-screen'>Reservas pendientes</h2>
         <div className="app-container">
-          <div className="search-add">
-            <div className="center-container">
-              <SearchBar onSearchChange={setSearchTerm} />
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              Cargando reservas...
             </div>
-          </div>
-          <DynamicTable
-            columns={reservationColumns}
-            data={displayedReservations}
-            gridColumnsLayout="90px auto 170px 100px 140px 220px"
-            columnLeftAlignIndex={[2, 3]}
-          />
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
+              {error}
+            </div>
+          ) : (
+            <>
+              <div className="search-add">
+                <div className="center-container">
+                  <SearchBar 
+                    onSearchChange={setSearchTerm}
+                    placeholder="Buscar por nombre de evento..."
+                  />
+                </div>
+              </div>
+              
+              {displayedReservations.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <p>No tienes reservas pendientes</p>
+                </div>
+              ) : (
+                <>
+                  <DynamicTable
+                    columns={reservationColumns}
+                    data={displayedReservations}
+                    gridColumnsLayout="90px auto 170px 140px 140px 220px"
+                    columnLeftAlignIndex={[2, 3]}
+                  />
+                  
+                  {totalPages > 1 && (
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center',
+                      gap: '10px',
+                      marginTop: '20px',
+                      padding: '10px'
+                    }}>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        style={{ padding: '5px 15px' }}
+                      >
+                        Anterior
+                      </button>
+                      <span>
+                        Página {currentPage} de {totalPages} ({totalRecords} registros)
+                      </span>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        style={{ padding: '5px 15px' }}
+                      >
+                        Siguiente
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
-      {showSidebar && currentReservation && (
-        <MyPanelLateralConfig>
-          <div className="panel-lateral-header">
-            <h2 className="sidebar-title">{`Detalles de la Reserva #${currentReservation.id}`}</h2>
-            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
-          </div>
-          <div className="sidebar-list">
-            <hr className="divider-sidebar" />
-            <h3 className="sidebar-subtitle">Requisitos</h3>
-            {currentReservation.requisitos.map(req => (
-              <div key={req.id} className="sidebar-list-item requirement-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={req.completado}
-                    onChange={() => handleToggleRequirement(req.id)}
-                  />
-                  <span>{req.nombre}</span>
-                </label>
-              </div>
-            ))}
-            <hr className="divider-sidebar" />
-            <h3 className="sidebar-subtitle">Estado de pago</h3>
-            <div className="sidebar-list-item requirement-item">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={currentReservation.pagoCompletado}
-                  onChange={handleTogglePayment}
-                />
-                <span>Pago Completado</span>
-              </label>
-            </div>
-          </div>
-        </MyPanelLateralConfig>
-      )}
 
       <Modal
         show={showModal}
         onClose={handleCloseModal}
-        title="Confirmar eliminación"
+        title="Confirmar cancelación"
         onAccept={confirmDelete}
         onCancel={handleCloseModal}
       >
-        <h4>¿Estás seguro que quieres cancelar tu reserva  para el evento de {reservationToDelete?.evento}?</h4>
+        <h4>
+          ¿Estás seguro que quieres cancelar tu reserva para el evento de {reservationToDelete?.event_name}?
+        </h4>
       </Modal>
     </>
   );

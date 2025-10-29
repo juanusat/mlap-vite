@@ -5,9 +5,9 @@ import MyButtonShortAction from '../components/MyButtonShortAction';
 import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
 import './Busqueda-parroquia.css';
+import * as publicChurchService from '../services/publicChurchService';
 
-// Datos simulados de parroquias con coordenadas y eventos
-const parroquiasData = [
+const parroquiasDataOLD = [
   {
     id: 1,
     nombre: "Santa María Catedral",
@@ -100,8 +100,7 @@ const parroquiasData = [
   }
 ];
 
-// Datos simulados de capillas asociadas a parroquias
-const capillasData = [
+const capillasDataOLD = [
   // Capillas de Santa María Catedral (id: 1)
   {
     id: 101,
@@ -263,14 +262,6 @@ const capillasData = [
   }
 ];
 
-
-const getAllLocations = () => {
-  return [...parroquiasData, ...capillasData];
-};
-
-const getCapillasByParroquia = (parroquiaId) => {
-  return capillasData.filter(capilla => capilla.parroquiaId === parroquiaId);
-};
 export default function BuscarParroquia() {
   const navigate = useNavigate();
   const mapRef = useRef(null);
@@ -280,10 +271,93 @@ export default function BuscarParroquia() {
   const [selectedByUser, setSelectedByUser] = useState(false);
   const [selectedParroquiaForGrid, setSelectedParroquiaForGrid] = useState(null); 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredLocations, setFilteredLocations] = useState(getAllLocations()); 
+  const [allLocations, setAllLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]); 
   const [searchParams] = useSearchParams();
   const [currentZoom, setCurrentZoom] = useState(13);
+  const [loading, setLoading] = useState(false);
+  const [locationDetails, setLocationDetails] = useState(null);
+  const [locationActs, setLocationActs] = useState([]);
+  const [parishChapels, setParishChapels] = useState([]);
 
+  const parseCoordinates = (coordString) => {
+    if (!coordString) return [0, 0];
+    const parts = coordString.split(',').map(s => parseFloat(s.trim()));
+    return parts.length === 2 ? parts : [0, 0];
+  };
+
+  const loadAllLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await publicChurchService.searchChurches('', 1, 1000);
+      const locations = response.data.map(loc => ({
+        id: loc.id,
+        nombre: loc.name,
+        direccion: loc.address,
+        tipo: loc.type.toLowerCase() === 'parroquia' ? 'parroquia' : 'capilla',
+        coordinates: loc.coordinates,
+        latitud: parseCoordinates(loc.coordinates)[0],
+        longitud: parseCoordinates(loc.coordinates)[1]
+      }));
+      setAllLocations(locations);
+      setFilteredLocations(locations);
+    } catch (error) {
+      console.error('Error loading locations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadParishWithChapels = async (parishId) => {
+    try {
+      const response = await publicChurchService.selectParish(parishId);
+      if (response.data.selected_parish) {
+        const parish = {
+          id: response.data.selected_parish.id,
+          nombre: response.data.selected_parish.name,
+          direccion: response.data.selected_parish.address,
+          tipo: 'parroquia',
+          coordinates: response.data.selected_parish.coordinates,
+          latitud: parseCoordinates(response.data.selected_parish.coordinates)[0],
+          longitud: parseCoordinates(response.data.selected_parish.coordinates)[1]
+        };
+        
+        const chapels = response.data.chapels.map(ch => ({
+          id: ch.id,
+          nombre: ch.name,
+          direccion: ch.address,
+          tipo: 'capilla',
+          parroquiaId: parishId,
+          coordinates: ch.coordinates,
+          latitud: parseCoordinates(ch.coordinates)[0],
+          longitud: parseCoordinates(ch.coordinates)[1]
+        }));
+        
+        setSelectedParroquiaForGrid(parish);
+        setParishChapels(chapels);
+      }
+    } catch (error) {
+      console.error('Error loading parish chapels:', error);
+    }
+  };
+
+  const loadLocationDetails = async (locationId) => {
+    try {
+      const [infoResponse, actsResponse] = await Promise.all([
+        publicChurchService.getChapelInfo(locationId),
+        publicChurchService.getChapelActs(locationId)
+      ]);
+      
+      setLocationDetails(infoResponse.data);
+      setLocationActs(actsResponse.data);
+    } catch (error) {
+      console.error('Error loading location details:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadAllLocations();
+  }, []);
  
   useEffect(() => {
     const urlSearchTerm = searchParams.get('q');
@@ -291,7 +365,6 @@ export default function BuscarParroquia() {
       setSearchTerm(urlSearchTerm);
     }
   }, [searchParams]);
-
 
   useEffect(() => {
     const loadLeaflet = async () => {
@@ -311,61 +384,57 @@ export default function BuscarParroquia() {
     return () => {
       if (map) {
         map.remove();
+        setMap(null);
+      }
+      if (mapRef.current && mapRef.current._leaflet_id) {
+        delete mapRef.current._leaflet_id;
       }
     };
   }, []);
 
+  useEffect(() => {
+    const performSearch = async () => {
+      try {
+        setLoading(true);
+        const response = await publicChurchService.searchChurches(searchTerm, 1, 1000);
+        const locations = response.data.map(loc => ({
+          id: loc.id,
+          nombre: loc.name,
+          direccion: loc.address,
+          tipo: loc.type.toLowerCase() === 'parroquia' ? 'parroquia' : 'capilla',
+          coordinates: loc.coordinates,
+          latitud: parseCoordinates(loc.coordinates)[0],
+          longitud: parseCoordinates(loc.coordinates)[1]
+        }));
+        setFilteredLocations(locations);
+      } catch (error) {
+        console.error('Error searching:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        performSearch();
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
 
   useEffect(() => {
-    const allLocations = getAllLocations();
-    const filtered = allLocations.filter(location =>
-      location.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      location.direccion.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredLocations(filtered);
-    
-    // Si no es una selección explícita del usuario, permitir selección automática basada en búsqueda
-    if (!selectedByUser && searchTerm && !selectedParroquiaForGrid) {
-      const capillaEncontrada = filtered.find(l => l.tipo === 'capilla');
-      if (capillaEncontrada) {
-        const parroquiaMadre = parroquiasData.find(p => p.id === capillaEncontrada.parroquiaId);
-        if (parroquiaMadre) {
-          setSelectedParroquiaForGrid(parroquiaMadre);
-        }
-      }
+    if (map && filteredLocations.length > 0) {
+      updateMapMarkers(filteredLocations);
     }
-
-    // Si la ubicación seleccionada no está en los resultados filtrados, deseleccionarla
-    // PERO respetar si la selección fue hecha por el usuario (click)
-    if (selectedLocation && !filtered.find(l => l.id === selectedLocation.id && l.tipo === selectedLocation.tipo)) {
-      if (!selectedByUser) {
-        setSelectedLocation(null);
-      }
-      // si fue seleccionada por usuario, no hacemos nada (no deseleccionar)
-    }
-
-    // Si la parroquia seleccionada para el grid no está en las parroquias filtradas, deseleccionarla
-    if (selectedParroquiaForGrid) {
-      const filteredParroquias = filtered.filter(l => l.tipo === 'parroquia');
-      const capillasDeParroquia = getCapillasByParroquia(selectedParroquiaForGrid.id);
-      const hayCapillasEnFiltrado = capillasDeParroquia.some(capilla =>
-        filtered.find(f => f.id === capilla.id && f.tipo === 'capilla')
-      );
-
-      // Solo deseleccionar si ni la parroquia ni sus capillas están en el filtrado
-      if (!filteredParroquias.find(p => p.id === selectedParroquiaForGrid.id) && !hayCapillasEnFiltrado) {
-        setSelectedParroquiaForGrid(null);
-      }
-    }
-
-    // Actualizar marcadores en el mapa
-    if (map) {
-      updateMapMarkers(filtered);
-    }
-  }, [searchTerm, map, selectedLocation, selectedByUser]);
+  }, [filteredLocations, map, currentZoom]);
 
   const initMap = () => {
     if (!window.L || !mapRef.current) return;
+    
+    if (mapRef.current._leaflet_id) {
+      return;
+    }
 
     const leafletMap = window.L.map(mapRef.current).setView([-6.77, -79.84], 13);
 
@@ -373,37 +442,29 @@ export default function BuscarParroquia() {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(leafletMap);
 
-    // Escuchar cambios de zoom
     leafletMap.on('zoomend', () => {
       const zoom = leafletMap.getZoom();
       setCurrentZoom(zoom);
-      updateMapMarkers(filteredLocations, leafletMap, zoom);
     });
 
     setMap(leafletMap);
-    updateMapMarkers(getAllLocations(), leafletMap, 13);
   };
 
   const updateMapMarkers = (locations, leafletMap = map, zoom = currentZoom) => {
     if (!leafletMap || !window.L) return;
 
-    // Limpiar marcadores existentes
     Object.values(markers).forEach(marker => {
       leafletMap.removeLayer(marker);
     });
 
     const newMarkers = {};
-
-    // Mostrar solo parroquias en zoom bajo, ambas en zoom alto
     const locationsToShow = zoom >= 15 ? locations : locations.filter(l => l.tipo === 'parroquia');
 
     locationsToShow.forEach(location => {
-      // Crear iconos diferentes para parroquias y capillas
       const isParroquia = location.tipo === 'parroquia';
       const iconColor = isParroquia ? 'red' : 'blue';
       const iconSize = isParroquia ? [35, 35] : [32, 32];
 
-      // Crear marcador personalizado
       const customIcon = window.L.divIcon({
         className: `custom-marker-${location.tipo}`,
         html: `<div style="
@@ -439,10 +500,11 @@ export default function BuscarParroquia() {
           Haz clic para ver más.
         `);
 
-      marker.on('click', () => {
+      marker.on('click', async () => {
         setSelectedLocation(location);
         setSelectedByUser(true);
         leafletMap.flyTo([location.latitud, location.longitud], 15);
+        await loadLocationDetails(location.id);
       });
 
       newMarkers[`${location.tipo}-${location.id}`] = marker;
@@ -452,38 +514,41 @@ export default function BuscarParroquia() {
   };
 
   const handleVerPerfil = () => {
-    navigate('/capilla');
+    if (selectedLocation) {
+      navigate(`/capilla?id=${selectedLocation.id}`);
+    }
   };
 
-  const handleParroquiaSelect = (e) => {
-    const parroquiaId = parseInt(e.target.value);
-    if (parroquiaId) {
-      const parroquia = parroquiasData.find(p => p.id === parroquiaId);
-      setSelectedParroquiaForGrid(parroquia);
-      // selección programática: limpiar selección manual previa
-      setSelectedLocation(null);
-      setSelectedByUser(false);
-      if (map && parroquia) {
-        map.flyTo([parroquia.latitud, parroquia.longitud], 15);
+  const handleParroquiaSelect = async (e) => {
+    const parishId = parseInt(e.target.value);
+    if (parishId) {
+      const parish = filteredLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
+      if (parish) {
+        await loadParishWithChapels(parishId);
+        setSelectedLocation(null);
+        setSelectedByUser(false);
+        if (map) {
+          map.flyTo([parish.latitud, parish.longitud], 15);
+        }
       }
     } else {
       setSelectedParroquiaForGrid(null);
+      setParishChapels([]);
       setSelectedLocation(null);
       setSelectedByUser(false);
     }
   };
 
-  const handleLocationSelect = (location) => {
+  const handleLocationSelect = async (location) => {
     setSelectedLocation(location);
     setSelectedByUser(true);
-    setSelectedParroquiaForGrid(null); // Limpiar selección del grid
+    setSelectedParroquiaForGrid(null);
+    await loadLocationDetails(location.id);
     if (map) {
       map.flyTo([location.latitud, location.longitud], 15);
     }
   };
 
-  //  Modificamos la SearchBar para que reciba y muestre el término de búsqueda
-  //   y para que actualice el searchTerm del estado cuando el usuario escribe.
   return (
     <ScreenMan>
       <div className="content-module only-this">
@@ -493,7 +558,7 @@ export default function BuscarParroquia() {
             <div className="center-container">
               <MyBarSearchGen
                 mode="local"
-                value={searchTerm} //  Pasamos el valor del estado al componente
+                value={searchTerm}
                 onSearchChange={setSearchTerm}
                 placeholder="Buscar parroquias y capillas..."
               />
@@ -513,7 +578,6 @@ export default function BuscarParroquia() {
 
             <div className="parish-info-panel">
               {!selectedLocation ? (
-                // Panel por defecto con combo box
                 <div className="parish-selector-panel">
                   <div className="parish-info-header">
                     <h3>Seleccionar Parroquia</h3>
@@ -527,11 +591,7 @@ export default function BuscarParroquia() {
                         value={selectedParroquiaForGrid ? selectedParroquiaForGrid.id : ""}
                       >
                         <option value="">-- Selecciona una parroquia --</option>
-                        {parroquiasData.filter(parroquia => {
-                          // Solo mostrar parroquias que coincidan con la búsqueda
-                          return parroquia.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            parroquia.direccion.toLowerCase().includes(searchTerm.toLowerCase());
-                        }).map(parroquia => (
+                        {filteredLocations.filter(l => l.tipo === 'parroquia').map(parroquia => (
                           <option key={parroquia.id} value={parroquia.id}>
                             {parroquia.nombre}
                           </option>
@@ -542,6 +602,7 @@ export default function BuscarParroquia() {
                           className="clear-selection-btn"
                           onClick={() => {
                             setSelectedParroquiaForGrid(null);
+                            setParishChapels([]);
                             setSearchTerm('');
                           }}
                         >
@@ -549,7 +610,6 @@ export default function BuscarParroquia() {
                         </button>
                       )}
                     </div>
-
 
                     <div className="instructions">
                       <p>
@@ -563,17 +623,17 @@ export default function BuscarParroquia() {
                       <div className="parishes-list">
                         <h4>
                           {selectedParroquiaForGrid
-                            ? `${selectedParroquiaForGrid.nombre} y todas sus capillas (independiente de la búsqueda):`
+                            ? `${selectedParroquiaForGrid.nombre} y todas sus capillas:`
                             : searchTerm
                               ? `Resultados encontrados (${filteredLocations.filter(location => currentZoom >= 15 || location.tipo === 'parroquia').length}):`
                               : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
                           }
                         </h4>
                         <div className="parishes-grid">
-                          {selectedParroquiaForGrid ? (
-                            // Mostrar parroquia seleccionada y sus capillas (solo si coinciden con la búsqueda)
+                          {loading ? (
+                            <p>Cargando...</p>
+                          ) : selectedParroquiaForGrid ? (
                             <>
-                              {/* Mostrar la parroquia solo si coincide con el filtro de búsqueda */}
                               {(!searchTerm ||
                                 selectedParroquiaForGrid.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                 selectedParroquiaForGrid.direccion.toLowerCase().includes(searchTerm.toLowerCase())
@@ -588,23 +648,19 @@ export default function BuscarParroquia() {
                                     <span className="location-type">Parroquia</span>
                                   </div>
                                 )}
-                              {getCapillasByParroquia(selectedParroquiaForGrid.id)
-                                // Mostrar todas las capillas de la parroquia seleccionada
-                                // para que el usuario pueda hacer click aunque no coincidan con la búsqueda
-                                .map(capilla => (
-                                  <div
-                                    key={`capilla-${capilla.id}`}
-                                    className="parish-card capilla-card"
-                                    onClick={() => handleLocationSelect(capilla)}
-                                  >
-                                    <h5>{capilla.nombre}</h5>
-                                    <p>{capilla.direccion}</p>
-                                    <span className="location-type">Capilla</span>
-                                  </div>
-                                ))}
+                              {parishChapels.map(capilla => (
+                                <div
+                                  key={`capilla-${capilla.id}`}
+                                  className="parish-card capilla-card"
+                                  onClick={() => handleLocationSelect(capilla)}
+                                >
+                                  <h5>{capilla.nombre}</h5>
+                                  <p>{capilla.direccion}</p>
+                                  <span className="location-type">Capilla</span>
+                                </div>
+                              ))}
                             </>
                           ) : (
-                            // Mostrar todas las ubicaciones filtradas
                             filteredLocations
                               .filter(location => currentZoom >= 15 || location.tipo === 'parroquia')
                               .map(location => (
@@ -627,7 +683,6 @@ export default function BuscarParroquia() {
                   </div>
                 </div>
               ) : (
-                // Panel de información de ubicación seleccionada
                 <div className="parish-details-panel">
                   <div className="parish-info-header">
                     <h3>{selectedLocation.nombre}</h3>
@@ -637,6 +692,8 @@ export default function BuscarParroquia() {
                         setSelectedLocation(null);
                         setSelectedParroquiaForGrid(null);
                         setSelectedByUser(false);
+                        setLocationDetails(null);
+                        setLocationActs([]);
                       }}
                     >
                       ×
@@ -644,36 +701,53 @@ export default function BuscarParroquia() {
                   </div>
 
                   <div className="parish-info-content">
-                    <div className="parish-basic-info">
-                      <p><strong>Tipo:</strong> {selectedLocation.tipo === 'parroquia' ? 'Parroquia' : 'Capilla'}</p>
-                      <p><strong>Dirección:</strong> {selectedLocation.direccion}</p>
-                      <p><strong>Teléfono:</strong> {selectedLocation.telefono}</p>
-                      <p><strong>{selectedLocation.tipo === 'parroquia' ? 'Párroco' : 'Encargado'}:</strong> {selectedLocation.parroco || selectedLocation.encargado}</p>
-                      <p><strong>Descripción:</strong> {selectedLocation.descripcion}</p>
-                      {selectedLocation.tipo === 'capilla' && (
-                        <p><strong>Parroquia:</strong> {parroquiasData.find(p => p.id === selectedLocation.parroquiaId)?.nombre}</p>
-                      )}
-                    </div>
+                    {locationDetails ? (
+                      <>
+                        <div className="parish-basic-info">
+                          <p><strong>Tipo:</strong> {locationDetails.type}</p>
+                          <p><strong>Dirección:</strong> {locationDetails.address}</p>
+                          <p><strong>Teléfono:</strong> {locationDetails.phone}</p>
+                          {locationDetails.parroco && (
+                            <p><strong>Párroco:</strong> {locationDetails.parroco}</p>
+                          )}
+                          {locationDetails.encargado && (
+                            <p><strong>Encargado:</strong> {locationDetails.encargado}</p>
+                          )}
+                          {locationDetails.description && (
+                            <p><strong>Descripción:</strong> {locationDetails.description}</p>
+                          )}
+                          {locationDetails.parroquia_padre_name && (
+                            <p><strong>Parroquia:</strong> {locationDetails.parroquia_padre_name}</p>
+                          )}
+                        </div>
 
-                    <div className="parish-events">
-                      <h4>Actos Litúrgicos Disponibles</h4>
-                      <div className="events-list">
-                        {selectedLocation.eventos.map(evento => (
-                          <div key={evento.id} className="event-item">
-                            <span className="event-name">{evento.nombre}</span>
+                        <div className="parish-events">
+                          <h4>Actos Litúrgicos Disponibles</h4>
+                          <div className="events-list">
+                            {locationActs.length > 0 ? (
+                              locationActs.map(evento => (
+                                <div key={evento.id} className="event-item">
+                                  <span className="event-name">{evento.name}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <p>No hay actos litúrgicos disponibles</p>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                        </div>
 
-                    <div className="parish-actions">
-                      <button
-                        className="btn-ver-perfil"
-                        onClick={handleVerPerfil}
-                      >
-                        Ver perfil
-                      </button>
-                    </div>
+                        <div className="parish-actions">
+                          <button
+                            className="btn-ver-perfil"
+                            onClick={handleVerPerfil}
+                          >
+                            Ver perfil
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p>Cargando información...</p>
+                    )}
                   </div>
                 </div>
               )}

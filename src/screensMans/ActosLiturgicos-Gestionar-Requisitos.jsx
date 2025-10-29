@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -8,69 +8,88 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
-
-// Datos de capillas reintroducidos para simulación
-const chapelsOptions = [
-  "Capilla Santa Ana",
-  "Capilla San José Obrero",
-  "Capilla Virgen del Carmen",
-  "Capilla La Candelaria",
-  "Capilla de San Antonio",
-];
-
-// Datos simulados (¡MODIFICADO para incluir Capilla!)
-const initialEventsData = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  nombre: `Evento ${i + 1}`,
-  descripcion: `Descripción del Evento ${i + 1}.`,
-  // Se asigna una capilla aleatoria a cada evento
-  capilla: chapelsOptions[Math.floor(Math.random() * chapelsOptions.length)],
-}));
-
-const initialRequirementsData = Array.from({ length: 100 }, (_, i) => ({
-  id: i + 1,
-  eventoId: (i % 20) + 1,
-  nombre: `Requisito ${i + 1}`,
-  descripcion: `Descripción del Requisito ${i + 1}.`,
-  estado: (i + 1) % 2 === 0 ? "Activo" : "Inactivo",
-}));
+import * as eventVariantService from "../services/eventVariantService";
+import * as chapelEventRequirementService from "../services/chapelEventRequirementService";
 
 export default function ActosLiturgicosRequisitos() {
     React.useEffect(() => {
     document.title = "MLAP | Gestionar requisitos";
   }, []);
 
-  const [requirements, setRequirements] = useState(initialRequirementsData);
+  const [requirements, setRequirements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentRequirement, setCurrentRequirement] = useState(null);
   const [modalType, setModalType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [events, setEvents] = useState(initialEventsData);
+  const [eventVariants, setEventVariants] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEventVariant, setSelectedEventVariant] = useState(null);
   const [searchTermEvent, setSearchTermEvent] = useState("");
 
-  const filteredRequirements = selectedEvent
-    ? requirements.filter(
-      (req) =>
-        req.eventoId === selectedEvent.id &&
-        (req.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          req.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-    : [];
+  useEffect(() => {
+    loadEventVariants();
+  }, []);
 
-  const filteredEvents = events.filter((event) =>
-    Object.values(event).some((value) =>
-      String(value).toLowerCase().includes(searchTermEvent.toLowerCase())
-    )
+  useEffect(() => {
+    if (selectedEventVariant) {
+      loadRequirements();
+    }
+  }, [selectedEventVariant]);
+
+  const loadEventVariants = async () => {
+    try {
+      setLoading(true);
+      const response = await eventVariantService.listEventVariants(1, 100);
+      console.log("Respuesta de event variants:", response);
+      const variantsList = response.data || [];
+      console.log("Variants list:", variantsList);
+      setEventVariants(variantsList);
+    } catch (err) {
+      console.error("Error al cargar variantes de eventos:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRequirements = async () => {
+    if (!selectedEventVariant) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await chapelEventRequirementService.getRequirementsByEventVariant(selectedEventVariant.id);
+      const requirementsList = response.data || [];
+      setRequirements(requirementsList);
+    } catch (err) {
+      console.error("Error al cargar requisitos:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredRequirements = requirements.filter(req =>
+    req.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (req.description && req.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const filteredEventVariants = eventVariants.filter((event) =>
+    event.name.toLowerCase().includes(searchTermEvent.toLowerCase()) ||
+    event.chapel_name.toLowerCase().includes(searchTermEvent.toLowerCase())
+  );
+
+  console.log("Event variants:", eventVariants);
+  console.log("Filtered event variants:", filteredEventVariants);
 
   const handleSelectEvent = () => setShowPanel(true);
   const handleClosePanel = () => setShowPanel(false);
 
   const handleAddRequirement = () => {
-    if (!selectedEvent) {
+    if (!selectedEventVariant) {
       alert("Por favor, selecciona un evento primero.");
       return;
     }
@@ -92,59 +111,79 @@ export default function ActosLiturgicosRequisitos() {
   };
 
   const handleEditRequirement = (req) => {
+    if (!req.is_editable) {
+      alert("Los requisitos base no se pueden editar.");
+      return;
+    }
     setCurrentRequirement(req);
     setModalType("edit");
     setShowModal(true);
   };
 
   const handleDeleteConfirmation = (req) => {
+    if (!req.is_editable) {
+      alert("Los requisitos base no se pueden eliminar.");
+      return;
+    }
     setCurrentRequirement(req);
     setModalType("delete");
     setShowModal(true);
   };
 
-  const confirmDelete = () => {
-    if (currentRequirement) {
-      setRequirements((prevReqs) =>
-        prevReqs.filter((req) => req.id !== currentRequirement.id)
-      );
-      handleCloseModal();
+  const confirmDelete = async () => {
+    if (currentRequirement && currentRequirement.is_editable) {
+      try {
+        await chapelEventRequirementService.deleteChapelEventRequirement(currentRequirement.id);
+        await loadRequirements();
+        handleCloseModal();
+      } catch (err) {
+        console.error("Error al eliminar requisito:", err);
+        alert("Error al eliminar: " + err.message);
+      }
     }
   };
 
-  const handleSave = (reqData) => {
-    if (modalType === "add") {
-      const newReq = {
-        ...reqData,
-        id: requirements.length + 1,
-        eventoId: selectedEvent.id,
-        estado: "Activo",
-        isNew: true,
-      };
-      setRequirements((prevReqs) => [...prevReqs, newReq]);
-    } else if (modalType === "edit" && currentRequirement) {
-      setRequirements((prevReqs) =>
-        prevReqs.map((req) =>
-          req.id === currentRequirement.id ? { ...req, ...reqData } : req
-        )
-      );
+  const handleSave = async (reqData) => {
+    try {
+      if (modalType === "add") {
+        await chapelEventRequirementService.createChapelEventRequirement({
+          chapel_event_id: selectedEventVariant.chapel_event_id,
+          name: reqData.nombre,
+          description: reqData.descripcion
+        });
+      } else if (modalType === "edit" && currentRequirement) {
+        await chapelEventRequirementService.updateChapelEventRequirement(currentRequirement.id, {
+          name: reqData.nombre,
+          description: reqData.descripcion
+        });
+      }
+      await loadRequirements();
+      handleCloseModal();
+    } catch (err) {
+      console.error("Error al guardar requisito:", err);
+      alert("Error al guardar: " + err.message);
     }
-    handleCloseModal();
   };
 
   const handleRowClickEvent = (event) => {
-    setSelectedEvent(event);
+    setSelectedEventVariant(event);
     setShowPanel(false);
   };
 
-  const handleToggle = (requirementId) => {
-    setRequirements((prevRequirements) =>
-      prevRequirements.map((req) =>
-        req.id === requirementId
-          ? { ...req, estado: req.estado === "Activo" ? "Inactivo" : "Activo" }
-          : req
-      )
-    );
+  const handleToggle = async (requirementId, currentActive) => {
+    const requirement = requirements.find(r => r.id === requirementId);
+    if (!requirement || !requirement.is_editable) {
+      alert("Solo se puede cambiar el estado de requisitos adicionales.");
+      return;
+    }
+
+    try {
+      await chapelEventRequirementService.updateChapelEventRequirementStatus(requirementId, !currentActive);
+      await loadRequirements();
+    } catch (err) {
+      console.error("Error al actualizar estado:", err);
+      alert("Error al actualizar estado: " + err.message);
+    }
   };
 
   const getModalProps = () => {
@@ -205,15 +244,21 @@ export default function ActosLiturgicosRequisitos() {
 
   const requirementColumns = [
     { key: "id", header: "ID", accessor: (row) => row.id },
-    { key: "nombre", header: "Nombre", accessor: (row) => row.nombre },
-    { key: "descripcion", header: "Descripción", accessor: (row) => row.descripcion },
+    { 
+      key: "tipo", 
+      header: "Tipo", 
+      accessor: (row) => row.requirement_type === 'BASE' ? 'Base' : 'Adicional'
+    },
+    { key: "nombre", header: "Nombre", accessor: (row) => row.name },
+    { key: "descripcion", header: "Descripción", accessor: (row) => row.description },
     {
       key: "estado",
       header: "Estado",
       accessor: (row) => (
         <ToggleSwitch
-          isEnabled={row.estado === "Activo"}
-          onToggle={() => handleToggle(row.id)}
+          isEnabled={row.active}
+          onToggle={() => handleToggle(row.id, row.active)}
+          disabled={!row.is_editable}
         />
       ),
     },
@@ -231,11 +276,13 @@ export default function ActosLiturgicosRequisitos() {
             type="edit"
             title="Editar"
             onClick={() => handleEditRequirement(row)}
+            disabled={!row.is_editable}
           />
           <MyButtonShortAction
             type="delete"
             title="Eliminar"
             onClick={() => handleDeleteConfirmation(row)}
+            disabled={!row.is_editable}
           />
         </MyGroupButtonsActions>
       ),
@@ -253,9 +300,9 @@ export default function ActosLiturgicosRequisitos() {
           >
             <div className="event-cell">
               <span className="event-id">{row.id}</span>
-              <div className="event-info-display"> {/* Contenedor para nombre y capilla */}
-                <span className="event-name">{row.nombre}</span>
-                <div className="event-capilla-name">{row.capilla}</div>
+              <div className="event-info-display">
+                <span className="event-name">{row.name}</span>
+                <div className="event-capilla-name">{row.chapel_name}</div>
               </div>
             </div>
           </div>
@@ -271,7 +318,7 @@ export default function ActosLiturgicosRequisitos() {
         <div className="app-container">
           <div className="search-add">
             <div className="texto-evento">
-              <label>{selectedEvent ? selectedEvent.nombre : ""}</label>
+              <label>{selectedEventVariant ? selectedEventVariant.name : ""}</label>
             </div>
             <div className="center-container">
               <SearchBar onSearchChange={setSearchTerm} />
@@ -291,12 +338,16 @@ export default function ActosLiturgicosRequisitos() {
               </MyGroupButtonsActions>
             </div>
           </div>
-          {selectedEvent ? (
+          
+          {loading && <p>Cargando...</p>}
+          {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+          
+          {selectedEventVariant ? (
             <DynamicTable
               columns={requirementColumns}
               data={filteredRequirements}
-              gridColumnsLayout="90px 380px 1fr 140px 220px"
-              columnLeftAlignIndex={[2, 3]}
+              gridColumnsLayout="auto 140px 280px 1fr 140px 220px"
+              columnLeftAlignIndex={[2, 3, 4]}
             />
           ) : (
             <div className="empty-state">
@@ -329,7 +380,7 @@ export default function ActosLiturgicosRequisitos() {
           <div className="sidebar-search">
             <SearchBar onSearchChange={setSearchTermEvent} />
           </div>
-          <TableEventsWithClick data={filteredEvents} />
+          <TableEventsWithClick data={filteredEventVariants} />
         </MyPanelLateralConfig>
       )}
     </>
@@ -338,8 +389,8 @@ export default function ActosLiturgicosRequisitos() {
 
 function RequisitoForm({ onSave, req = {}, mode = "add" }) {
 
-  const [nombre, setNombre] = useState(req.nombre || "");
-  const [descripcion, setDescripcion] = useState(req.descripcion || "");
+  const [nombre, setNombre] = useState(req.name || "");
+  const [descripcion, setDescripcion] = useState(req.description || "");
   const [estado] = useState(req.estado || "Activo");
 
   const isViewMode = mode === "view";
