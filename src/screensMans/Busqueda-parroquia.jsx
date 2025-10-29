@@ -297,7 +297,8 @@ export default function BuscarParroquia() {
         tipo: loc.type.toLowerCase() === 'parroquia' ? 'parroquia' : 'capilla',
         coordinates: loc.coordinates,
         latitud: parseCoordinates(loc.coordinates)[0],
-        longitud: parseCoordinates(loc.coordinates)[1]
+        longitud: parseCoordinates(loc.coordinates)[1],
+        parroquiaPadreId: loc.parroquia_padre_id || null
       }));
       setAllLocations(locations);
       setFilteredLocations(locations);
@@ -310,32 +311,26 @@ export default function BuscarParroquia() {
 
   const loadParishWithChapels = async (parishId) => {
     try {
-      const response = await publicChurchService.selectParish(parishId);
-      if (response.data.selected_parish) {
-        const parish = {
-          id: response.data.selected_parish.id,
-          nombre: response.data.selected_parish.name,
-          direccion: response.data.selected_parish.address,
-          tipo: 'parroquia',
-          coordinates: response.data.selected_parish.coordinates,
-          latitud: parseCoordinates(response.data.selected_parish.coordinates)[0],
-          longitud: parseCoordinates(response.data.selected_parish.coordinates)[1]
-        };
-        
-        const chapels = response.data.chapels.map(ch => ({
-          id: ch.id,
-          nombre: ch.name,
-          direccion: ch.address,
-          tipo: 'capilla',
-          parroquiaId: parishId,
-          coordinates: ch.coordinates,
-          latitud: parseCoordinates(ch.coordinates)[0],
-          longitud: parseCoordinates(ch.coordinates)[1]
-        }));
-        
-        setSelectedParroquiaForGrid(parish);
-        setParishChapels(chapels);
+      // Buscar la parroquia en allLocations usando el ID correcto
+      const selectedParish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
+      
+      if (!selectedParish) {
+        console.error('No se encontró la parroquia con ID:', parishId);
+        return;
       }
+
+      console.log('Parroquia seleccionada:', selectedParish);
+      console.log('Todas las ubicaciones:', allLocations);
+
+      // Filtrar solo las capillas que pertenecen a esta parroquia desde allLocations
+      const chapels = allLocations.filter(loc => 
+        loc.tipo === 'capilla' && loc.parroquiaPadreId === parishId
+      );
+      
+      console.log('Capillas filtradas para parroquia ID', parishId, ':', chapels);
+      
+      setSelectedParroquiaForGrid(selectedParish);
+      setParishChapels(chapels);
     } catch (error) {
       console.error('Error loading parish chapels:', error);
     }
@@ -522,7 +517,7 @@ export default function BuscarParroquia() {
   const handleParroquiaSelect = async (e) => {
     const parishId = parseInt(e.target.value);
     if (parishId) {
-      const parish = filteredLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
+      const parish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
       if (parish) {
         await loadParishWithChapels(parishId);
         setSelectedLocation(null);
@@ -591,22 +586,21 @@ export default function BuscarParroquia() {
                         value={selectedParroquiaForGrid ? selectedParroquiaForGrid.id : ""}
                       >
                         <option value="">-- Selecciona una parroquia --</option>
-                        {filteredLocations.filter(l => l.tipo === 'parroquia').map(parroquia => (
+                        {allLocations.filter(l => l.tipo === 'parroquia').map(parroquia => (
                           <option key={parroquia.id} value={parroquia.id}>
                             {parroquia.nombre}
                           </option>
                         ))}
                       </select>
-                      {selectedParroquiaForGrid && searchTerm && (
+                      {selectedParroquiaForGrid && (
                         <button
                           className="clear-selection-btn"
                           onClick={() => {
                             setSelectedParroquiaForGrid(null);
                             setParishChapels([]);
-                            setSearchTerm('');
                           }}
                         >
-                          Ver todas las ubicaciones
+                          Limpiar selección
                         </button>
                       )}
                     </div>
@@ -614,19 +608,15 @@ export default function BuscarParroquia() {
                     <div className="instructions">
                       <p>
                         {selectedParroquiaForGrid
-                          ? `Resultados para "${selectedParroquiaForGrid.nombre}":`
-                          : searchTerm
-                            ? `Resultados de búsqueda para "${searchTerm}":`
-                            : "Puedes seleccionar una parroquia de la lista o hacer clic directamente en los marcadores del mapa para ver información detallada."
+                          ? `Mostrando "${selectedParroquiaForGrid.nombre}" y sus capillas:`
+                          : "Selecciona una parroquia del desplegable para ver sus capillas o haz clic en los marcadores del mapa."
                         }
                       </p>
                       <div className="parishes-list">
                         <h4>
                           {selectedParroquiaForGrid
-                            ? `${selectedParroquiaForGrid.nombre} y todas sus capillas:`
-                            : searchTerm
-                              ? `Resultados encontrados (${filteredLocations.filter(location => currentZoom >= 15 || location.tipo === 'parroquia').length}):`
-                              : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
+                            ? `Capillas de ${selectedParroquiaForGrid.nombre}:`
+                            : `${currentZoom >= 15 ? 'Parroquias y capillas' : 'Parroquias'} disponibles:`
                           }
                         </h4>
                         <div className="parishes-grid">
@@ -634,20 +624,15 @@ export default function BuscarParroquia() {
                             <p>Cargando...</p>
                           ) : selectedParroquiaForGrid ? (
                             <>
-                              {(!searchTerm ||
-                                selectedParroquiaForGrid.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                selectedParroquiaForGrid.direccion.toLowerCase().includes(searchTerm.toLowerCase())
-                              ) && (
-                                  <div
-                                    key={`parroquia-${selectedParroquiaForGrid.id}`}
-                                    className="parish-card parroquia-card"
-                                    onClick={() => handleLocationSelect(selectedParroquiaForGrid)}
-                                  >
-                                    <h5>{selectedParroquiaForGrid.nombre}</h5>
-                                    <p>{selectedParroquiaForGrid.direccion}</p>
-                                    <span className="location-type">Parroquia</span>
-                                  </div>
-                                )}
+                              <div
+                                key={`parroquia-${selectedParroquiaForGrid.id}`}
+                                className="parish-card parroquia-card"
+                                onClick={() => handleLocationSelect(selectedParroquiaForGrid)}
+                              >
+                                <h5>{selectedParroquiaForGrid.nombre}</h5>
+                                <p>{selectedParroquiaForGrid.direccion}</p>
+                                <span className="location-type">Parroquia</span>
+                              </div>
                               {parishChapels.map(capilla => (
                                 <div
                                   key={`capilla-${capilla.id}`}
