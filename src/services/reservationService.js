@@ -17,6 +17,7 @@ export const getReservationFormInfo = async (eventVariantId) => {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
   });
 
   return await handleResponse(response);
@@ -28,6 +29,7 @@ export const checkAvailability = async (eventVariantId, eventDate, eventTime) =>
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify({
       event_variant_id: eventVariantId,
       event_date: eventDate,
@@ -38,13 +40,13 @@ export const checkAvailability = async (eventVariantId, eventDate, eventTime) =>
   return await handleResponse(response);
 };
 
-export const createReservation = async (eventVariantId, eventDate, eventTime, token) => {
+export const createReservation = async (eventVariantId, eventDate, eventTime) => {
   const response = await fetch(`${API_URL}/api/client/reservation/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
     },
+    credentials: 'include',
     body: JSON.stringify({
       event_variant_id: eventVariantId,
       event_date: eventDate,
@@ -61,6 +63,7 @@ export const getAvailableSlots = async (eventVariantId, startDate, endDate) => {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify({
       event_variant_id: eventVariantId,
       start_date: startDate,

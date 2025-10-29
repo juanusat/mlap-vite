@@ -1,3 +1,41 @@
+/* Mensajes de estado */
+.reserva-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.reserva-error-message {
+    text-align: center;
+    padding: 2rem;
+    color: red;
+}
+
+.reserva-info-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    color: #1976d2;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.reserva-info-message p {
+    margin: 0;
+}
+
+.reserva-button-container {
+    text-align: center;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.my-button-medium-icon {
+    width: auto;
+}
+
 .reserva-form {
     max-width: 1100px;
     margin: 20px auto;

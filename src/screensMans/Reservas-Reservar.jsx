@@ -17,8 +17,22 @@ export default function ReservasReservar() {
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [eventDate, setEventDate] = useState('');
-    const [eventTime, setEventTime] = useState('08:00');
+    
+    const getTomorrowDate = () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    };
+    
+    const getNextHour = () => {
+        const now = new Date();
+        const nextHour = new Date(now);
+        nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+        return nextHour.toTimeString().slice(0, 5);
+    };
+    
+    const [eventDate, setEventDate] = useState(getTomorrowDate());
+    const [eventTime, setEventTime] = useState(getNextHour());
     const [availabilityMessage, setAvailabilityMessage] = useState('');
     const [isAvailable, setIsAvailable] = useState(null);
     const [isChecking, setIsChecking] = useState(false);
@@ -30,7 +44,6 @@ export default function ReservasReservar() {
         if (eventId) {
             loadFormInfo();
         } else {
-            setError('No se proporcionó un ID de evento');
             setLoading(false);
         }
     }, [eventId]);
@@ -106,17 +119,9 @@ export default function ReservasReservar() {
             return;
         }
 
-        const token = localStorage.getItem('session_token') || sessionStorage.getItem('session_token');
-        
-        if (!token) {
-            alert('Debe iniciar sesión para realizar una reserva');
-            navigate('/login', { state: { returnUrl: window.location.pathname + window.location.search } });
-            return;
-        }
-
         try {
             setIsCreating(true);
-            const response = await createReservation(eventId, eventDate, eventTime, token);
+            const response = await createReservation(eventId, eventDate, eventTime);
             
             alert(response.data.confirmation_message);
             
@@ -141,7 +146,7 @@ export default function ReservasReservar() {
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reservar evento</h2>
                 <div className='app-container'>
-                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <div className="reserva-loading">
                         Cargando información del evento...
                     </div>
                 </div>
@@ -154,14 +159,37 @@ export default function ReservasReservar() {
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reservar evento</h2>
                 <div className='app-container'>
-                    <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>
+                    <div className="reserva-error-message">
                         {error}
                     </div>
-                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                    <div className="reserva-button-container">
                         <MyButtonMediumIcon
-                            text="Volver"
+                            text="Regresar a inicio"
                             icon="MdArrowBack"
-                            onClick={handleCancel}
+                            onClick={() => navigate('/inicio')}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!eventId) {
+        return (
+            <div className="content-module only-this">
+                <h2 className='title-screen'>Reservar evento</h2>
+                <div className='app-container'>
+                    <div className="reserva-info-message">
+                        <p>
+                            Para realizar una reserva, primero debe buscar la parroquia deseada desde la pantalla de inicio 
+                            y seleccionar el evento que desea reservar desde la página de la parroquia.
+                        </p>
+                    </div>
+                    <div className="reserva-button-container">
+                        <MyButtonMediumIcon
+                            text="Regresar a inicio"
+                            icon="MdArrowBack"
+                            onClick={() => navigate('/inicio')}
                         />
                     </div>
                 </div>
@@ -174,7 +202,7 @@ export default function ReservasReservar() {
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reservar evento</h2>
                 <div className='app-container'>
-                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <div className="reserva-loading">
                         No se encontró información del evento
                     </div>
                 </div>
