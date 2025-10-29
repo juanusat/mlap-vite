@@ -384,6 +384,10 @@ export default function BuscarParroquia() {
     return () => {
       if (map) {
         map.remove();
+        setMap(null);
+      }
+      if (mapRef.current && mapRef.current._leaflet_id) {
+        delete mapRef.current._leaflet_id;
       }
     };
   }, []);
@@ -427,6 +431,10 @@ export default function BuscarParroquia() {
 
   const initMap = () => {
     if (!window.L || !mapRef.current) return;
+    
+    if (mapRef.current._leaflet_id) {
+      return;
+    }
 
     const leafletMap = window.L.map(mapRef.current).setView([-6.77, -79.84], 13);
 
