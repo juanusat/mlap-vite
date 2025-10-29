@@ -91,7 +91,6 @@ export default function VistaPresentacion() {
                         backgroundImage: `url(${getImageUrl(profileData.cover_photo)})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
-                        position: "relative",
                     }}
                 >
                     <div className="vp-header-overlay">
