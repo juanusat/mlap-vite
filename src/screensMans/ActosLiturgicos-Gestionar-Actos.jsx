@@ -57,9 +57,10 @@ export default function EventosLiturgicos() {
         estado: variant.active ? "Activo" : "Inactivo",
         tipo: variant.variant_type === "PRIVATE" ? "Privado" : "Comunitario",
         personas: variant.variant_type === "PRIVATE" ? "-" : variant.max_capacity,
-        capilla: variant.chapel?.name || "",
-        chapel_id: variant.chapel?.id,
-        event_id: variant.event_base?.id,
+        capilla: variant.chapel_name || "",
+        chapel_id: variant.chapel_id,
+        chapel_event_id: variant.chapel_event_id,
+        event_id: variant.event_id,
         event_type: variant.variant_type,
       }));
       
@@ -86,9 +87,10 @@ export default function EventosLiturgicos() {
         estado: variant.active ? "Activo" : "Inactivo",
         tipo: variant.variant_type === "PRIVATE" ? "Privado" : "Comunitario",
         personas: variant.variant_type === "PRIVATE" ? "-" : variant.max_capacity,
-        capilla: variant.chapel?.name || "",
-        chapel_id: variant.chapel?.id,
-        event_id: variant.event_base?.id,
+        capilla: variant.chapel_name || "",
+        chapel_id: variant.chapel_id,
+        chapel_event_id: variant.chapel_event_id,
+        event_id: variant.event_id,
         event_type: variant.variant_type,
       }));
       
@@ -327,7 +329,7 @@ export default function EventosLiturgicos() {
         <DynamicTable
           columns={eventColumns}
           data={filteredEvents}
-          gridColumnsLayout="90px 240px 1fr 250px 140px 140px 140px 220px"
+          gridColumnsLayout="90px 180px 1fr 200px 140px 140px 140px 220px"
           columnLeftAlignIndex={[2, 3, 4]}
         />
       </div>
