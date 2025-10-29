@@ -75,7 +75,7 @@ export const getAvailableSlots = async (eventVariantId, startDate, endDate) => {
 };
 
 export const getPendingReservations = async (page = 1, limit = 10) => {
-  const response = await fetch(`${API_URL}/api/client/reservations/pending/list`, {
+  const response = await fetch(`${API_URL}/api/client/reservation/pending/list`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export const getPendingReservations = async (page = 1, limit = 10) => {
 };
 
 export const searchPendingReservations = async (searchEventName, page = 1, limit = 10) => {
-  const response = await fetch(`${API_URL}/api/client/reservations/pending/search`, {
+  const response = await fetch(`${API_URL}/api/client/reservation/pending/search`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -108,8 +108,53 @@ export const searchPendingReservations = async (searchEventName, page = 1, limit
 };
 
 export const cancelReservation = async (reservationId) => {
-  const response = await fetch(`${API_URL}/api/client/reservations/${reservationId}/cancel`, {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}/cancel`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const getHistoryReservations = async (page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/history/list`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const searchHistoryReservations = async (searchEventName, page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/history/search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      search_event_name: searchEventName,
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const getReservationDetails = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}`, {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
