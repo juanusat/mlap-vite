@@ -5,9 +5,19 @@ import { getChapelProfile } from "../services/publicChurchService";
 import "../utils/VistaPresentacion-Capilla.css";
 import "../utils/Estilos-Generales-1.css";
 
+const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
+
 const options = [
     { href: "/capilla", label: "Bienvenida" }
 ];
+
+const getImageUrl = (filename) => {
+    if (!filename) return '';
+    if (filename.startsWith('http://') || filename.startsWith('https://')) {
+        return filename;
+    }
+    return `${API_URL}/api/static/uploads/${filename}`;
+};
 
 export default function VistaPresentacion() {
     const [searchParams] = useSearchParams();
@@ -78,7 +88,7 @@ export default function VistaPresentacion() {
                 <section
                     className="chapel-header vp-chapel-header"
                     style={{
-                        backgroundImage: `url(${profileData.cover_photo || ''})`,
+                        backgroundImage: `url(${getImageUrl(profileData.cover_photo)})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         position: "relative",
@@ -87,7 +97,7 @@ export default function VistaPresentacion() {
                     <div className="vp-header-overlay">
                         <div>
                             {profileData.profile_photo && (
-                                <img src={profileData.profile_photo} alt="Chapel Profile" />
+                                <img src={getImageUrl(profileData.profile_photo)} alt="Chapel Profile" />
                             )}
                         </div>
                         <h2 className="vp-chapel-title">
