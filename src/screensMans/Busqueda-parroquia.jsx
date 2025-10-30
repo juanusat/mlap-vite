@@ -311,16 +311,18 @@ export default function BuscarParroquia() {
 
   const loadParishWithChapels = async (parishId) => {
     try {
+      setLoading(true);
+      
       // Buscar la parroquia en allLocations usando el ID correcto
       const selectedParish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
       
       if (!selectedParish) {
         console.error('No se encontró la parroquia con ID:', parishId);
+        setLoading(false);
         return;
       }
 
-      // Usar el endpoint selectParish SOLO para obtener las capillas
-      // pero usar selectedParish (de allLocations) para la parroquia principal
+      // Usar el endpoint select-parish (ahora corregido en el backend)
       const response = await publicChurchService.selectParish(parishId);
       
       let chapels = [];
@@ -337,13 +339,18 @@ export default function BuscarParroquia() {
         }));
       }
       
-      console.log('Parroquia correcta:', selectedParish);
-      console.log('Capillas obtenidas del API:', chapels);
-      
       setSelectedParroquiaForGrid(selectedParish);
       setParishChapels(chapels);
     } catch (error) {
       console.error('Error loading parish chapels:', error);
+      // En caso de error, mostramos la parroquia seleccionada sin capillas
+      const selectedParish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
+      if (selectedParish) {
+        setSelectedParroquiaForGrid(selectedParish);
+        setParishChapels([]);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -528,11 +535,15 @@ export default function BuscarParroquia() {
   const handleParroquiaSelect = async (e) => {
     const parishId = parseInt(e.target.value);
     if (parishId) {
+      // Limpiar estados previos antes de cargar nueva parroquia
+      setSelectedParroquiaForGrid(null);
+      setParishChapels([]);
+      setSelectedLocation(null);
+      setSelectedByUser(false);
+      
       const parish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
       if (parish) {
         await loadParishWithChapels(parishId);
-        setSelectedLocation(null);
-        setSelectedByUser(false);
         if (map) {
           map.flyTo([parish.latitud, parish.longitud], 15);
         }

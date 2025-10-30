@@ -23,6 +23,18 @@ export const searchChurches = async (query = '', page = 1, limit = 100) => {
   return await handleResponse(response);
 };
 
+export const selectLocation = async (locationId, type) => {
+  const response = await fetch(`${API_URL}/api/public/church/select-location`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ location_id: locationId, type: type }),
+  });
+
+  return await handleResponse(response);
+};
+
 export const selectParish = async (parishId) => {
   const response = await fetch(`${API_URL}/api/public/church/select-parish`, {
     method: 'POST',
