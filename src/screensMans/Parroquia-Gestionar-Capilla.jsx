@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from 'react-dom';
+import { FaMapMarkedAlt } from 'react-icons/fa';
 import DynamicTable from "../components/Tabla";
 import SearchBar from "../components/SearchBar";
 import ToggleSwitch from "../components/Toggle";
@@ -6,6 +8,8 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import InputFotoPerfil from '../components/inputFotoPerfil';
+import MyModalGreatSize from '../components/MyModalGreatSize';
+import MyMapSelector from '../components/MyMapSelector';
 import * as chapelService from '../services/chapelService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Parroquia-Gestionar-Capilla.css';
@@ -209,12 +213,49 @@ export default function GestionCapillas() {
 function ChapelForm({ mode, initialData, onSave }) {
   const [name, setName] = useState(initialData?.name || '');
   const [address, setAddress] = useState(initialData?.address || '');
+  const [coordinates, setCoordinates] = useState(initialData?.coordinates || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [profilePhoto, setProfilePhoto] = useState(initialData?.profile_photo || '');
   const [coverPhoto, setCoverPhoto] = useState(initialData?.cover_photo || '');
 
+  // Estados para el modal del mapa
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+
+  const parseCoordinates = (coordString) => {
+    if (!coordString) return [0, 0];
+    const parts = coordString.split(',').map(s => parseFloat(s.trim()));
+    return parts.length === 2 ? parts : [0, 0];
+  };
+
   const handleFotoPerfilChange = (data) => setProfilePhoto(data ? data.name : "");
   const handleFotoPortadaChange = (data) => setCoverPhoto(data ? data.name : "");
+
+  // Funciones para el modal del mapa
+  const handleOpenMapModal = () => {
+    setShowMapModal(true);
+    if (coordinates) {
+      const coords = parseCoordinates(coordinates);
+      setSelectedCoordinates({ lat: coords[0].toFixed(6), lng: coords[1].toFixed(6) });
+    }
+  };
+
+  const handleCloseMapModal = () => {
+    setShowMapModal(false);
+    setSelectedCoordinates(null);
+  };
+
+  const handleMapClick = (coords) => {
+    setSelectedCoordinates(coords);
+  };
+
+  const handleConfirmLocation = () => {
+    if (selectedCoordinates) {
+      const coordsString = `${selectedCoordinates.lat}, ${selectedCoordinates.lng}`;
+      setCoordinates(coordsString);
+      handleCloseMapModal();
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -222,6 +263,7 @@ function ChapelForm({ mode, initialData, onSave }) {
       onSave({
         name,
         address,
+        coordinates,
         phone,
         profile_photo: profilePhoto,
         cover_photo: coverPhoto
@@ -232,8 +274,9 @@ function ChapelForm({ mode, initialData, onSave }) {
   const disabled = mode === 'view';
 
   return (
-    <form id="chapel-form" onSubmit={handleSubmit}>
-      <div className="Inputs">
+    <>
+      <form id="chapel-form" onSubmit={handleSubmit}>
+        <div className="Inputs">
         <label>Nombre de la capilla</label>
         <input
           type="text"
@@ -251,6 +294,46 @@ function ChapelForm({ mode, initialData, onSave }) {
           disabled={disabled}
           required
         />
+        <label>Coordenadas</label>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <input
+            type="text"
+            className="inputModal"
+            value={coordinates}
+            onChange={e => setCoordinates(e.target.value)}
+            disabled={disabled}
+            placeholder="Latitud, Longitud"
+            style={{ 
+              flex: '0 1 55%',
+              fontSize: '13px',
+              padding: '8px'
+            }}
+          />
+          {!disabled && (
+            <button
+              type="button"
+              className="btn-select-location"
+              onClick={handleOpenMapModal}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 12px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontSize: '13px',
+                flex: '0 0 auto'
+              }}
+            >
+              <FaMapMarkedAlt size={14} />
+              Seleccionar ubicación
+            </button>
+          )}
+        </div>
         <label>Teléfono</label>
         <input
           type="text"
@@ -273,5 +356,61 @@ function ChapelForm({ mode, initialData, onSave }) {
         />
       </div>
     </form>
+    
+    <MapModalPortal 
+      showMapModal={showMapModal}
+      handleCloseMapModal={handleCloseMapModal}
+      handleConfirmLocation={handleConfirmLocation}
+      selectedCoordinates={selectedCoordinates}
+      handleMapClick={handleMapClick}
+      coordinates={coordinates}
+      parseCoordinates={parseCoordinates}
+    />
+    </>
+  );
+}
+
+function MapModalPortal({ showMapModal, handleCloseMapModal, handleConfirmLocation, selectedCoordinates, handleMapClick, coordinates, parseCoordinates }) {
+  if (!showMapModal) return null;
+
+  return createPortal(
+    <MyModalGreatSize open={showMapModal} onClose={handleCloseMapModal}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ 
+          padding: '10px 20px', 
+          borderBottom: '1px solid #ddd',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h3 style={{ margin: 0 }}>Seleccionar Ubicación de la Capilla</h3>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="button"
+              onClick={handleConfirmLocation}
+              disabled={!selectedCoordinates}
+              style={{
+                padding: '8px 20px',
+                backgroundColor: selectedCoordinates ? '#4CAF50' : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: selectedCoordinates ? 'pointer' : 'not-allowed'
+              }}
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <MyMapSelector
+            onMapClick={handleMapClick}
+            selectedCoordinates={selectedCoordinates}
+            initialCenter={coordinates ? parseCoordinates(coordinates) : [-6.77, -79.84]}
+          />
+        </div>
+      </div>
+    </MyModalGreatSize>,
+    document.body
   );
 }
