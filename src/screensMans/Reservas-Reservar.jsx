@@ -33,6 +33,7 @@ export default function ReservasReservar() {
     
     const [eventDate, setEventDate] = useState(getTomorrowDate());
     const [eventTime, setEventTime] = useState(getNextHour());
+    const [beneficiaryName, setBeneficiaryName] = useState('');
     const [availabilityMessage, setAvailabilityMessage] = useState('');
     const [isAvailable, setIsAvailable] = useState(null);
     const [isChecking, setIsChecking] = useState(false);
@@ -121,7 +122,12 @@ export default function ReservasReservar() {
 
         try {
             setIsCreating(true);
-            const response = await createReservation(eventId, eventDate, eventTime);
+            const response = await createReservation(
+                eventId, 
+                eventDate, 
+                eventTime, 
+                beneficiaryName || null
+            );
             
             alert(response.data.confirmation_message);
             
@@ -224,6 +230,23 @@ export default function ReservasReservar() {
                         <div className="reserva-row">
                             <div className="reserva-label">Evento</div>
                             <div className="reserva-value">{formData.event_name}</div>
+                        </div>
+
+                        <div className="reserva-row">
+                            <div className="reserva-label">Nombre del beneficiario:</div>
+                            <div className="reserva-value">
+                                <input 
+                                    type="text"
+                                    className="reserva-text-input"
+                                    value={beneficiaryName}
+                                    onChange={(e) => setBeneficiaryName(e.target.value)}
+                                    placeholder="Dejar vacío para usar tu nombre"
+                                    maxLength={120}
+                                />
+                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                    Opcional: Si la reserva es para otra persona, ingresa su nombre completo
+                                </small>
+                            </div>
                         </div>
 
                         <div className="reserva-row">
