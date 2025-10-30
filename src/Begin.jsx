@@ -75,7 +75,7 @@ export default function Begin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          context_type: 'PARISH',
+          context_type: 'PARISHIONER',
           parishId: null 
         }),
       });
