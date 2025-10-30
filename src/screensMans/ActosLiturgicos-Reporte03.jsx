@@ -116,7 +116,7 @@ export default function Reporte03A() {
                         {/* Grilla de horarios - Mapa de calor */}
                         <div className="occupancy-grid-container">
                             <div className="occupancy-grid">
-                                <div className="grid-header">
+                                <div className="grid-header table-schedule">
                                     <div className="grid-cell header-cell"></div>
                                     {daysOfWeek.map((day, index) => (
                                         <div key={index} className="grid-cell header-cell">
