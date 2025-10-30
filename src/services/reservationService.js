@@ -40,18 +40,25 @@ export const checkAvailability = async (eventVariantId, eventDate, eventTime) =>
   return await handleResponse(response);
 };
 
-export const createReservation = async (eventVariantId, eventDate, eventTime) => {
+export const createReservation = async (eventVariantId, eventDate, eventTime, beneficiaryFullName = null) => {
+  const body = {
+    event_variant_id: eventVariantId,
+    event_date: eventDate,
+    event_time: eventTime,
+  };
+
+  // Solo incluir beneficiary_full_name si se proporciona
+  if (beneficiaryFullName && beneficiaryFullName.trim() !== '') {
+    body.beneficiary_full_name = beneficiaryFullName.trim();
+  }
+
   const response = await fetch(`${API_URL}/api/client/reservation/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify({
-      event_variant_id: eventVariantId,
-      event_date: eventDate,
-      event_time: eventTime,
-    }),
+    body: JSON.stringify(body),
   });
 
   return await handleResponse(response);
