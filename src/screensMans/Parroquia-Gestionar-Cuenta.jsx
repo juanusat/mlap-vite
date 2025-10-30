@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { FaMapMarkedAlt } from 'react-icons/fa';
 import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import TextInput from '../components/formsUI/TextInput';
@@ -6,6 +7,8 @@ import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import InputColorPicker from '../components/inputColorPicker';
+import MyModalGreatSize from '../components/MyModalGreatSize';
+import MyMapSelector from '../components/MyMapSelector';
 import * as parishService from '../services/parishService';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
@@ -46,6 +49,16 @@ const GestionCuenta = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    // Estados para el modal del mapa
+    const [showMapModal, setShowMapModal] = useState(false);
+    const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+
+    const parseCoordinates = (coordString) => {
+        if (!coordString) return [0, 0];
+        const parts = coordString.split(',').map(s => parseFloat(s.trim()));
+        return parts.length === 2 ? parts : [0, 0];
+    };
+
     const loadAccountData = async () => {
         try {
             setLoading(true);
@@ -66,6 +79,7 @@ const GestionCuenta = () => {
                 correo: credentials.email || "",
                 contraseña: ""
             });
+
         } catch (err) {
             setError(err.message || 'Error al cargar los datos de la cuenta');
             console.error('Error al cargar cuenta:', err);
@@ -221,6 +235,36 @@ const GestionCuenta = () => {
         console.log("Color secundario seleccionado:", colorData);
     };
 
+    // Funciones para el modal del mapa
+    const handleOpenMapModal = () => {
+        setShowMapModal(true);
+        // Si ya hay coordenadas, parsearlas para el centro inicial
+        if (tempUserInfo.coordenadas) {
+            const coords = parseCoordinates(tempUserInfo.coordenadas);
+            setSelectedCoordinates({ lat: coords[0], lng: coords[1] });
+        }
+    };
+
+    const handleCloseMapModal = () => {
+        setShowMapModal(false);
+        setSelectedCoordinates(null);
+    };
+
+    const handleMapClick = (coordinates) => {
+        setSelectedCoordinates(coordinates);
+    };
+
+    const handleConfirmLocation = () => {
+        if (selectedCoordinates) {
+            const coordinates = `${selectedCoordinates.lat}, ${selectedCoordinates.lng}`;
+            setTempUserInfo(prevInfo => ({
+                ...prevInfo,
+                coordenadas: coordinates
+            }));
+            handleCloseMapModal();
+        }
+    };
+
     return (
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de cuenta de parroquia</h2>
@@ -238,7 +282,24 @@ const GestionCuenta = () => {
                     <>
                         <TextInput label="Nombres" value={tempUserInfo.nombres} onChange={handleInputChange} name="nombres" />
                         <TextInput label="Dirección" value={tempUserInfo.direccion} onChange={handleInputChange} name="direccion" />
-                        <TextInput label="Coordenadas" value={tempUserInfo.coordenadas} onChange={handleInputChange} name="coordenadas" />
+                        
+                        <div className="coordinates-input-container">
+                            <TextInput 
+                                label="Coordenadas" 
+                                value={tempUserInfo.coordenadas} 
+                                onChange={handleInputChange} 
+                                name="coordenadas"
+                                placeholder="Ej: -6.77, -79.84"
+                            />
+                            <button 
+                                className="btn-select-location" 
+                                type="button"
+                                onClick={handleOpenMapModal}
+                            >
+                                <FaMapMarkedAlt /> Seleccionar ubicación
+                            </button>
+                        </div>
+                        
                         <TextInput label="Celular" value={tempUserInfo.celular} onChange={handleInputChange} name="celular" />
                         
                         <div className="color-input-container">
@@ -380,6 +441,68 @@ const GestionCuenta = () => {
 
             {loading && <div className="loading-message">Cargando...</div>}
             {error && <div className="error-message">{error}</div>}
+
+            {/* Modal para seleccionar ubicación en el mapa */}
+            <MyModalGreatSize
+                open={showMapModal}
+                title="Seleccionar Ubicación de la Parroquia"
+                onClose={handleCloseMapModal}
+            >
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                        <MyMapSelector
+                            onMapClick={handleMapClick}
+                            selectedCoordinates={selectedCoordinates}
+                            initialCenter={
+                                tempUserInfo.coordenadas 
+                                    ? parseCoordinates(tempUserInfo.coordenadas) 
+                                    : [-6.77, -79.84]
+                            }
+                            initialZoom={13}
+                        />
+                    </div>
+                    <div style={{ 
+                        padding: '1rem 2rem', 
+                        borderTop: '1px solid var(--color-n-50)', 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: 'var(--color-n-0)'
+                    }}>
+                        <div>
+                            {selectedCoordinates ? (
+                                <p style={{ margin: 0, fontSize: 'var(--font-size-body)' }}>
+                                    <strong>Coordenadas seleccionadas:</strong>
+                                    <br />
+                                    Latitud: {selectedCoordinates.lat}, Longitud: {selectedCoordinates.lng}
+                                </p>
+                            ) : (
+                                <p style={{ margin: 0, color: 'var(--color-n-500)' }}>
+                                    Haz clic en cualquier punto del mapa para seleccionar la ubicación
+                                </p>
+                            )}
+                        </div>
+                        <button
+                            className="btn-confirm-location"
+                            onClick={handleConfirmLocation}
+                            disabled={!selectedCoordinates}
+                            style={{
+                                padding: '0.75rem 1.5rem',
+                                backgroundColor: selectedCoordinates ? 'var(--color-a-350)' : 'var(--color-n-200)',
+                                color: 'var(--color-n-0)',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: selectedCoordinates ? 'pointer' : 'not-allowed',
+                                fontWeight: 'bold',
+                                fontSize: 'var(--font-size-body)',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            Confirmar ubicación
+                        </button>
+                    </div>
+                </div>
+            </MyModalGreatSize>
         </div>
     );
 };
