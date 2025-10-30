@@ -125,13 +125,15 @@
 .grid-cell {
   display: table-cell;
   border: 1px solid var(--color-n-25);
-  padding: 10px;
+  padding: 0;
   text-align: center;
+  vertical-align: middle;
 }
 
 .header-cell {
   font-weight: bold;
   background-color: var(--color-n-10);
+  padding: 10px;
 }
 
 .day-name {
@@ -149,13 +151,16 @@
   background-color: var(--color-grey-palido);
   font-size: var(--font-size-body);
   min-width: 100px;
+  padding: 10px;
 }
 
 .day-cell {
   min-width: 100px;
-  height: 40px;
+  height: 50px;
   user-select: none;
   position: relative;
+  padding: 0;
+  vertical-align: middle;
 }
 
 .day-cell.editable {
