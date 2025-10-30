@@ -5,6 +5,7 @@ export default function MyMapContainer({
   locations = [], 
   onLocationSelect,
   selectedLocation = null,
+  mapCenter = null, // Nueva prop para controlar el centrado del mapa
   initialCenter = [-6.77, -79.84],
   initialZoom = 13,
   onZoomChange
@@ -70,8 +71,27 @@ export default function MyMapContainer({
   useEffect(() => {
     if (map && locations.length > 0) {
       updateMapMarkers(locations, map, currentZoom);
+      
+      // Si hay una sola ubicación, centrar el mapa en ella
+      if (locations.length === 1) {
+        map.flyTo([locations[0].latitud, locations[0].longitud], 15);
+      }
     }
   }, [locations, map, currentZoom]);
+
+  // Centrar mapa cuando cambia mapCenter (desde el dropdown)
+  useEffect(() => {
+    if (map && mapCenter) {
+      map.flyTo([mapCenter.latitud, mapCenter.longitud], 15);
+    }
+  }, [mapCenter, map]);
+
+  // Centrar mapa cuando cambia selectedLocation (click en marcador o grilla)
+  useEffect(() => {
+    if (map && selectedLocation) {
+      map.flyTo([selectedLocation.latitud, selectedLocation.longitud], 15);
+    }
+  }, [selectedLocation, map]);
 
   const updateMapMarkers = (locs, leafletMap, zoom) => {
     if (!leafletMap || !window.L) return;
@@ -136,13 +156,6 @@ export default function MyMapContainer({
 
     setMarkers(newMarkers);
   };
-
-  // Método público para volar a una ubicación
-  useEffect(() => {
-    if (map && selectedLocation) {
-      map.flyTo([selectedLocation.latitud, selectedLocation.longitud], 15);
-    }
-  }, [selectedLocation, map]);
 
   return (
     <div className="map-container">

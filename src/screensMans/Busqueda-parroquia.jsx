@@ -276,6 +276,7 @@ export default function BuscarParroquia() {
   const [locationDetails, setLocationDetails] = useState(null);
   const [locationActs, setLocationActs] = useState([]);
   const [parishChapels, setParishChapels] = useState([]);
+  const [mapCenter, setMapCenter] = useState(null); // Para controlar el centrado del mapa
 
   const parseCoordinates = (coordString) => {
     if (!coordString) return [0, 0];
@@ -427,14 +428,12 @@ export default function BuscarParroquia() {
   const handleParroquiaSelect = async (e) => {
     const parishId = parseInt(e.target.value);
     if (parishId) {
-      // Limpiar estados previos antes de cargar nueva parroquia
-      setSelectedParroquiaForGrid(null);
-      setParishChapels([]);
-      setSelectedLocation(null);
-      setSelectedByUser(false);
-      
       const parish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
       if (parish) {
+        // Centrar el mapa sin establecer selectedLocation
+        setMapCenter(parish);
+        
+        // Cargar capillas de la parroquia
         await loadParishWithChapels(parishId);
       }
     } else {
@@ -442,6 +441,7 @@ export default function BuscarParroquia() {
       setParishChapels([]);
       setSelectedLocation(null);
       setSelectedByUser(false);
+      setMapCenter(null);
     }
   };
 
@@ -473,6 +473,7 @@ export default function BuscarParroquia() {
               locations={filteredLocations}
               onLocationSelect={handleMapLocationSelect}
               selectedLocation={selectedLocation}
+              mapCenter={mapCenter}
               initialCenter={[-6.77, -79.84]}
               initialZoom={13}
               onZoomChange={handleZoomChange}
