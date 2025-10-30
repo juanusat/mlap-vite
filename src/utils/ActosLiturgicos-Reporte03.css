@@ -101,6 +101,9 @@
     display: grid;
     grid-template-columns: 120px repeat(7, 1fr);
 }
+.grid-header.table-schedule{
+  padding: 0px;
+}
 
 .grid-cell {
     padding: 12px;

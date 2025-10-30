@@ -26,6 +26,7 @@ hr {
     gap: var(--space-0);
 }
 
+/* Overlay oculto por defecto (en desktop no se muestra) */
 .aside-overlay {
     display: none;
 }
@@ -45,18 +46,19 @@ hr {
     .screenman-aside.open {
         transform: translateX(0);
     }
-}
-
-.aside-overlay {
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
+    
+    /* El overlay solo se muestra en modo responsivo */
+    .aside-overlay {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
 }
 
 @keyframes fadeIn {
