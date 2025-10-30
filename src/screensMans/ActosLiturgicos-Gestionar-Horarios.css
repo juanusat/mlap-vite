@@ -113,9 +113,12 @@
   border-collapse: collapse;
 }
 
-.grid-header {
+.grid-header  {
   display: table-row;
   background-color: var(--color-n-10);
+}
+.grid-header.table-schedule{
+  padding: 0px;
 }
 
 .grid-row {

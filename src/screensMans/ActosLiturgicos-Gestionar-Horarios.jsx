@@ -588,7 +588,7 @@ export default function ActosLiturgicosHorarios() {
 
                         <div className="horarios-grid-container">
                                 <div className="horarios-grid">
-                                    <div className="grid-header">
+                                    <div className="grid-header table-schedule">
                                         <div className="grid-cell header-cell"></div>
                                         {daysOfWeek.map((day, index) => (
                                             <div key={index} className="grid-cell header-cell">
