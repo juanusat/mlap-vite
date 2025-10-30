@@ -94,6 +94,11 @@ export default function ReservasHistorial() {
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
+    { 
+      key: 'beneficiary_full_name', 
+      header: 'Beneficiario', 
+      accessor: (row) => row.beneficiary_full_name 
+    },
     { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
     { 
       key: 'event_date', 
@@ -164,8 +169,8 @@ export default function ReservasHistorial() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="90px 1fr 170px 100px 140px 220px"
-                    columnLeftAlignIndex={[2]}
+                    gridColumnsLayout="80px 1fr 180px 120px 100px 120px 220px"
+                    columnLeftAlignIndex={[1, 2]}
                   />
                   
                   {totalPages > 1 && (
@@ -208,6 +213,7 @@ export default function ReservasHistorial() {
             <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
           </div>
           <div className="sidebar-list">
+            <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
             <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>

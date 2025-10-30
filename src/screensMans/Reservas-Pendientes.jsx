@@ -107,6 +107,11 @@ export default function ReservasPendientes() {
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
+    { 
+      key: 'beneficiary_full_name', 
+      header: 'Beneficiario', 
+      accessor: (row) => row.beneficiary_full_name 
+    },
     { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
     { 
       key: 'event_date', 
@@ -176,8 +181,8 @@ export default function ReservasPendientes() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="90px auto 170px 140px 140px 220px"
-                    columnLeftAlignIndex={[2, 3]}
+                    gridColumnsLayout="80px 1fr 180px 120px 140px 120px 220px"
+                    columnLeftAlignIndex={[1, 2]}
                   />
                   
                   {totalPages > 1 && (
