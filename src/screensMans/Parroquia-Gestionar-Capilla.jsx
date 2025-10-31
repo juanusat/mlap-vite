@@ -295,7 +295,7 @@ function ChapelForm({ mode, initialData, onSave }) {
           required
         />
         <label>Coordenadas</label>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div className="chapel-coordinates-container">
           <input
             type="text"
             className="inputModal"
@@ -303,33 +303,14 @@ function ChapelForm({ mode, initialData, onSave }) {
             onChange={e => setCoordinates(e.target.value)}
             disabled={disabled}
             placeholder="Latitud, Longitud"
-            style={{ 
-              flex: '0 1 55%',
-              fontSize: '13px',
-              padding: '8px'
-            }}
           />
           {!disabled && (
             <button
               type="button"
-              className="btn-select-location"
+              className="chapel-btn-select-location"
               onClick={handleOpenMapModal}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                fontSize: '13px',
-                flex: '0 0 auto'
-              }}
             >
-              <FaMapMarkedAlt size={14} />
+              <FaMapMarkedAlt />
               Seleccionar ubicación
             </button>
           )}
@@ -374,40 +355,73 @@ function MapModalPortal({ showMapModal, handleCloseMapModal, handleConfirmLocati
   if (!showMapModal) return null;
 
   return createPortal(
-    <MyModalGreatSize open={showMapModal} onClose={handleCloseMapModal}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div style={{ 
-          padding: '10px 20px', 
-          borderBottom: '1px solid #ddd',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <h3 style={{ margin: 0 }}>Seleccionar Ubicación de la Capilla</h3>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              type="button"
-              onClick={handleConfirmLocation}
-              disabled={!selectedCoordinates}
-              style={{
-                padding: '8px 20px',
-                backgroundColor: selectedCoordinates ? '#4CAF50' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedCoordinates ? 'pointer' : 'not-allowed'
-              }}
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
+    <MyModalGreatSize 
+      open={showMapModal} 
+      title="Seleccionar Ubicación de la Capilla"
+      onClose={handleCloseMapModal}
+    >
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <MyMapSelector
             onMapClick={handleMapClick}
             selectedCoordinates={selectedCoordinates}
             initialCenter={coordinates ? parseCoordinates(coordinates) : [-6.77, -79.84]}
+            initialZoom={13}
           />
+        </div>
+        <div style={{ 
+          padding: '1rem 2rem', 
+          borderTop: '1px solid var(--color-n-50)', 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: 'var(--color-n-0)'
+        }}>
+          <div>
+            {selectedCoordinates ? (
+              <p style={{ margin: 0, fontSize: 'var(--font-size-body)' }}>
+                <strong>Coordenadas seleccionadas:</strong>
+                <br />
+                Latitud: {selectedCoordinates.lat}, Longitud: {selectedCoordinates.lng}
+              </p>
+            ) : (
+              <p style={{ margin: 0, color: 'var(--color-n-500)' }}>
+                Haz clic en cualquier punto del mapa para seleccionar la ubicación
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleConfirmLocation}
+            disabled={!selectedCoordinates}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: selectedCoordinates ? 'var(--color-a-350)' : 'var(--color-n-200)',
+              color: 'var(--color-n-0)',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: selectedCoordinates ? 'pointer' : 'not-allowed',
+              fontWeight: 'bold',
+              fontSize: 'var(--font-size-body)',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              if (selectedCoordinates) {
+                e.target.style.backgroundColor = 'var(--color-a-400)';
+                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedCoordinates) {
+                e.target.style.backgroundColor = 'var(--color-a-350)';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
+              }
+            }}
+          >
+            Confirmar ubicación
+          </button>
         </div>
       </div>
     </MyModalGreatSize>,
