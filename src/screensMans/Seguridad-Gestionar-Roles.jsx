@@ -242,25 +242,33 @@ export default function RolesGestionar() {
 
         try {
             setLoading(true);
+            console.log('=== CARGA DE PERMISOS DESDE BD ===');
+            console.log('Solicitando permisos para Rol ID:', rol.ID);
+            
             const permissions = await roleService.getRolePermissions(sessionData.parish.id, rol.ID);
             
-            console.log('=== CARGA DE PERMISOS ===');
-            console.log('Rol ID:', rol.ID);
-            console.log('Permisos recibidos del backend:', permissions);
-            console.log('Total permisos:', permissions.length);
+            console.log('✅ Permisos recibidos del backend (BD):', permissions.length);
+            console.log('✅ Permisos activos (granted=true) en BD:', permissions.filter(p => p.granted).length);
+            
+            // Mostrar detalle de permisos activos
+            const activePerms = permissions.filter(p => p.granted);
+            if (activePerms.length > 0) {
+                console.log('📋 Detalle de permisos activos en BD:');
+                activePerms.forEach(perm => {
+                    console.log(`   - ${perm.code}: ${perm.name}`);
+                });
+            } else {
+                console.log('⚠️ No hay permisos activos en BD para este rol');
+            }
             
             setAvailablePermissions(permissions);
             
             const permissionsMap = {};
             permissions.forEach(perm => {
                 permissionsMap[perm.code] = perm.granted;
-                if (perm.granted) {
-                    console.log(`Permiso ACTIVO: ${perm.code} = ${perm.granted}`);
-                }
             });
             
-            console.log('Mapa completo de permisos:', permissionsMap);
-            console.log('Permisos activos:', Object.entries(permissionsMap).filter(([k,v]) => v).length);
+            console.log('Mapa de permisos creado:', Object.keys(permissionsMap).length, 'permisos');
             
             setPermissionsForm(permissionsMap);
             
@@ -288,23 +296,20 @@ export default function RolesGestionar() {
         try {
             setLoading(true);
             
-            // Crear array de permisos usando directamente el estado del formulario
-            // En lugar de iterar sobre availablePermissions, iteramos sobre permissionsForm
-            const permissions = Object.entries(permissionsForm).map(([code, granted]) => {
-                // Buscar el permission_id correspondiente al code en availablePermissions
-                const permission = availablePermissions.find(p => p.code === code);
-                if (!permission) {
-                    console.warn(`No se encontró permission_id para el código: ${code}`);
-                    return null;
-                }
-                return {
-                    permission_id: permission.permission_id,
-                    granted: granted
-                };
-            }).filter(p => p !== null); // Filtrar nulls
+            console.log('=== GUARDADO DE PERMISOS ===');
+            console.log('Estado del formulario completo:', permissionsForm);
+            console.log('Permisos disponibles:', availablePermissions.length);
+            
+            // Crear array de permisos usando TODOS los permisos disponibles
+            // y tomando el valor de granted desde permissionsForm (si existe) o false por defecto
+            const permissions = availablePermissions.map(perm => ({
+                permission_id: perm.permission_id,
+                granted: permissionsForm[perm.code] || false
+            }));
 
-            console.log('Permisos a guardar:', permissions);
-            console.log('Estado del formulario:', permissionsForm);
+            console.log('Permisos a guardar (total):', permissions.length);
+            console.log('Permisos a guardar con granted=true:', permissions.filter(p => p.granted).length);
+            console.log('Primeros 10 permisos a guardar:', permissions.slice(0, 10));
 
             const result = await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
             console.log('Resultado del guardado:', result);
