@@ -333,6 +333,7 @@
     font-size: var(--font-size-s);
     outline: none;
     background-color: var(--color-n-0);
+    color: var(--color-n-800);
 }
 .inputTime{
   width: 50%;
