@@ -3,6 +3,7 @@ import MyButtonShortAction from '../components/MyButtonShortAction';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import Modal from '../components/Modal';
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import MySchedule from '../components/MySchedule';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -586,48 +587,37 @@ export default function ActosLiturgicosHorarios() {
                             </MyPanelLateralConfig>
                         )}
 
-                        <div className="horarios-grid-container">
-                                <div className="horarios-grid">
-                                    <div className="grid-header table-schedule">
-                                        <div className="grid-cell header-cell"></div>
-                                        {daysOfWeek.map((day, index) => (
-                                            <div key={index} className="grid-cell header-cell">
-                                                <div className="day-name">{day}</div>
-                                                <div className="day-date">{weekDates[index].getDate()}</div>
-                                            </div>
-                                        ))}
+                        <MySchedule
+                            timeSlots={timeSlots}
+                            daysOfWeek={daysOfWeek}
+                            weekDates={weekDates}
+                            showDates={true}
+                            mode="schedule"
+                            renderCell={(rowIndex, colIndex) => {
+                                const isSelected = isCellInInterval(rowIndex, colIndex);
+                                const hasException = hasExceptionForCell(rowIndex, colIndex);
+                                const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
+                                
+                                return (
+                                    <div
+                                        className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
+                                        data-row={rowIndex}
+                                        data-col={colIndex}
+                                        onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
+                                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                        onMouseUp={() => handleCellMouseUp(rowIndex)}
+                                        onClick={() => handleCellClick(rowIndex, colIndex)}
+                                    >
+                                        {isSelected && !hasException && (
+                                            <div className="interval-marker"></div>
+                                        )}
+                                        {hasException && (
+                                            <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
+                                        )}
                                     </div>
-                                    {timeSlots.map((timeSlot, rowIndex) => (
-                                        <div key={rowIndex} className="grid-row">
-                                            <div className="grid-cell time-cell">{timeSlot}</div>
-                                            {daysOfWeek.map((_, colIndex) => {
-                                                const isSelected = isCellInInterval(rowIndex, colIndex);
-                                                const hasException = hasExceptionForCell(rowIndex, colIndex);
-                                                const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
-                                                return (
-                                                    <div
-                                                        key={colIndex}
-                                                        className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
-                                                        data-row={rowIndex}
-                                                        data-col={colIndex}
-                                                        onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
-                                                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                                        onMouseUp={() => handleCellMouseUp(rowIndex)}
-                                                        onClick={() => handleCellClick(rowIndex, colIndex)}
-                                                    >
-                                                        {isSelected && !hasException && (
-                                                            <div className="interval-marker"></div>
-                                                        )}
-                                                        {hasException && (
-                                                            <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                                );
+                            }}
+                        />
 
                             <div className="exceptions-container">
                                 <ExcepcionesSection

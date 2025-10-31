@@ -1,0 +1,200 @@
+/* Contenedor principal de la grilla de horarios */
+.schedule-grid-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 2rem;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-rows: auto repeat(auto-fill, 1fr);
+    min-width: 100%;
+    width: fit-content;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Header de la grilla */
+.grid-header {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.grid-header.table-schedule {
+    min-width: 800px;
+}
+
+.grid-cell {
+    padding: 0.75rem;
+    text-align: center;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-cell:last-child {
+    border-right: none;
+}
+
+.header-cell {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.day-name {
+    font-size: var(--font-size-medium);
+    margin-bottom: 0.25rem;
+}
+
+.day-date {
+    font-size: var(--font-size-small);
+    opacity: 0.9;
+}
+
+/* Filas de la grilla */
+.grid-row {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    min-width: 800px;
+}
+
+.time-cell {
+    background-color: #f5f5f5;
+    font-weight: 500;
+    font-size: var(--font-size-small);
+    color: #666;
+}
+
+/* Estilos específicos para modo horario */
+.schedule-mode .day-cell {
+    position: relative;
+    min-height: 60px;
+    cursor: default;
+    background-color: white;
+    transition: background-color 0.2s ease;
+}
+
+.schedule-mode .day-cell.editable {
+    cursor: pointer;
+}
+
+.schedule-mode .day-cell.editable:hover {
+    background-color: #f0f7ff;
+}
+
+.schedule-mode .day-cell.selected {
+    background-color: #e3f2fd;
+}
+
+.schedule-mode .day-cell.exception {
+    position: relative;
+}
+
+.schedule-mode .day-cell.exception-disponibilidad {
+    background-color: #c8e6c9;
+}
+
+.schedule-mode .day-cell.exception-no-disponibilidad {
+    background-color: #ffcdd2;
+}
+
+.schedule-mode .day-cell.dragging {
+    background-color: #bbdefb !important;
+}
+
+/* Marcadores de intervalo */
+.interval-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(33, 150, 243, 0.2);
+    pointer-events: none;
+}
+
+.exception-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.exception-marker-disponibilidad {
+    background-color: rgba(76, 175, 80, 0.3);
+}
+
+.exception-marker-no-disponibilidad {
+    background-color: rgba(244, 67, 54, 0.3);
+}
+
+/* Estilos específicos para modo heatmap */
+.heatmap-mode .heatmap-cell {
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+}
+
+.heatmap-mode .heatmap-cell:hover {
+    transform: scale(1.05);
+    z-index: 1;
+}
+
+.heatmap-percentage {
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .schedule-grid-container {
+        overflow-x: scroll;
+    }
+
+    .grid-header,
+    .grid-row {
+        min-width: 600px;
+    }
+
+    .grid-cell {
+        padding: 0.5rem;
+        font-size: var(--font-size-small);
+    }
+
+    .day-name {
+        font-size: var(--font-size-small);
+    }
+
+    .day-date {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-header,
+    .grid-row {
+        grid-template-columns: 80px repeat(7, 1fr);
+    }
+
+    .grid-cell {
+        padding: 0.4rem;
+    }
+
+    .schedule-mode .day-cell,
+    .heatmap-mode .heatmap-cell {
+        min-height: 50px;
+    }
+}
