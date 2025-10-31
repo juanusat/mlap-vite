@@ -21,11 +21,12 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 200;
     font-size: var(--font-size-body);
     transition: all 0.2s ease;
-    white-space: nowrap;
-    height: fit-content;
+    height: 40px; /* Altura fija para coincidir con el input */
+    margin-bottom: 16px; /* Mismo margen que el input de TextInput */
+    flex-shrink: 0; /* Evita que el botón se encoja */
 }
 
 .btn-select-location:hover {
