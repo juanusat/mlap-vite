@@ -1,0 +1,122 @@
+/* Estilos para Gestionar Cuenta de Parroquia */
+
+.coordinates-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.coordinates-input-container > div {
+    flex: 1;
+}
+
+.btn-select-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-a-350);
+    color: var(--color-n-0);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 200;
+    font-size: var(--font-size-body);
+    transition: all 0.2s ease;
+    height: 40px; /* Altura fija para coincidir con el input */
+    margin-bottom: 16px; /* Mismo margen que el input de TextInput */
+    flex-shrink: 0; /* Evita que el botón se encoja */
+}
+
+.btn-select-location:hover {
+    background-color: var(--color-a-400);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-select-location:active {
+    transform: translateY(0);
+}
+
+.btn-select-location svg {
+    font-size: 1.2em;
+}
+
+.color-input-container,
+.foto-input-container {
+    margin-bottom: 1rem;
+}
+
+.foto-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-n-700);
+    font-size: var(--font-size-body);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-n-50);
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--color-n-700);
+}
+
+.info-value {
+    color: var(--color-n-900);
+}
+
+.color-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-sample {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid var(--color-n-200);
+}
+
+.password-row {
+    align-items: center;
+}
+
+.password-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.error-message {
+    color: var(--color-error, #dc2626);
+    margin-top: 0.5rem;
+    font-size: var(--font-size-s);
+}
+
+.loading-message {
+    text-align: center;
+    padding: 1rem;
+    color: var(--color-n-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .coordinates-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-select-location {
+        width: 100%;
+        justify-content: center;
+    }
+}

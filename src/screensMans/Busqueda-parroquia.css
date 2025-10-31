@@ -321,25 +321,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Información adicional sobre zoom */
-.zoom-info {
-  background: var(--color-n-50);
-  border-radius: 6px;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  font-size: var(--font-size-xs);
-  color: var(--color-n-600);
-  text-align: center;
-}
-
-
-.zoom-info.show-chapels {
-  background: var(--color-blue-50);
-  border-color: var(--color-blue-200);
-  color: var(--color-blue-700);
-}
-
 /* Ajustes para el contenedor principal */
 .content-module.only-this .app-container .search-add {
   margin-bottom: 1.5rem;
@@ -376,10 +357,6 @@
     order: 1;
     display: flex;
     flex-direction: column;
-  }
-
-  .zoom-info {
-    order: 2;
   }
 
   .parish-info-panel {

@@ -1,272 +1,269 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MyBarSearchGen from '../components/MyBarSearchGen';
-import MyButtonShortAction from '../components/MyButtonShortAction';
+import MyMapContainer from '../components/MyMapContainer';
 import ScreenMan from '../components/ScreenMan';
 import '../utils/Estilos-Generales-1.css';
 import './Busqueda-parroquia.css';
 import * as publicChurchService from '../services/publicChurchService';
 
-const parroquiasDataOLD = [
-  {
-    id: 1,
-    nombre: "Santa María Catedral",
-    tipo: "parroquia",
-    latitud: -6.771611,
-    longitud: -79.837778,
-    direccion: "Plaza de Armas, Chiclayo",
-    telefono: "(074) 123-456",
-    parroco: "Padre José García",
-    descripcion: "Catedral principal de la Diócesis de Chiclayo",
-    eventos: [
-      { id: 1, nombre: "Matrimonio" },
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 4, nombre: "Confirmación" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 2,
-    nombre: "El Señor de los Milagros",
-    tipo: "parroquia",
-    latitud: -6.7725,
-    longitud: -79.8341,
-    direccion: "Av. Bolognesi 485, Chiclayo",
-    telefono: "(074) 234-567",
-    parroco: "Padre Miguel Rodríguez",
-    descripcion: "Parroquia dedicada al Señor de los Milagros",
-    eventos: [
-      { id: 1, nombre: "Matrimonio" },
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 4, nombre: "Confirmación" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 3,
-    nombre: "Santa Rosa de Lima",
-    tipo: "parroquia",
-    latitud: -6.748333,
-    longitud: -79.835,
-    direccion: "Calle Santa Rosa 123, Chiclayo",
-    telefono: "(074) 345-678",
-    parroco: "Padre Carlos Mendoza",
-    descripcion: "Parroquia en honor a Santa Rosa de Lima",
-    eventos: [
-      { id: 1, nombre: "Matrimonio" },
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 4, nombre: "Confirmación" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 4,
-    nombre: "San José Obrero",
-    tipo: "parroquia",
-    latitud: -6.7975,
-    longitud: -79.8441,
-    direccion: "Av. José Balta 789, Chiclayo",
-    telefono: "(074) 456-789",
-    parroco: "Padre Luis Fernández",
-    descripcion: "Parroquia dedicada a San José Obrero",
-    eventos: [
-      { id: 1, nombre: "Matrimonio" },
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 4, nombre: "Confirmación" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 5,
-    nombre: "Sagrado Corazón de Jesús",
-    tipo: "parroquia",
-    latitud: -6.7533,
-    longitud: -79.8525,
-    direccion: "Av. Leguía 234, Chiclayo",
-    telefono: "(074) 567-890",
-    parroco: "Padre Antonio Silva",
-    descripcion: "Parroquia del Sagrado Corazón de Jesús",
-    eventos: [
-      { id: 1, nombre: "Matrimonio" },
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 4, nombre: "Confirmación" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  }
-];
+// const parroquiasDataOLD = [
+//   {
+//     id: 1,
+//     nombre: "Santa María Catedral",
+//     tipo: "parroquia",
+//     latitud: -6.771611,
+//     longitud: -79.837778,
+//     direccion: "Plaza de Armas, Chiclayo",
+//     telefono: "(074) 123-456",
+//     parroco: "Padre José García",
+//     descripcion: "Catedral principal de la Diócesis de Chiclayo",
+//     eventos: [
+//       { id: 1, nombre: "Matrimonio" },
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 4, nombre: "Confirmación" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 2,
+//     nombre: "El Señor de los Milagros",
+//     tipo: "parroquia",
+//     latitud: -6.7725,
+//     longitud: -79.8341,
+//     direccion: "Av. Bolognesi 485, Chiclayo",
+//     telefono: "(074) 234-567",
+//     parroco: "Padre Miguel Rodríguez",
+//     descripcion: "Parroquia dedicada al Señor de los Milagros",
+//     eventos: [
+//       { id: 1, nombre: "Matrimonio" },
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 4, nombre: "Confirmación" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 3,
+//     nombre: "Santa Rosa de Lima",
+//     tipo: "parroquia",
+//     latitud: -6.748333,
+//     longitud: -79.835,
+//     direccion: "Calle Santa Rosa 123, Chiclayo",
+//     telefono: "(074) 345-678",
+//     parroco: "Padre Carlos Mendoza",
+//     descripcion: "Parroquia en honor a Santa Rosa de Lima",
+//     eventos: [
+//       { id: 1, nombre: "Matrimonio" },
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 4, nombre: "Confirmación" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 4,
+//     nombre: "San José Obrero",
+//     tipo: "parroquia",
+//     latitud: -6.7975,
+//     longitud: -79.8441,
+//     direccion: "Av. José Balta 789, Chiclayo",
+//     telefono: "(074) 456-789",
+//     parroco: "Padre Luis Fernández",
+//     descripcion: "Parroquia dedicada a San José Obrero",
+//     eventos: [
+//       { id: 1, nombre: "Matrimonio" },
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 4, nombre: "Confirmación" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 5,
+//     nombre: "Sagrado Corazón de Jesús",
+//     tipo: "parroquia",
+//     latitud: -6.7533,
+//     longitud: -79.8525,
+//     direccion: "Av. Leguía 234, Chiclayo",
+//     telefono: "(074) 567-890",
+//     parroco: "Padre Antonio Silva",
+//     descripcion: "Parroquia del Sagrado Corazón de Jesús",
+//     eventos: [
+//       { id: 1, nombre: "Matrimonio" },
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 4, nombre: "Confirmación" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   }
+// ];
 
-const capillasDataOLD = [
-  // Capillas de Santa María Catedral (id: 1)
-  {
-    id: 101,
-    nombre: "Capilla del Santísimo Sacramento",
-    tipo: "capilla",
-    parroquiaId: 1,
-    latitud: -6.7720,
-    longitud: -79.8385,
-    direccion: "Calle San José 145, Chiclayo",
-    telefono: "(074) 123-457",
-    encargado: "Hermana María Gonzáles",
-    descripcion: "Capilla dedicada al Santísimo Sacramento",
-    eventos: [
-      { id: 1, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 102,
-    nombre: "Capilla San Francisco",
-    tipo: "capilla",
-    parroquiaId: 1,
-    latitud: -6.7695,
-    longitud: -79.8395,
-    direccion: "Jr. Francisco Bolognesi 67, Chiclayo",
-    telefono: "(074) 123-458",
-    encargado: "Padre Juan Carlos",
-    descripcion: "Capilla en honor a San Francisco de Asís",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
+// const capillasDataOLD = [
+//   // Capillas de Santa María Catedral (id: 1)
+//   {
+//     id: 101,
+//     nombre: "Capilla del Santísimo Sacramento",
+//     tipo: "capilla",
+//     parroquiaId: 1,
+//     latitud: -6.7720,
+//     longitud: -79.8385,
+//     direccion: "Calle San José 145, Chiclayo",
+//     telefono: "(074) 123-457",
+//     encargado: "Hermana María Gonzáles",
+//     descripcion: "Capilla dedicada al Santísimo Sacramento",
+//     eventos: [
+//       { id: 1, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 102,
+//     nombre: "Capilla San Francisco",
+//     tipo: "capilla",
+//     parroquiaId: 1,
+//     latitud: -6.7695,
+//     longitud: -79.8395,
+//     direccion: "Jr. Francisco Bolognesi 67, Chiclayo",
+//     telefono: "(074) 123-458",
+//     encargado: "Padre Juan Carlos",
+//     descripcion: "Capilla en honor a San Francisco de Asís",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
 
-  // Capillas de El Señor de los Milagros (id: 2)
-  {
-    id: 201,
-    nombre: "Capilla Virgen de Fátima",
-    tipo: "capilla",
-    parroquiaId: 2,
-    latitud: -6.7735,
-    longitud: -79.8355,
-    direccion: "Av. Grau 456, Chiclayo",
-    telefono: "(074) 234-568",
-    encargado: "Hermana Carmen López",
-    descripcion: "Capilla dedicada a la Virgen de Fátima",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
+//   // Capillas de El Señor de los Milagros (id: 2)
+//   {
+//     id: 201,
+//     nombre: "Capilla Virgen de Fátima",
+//     tipo: "capilla",
+//     parroquiaId: 2,
+//     latitud: -6.7735,
+//     longitud: -79.8355,
+//     direccion: "Av. Grau 456, Chiclayo",
+//     telefono: "(074) 234-568",
+//     encargado: "Hermana Carmen López",
+//     descripcion: "Capilla dedicada a la Virgen de Fátima",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
 
-  // Capillas de Santa Rosa de Lima (id: 3)
-  {
-    id: 301,
-    nombre: "Capilla San Antonio",
-    tipo: "capilla",
-    parroquiaId: 3,
-    latitud: -6.7465,
-    longitud: -79.8365,
-    direccion: "Calle Los Laureles 89, Chiclayo",
-    telefono: "(074) 345-679",
-    encargado: "Padre Roberto Díaz",
-    descripcion: "Capilla dedicada a San Antonio de Padua",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 302,
-    nombre: "Capilla Virgen del Carmen",
-    tipo: "capilla",
-    parroquiaId: 3,
-    latitud: -6.7455,
-    longitud: -79.8335,
-    direccion: "Jr. El Carmen 234, Chiclayo",
-    telefono: "(074) 345-680",
-    encargado: "Hermana Rosa Medina",
-    descripcion: "Capilla en honor a la Virgen del Carmen",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 303,
-    nombre: "Capilla Santa Teresita",
-    tipo: "capilla",
-    parroquiaId: 3,
-    latitud: -6.7475,
-    longitud: -79.8345,
-    direccion: "Av. Santa Teresa 678, Chiclayo",
-    telefono: "(074) 345-681",
-    encargado: "Padre Miguel Herrera",
-    descripcion: "Capilla dedicada a Santa Teresita del Niño Jesús",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" }
-    ]
-  },
+//   // Capillas de Santa Rosa de Lima (id: 3)
+//   {
+//     id: 301,
+//     nombre: "Capilla San Antonio",
+//     tipo: "capilla",
+//     parroquiaId: 3,
+//     latitud: -6.7465,
+//     longitud: -79.8365,
+//     direccion: "Calle Los Laureles 89, Chiclayo",
+//     telefono: "(074) 345-679",
+//     encargado: "Padre Roberto Díaz",
+//     descripcion: "Capilla dedicada a San Antonio de Padua",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 302,
+//     nombre: "Capilla Virgen del Carmen",
+//     tipo: "capilla",
+//     parroquiaId: 3,
+//     latitud: -6.7455,
+//     longitud: -79.8335,
+//     direccion: "Jr. El Carmen 234, Chiclayo",
+//     telefono: "(074) 345-680",
+//     encargado: "Hermana Rosa Medina",
+//     descripcion: "Capilla en honor a la Virgen del Carmen",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 303,
+//     nombre: "Capilla Santa Teresita",
+//     tipo: "capilla",
+//     parroquiaId: 3,
+//     latitud: -6.7475,
+//     longitud: -79.8345,
+//     direccion: "Av. Santa Teresa 678, Chiclayo",
+//     telefono: "(074) 345-681",
+//     encargado: "Padre Miguel Herrera",
+//     descripcion: "Capilla dedicada a Santa Teresita del Niño Jesús",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" }
+//     ]
+//   },
 
-  // Capillas de San José Obrero (id: 4)
-  {
-    id: 401,
-    nombre: "Capilla Cristo Rey",
-    tipo: "capilla",
-    parroquiaId: 4,
-    latitud: -6.7985,
-    longitud: -79.8455,
-    direccion: "Calle Cristo Rey 123, Chiclayo",
-    telefono: "(074) 456-790",
-    encargado: "Padre Carlos Vega",
-    descripcion: "Capilla dedicada a Cristo Rey",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
-  {
-    id: 402,
-    nombre: "Capilla San Judas Tadeo",
-    tipo: "capilla",
-    parroquiaId: 4,
-    latitud: -6.7965,
-    longitud: -79.8425,
-    direccion: "Jr. San Judas 345, Chiclayo",
-    telefono: "(074) 456-791",
-    encargado: "Hermana Isabel Torres",
-    descripcion: "Capilla en honor a San Judas Tadeo",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  },
+//   // Capillas de San José Obrero (id: 4)
+//   {
+//     id: 401,
+//     nombre: "Capilla Cristo Rey",
+//     tipo: "capilla",
+//     parroquiaId: 4,
+//     latitud: -6.7985,
+//     longitud: -79.8455,
+//     direccion: "Calle Cristo Rey 123, Chiclayo",
+//     telefono: "(074) 456-790",
+//     encargado: "Padre Carlos Vega",
+//     descripcion: "Capilla dedicada a Cristo Rey",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
+//   {
+//     id: 402,
+//     nombre: "Capilla San Judas Tadeo",
+//     tipo: "capilla",
+//     parroquiaId: 4,
+//     latitud: -6.7965,
+//     longitud: -79.8425,
+//     direccion: "Jr. San Judas 345, Chiclayo",
+//     telefono: "(074) 456-791",
+//     encargado: "Hermana Isabel Torres",
+//     descripcion: "Capilla en honor a San Judas Tadeo",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   },
 
-  {
-    id: 501,
-    nombre: "Capilla Inmaculada Concepción",
-    tipo: "capilla",
-    parroquiaId: 5,
-    latitud: -6.7545,
-    longitud: -79.8535,
-    direccion: "Av. La Inmaculada 567, Chiclayo",
-    telefono: "(074) 567-891",
-    encargado: "Padre Fernando Ruiz",
-    descripcion: "Capilla de la Inmaculada Concepción",
-    eventos: [
-      { id: 2, nombre: "Bautismo" },
-      { id: 3, nombre: "Primera Comunión" },
-      { id: 5, nombre: "Misa de Difuntos" }
-    ]
-  }
-];
+//   {
+//     id: 501,
+//     nombre: "Capilla Inmaculada Concepción",
+//     tipo: "capilla",
+//     parroquiaId: 5,
+//     latitud: -6.7545,
+//     longitud: -79.8535,
+//     direccion: "Av. La Inmaculada 567, Chiclayo",
+//     telefono: "(074) 567-891",
+//     encargado: "Padre Fernando Ruiz",
+//     descripcion: "Capilla de la Inmaculada Concepción",
+//     eventos: [
+//       { id: 2, nombre: "Bautismo" },
+//       { id: 3, nombre: "Primera Comunión" },
+//       { id: 5, nombre: "Misa de Difuntos" }
+//     ]
+//   }
+// ];
 
 export default function BuscarParroquia() {
   const navigate = useNavigate();
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [markers, setMarkers] = useState({});
   const [selectedLocation, setSelectedLocation] = useState(null); 
   const [selectedByUser, setSelectedByUser] = useState(false);
   const [selectedParroquiaForGrid, setSelectedParroquiaForGrid] = useState(null); 
@@ -279,6 +276,7 @@ export default function BuscarParroquia() {
   const [locationDetails, setLocationDetails] = useState(null);
   const [locationActs, setLocationActs] = useState([]);
   const [parishChapels, setParishChapels] = useState([]);
+  const [mapCenter, setMapCenter] = useState(null); // Para controlar el centrado del mapa
 
   const parseCoordinates = (coordString) => {
     if (!coordString) return [0, 0];
@@ -380,32 +378,6 @@ export default function BuscarParroquia() {
   }, [searchParams]);
 
   useEffect(() => {
-    const loadLeaflet = async () => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      document.head.appendChild(link);
-
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.onload = initMap;
-      document.body.appendChild(script);
-    };
-
-    loadLeaflet();
-
-    return () => {
-      if (map) {
-        map.remove();
-        setMap(null);
-      }
-      if (mapRef.current && mapRef.current._leaflet_id) {
-        delete mapRef.current._leaflet_id;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const performSearch = async () => {
       try {
         setLoading(true);
@@ -436,123 +408,40 @@ export default function BuscarParroquia() {
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
-  useEffect(() => {
-    if (map && filteredLocations.length > 0) {
-      updateMapMarkers(filteredLocations);
-    }
-  }, [filteredLocations, map, currentZoom]);
-
-  const initMap = () => {
-    if (!window.L || !mapRef.current) return;
-    
-    if (mapRef.current._leaflet_id) {
-      return;
-    }
-
-    const leafletMap = window.L.map(mapRef.current).setView([-6.77, -79.84], 13);
-
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(leafletMap);
-
-    leafletMap.on('zoomend', () => {
-      const zoom = leafletMap.getZoom();
-      setCurrentZoom(zoom);
-    });
-
-    setMap(leafletMap);
-  };
-
-  const updateMapMarkers = (locations, leafletMap = map, zoom = currentZoom) => {
-    if (!leafletMap || !window.L) return;
-
-    Object.values(markers).forEach(marker => {
-      leafletMap.removeLayer(marker);
-    });
-
-    const newMarkers = {};
-    const locationsToShow = zoom >= 15 ? locations : locations.filter(l => l.tipo === 'parroquia');
-
-    locationsToShow.forEach(location => {
-      const isParroquia = location.tipo === 'parroquia';
-      const iconColor = isParroquia ? 'red' : 'blue';
-      const iconSize = isParroquia ? [35, 35] : [32, 32];
-
-      const customIcon = window.L.divIcon({
-        className: `custom-marker-${location.tipo}`,
-        html: `<div style="
-          background-color: ${iconColor};
-          width: ${iconSize[0]}px;
-          height: ${iconSize[1]}px;
-          border-radius: 50% 50% 50% 0;
-          border: 2px solid white;
-          transform: rotate(-45deg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        ">
-          <div style="
-            color: var(--color-n-0);
-            font-weight: bold;
-            font-size: ${isParroquia ? '12px' : '10px'};
-            transform: rotate(45deg);
-          ">
-            ${isParroquia ? 'P' : 'C'}
-          </div>
-        </div>`,
-        iconSize: iconSize,
-        iconAnchor: [iconSize[0] / 2, iconSize[1]]
-      });
-
-      const marker = window.L.marker([location.latitud, location.longitud], { icon: customIcon })
-        .addTo(leafletMap)
-        .bindPopup(`
-          <b>${location.nombre}</b><br>
-          <small>${location.tipo === 'parroquia' ? 'Parroquia' : 'Capilla'}</small><br>
-          Haz clic para ver más.
-        `);
-
-      marker.on('click', async () => {
-        setSelectedLocation(location);
-        setSelectedByUser(true);
-        leafletMap.flyTo([location.latitud, location.longitud], 15);
-        await loadLocationDetails(location.id);
-      });
-
-      newMarkers[`${location.tipo}-${location.id}`] = marker;
-    });
-
-    setMarkers(newMarkers);
-  };
-
   const handleVerPerfil = () => {
     if (selectedLocation) {
       navigate(`/capilla?id=${selectedLocation.id}`);
     }
   };
 
+  const handleMapLocationSelect = async (location) => {
+    setSelectedLocation(location);
+    setSelectedByUser(true);
+    setSelectedParroquiaForGrid(null);
+    await loadLocationDetails(location.id);
+  };
+
+  const handleZoomChange = (zoom) => {
+    setCurrentZoom(zoom);
+  };
+
   const handleParroquiaSelect = async (e) => {
     const parishId = parseInt(e.target.value);
     if (parishId) {
-      // Limpiar estados previos antes de cargar nueva parroquia
-      setSelectedParroquiaForGrid(null);
-      setParishChapels([]);
-      setSelectedLocation(null);
-      setSelectedByUser(false);
-      
       const parish = allLocations.find(l => l.id === parishId && l.tipo === 'parroquia');
       if (parish) {
+        // Centrar el mapa sin establecer selectedLocation
+        setMapCenter(parish);
+        
+        // Cargar capillas de la parroquia
         await loadParishWithChapels(parishId);
-        if (map) {
-          map.flyTo([parish.latitud, parish.longitud], 15);
-        }
       }
     } else {
       setSelectedParroquiaForGrid(null);
       setParishChapels([]);
       setSelectedLocation(null);
       setSelectedByUser(false);
+      setMapCenter(null);
     }
   };
 
@@ -561,9 +450,6 @@ export default function BuscarParroquia() {
     setSelectedByUser(true);
     setSelectedParroquiaForGrid(null);
     await loadLocationDetails(location.id);
-    if (map) {
-      map.flyTo([location.latitud, location.longitud], 15);
-    }
   };
 
   return (
@@ -583,15 +469,15 @@ export default function BuscarParroquia() {
           </div>
 
           <div className="map-container-wrapper">
-            <div className="map-container">
-              <div ref={mapRef} style={{ width: '100%', height: '600px' }} />
-              <div className={`zoom-info ${currentZoom >= 15 ? 'show-chapels' : ''}`}>
-                {currentZoom >= 15
-                  ? "🔍 Zoom alto: Se muestran parroquias y capillas"
-                  : "🔍 Haz zoom para ver las capillas"
-                }
-              </div>
-            </div>
+            <MyMapContainer
+              locations={filteredLocations}
+              onLocationSelect={handleMapLocationSelect}
+              selectedLocation={selectedLocation}
+              mapCenter={mapCenter}
+              initialCenter={[-6.77, -79.84]}
+              initialZoom={13}
+              onZoomChange={handleZoomChange}
+            />
 
             <div className="parish-info-panel">
               {!selectedLocation ? (
