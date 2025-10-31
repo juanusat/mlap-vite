@@ -18,64 +18,41 @@ const PERMISSIONS_STRUCTURE = {
             'ACTOS': {
                 name: 'Gestionar actos litúrgicos',
                 permissions: [
-                    { id: 'C_ACTOS_LITURGICOS_ACTOS', name: 'Crear acto litúrgicos' },
-                    { id: 'U_ESTADO_ACTOS_LITURGICOS', name: 'Actualizar estado acto litúrgicos' },
-                    { id: 'R_ACTOS_LITURGICOS_ACTOS', name: 'Leer acto litúrgicos' },
-                    { id: 'U_ACTOS_LITURGICOS_ACTOS', name: 'Actualizar acto litúrgicos' },
-                    { id: 'D_ACTOS_LITURGICOS_ACTOS', name: 'Eliminar acto litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_ACTOS_C', name: 'Crear acto litúrgicos' },
+                    { id: 'ESTADO_ACTOS_LITURGICOS_U', name: 'Actualizar estado acto litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_ACTOS_R', name: 'Leer acto litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_ACTOS_U', name: 'Actualizar acto litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_ACTOS_D', name: 'Eliminar acto litúrgicos' },
                 ]
             },
             'REQUISITOS': {
                 name: 'Gestionar requisitos',
                 permissions: [
-                    { id: 'C_ACTOS_LITURGICOS_REQ', name: 'Crear requisitos' },
-                    { id: 'U_ESTADO_REQ_ACTOS_LIT', name: 'Actualizar estado requisitos' },
-                    { id: 'R_ACTOS_LITURGICOS_REQ', name: 'Leer requisitos' },
-                    { id: 'U_ACTOS_LITURGICOS_REQ', name: 'Actualizar requisitos' },
-                    { id: 'D_ACTOS_LITURGICOS_REQ', name: 'Eliminar requisitos' },
+                    { id: 'ACTOS_LITURGICOS_REQ_C', name: 'Crear requisitos' },
+                    { id: 'ESTADO_REQ_ACTOS_LIT_U', name: 'Actualizar estado requisitos' },
+                    { id: 'ACTOS_LITURGICOS_REQ_R', name: 'Leer requisitos' },
+                    { id: 'ACTOS_LITURGICOS_REQ_U', name: 'Actualizar requisitos' },
+                    { id: 'ACTOS_LITURGICOS_REQ_D', name: 'Eliminar requisitos' },
                 ]
             },
             'HORARIOS': {
                 name: 'Gestionar horarios',
                 permissions: [
-                    { id: 'C_ACTOS_LITURGICOS_HORA', name: 'Crear horario' },
-                    { id: 'U_ACTOS_LITURGICOS_HORA', name: 'Actualizar horario' },
-                    { id: 'C_EXCEP_DISP', name: 'Crear Excepción - Disponibilidad' },
-                    { id: 'U_EXCEP_DISP', name: 'Actualizar Excepción - Disponibilidad' },
-                    { id: 'D_EXCEP_DISP', name: 'Eliminar Excepción - Disponibilidad' },
-                    { id: 'C_EXCEP_NO_DISP', name: 'Crear Excepción NO - Disponibilidad' },
-                    { id: 'U_EXCEP_NO_DISP', name: 'Actualizar Excepción NO - Disponibilidad' },
-                    { id: 'D_EXCEP_NO_DISP', name: 'Eliminar Excepción NO - Disponibilidad' },
+                    { id: 'ACTOS_LITURGICOS_HORA_C', name: 'Crear horario' },
+                    { id: 'ACTOS_LITURGICOS_HORA_U', name: 'Actualizar horario' },
+                    { id: 'EXCEP_DISP_C', name: 'Crear Excepción - Disponibilidad' },
+                    { id: 'EXCEP_DISP_U', name: 'Actualizar Excepción - Disponibilidad' },
+                    { id: 'EXCEP_DISP_D', name: 'Eliminar Excepción - Disponibilidad' },
+                    { id: 'EXCEP_NO_DISP_C', name: 'Crear Excepción NO - Disponibilidad' },
+                    { id: 'EXCEP_NO_DISP_U', name: 'Actualizar Excepción NO - Disponibilidad' },
+                    { id: 'EXCEP_NO_DISP_D', name: 'Eliminar Excepción NO - Disponibilidad' },
                 ]
             },
             'RESERVAS': {
                 name: 'Gestionar Reservas',
                 permissions: [
-                    { id: 'R_ACTOS_LITURGICOS_RESER', name: 'Leer reservas' },
-                    { id: 'U_ACTOS_LITURGICOS_RESER', name: 'Actualizar reservas' },
-                ]
-            },
-        }
-    },
-    'RESERVAS': { 
-        name: 'Reservas',
-        submodules: {
-            'PENDIENTES': {
-                name: 'Reservas pendientes',
-                permissions: [
-                    { id: 'D_RESERVAS_PEND', name: 'Eliminar reserva' },
-                ]
-            },
-            'HISTORIAL': {
-                name: 'Historial de reservas',
-                permissions: [
-                    { id: 'R_RESERVAS_HIST', name: 'Leer reserva' },
-                ]
-            },
-            'RESERVAR': {
-                name: 'Reservar evento',
-                permissions: [
-                    { id: 'C_RESERVAS_EVENTO', name: 'Crear reserva' },
+                    { id: 'ACTOS_LITURGICOS_RESER_R', name: 'Leer reservas' },
+                    { id: 'ACTOS_LITURGICOS_RESER_U', name: 'Actualizar reservas' },
                 ]
             },
         }
@@ -86,22 +63,22 @@ const PERMISSIONS_STRUCTURE = {
             'CUENTAS': {
                 name: 'Gestionar cuentas',
                 permissions: [
-                    { id: 'C_SEGURIDAD_ASOC_USER', name: 'Crear asociacion usuario' },
-                    { id: 'U_ESTADO_ASOC_USER', name: 'Actualizar estado asociacion usuario' },
-                    { id: 'R_SEGURIDAD_ASOC_USER', name: 'Leer asociacion usuario' },
-                    { id: 'C_ROL_ASOC_USER', name: 'Crear rol - asosiacion usuario' },
-                    { id: 'D_SEGURIDAD_ASOC_USER', name: 'Eliminar asosiacion usuario' },
+                    { id: 'SEGURIDAD_ASOC_USER_C', name: 'Crear asociacion usuario' },
+                    { id: 'ESTADO_ASOC_USER_U', name: 'Actualizar estado asociacion usuario' },
+                    { id: 'SEGURIDAD_ASOC_USER_R', name: 'Leer asociacion usuario' },
+                    { id: 'ROL_ASOC_USER_C', name: 'Crear rol - asosiacion usuario' },
+                    { id: 'SEGURIDAD_ASOC_USER_D', name: 'Eliminar asosiacion usuario' },
                 ]
             },
             'ROLES': {
                 name: 'Gestionar roles',
                 permissions: [
-                    { id: 'C_SEGURIDAD_ROL', name: 'Crear rol' },
-                    { id: 'U_ESTADO_ROL', name: 'Actualizar estado rol' },
-                    { id: 'R_SEGURIDAD_ROL', name: 'Leer rol' },
-                    { id: 'U_SEGURIDAD_ROL_PERMS', name: 'Actualizar rol - permisos' },
-                    { id: 'U_SEGURIDAD_ROL_DATA', name: 'Actualizar rol' },
-                    { id: 'D_SEGURIDAD_ROL', name: 'Eliminar rol' },
+                    { id: 'SEGURIDAD_ROL_C', name: 'Crear rol' },
+                    { id: 'ESTADO_ROL_U', name: 'Actualizar estado rol' },
+                    { id: 'SEGURIDAD_ROL_R', name: 'Leer rol' },
+                    { id: 'SEGURIDAD_ROL_PERMS_U', name: 'Actualizar rol - permisos' },
+                    { id: 'SEGURIDAD_ROL_DATA_U', name: 'Actualizar rol' },
+                    { id: 'SEGURIDAD_ROL_D', name: 'Eliminar rol' },
                 ]
             },
         }
@@ -112,20 +89,20 @@ const PERMISSIONS_STRUCTURE = {
             'CUENTA': {
                 name: 'Gestionar cuenta',
                 permissions: [
-                    { id: 'R_PARROQUIA_INFO', name: 'Leer información de la parroquia' },
-                    { id: 'U_PARROQUIA_INFO', name: 'Actualizar información de la parroquia' },
-                    { id: 'R_PARROQUIA_DATOS_CUENTA', name: 'Leer Datos de la cuenta' },
-                    { id: 'U_PARROQUIA_DATOS_CUENTA', name: 'Actualizar Datos de la cuenta' },
+                    { id: 'PARROQUIA_INFO_R', name: 'Leer información de la parroquia' },
+                    { id: 'PARROQUIA_INFO_U', name: 'Actualizar información de la parroquia' },
+                    { id: 'PARROQUIA_DATOS_CUENTA_R', name: 'Leer Datos de la cuenta' },
+                    { id: 'PARROQUIA_DATOS_CUENTA_U', name: 'Actualizar Datos de la cuenta' },
                 ]
             },
             'CAPILLA': {
                 name: 'Gestionar capilla',
                 permissions: [
-                    { id: 'C_PARROQUIA_CAPILLA', name: 'Crear capilla' },
-                    { id: 'U_ESTADO_CAPILLA', name: 'Actualizar estado capilla' },
-                    { id: 'R_PARROQUIA_CAPILLA', name: 'Leer capilla' },
-                    { id: 'U_PARROQUIA_CAPILLA', name: 'Actualizar capilla' },
-                    { id: 'D_PARROQUIA_CAPILLA', name: 'Eliminar capilla' },
+                    { id: 'PARROQUIA_CAPILLA_C', name: 'Crear capilla' },
+                    { id: 'ESTADO_CAPILLA_U', name: 'Actualizar estado capilla' },
+                    { id: 'PARROQUIA_CAPILLA_R', name: 'Leer capilla' },
+                    { id: 'PARROQUIA_CAPILLA_U', name: 'Actualizar capilla' },
+                    { id: 'PARROQUIA_CAPILLA_D', name: 'Eliminar capilla' },
                 ]
             },
         }
@@ -265,9 +242,24 @@ export default function RolesGestionar() {
 
         try {
             setLoading(true);
+            console.log('=== CARGA DE PERMISOS DESDE BD ===');
+            console.log('Solicitando permisos para Rol ID:', rol.ID);
+            
             const permissions = await roleService.getRolePermissions(sessionData.parish.id, rol.ID);
             
-            console.log('Permisos recibidos del backend:', permissions);
+            console.log('✅ Permisos recibidos del backend (BD):', permissions.length);
+            console.log('✅ Permisos activos (granted=true) en BD:', permissions.filter(p => p.granted).length);
+            
+            // Mostrar detalle de permisos activos
+            const activePerms = permissions.filter(p => p.granted);
+            if (activePerms.length > 0) {
+                console.log('📋 Detalle de permisos activos en BD:');
+                activePerms.forEach(perm => {
+                    console.log(`   - ${perm.code}: ${perm.name}`);
+                });
+            } else {
+                console.log('⚠️ No hay permisos activos en BD para este rol');
+            }
             
             setAvailablePermissions(permissions);
             
@@ -276,7 +268,7 @@ export default function RolesGestionar() {
                 permissionsMap[perm.code] = perm.granted;
             });
             
-            console.log('Mapa de permisos:', permissionsMap);
+            console.log('Mapa de permisos creado:', Object.keys(permissionsMap).length, 'permisos');
             
             setPermissionsForm(permissionsMap);
             
@@ -304,16 +296,25 @@ export default function RolesGestionar() {
         try {
             setLoading(true);
             
+            console.log('=== GUARDADO DE PERMISOS ===');
+            console.log('Estado del formulario completo:', permissionsForm);
+            console.log('Permisos disponibles:', availablePermissions.length);
+            
+            // Crear array de permisos usando TODOS los permisos disponibles
+            // y tomando el valor de granted desde permissionsForm (si existe) o false por defecto
             const permissions = availablePermissions.map(perm => ({
                 permission_id: perm.permission_id,
                 granted: permissionsForm[perm.code] || false
             }));
 
-            console.log('Permisos a guardar:', permissions);
-            console.log('Estado del formulario:', permissionsForm);
+            console.log('Permisos a guardar (total):', permissions.length);
+            console.log('Permisos a guardar con granted=true:', permissions.filter(p => p.granted).length);
+            console.log('Primeros 10 permisos a guardar:', permissions.slice(0, 10));
 
             const result = await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
             console.log('Resultado del guardado:', result);
+            
+            alert('Permisos guardados exitosamente');
             handleCloseModal();
         } catch (error) {
             console.error('Error al guardar permisos:', error);
