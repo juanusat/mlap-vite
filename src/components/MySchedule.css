@@ -20,7 +20,6 @@
     display: grid;
     grid-template-columns: 120px repeat(7, 1fr);
     background-color: var(--color-primary);
-    color: white;
     font-weight: 600;
 }
 
