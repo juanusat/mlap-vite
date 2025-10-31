@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MyButtonShortAction from '../components/MyButtonShortAction';
+import MySchedule from '../components/MySchedule';
 import '../components/MyButtonShortAction.css';
 import "../utils/ActosLiturgicos-Reporte03.css";
 
@@ -114,42 +115,30 @@ export default function Reporte03A() {
                         </div>
 
                         {/* Grilla de horarios - Mapa de calor */}
-                        <div className="occupancy-grid-container">
-                            <div className="occupancy-grid">
-                                <div className="grid-header table-schedule">
-                                    <div className="grid-cell header-cell"></div>
-                                    {daysOfWeek.map((day, index) => (
-                                        <div key={index} className="grid-cell header-cell">
-                                            <div className="day-name">{day}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                                {timeSlots.map((timeSlot, rowIndex) => (
-                                    <div key={rowIndex} className="grid-row">
-                                        <div className="grid-cell time-cell">{timeSlot}</div>
-                                        {daysOfWeek.map((_, colIndex) => {
-                                            const occupancy = occupancyData[colIndex]?.[rowIndex] || 0;
-                                            const bgColor = getHeatmapColor(occupancy);
-                                            const textColor = getTextColor(occupancy);
-                                            
-                                            return (
-                                                <div
-                                                    key={colIndex}
-                                                    className="grid-cell heatmap-cell"
-                                                    style={{ 
-                                                        backgroundColor: bgColor,
-                                                        color: textColor
-                                                    }}
-                                                    title={`Ocupación: ${occupancy}%`}
-                                                >
-                                                    <span className="heatmap-percentage">{occupancy}%</span>
-                                                </div>
-                                            );
-                                        })}
+                        <MySchedule
+                            timeSlots={timeSlots}
+                            daysOfWeek={daysOfWeek}
+                            showDates={false}
+                            mode="heatmap"
+                            renderCell={(rowIndex, colIndex) => {
+                                const occupancy = occupancyData[colIndex]?.[rowIndex] || 0;
+                                const bgColor = getHeatmapColor(occupancy);
+                                const textColor = getTextColor(occupancy);
+                                
+                                return (
+                                    <div
+                                        className="grid-cell heatmap-cell"
+                                        style={{ 
+                                            backgroundColor: bgColor,
+                                            color: textColor
+                                        }}
+                                        title={`Ocupación: ${occupancy}%`}
+                                    >
+                                        <span className="heatmap-percentage">{occupancy}%</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                );
+                            }}
+                        />
                     </div>
                 </div>
             </div>
