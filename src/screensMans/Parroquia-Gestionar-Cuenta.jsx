@@ -109,16 +109,19 @@ const GestionCuenta = () => {
                 secondary_color: tempUserInfo.colorSecundario
             };
 
-            if (fotoPerfilData && fotoPerfilData.name) {
-                updateData.profile_photo = fotoPerfilData.name;
+            // Pasar el archivo completo, no solo el nombre
+            if (fotoPerfilData && fotoPerfilData.file) {
+                updateData.profile_photo = fotoPerfilData.file;
             }
-            if (fotoPortadaData && fotoPortadaData.name) {
-                updateData.cover_photo = fotoPortadaData.name;
+            if (fotoPortadaData && fotoPortadaData.file) {
+                updateData.cover_photo = fotoPortadaData.file;
             }
 
             await parishService.updateParishAccountInfo(updateData);
             
             setIsEditingPersonal(false);
+            setFotoPerfilData(null);
+            setFotoPortadaData(null);
             await loadAccountData();
             
         } catch (err) {
