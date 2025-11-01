@@ -21,17 +21,40 @@ function ExcepcionesSection({
 }) {
     const [activeTab, setActiveTab] = useState('futuras');
     const [page, setPage] = useState(0);
+    const [, forceUpdate] = useState();
+
+    // Forzar actualización a medianoche para mover excepciones de futuras a pasadas
+    useEffect(() => {
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+        const msUntilMidnight = tomorrow.getTime() - now.getTime();
+        
+        const timeout = setTimeout(() => {
+            forceUpdate({}); // Forzar re-render
+            // Configurar intervalo diario
+            const interval = setInterval(() => {
+                forceUpdate({});
+            }, 24 * 60 * 60 * 1000); // 24 horas
+            
+            return () => clearInterval(interval);
+        }, msUntilMidnight);
+        
+        return () => clearTimeout(timeout);
+    }, []);
 
     // Filtrado por fecha
     const parseDate = (dateStr) => {
+        // dateStr viene en formato DD/MM/YYYY
         const [day, month, year] = dateStr.split('/');
         const fullYear = year.length === 2 ? '20' + year : year;
-        return new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+        // Crear fecha en hora local (no UTC)
+        return new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day), 0, 0, 0, 0);
     };
     const isFuture = (dateStr) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        return parseDate(dateStr) >= today;
+        const exceptionDate = parseDate(dateStr);
+        return exceptionDate >= today;
     };
     const filterExceptions = (exceptions, tab) => {
         return exceptions.filter(ex => tab === 'futuras' ? isFuture(ex.fecha) : !isFuture(ex.fecha));
@@ -254,24 +277,42 @@ export default function ActosLiturgicosHorarios() {
             const dispResponse = await scheduleService.listSpecificSchedules(
                 parishIdTemp, chapelId, 1, 100, { exception_type: 'OPEN' }
             );
-            const dispExceptions = (dispResponse.data || []).map(ex => ({
-                id: ex.id,
-                fecha: formatDateFromDB(ex.date),
-                hora: `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`,
-                motivo: ex.reason || ''
-            }));
+            const dispExceptions = (dispResponse.data || []).map(ex => {
+                const fechaFormateada = formatDateFromDB(ex.date);
+                const horaFormateada = ex.start_time && ex.end_time 
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                    : '';
+                return {
+                    id: ex.id,
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    motivo: ex.reason || '',
+                    startTime: ex.start_time ? ex.start_time.substring(0, 5) : null,
+                    endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
+                };
+            });
+            console.log('✅ Excepciones de disponibilidad cargadas:', dispExceptions);
             setExceptionsDisponibilidad(dispExceptions);
             
             // Cargar excepciones de no disponibilidad
             const noDispResponse = await scheduleService.listSpecificSchedules(
                 parishIdTemp, chapelId, 1, 100, { exception_type: 'CLOSED' }
             );
-            const noDispExceptions = (noDispResponse.data || []).map(ex => ({
-                id: ex.id,
-                fecha: formatDateFromDB(ex.date),
-                hora: `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`,
-                motivo: ex.reason || ''
-            }));
+            const noDispExceptions = (noDispResponse.data || []).map(ex => {
+                const fechaFormateada = formatDateFromDB(ex.date);
+                const horaFormateada = ex.start_time && ex.end_time 
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                    : '';
+                return {
+                    id: ex.id,
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    motivo: ex.reason || '',
+                    startTime: ex.start_time ? ex.start_time.substring(0, 5) : null,
+                    endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
+                };
+            });
+            console.log('✅ Excepciones de no disponibilidad cargadas:', noDispExceptions);
             setExceptionsNoDisponibilidad(noDispExceptions);
             
         } catch (err) {
@@ -283,7 +324,16 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const formatDateFromDB = (dateStr) => {
-        const [year, month, day] = dateStr.split('-');
+        // dateStr viene en formato YYYY-MM-DD o puede ser un objeto Date
+        if (dateStr instanceof Date) {
+            const day = dateStr.getDate().toString().padStart(2, '0');
+            const month = (dateStr.getMonth() + 1).toString().padStart(2, '0');
+            const year = dateStr.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Si es string, asumimos formato YYYY-MM-DD
+        const [year, month, day] = dateStr.split('T')[0].split('-');
         return `${day}/${month}/${year}`;
     };
 
@@ -423,19 +473,55 @@ export default function ActosLiturgicosHorarios() {
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
         const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
+        
+        // Debug logs
+        if (rowIndex === 0 && colIndex === 0 && allExceptions.length > 0) {
+            console.log('🔍 Debug hasExceptionForCell:');
+            console.log('  - dateStr (grid):', dateStr);
+            console.log('  - timeSlot (grid):', timeSlot);
+            console.log('  - Total exceptions:', allExceptions.length);
+            console.log('  - exceptionsDisponibilidad:', exceptionsDisponibilidad);
+            console.log('  - exceptionsNoDisponibilidad:', exceptionsNoDisponibilidad);
+            if (allExceptions.length > 0) {
+                console.log('  - Primer excepción fecha:', allExceptions[0].fecha);
+                console.log('  - Primer excepción startTime:', allExceptions[0].startTime);
+                console.log('  - Primer excepción endTime:', allExceptions[0].endTime);
+            }
+        }
+        
         return allExceptions.some(exception => {
+            // Comparar fecha
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
+            
+            // Si no tiene horario definido, no se puede comparar con celdas específicas
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            // Parsear tiempos
             const [slotStart, slotEnd] = timeSlot.split(' - ');
+            
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+            
+            // Verificar si hay solapamiento
+            const overlaps = (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+            
+            if (overlaps && rowIndex === 0 && colIndex === 0) {
+                console.log('  ✅ OVERLAP FOUND:', {
+                    exceptionStart,
+                    exceptionEnd,
+                    slotStartMin,
+                    slotEndMin
+                });
+            }
+            
+            return overlaps;
         });
     };
 
@@ -443,36 +529,42 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
+        
+        const parseTime = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+        
+        const [slotStart, slotEnd] = timeSlot.split(' - ');
+        const slotStartMin = parseTime(slotStart);
+        const slotEndMin = parseTime(slotEnd);
+        
+        // Verificar disponibilidad (OPEN)
         const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
-            const [slotStart, slotEnd] = timeSlot.split(' - ');
-            const parseTime = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
-            const slotStartMin = parseTime(slotStart);
-            const slotEndMin = parseTime(slotEnd);
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
+            
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
+        
         if (hasDisponibilidadException) return 'disponibilidad';
+        
+        // Verificar no disponibilidad (CLOSED)
         const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
-            const [slotStart, slotEnd] = timeSlot.split(' - ');
-            const parseTime = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
-            const slotStartMin = parseTime(slotStart);
-            const slotEndMin = parseTime(slotEnd);
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
+            
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
+        
         if (hasNoDisponibilidadException) return 'noDisponibilidad';
+        
         return null;
     };
 
