@@ -132,6 +132,7 @@ export const updateParishAccountInfo = async (data) => {
   formData.append('address', data.address);
   formData.append('coordinates', data.coordinates);
   formData.append('phone', data.phone);
+  formData.append('email', data.email || '');
   formData.append('primary_color', data.primary_color);
   formData.append('secondary_color', data.secondary_color);
   

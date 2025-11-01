@@ -18,6 +18,7 @@ export const createChapel = async (data) => {
   formData.append('address', data.address);
   formData.append('coordinates', data.coordinates || '');
   formData.append('phone', data.phone || '');
+  formData.append('email', data.email || '');
   
   if (data.profile_photo) {
     formData.append('profile_photo', data.profile_photo);
@@ -70,6 +71,7 @@ export const updateChapel = async (id, data) => {
   formData.append('address', data.address);
   formData.append('coordinates', data.coordinates || '');
   formData.append('phone', data.phone || '');
+  formData.append('email', data.email || '');
   
   if (data.profile_photo) {
     formData.append('profile_photo', data.profile_photo);

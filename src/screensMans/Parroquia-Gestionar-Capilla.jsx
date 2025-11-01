@@ -215,6 +215,7 @@ function ChapelForm({ mode, initialData, onSave }) {
   const [address, setAddress] = useState(initialData?.address || '');
   const [coordinates, setCoordinates] = useState(initialData?.coordinates || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
+  const [email, setEmail] = useState(initialData?.email || '');
   const [profilePhotoData, setProfilePhotoData] = useState(null);
   const [coverPhotoData, setCoverPhotoData] = useState(null);
 
@@ -269,7 +270,8 @@ function ChapelForm({ mode, initialData, onSave }) {
         name,
         address,
         coordinates,
-        phone
+        phone,
+        email
       };
       
       // Pasar el archivo completo, no solo el nombre
@@ -342,6 +344,15 @@ function ChapelForm({ mode, initialData, onSave }) {
           }}
           disabled={disabled}
           placeholder="Solo números"
+        />
+        <label>Email</label>
+        <input
+          type="email"
+          className="inputModal"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          disabled={disabled}
+          placeholder="correo@ejemplo.com"
         />
         <label>Foto de perfil</label>
         <InputFotoPerfil
