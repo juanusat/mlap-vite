@@ -4,6 +4,8 @@ import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import Modal from '../components/Modal';
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import MySchedule from '../components/MySchedule';
+import * as scheduleService from '../services/scheduleService';
+import * as chapelService from '../services/chapelService';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -113,9 +115,13 @@ function ExcepcionesSection({
 
 export default function ActosLiturgicosHorarios() {
       React.useEffect(() => {
-        document.title = "MLAP | Gestionar horarios";
-      }, []);
+        document.title = "MLAP | Gestionar Horarios";
+        loadCapillas();
+    }, []);
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [parishId, setParishId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('disponibilidad');
     const [modalAction, setModalAction] = useState('add');
@@ -180,77 +186,129 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const weekDates = getWeekDates(currentWeekStart);
-    // Capillas (mock data). Replace with backend fetch when available.
-    const [capillas, setCapillas] = useState([
-        {
-            id: 1,
-            nombre: 'Capilla San José',
-            exceptionsDisponibilidad: [
-                { fecha: '17/08/2025', hora: '12:00 - 14:00', motivo: 'Mantenimiento' }
-            ],
-            exceptionsNoDisponibilidad: [
-                { fecha: '18/08/2025', hora: '16:00 - 17:00', motivo: 'Vacaciones' }
-            ],
-            savedIntervals: {}
-        },
-        {
-            id: 2,
-            nombre: 'Capilla Santa María',
-            exceptionsDisponibilidad: [
-                { fecha: '19/08/2025', hora: '12:00 - 14:00', motivo: 'Evento especial' }
-            ],
-            exceptionsNoDisponibilidad: [
-                { fecha: '20/07/2025', hora: '12:00 - 14:00', motivo: 'Reunión de personal' }
-            ],
-            savedIntervals: {}
-        },
-        {
-            id: 3,
-            nombre: 'Capilla San Miguel',
-            exceptionsDisponibilidad: [],
-            exceptionsNoDisponibilidad: [],
-            savedIntervals: {}
+    
+    // Capillas - se cargarán desde el backend
+    const [capillas, setCapillas] = useState([]);
+
+    // Cargar capillas desde el backend
+    const loadCapillas = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await chapelService.searchChapels(1, 100, '');
+            const capillasData = response.data.map(chapel => ({
+                id: chapel.id,
+                nombre: chapel.name,
+                exceptionsDisponibilidad: [],
+                exceptionsNoDisponibilidad: [],
+                savedIntervals: {}
+            }));
+            setCapillas(capillasData);
+            if (capillasData.length > 0) {
+                await loadSchedulesForChapel(capillasData[0].id);
+            }
+        } catch (err) {
+            setError(err.message || 'Error al cargar las capillas');
+            console.error('Error al cargar capillas:', err);
+        } finally {
+            setLoading(false);
         }
-    ]);
+    };
+
+    // Cargar horarios de una capilla específica
+    const loadSchedulesForChapel = async (chapelId) => {
+        if (!chapelId) return;
+        
+        try {
+            setLoading(true);
+            const parishIdTemp = 1; // El backend lo valida del JWT
+            
+            // Cargar horarios generales
+            const generalResponse = await scheduleService.listGeneralSchedules(parishIdTemp, chapelId);
+            const generalSchedules = generalResponse.data || [];
+            
+            // Convertir horarios generales a intervalos guardados
+            const savedIntervalsData = {};
+            generalSchedules.forEach(schedule => {
+                const dayKey = schedule.day_of_week;
+                if (!savedIntervalsData[dayKey]) {
+                    savedIntervalsData[dayKey] = [];
+                }
+                
+                const startHour = parseInt(schedule.start_time.split(':')[0]);
+                const endHour = parseInt(schedule.end_time.split(':')[0]);
+                const startRow = startHour - 8;
+                const endRow = endHour - 8;
+                
+                for (let row = startRow; row < endRow; row++) {
+                    if (row >= 0 && row < 10) {
+                        savedIntervalsData[dayKey].push(row);
+                    }
+                }
+            });
+            
+            setSavedIntervals(savedIntervalsData);
+            setSelectedIntervals(JSON.parse(JSON.stringify(savedIntervalsData)));
+            
+            // Cargar excepciones de disponibilidad
+            const dispResponse = await scheduleService.listSpecificSchedules(
+                parishIdTemp, chapelId, 1, 100, { exception_type: 'OPEN' }
+            );
+            const dispExceptions = (dispResponse.data || []).map(ex => ({
+                id: ex.id,
+                fecha: formatDateFromDB(ex.date),
+                hora: `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`,
+                motivo: ex.reason || ''
+            }));
+            setExceptionsDisponibilidad(dispExceptions);
+            
+            // Cargar excepciones de no disponibilidad
+            const noDispResponse = await scheduleService.listSpecificSchedules(
+                parishIdTemp, chapelId, 1, 100, { exception_type: 'CLOSED' }
+            );
+            const noDispExceptions = (noDispResponse.data || []).map(ex => ({
+                id: ex.id,
+                fecha: formatDateFromDB(ex.date),
+                hora: `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`,
+                motivo: ex.reason || ''
+            }));
+            setExceptionsNoDisponibilidad(noDispExceptions);
+            
+        } catch (err) {
+            setError(err.message || 'Error al cargar los horarios');
+            console.error('Error al cargar horarios:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatDateFromDB = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    };
+
+    const formatDateToDB = (dateStr) => {
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month}-${day}`;
+    };
 
     const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(0);
     const [showPanelLateral, setShowPanelLateral] = useState(false);
 
-    // Estados por capilla (se sincronizan con `capillas[selectedCapillaIndex]`)
-    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState(() => {
-        return capillas[0]?.exceptionsDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsDisponibilidad)) : [];
-    });
-    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState(() => {
-        return capillas[0]?.exceptionsNoDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsNoDisponibilidad)) : [];
-    });
+    // Estados por capilla
+    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([]);
+    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([]);
 
     // sincronizar al cambiar la capilla seleccionada
     useEffect(() => {
         const cap = capillas[selectedCapillaIndex];
         if (!cap) return;
-        setExceptionsDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsDisponibilidad || [])));
-        setExceptionsNoDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsNoDisponibilidad || [])));
-        setSavedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
-        setSelectedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
+        loadSchedulesForChapel(cap.id);
         setIsEditing(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCapillaIndex]);
 
-    // persistir cambios locales en el array `capillas`
-    useEffect(() => {
-        setCapillas(prev => {
-            const next = [...prev];
-            if (!next[selectedCapillaIndex]) return prev;
-            next[selectedCapillaIndex] = {
-                ...next[selectedCapillaIndex],
-                exceptionsDisponibilidad: JSON.parse(JSON.stringify(exceptionsDisponibilidad)),
-                exceptionsNoDisponibilidad: JSON.parse(JSON.stringify(exceptionsNoDisponibilidad)),
-                savedIntervals: JSON.parse(JSON.stringify(savedIntervals || {}))
-            };
-            return next;
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [exceptionsDisponibilidad, exceptionsNoDisponibilidad, savedIntervals, selectedCapillaIndex]);
+    // persistir cambios locales eliminado - ya no necesitamos sincronizar localmente
 
     const handleOpenModal = (type) => {
         setModalType(type);
@@ -271,12 +329,26 @@ export default function ActosLiturgicosHorarios() {
         setShowModal(true);
     };
 
-    const handleDeleteException = (exception, type) => {
-        setModalType(type);
-        setModalAction('delete');
-        setSelectedException(exception);
-        setSelectedExceptionType(type);
-        setShowModal(true);
+    const handleDeleteException = async (exception, type) => {
+        if (!window.confirm('¿Estás seguro de que quieres eliminar esta excepción?')) {
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            await scheduleService.deleteSpecificSchedule(parishIdTemp, chapelId, exception.id);
+            
+            // Recargar excepciones
+            await loadSchedulesForChapel(chapelId);
+        } catch (err) {
+            setError(err.message || 'Error al eliminar la excepción');
+            console.error('Error al eliminar excepción:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancelModal = () => {
@@ -290,23 +362,40 @@ export default function ActosLiturgicosHorarios() {
         setModalAction('add');
     };
 
-    const handleAcceptModal = () => {
-        if (modalAction === 'add') {
-            const newException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
-            if (modalType === 'disponibilidad') {
-                setExceptionsDisponibilidad(prev => [newException, ...prev]);
-            } else {
-                setExceptionsNoDisponibilidad(prev => [newException, ...prev]);
+    const handleAcceptModal = async () => {
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            const scheduleData = {
+                date: formatDateToDB(fecha),
+                start_time: horaInicio,
+                end_time: horaFin,
+                exception_type: modalType === 'disponibilidad' ? 'OPEN' : 'CLOSED',
+                reason: motivo
+            };
+            
+            if (modalAction === 'add') {
+                await scheduleService.createSpecificSchedule(parishIdTemp, chapelId, scheduleData);
+            } else if (modalAction === 'edit') {
+                await scheduleService.updateSpecificSchedule(
+                    parishIdTemp,
+                    chapelId,
+                    selectedException.id,
+                    scheduleData
+                );
             }
-        } else if (modalAction === 'edit') {
-            const updatedException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
-            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
-            setter(prev => prev.map(ex => (ex === selectedException ? updatedException : ex)));
-        } else if (modalAction === 'delete') {
-            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
-            setter(prev => prev.filter(ex => ex !== selectedException));
+            
+            // Recargar excepciones
+            await loadSchedulesForChapel(chapelId);
+            handleCancelModal();
+        } catch (err) {
+            setError(err.message || 'Error al guardar la excepción');
+            console.error('Error al guardar excepción:', err);
+        } finally {
+            setLoading(false);
         }
-        handleCancelModal();
     };
 
     const toggleEditing = () => {
@@ -497,14 +586,73 @@ export default function ActosLiturgicosHorarios() {
         setIsEditing(false);
     };
 
-    const handleSave = () => {
-        setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            // Convertir selectedIntervals a formato de API
+            const schedules = [];
+            Object.keys(selectedIntervals).forEach(dayKey => {
+                const dayOfWeek = parseInt(dayKey);
+                const intervals = selectedIntervals[dayKey];
+                
+                // Agrupar filas consecutivas en intervalos
+                const sortedRows = [...new Set(intervals)].sort((a, b) => a - b);
+                let currentStart = null;
+                let currentEnd = null;
+                
+                sortedRows.forEach((row, index) => {
+                    if (currentStart === null) {
+                        currentStart = row;
+                        currentEnd = row;
+                    } else if (row === currentEnd + 1) {
+                        currentEnd = row;
+                    } else {
+                        // Guardar intervalo anterior
+                        const startHour = currentStart + 8;
+                        const endHour = currentEnd + 9; // +1 porque el end_time es exclusivo
+                        schedules.push({
+                            day_of_week: dayOfWeek,
+                            start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
+                            end_time: `${endHour.toString().padStart(2, '0')}:00:00`
+                        });
+                        
+                        // Iniciar nuevo intervalo
+                        currentStart = row;
+                        currentEnd = row;
+                    }
+                });
+                
+                // Guardar último intervalo
+                if (currentStart !== null) {
+                    const startHour = currentStart + 8;
+                    const endHour = currentEnd + 9;
+                    schedules.push({
+                        day_of_week: dayOfWeek,
+                        start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
+                        end_time: `${endHour.toString().padStart(2, '0')}:00:00`
+                    });
+                }
+            });
+            
+            await scheduleService.bulkUpdateGeneralSchedules(parishIdTemp, chapelId, schedules);
+            setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
+            setIsEditing(false);
+        } catch (err) {
+            setError(err.message || 'Error al guardar los horarios');
+            console.error('Error al guardar horarios:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestionar horario - {capillas[selectedCapillaIndex].nombre}</h2>
+            <h2 className='title-screen'>Gestionar horario - {capillas[selectedCapillaIndex]?.nombre || 'Cargando...'}</h2>
+            {error && <div className="error-message" style={{padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
+            {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
             <div className='app-container'>
                     <div className="horarios-container">
                         <div className="week-navigation">
