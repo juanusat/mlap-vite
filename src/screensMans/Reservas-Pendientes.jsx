@@ -33,11 +33,6 @@ export default function ReservasPendientes() {
   const [showModal, setShowModal] = useState(false);
   const [reservationToDelete, setReservationToDelete] = useState(null);
 
-  // Cargar reservas pendientes
-  useEffect(() => {
-    loadReservations();
-  }, [currentPage]);
-
   const loadReservations = async () => {
     try {
       setLoading(true);
@@ -65,14 +60,20 @@ export default function ReservasPendientes() {
     }
   };
 
-  // Buscar cuando cambia el término de búsqueda
+  // Cargar reservas cuando cambia la página o el término de búsqueda
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      setCurrentPage(1); // Reset a la primera página al buscar
       loadReservations();
-    }, 500);
+    }, searchTerm ? 500 : 0); // Solo delay si hay búsqueda
 
     return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, searchTerm]);
+
+  // Resetear a la primera página cuando cambia el término de búsqueda
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setCurrentPage(1);
+    }
   }, [searchTerm]);
 
   // Función para abrir el modal de confirmación

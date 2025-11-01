@@ -31,11 +31,6 @@ export default function ReservasHistorial() {
   const [totalRecords, setTotalRecords] = useState(0);
   const limit = 10;
 
-  // Cargar historial de reservas
-  useEffect(() => {
-    loadReservations();
-  }, [currentPage]);
-
   const loadReservations = async () => {
     try {
       setLoading(true);
@@ -63,14 +58,20 @@ export default function ReservasHistorial() {
     }
   };
 
-  // Buscar cuando cambia el término de búsqueda
+  // Cargar reservas cuando cambia la página o el término de búsqueda
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      setCurrentPage(1);
       loadReservations();
-    }, 500);
+    }, searchTerm ? 500 : 0); // Solo delay si hay búsqueda
 
     return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, searchTerm]);
+
+  // Resetear a la primera página cuando cambia el término de búsqueda
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setCurrentPage(1);
+    }
   }, [searchTerm]);
 
   const handleOpenSidebar = async (reservation) => {
