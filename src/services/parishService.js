@@ -126,13 +126,29 @@ export const getParishAccount = async () => {
 };
 
 export const updateParishAccountInfo = async (data) => {
+  const formData = new FormData();
+  
+  formData.append('name', data.name);
+  formData.append('address', data.address);
+  formData.append('coordinates', data.coordinates);
+  formData.append('phone', data.phone);
+  formData.append('primary_color', data.primary_color);
+  formData.append('secondary_color', data.secondary_color);
+  
+  if (data.profile_photo) {
+    formData.append('profile_photo', data.profile_photo);
+    formData.append('profile_photo_name', data.profile_photo.name);
+  }
+  
+  if (data.cover_photo) {
+    formData.append('cover_photo', data.cover_photo);
+    formData.append('cover_photo_name', data.cover_photo.name);
+  }
+  
   const response = await fetch(`${API_URL}/api/parish/account/info`, {
     method: 'PATCH',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+    body: formData,
   });
 
   return await handleResponse(response);

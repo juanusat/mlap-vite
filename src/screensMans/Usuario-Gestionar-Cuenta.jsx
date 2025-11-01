@@ -6,9 +6,14 @@ import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
 import { getUserAccount, updatePersonalInfo, updateCredentials } from '../services/userService';
+import useSession from '../hooks/useSession';
+import useLogout from '../hooks/useLogout';
 import '../utils/Usuario-Gestionar.css';
 
 const GestionCuenta = () => {
+    const logout = useLogout();
+    const { refetch: refetchSession } = useSession(logout);
+    
     useEffect(() => {
         document.title = "MLAP | Mi cuenta";
         loadUserData();
@@ -84,7 +89,13 @@ const GestionCuenta = () => {
             await updatePersonalInfo(updateData);
             
             setIsEditingPersonal(false);
+            setFotoPerfilData(null);
             await loadUserData();
+            
+            // Actualizar la sesión para reflejar la nueva foto en el header
+            if (refetchSession) {
+                await refetchSession();
+            }
         } catch (err) {
             setError(err.message || "Error al actualizar la información personal");
             console.error(err);

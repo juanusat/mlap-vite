@@ -45,7 +45,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
       return photoFilename;
     }
     // Si es un nombre de archivo, construir la URL completa
-    return `${API_URL}/uploads/${photoFilename}`;
+    return `${API_URL}/api/static/uploads/${photoFilename}`;
   };
 
   // Datos de ejemplo para las notificaciones
