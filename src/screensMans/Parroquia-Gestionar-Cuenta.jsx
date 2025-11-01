@@ -26,6 +26,7 @@ const GestionCuenta = () => {
         direccion: "",
         coordenadas: "",
         celular: "",
+        email: "",
         colorPrimario: "#b1b1b1", 
         colorSecundario: "#424242", 
         fotoPerfil: "", 
@@ -71,6 +72,7 @@ const GestionCuenta = () => {
                 direccion: info.address || "",
                 coordenadas: info.coordinates || "",
                 celular: info.phone || "",
+                email: info.email || "",
                 colorPrimario: info.primary_color || "#b1b1b1",
                 colorSecundario: info.secondary_color || "#424242",
                 fotoPerfil: info.profile_photo || "",
@@ -105,6 +107,7 @@ const GestionCuenta = () => {
                 address: tempUserInfo.direccion,
                 coordinates: tempUserInfo.coordenadas,
                 phone: tempUserInfo.celular,
+                email: tempUserInfo.email,
                 primary_color: tempUserInfo.colorPrimario,
                 secondary_color: tempUserInfo.colorSecundario
             };
@@ -325,6 +328,7 @@ const GestionCuenta = () => {
                         </div>
                         
                         <TextInput label="Celular" value={tempUserInfo.celular} onChange={handleInputChange} name="celular" />
+                        <TextInput label="Email" value={tempUserInfo.email} onChange={handleInputChange} name="email" type="email" placeholder="correo@ejemplo.com" />
                         
                         <div className="color-input-container">
                             <InputColorPicker 
@@ -383,6 +387,10 @@ const GestionCuenta = () => {
                         <div className="info-item">
                             <span className="info-label">Celular:</span>
                             <span className="info-value">{userInfo.celular}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Email:</span>
+                            <span className="info-value">{userInfo.email}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Color primario:</span>

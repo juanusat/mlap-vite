@@ -4,6 +4,9 @@ import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import Modal from '../components/Modal';
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import MySchedule from '../components/MySchedule';
+import SearchBar from '../components/SearchBar';
+import * as scheduleService from '../services/scheduleService';
+import * as chapelService from '../services/chapelService';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -18,17 +21,40 @@ function ExcepcionesSection({
 }) {
     const [activeTab, setActiveTab] = useState('futuras');
     const [page, setPage] = useState(0);
+    const [, forceUpdate] = useState();
+
+    // Forzar actualización a medianoche para mover excepciones de futuras a pasadas
+    useEffect(() => {
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+        const msUntilMidnight = tomorrow.getTime() - now.getTime();
+        
+        const timeout = setTimeout(() => {
+            forceUpdate({}); // Forzar re-render
+            // Configurar intervalo diario
+            const interval = setInterval(() => {
+                forceUpdate({});
+            }, 24 * 60 * 60 * 1000); // 24 horas
+            
+            return () => clearInterval(interval);
+        }, msUntilMidnight);
+        
+        return () => clearTimeout(timeout);
+    }, []);
 
     // Filtrado por fecha
     const parseDate = (dateStr) => {
+        // dateStr viene en formato DD/MM/YYYY
         const [day, month, year] = dateStr.split('/');
         const fullYear = year.length === 2 ? '20' + year : year;
-        return new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`);
+        // Crear fecha en hora local (no UTC)
+        return new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day), 0, 0, 0, 0);
     };
     const isFuture = (dateStr) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        return parseDate(dateStr) >= today;
+        const exceptionDate = parseDate(dateStr);
+        return exceptionDate >= today;
     };
     const filterExceptions = (exceptions, tab) => {
         return exceptions.filter(ex => tab === 'futuras' ? isFuture(ex.fecha) : !isFuture(ex.fecha));
@@ -113,9 +139,13 @@ function ExcepcionesSection({
 
 export default function ActosLiturgicosHorarios() {
       React.useEffect(() => {
-        document.title = "MLAP | Gestionar horarios";
-      }, []);
+        document.title = "MLAP | Gestionar Horarios";
+        loadCapillas();
+    }, []);
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [parishId, setParishId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('disponibilidad');
     const [modalAction, setModalAction] = useState('add');
@@ -180,79 +210,163 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const weekDates = getWeekDates(currentWeekStart);
-    // Capillas (mock data). Replace with backend fetch when available.
-    const [capillas, setCapillas] = useState([
-        {
-            id: 1,
-            nombre: 'Capilla San José',
-            exceptionsDisponibilidad: [
-                { fecha: '17/08/2025', hora: '12:00 - 14:00', motivo: 'Mantenimiento' }
-            ],
-            exceptionsNoDisponibilidad: [
-                { fecha: '18/08/2025', hora: '16:00 - 17:00', motivo: 'Vacaciones' }
-            ],
-            savedIntervals: {}
-        },
-        {
-            id: 2,
-            nombre: 'Capilla Santa María',
-            exceptionsDisponibilidad: [
-                { fecha: '19/08/2025', hora: '12:00 - 14:00', motivo: 'Evento especial' }
-            ],
-            exceptionsNoDisponibilidad: [
-                { fecha: '20/07/2025', hora: '12:00 - 14:00', motivo: 'Reunión de personal' }
-            ],
-            savedIntervals: {}
-        },
-        {
-            id: 3,
-            nombre: 'Capilla San Miguel',
-            exceptionsDisponibilidad: [],
-            exceptionsNoDisponibilidad: [],
-            savedIntervals: {}
+    
+    // Capillas - se cargarán desde el backend
+    const [capillas, setCapillas] = useState([]);
+
+    // Cargar capillas desde el backend
+    const loadCapillas = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await chapelService.searchChapels(1, 100, '');
+            const capillasData = response.data.map(chapel => ({
+                id: chapel.id,
+                nombre: chapel.name,
+                direccion: chapel.address,
+                exceptionsDisponibilidad: [],
+                exceptionsNoDisponibilidad: [],
+                savedIntervals: {}
+            }));
+            setCapillas(capillasData);
+            // NO cargar automáticamente la primera capilla
+        } catch (err) {
+            setError(err.message || 'Error al cargar las capillas');
+            console.error('Error al cargar capillas:', err);
+        } finally {
+            setLoading(false);
         }
-    ]);
+    };
 
-    const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(0);
+    // Cargar horarios de una capilla específica
+    const loadSchedulesForChapel = async (chapelId) => {
+        if (!chapelId) return;
+        
+        try {
+            setLoading(true);
+            const parishIdTemp = 1; // El backend lo valida del JWT
+            
+            // Cargar horarios generales
+            const generalResponse = await scheduleService.listGeneralSchedules(parishIdTemp, chapelId);
+            const generalSchedules = generalResponse.data || [];
+            
+            // Convertir horarios generales a intervalos guardados
+            const savedIntervalsData = {};
+            generalSchedules.forEach(schedule => {
+                const dayKey = schedule.day_of_week;
+                if (!savedIntervalsData[dayKey]) {
+                    savedIntervalsData[dayKey] = [];
+                }
+                
+                const startHour = parseInt(schedule.start_time.split(':')[0]);
+                const endHour = parseInt(schedule.end_time.split(':')[0]);
+                const startRow = startHour - 8;
+                const endRow = endHour - 8;
+                
+                for (let row = startRow; row < endRow; row++) {
+                    if (row >= 0 && row < 10) {
+                        savedIntervalsData[dayKey].push(row);
+                    }
+                }
+            });
+            
+            setSavedIntervals(savedIntervalsData);
+            setSelectedIntervals(JSON.parse(JSON.stringify(savedIntervalsData)));
+            
+            // Cargar excepciones de disponibilidad
+            const dispResponse = await scheduleService.listSpecificSchedules(
+                parishIdTemp, chapelId, 1, 100, { exception_type: 'OPEN' }
+            );
+            const dispExceptions = (dispResponse.data || []).map(ex => {
+                const fechaFormateada = formatDateFromDB(ex.date);
+                const horaFormateada = ex.start_time && ex.end_time 
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                    : '';
+                return {
+                    id: ex.id,
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    motivo: ex.reason || '',
+                    startTime: ex.start_time ? ex.start_time.substring(0, 5) : null,
+                    endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
+                };
+            });
+            console.log('✅ Excepciones de disponibilidad cargadas:', dispExceptions);
+            setExceptionsDisponibilidad(dispExceptions);
+            
+            // Cargar excepciones de no disponibilidad
+            const noDispResponse = await scheduleService.listSpecificSchedules(
+                parishIdTemp, chapelId, 1, 100, { exception_type: 'CLOSED' }
+            );
+            const noDispExceptions = (noDispResponse.data || []).map(ex => {
+                const fechaFormateada = formatDateFromDB(ex.date);
+                const horaFormateada = ex.start_time && ex.end_time 
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                    : '';
+                return {
+                    id: ex.id,
+                    fecha: fechaFormateada,
+                    hora: horaFormateada,
+                    motivo: ex.reason || '',
+                    startTime: ex.start_time ? ex.start_time.substring(0, 5) : null,
+                    endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
+                };
+            });
+            console.log('✅ Excepciones de no disponibilidad cargadas:', noDispExceptions);
+            setExceptionsNoDisponibilidad(noDispExceptions);
+            
+        } catch (err) {
+            setError(err.message || 'Error al cargar los horarios');
+            console.error('Error al cargar horarios:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatDateFromDB = (dateStr) => {
+        // dateStr viene en formato YYYY-MM-DD o puede ser un objeto Date
+        if (dateStr instanceof Date) {
+            const day = dateStr.getDate().toString().padStart(2, '0');
+            const month = (dateStr.getMonth() + 1).toString().padStart(2, '0');
+            const year = dateStr.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Si es string, asumimos formato YYYY-MM-DD
+        const [year, month, day] = dateStr.split('T')[0].split('-');
+        return `${day}/${month}/${year}`;
+    };
+
+    const formatDateToDB = (dateStr) => {
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month}-${day}`;
+    };
+
+    const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(null);
     const [showPanelLateral, setShowPanelLateral] = useState(false);
+    const [searchTermCapilla, setSearchTermCapilla] = useState('');
 
-    // Estados por capilla (se sincronizan con `capillas[selectedCapillaIndex]`)
-    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState(() => {
-        return capillas[0]?.exceptionsDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsDisponibilidad)) : [];
-    });
-    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState(() => {
-        return capillas[0]?.exceptionsNoDisponibilidad ? JSON.parse(JSON.stringify(capillas[0].exceptionsNoDisponibilidad)) : [];
-    });
+    // Estados por capilla
+    const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([]);
+    const [exceptionsNoDisponibilidad, setExceptionsNoDisponibilidad] = useState([]);
 
     // sincronizar al cambiar la capilla seleccionada
     useEffect(() => {
+        if (selectedCapillaIndex === null) return;
         const cap = capillas[selectedCapillaIndex];
         if (!cap) return;
-        setExceptionsDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsDisponibilidad || [])));
-        setExceptionsNoDisponibilidad(JSON.parse(JSON.stringify(cap.exceptionsNoDisponibilidad || [])));
-        setSavedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
-        setSelectedIntervals(JSON.parse(JSON.stringify(cap.savedIntervals || {})));
+        loadSchedulesForChapel(cap.id);
         setIsEditing(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCapillaIndex]);
 
-    // persistir cambios locales en el array `capillas`
-    useEffect(() => {
-        setCapillas(prev => {
-            const next = [...prev];
-            if (!next[selectedCapillaIndex]) return prev;
-            next[selectedCapillaIndex] = {
-                ...next[selectedCapillaIndex],
-                exceptionsDisponibilidad: JSON.parse(JSON.stringify(exceptionsDisponibilidad)),
-                exceptionsNoDisponibilidad: JSON.parse(JSON.stringify(exceptionsNoDisponibilidad)),
-                savedIntervals: JSON.parse(JSON.stringify(savedIntervals || {}))
-            };
-            return next;
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [exceptionsDisponibilidad, exceptionsNoDisponibilidad, savedIntervals, selectedCapillaIndex]);
+    // persistir cambios locales eliminado - ya no necesitamos sincronizar localmente
 
     const handleOpenModal = (type) => {
+        if (selectedCapillaIndex === null || !capillas[selectedCapillaIndex]) {
+            alert('Por favor, selecciona una capilla primero.');
+            return;
+        }
         setModalType(type);
         setModalAction('add');
         setShowModal(true);
@@ -271,12 +385,26 @@ export default function ActosLiturgicosHorarios() {
         setShowModal(true);
     };
 
-    const handleDeleteException = (exception, type) => {
-        setModalType(type);
-        setModalAction('delete');
-        setSelectedException(exception);
-        setSelectedExceptionType(type);
-        setShowModal(true);
+    const handleDeleteException = async (exception, type) => {
+        if (!window.confirm('¿Estás seguro de que quieres eliminar esta excepción?')) {
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            await scheduleService.deleteSpecificSchedule(parishIdTemp, chapelId, exception.id);
+            
+            // Recargar excepciones
+            await loadSchedulesForChapel(chapelId);
+        } catch (err) {
+            setError(err.message || 'Error al eliminar la excepción');
+            console.error('Error al eliminar excepción:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancelModal = () => {
@@ -290,23 +418,40 @@ export default function ActosLiturgicosHorarios() {
         setModalAction('add');
     };
 
-    const handleAcceptModal = () => {
-        if (modalAction === 'add') {
-            const newException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
-            if (modalType === 'disponibilidad') {
-                setExceptionsDisponibilidad(prev => [newException, ...prev]);
-            } else {
-                setExceptionsNoDisponibilidad(prev => [newException, ...prev]);
+    const handleAcceptModal = async () => {
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            const scheduleData = {
+                date: formatDateToDB(fecha),
+                start_time: horaInicio,
+                end_time: horaFin,
+                exception_type: modalType === 'disponibilidad' ? 'OPEN' : 'CLOSED',
+                reason: motivo
+            };
+            
+            if (modalAction === 'add') {
+                await scheduleService.createSpecificSchedule(parishIdTemp, chapelId, scheduleData);
+            } else if (modalAction === 'edit') {
+                await scheduleService.updateSpecificSchedule(
+                    parishIdTemp,
+                    chapelId,
+                    selectedException.id,
+                    scheduleData
+                );
             }
-        } else if (modalAction === 'edit') {
-            const updatedException = { fecha, hora: `${horaInicio} - ${horaFin}`, motivo };
-            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
-            setter(prev => prev.map(ex => (ex === selectedException ? updatedException : ex)));
-        } else if (modalAction === 'delete') {
-            const setter = selectedExceptionType === 'disponibilidad' ? setExceptionsDisponibilidad : setExceptionsNoDisponibilidad;
-            setter(prev => prev.filter(ex => ex !== selectedException));
+            
+            // Recargar excepciones
+            await loadSchedulesForChapel(chapelId);
+            handleCancelModal();
+        } catch (err) {
+            setError(err.message || 'Error al guardar la excepción');
+            console.error('Error al guardar excepción:', err);
+        } finally {
+            setLoading(false);
         }
-        handleCancelModal();
     };
 
     const toggleEditing = () => {
@@ -320,9 +465,7 @@ export default function ActosLiturgicosHorarios() {
 
     const isCellInInterval = (rowIndex, colIndex) => {
         if (!selectedIntervals[colIndex]) return false;
-        return selectedIntervals[colIndex].some(interval => {
-            return rowIndex >= interval[0] && rowIndex <= interval[1];
-        });
+        return selectedIntervals[colIndex].includes(rowIndex);
     };
 
     const hasExceptionForCell = (rowIndex, colIndex) => {
@@ -330,19 +473,55 @@ export default function ActosLiturgicosHorarios() {
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
         const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
+        
+        // Debug logs
+        if (rowIndex === 0 && colIndex === 0 && allExceptions.length > 0) {
+            console.log('🔍 Debug hasExceptionForCell:');
+            console.log('  - dateStr (grid):', dateStr);
+            console.log('  - timeSlot (grid):', timeSlot);
+            console.log('  - Total exceptions:', allExceptions.length);
+            console.log('  - exceptionsDisponibilidad:', exceptionsDisponibilidad);
+            console.log('  - exceptionsNoDisponibilidad:', exceptionsNoDisponibilidad);
+            if (allExceptions.length > 0) {
+                console.log('  - Primer excepción fecha:', allExceptions[0].fecha);
+                console.log('  - Primer excepción startTime:', allExceptions[0].startTime);
+                console.log('  - Primer excepción endTime:', allExceptions[0].endTime);
+            }
+        }
+        
         return allExceptions.some(exception => {
+            // Comparar fecha
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
+            
+            // Si no tiene horario definido, no se puede comparar con celdas específicas
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            // Parsear tiempos
             const [slotStart, slotEnd] = timeSlot.split(' - ');
+            
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+            
+            // Verificar si hay solapamiento
+            const overlaps = (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
+            
+            if (overlaps && rowIndex === 0 && colIndex === 0) {
+                console.log('  ✅ OVERLAP FOUND:', {
+                    exceptionStart,
+                    exceptionEnd,
+                    slotStartMin,
+                    slotEndMin
+                });
+            }
+            
+            return overlaps;
         });
     };
 
@@ -350,36 +529,42 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
+        
+        const parseTime = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+        
+        const [slotStart, slotEnd] = timeSlot.split(' - ');
+        const slotStartMin = parseTime(slotStart);
+        const slotEndMin = parseTime(slotEnd);
+        
+        // Verificar disponibilidad (OPEN)
         const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
-            const [slotStart, slotEnd] = timeSlot.split(' - ');
-            const parseTime = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
-            const slotStartMin = parseTime(slotStart);
-            const slotEndMin = parseTime(slotEnd);
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
+            
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
+        
         if (hasDisponibilidadException) return 'disponibilidad';
+        
+        // Verificar no disponibilidad (CLOSED)
         const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
-            const [startTime, endTime] = exception.hora.split(' - ');
-            const [slotStart, slotEnd] = timeSlot.split(' - ');
-            const parseTime = (timeStr) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-            const exceptionStart = parseTime(startTime);
-            const exceptionEnd = parseTime(endTime);
-            const slotStartMin = parseTime(slotStart);
-            const slotEndMin = parseTime(slotEnd);
+            if (!exception.startTime || !exception.endTime) return false;
+            
+            const exceptionStart = parseTime(exception.startTime);
+            const exceptionEnd = parseTime(exception.endTime);
+            
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
+        
         if (hasNoDisponibilidadException) return 'noDisponibilidad';
+        
         return null;
     };
 
@@ -419,22 +604,14 @@ export default function ActosLiturgicosHorarios() {
                 if (!newIntervals[currentDay]) {
                     newIntervals[currentDay] = [];
                 }
-                let newInterval = [startInterval, endInterval];
-                let intervalsToRemove = [];
-                newIntervals[currentDay].forEach((interval, index) => {
-                    if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
-                        (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
-                        newInterval = [
-                            Math.min(newInterval[0], interval[0]),
-                            Math.max(newInterval[1], interval[1])
-                        ];
-                        intervalsToRemove.push(index);
+                // Agregar todos los índices del rango
+                for (let i = startInterval; i <= endInterval; i++) {
+                    if (!newIntervals[currentDay].includes(i)) {
+                        newIntervals[currentDay].push(i);
                     }
-                });
-                const filteredIntervals = newIntervals[currentDay].filter((_, index) =>
-                    !intervalsToRemove.includes(index)
-                );
-                newIntervals[currentDay] = [...filteredIntervals, newInterval];
+                }
+                // Ordenar los índices
+                newIntervals[currentDay].sort((a, b) => a - b);
                 return newIntervals;
             });
         }
@@ -448,15 +625,8 @@ export default function ActosLiturgicosHorarios() {
         setSelectedIntervals(prevIntervals => {
             const newIntervals = { ...prevIntervals };
             if (!newIntervals[dayIndex]) return newIntervals;
-            const intervalIndex = newIntervals[dayIndex].findIndex(
-                interval => rowIndex >= interval[0] && rowIndex <= interval[1]
-            );
-            if (intervalIndex !== -1) {
-                newIntervals[dayIndex] = [
-                    ...newIntervals[dayIndex].slice(0, intervalIndex),
-                    ...newIntervals[dayIndex].slice(intervalIndex + 1)
-                ];
-            }
+            // Remover el índice específico
+            newIntervals[dayIndex] = newIntervals[dayIndex].filter(idx => idx !== rowIndex);
             return newIntervals;
         });
     };
@@ -470,23 +640,13 @@ export default function ActosLiturgicosHorarios() {
             }
             const isSelected = isCellInInterval(rowIndex, colIndex);
             if (isSelected) {
-                newIntervals[colIndex] = newIntervals[colIndex].filter(interval =>
-                    !(rowIndex >= interval[0] && rowIndex <= interval[1])
-                );
+                // Remover el índice
+                newIntervals[colIndex] = newIntervals[colIndex].filter(idx => idx !== rowIndex);
             } else {
-                let newInterval = [rowIndex, rowIndex];
-                const filteredIntervals = newIntervals[colIndex].filter(interval => {
-                    const overlaps = (newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
-                        (interval[0] <= newInterval[1] && interval[1] >= newInterval[0]);
-                    if (overlaps) {
-                        newInterval = [
-                            Math.min(newInterval[0], interval[0]),
-                            Math.max(newInterval[1], interval[1])
-                        ];
-                    }
-                    return !overlaps;
-                });
-                newIntervals[colIndex] = [...filteredIntervals, newInterval];
+                // Agregar el índice
+                newIntervals[colIndex].push(rowIndex);
+                // Ordenar
+                newIntervals[colIndex].sort((a, b) => a - b);
             }
             return newIntervals;
         });
@@ -497,14 +657,92 @@ export default function ActosLiturgicosHorarios() {
         setIsEditing(false);
     };
 
-    const handleSave = () => {
-        setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            const parishIdTemp = 1;
+            const chapelId = capillas[selectedCapillaIndex]?.id;
+            
+            // Convertir selectedIntervals a formato de API
+            const schedules = [];
+            Object.keys(selectedIntervals).forEach(dayKey => {
+                const dayOfWeek = parseInt(dayKey);
+                const intervals = selectedIntervals[dayKey];
+                
+                // Agrupar filas consecutivas en intervalos
+                const sortedRows = [...new Set(intervals)].sort((a, b) => a - b);
+                let currentStart = null;
+                let currentEnd = null;
+                
+                sortedRows.forEach((row, index) => {
+                    if (currentStart === null) {
+                        currentStart = row;
+                        currentEnd = row;
+                    } else if (row === currentEnd + 1) {
+                        currentEnd = row;
+                    } else {
+                        // Guardar intervalo anterior
+                        const startHour = parseInt(currentStart) + 8;
+                        const endHour = parseInt(currentEnd) + 9; // +1 porque el end_time es exclusivo
+                        schedules.push({
+                            day_of_week: dayOfWeek,
+                            start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
+                            end_time: `${endHour.toString().padStart(2, '0')}:00:00`
+                        });
+                        
+                        // Iniciar nuevo intervalo
+                        currentStart = row;
+                        currentEnd = row;
+                    }
+                });
+                
+                // Guardar último intervalo
+                if (currentStart !== null) {
+                    const startHour = parseInt(currentStart) + 8;
+                    const endHour = parseInt(currentEnd) + 9;
+                    schedules.push({
+                        day_of_week: dayOfWeek,
+                        start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
+                        end_time: `${endHour.toString().padStart(2, '0')}:00:00`
+                    });
+                }
+            });
+            
+            await scheduleService.bulkUpdateGeneralSchedules(parishIdTemp, chapelId, schedules);
+            setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
+            setIsEditing(false);
+        } catch (err) {
+            setError(err.message || 'Error al guardar los horarios');
+            console.error('Error al guardar horarios:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestionar horario - {capillas[selectedCapillaIndex].nombre}</h2>
+            <h2 className='title-screen'>
+                Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex] 
+                    ? `- ${capillas[selectedCapillaIndex].nombre}` 
+                    : ''}
+            </h2>
+            {error && <div className="error-message" style={{padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
+            {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
+            
+            {selectedCapillaIndex === null ? (
+                <div className="app-container">
+                    <div style={{textAlign: 'center', padding: '3rem', fontSize: '1.2rem', color: '#666'}}>
+                        <p>Por favor, selecciona una capilla para gestionar sus horarios.</p>
+                        <br />
+                        <MyButtonMediumIcon
+                            icon="MdOutlineTouchApp"
+                            text="Seleccionar Capilla"
+                            onClick={() => setShowPanelLateral(true)}
+                            classNameExtra="horarios-btn"
+                        />
+                    </div>
+                </div>
+            ) : (
             <div className='app-container'>
                     <div className="horarios-container">
                         <div className="week-navigation">
@@ -528,7 +766,13 @@ export default function ActosLiturgicosHorarios() {
                                 <MyButtonMediumIcon
                                     icon="MdCreate"
                                     text={isEditing ? "Finalizar edición" : "Editar"}
-                                    onClick={toggleEditing}
+                                    onClick={() => {
+                                        if (capillas.length === 0 || !capillas[selectedCapillaIndex]) {
+                                            alert('Por favor, selecciona una capilla primero.');
+                                            return;
+                                        }
+                                        toggleEditing();
+                                    }}
                                     classNameExtra="horarios-btn"
                                 />
                             </div>
@@ -569,23 +813,6 @@ export default function ActosLiturgicosHorarios() {
                                 </div>
                             )}
                         </div>
-
-                        {/* Panel lateral: listado de capillas */}
-                        {showPanelLateral && (
-                            <MyPanelLateralConfig title="Capillas">
-                                <div className="panel-config-actions">
-                                    {capillas.map((cap, idx) => (
-                                        <button
-                                            key={cap.id}
-                                            onClick={() => { setSelectedCapillaIndex(idx); setShowPanelLateral(false); }}
-                                            className={`capilla-btn ${idx === selectedCapillaIndex ? 'active' : ''}`}
-                                        >
-                                            {cap.nombre}
-                                        </button>
-                                    ))}
-                                </div>
-                            </MyPanelLateralConfig>
-                        )}
 
                         <MySchedule
                             timeSlots={timeSlots}
@@ -669,6 +896,53 @@ export default function ActosLiturgicosHorarios() {
                             </Modal>
                     </div>
                 </div>
-            </div>
+            )}
+            
+            {/* Panel lateral: listado de capillas */}
+            {showPanelLateral && (
+                <MyPanelLateralConfig>
+                    <div className="panel-lateral-header">
+                        <h2>Seleccionar capilla</h2>
+                        <MyButtonShortAction
+                            type="close"
+                            onClick={() => setShowPanelLateral(false)}
+                            title="Cerrar"
+                        />
+                    </div>
+                    <br />
+                    <div className="sidebar-search">
+                        <SearchBar onSearchChange={setSearchTermCapilla} />
+                    </div>
+                    <div className="table-container">
+                        <div className="table-body-div">
+                            {capillas
+                                .filter(cap => 
+                                    cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
+                                    (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
+                                )
+                                .map((cap, idx) => (
+                                <div
+                                    key={cap.id}
+                                    className="table-row-div event-row"
+                                    onClick={() => { 
+                                        const originalIndex = capillas.findIndex(c => c.id === cap.id);
+                                        setSelectedCapillaIndex(originalIndex); 
+                                        setShowPanelLateral(false); 
+                                    }}
+                                >
+                                    <div className="event-cell">
+                                        <span className="event-id">{cap.id}</span>
+                                        <div className="event-info-display">
+                                            <span className="event-name">{cap.nombre}</span>
+                                            <div className="event-capilla-name">{cap.direccion || ''}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </MyPanelLateralConfig>
+            )}
+        </div>
     );
 }
