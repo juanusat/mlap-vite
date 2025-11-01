@@ -215,8 +215,8 @@ function ChapelForm({ mode, initialData, onSave }) {
   const [address, setAddress] = useState(initialData?.address || '');
   const [coordinates, setCoordinates] = useState(initialData?.coordinates || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
-  const [profilePhoto, setProfilePhoto] = useState(initialData?.profile_photo || '');
-  const [coverPhoto, setCoverPhoto] = useState(initialData?.cover_photo || '');
+  const [profilePhotoData, setProfilePhotoData] = useState(null);
+  const [coverPhotoData, setCoverPhotoData] = useState(null);
 
   // Estados para el modal del mapa
   const [showMapModal, setShowMapModal] = useState(false);
@@ -228,8 +228,13 @@ function ChapelForm({ mode, initialData, onSave }) {
     return parts.length === 2 ? parts : [0, 0];
   };
 
-  const handleFotoPerfilChange = (data) => setProfilePhoto(data ? data.name : "");
-  const handleFotoPortadaChange = (data) => setCoverPhoto(data ? data.name : "");
+  const handleFotoPerfilChange = (data) => {
+    setProfilePhotoData(data);
+  };
+  
+  const handleFotoPortadaChange = (data) => {
+    setCoverPhotoData(data);
+  };
 
   // Funciones para el modal del mapa
   const handleOpenMapModal = () => {
@@ -260,14 +265,22 @@ function ChapelForm({ mode, initialData, onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (mode !== 'view') {
-      onSave({
+      const chapelData = {
         name,
         address,
         coordinates,
-        phone,
-        profile_photo: profilePhoto,
-        cover_photo: coverPhoto
-      });
+        phone
+      };
+      
+      // Pasar el archivo completo, no solo el nombre
+      if (profilePhotoData && profilePhotoData.file) {
+        chapelData.profile_photo = profilePhotoData.file;
+      }
+      if (coverPhotoData && coverPhotoData.file) {
+        chapelData.cover_photo = coverPhotoData.file;
+      }
+      
+      onSave(chapelData);
     }
   };
 
@@ -326,14 +339,20 @@ function ChapelForm({ mode, initialData, onSave }) {
         <label>Foto de perfil</label>
         <InputFotoPerfil
           onChange={handleFotoPerfilChange}
+          value={profilePhotoData ? profilePhotoData.preview : null}
           placeholder="Subir foto de perfil de la capilla"
           disabled={disabled}
+          maxSize={5 * 1024 * 1024}
+          acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
         />
         <label>Foto de portada</label>
         <InputFotoPerfil
           onChange={handleFotoPortadaChange}
+          value={coverPhotoData ? coverPhotoData.preview : null}
           placeholder="Subir foto de portada de la capilla"
           disabled={disabled}
+          maxSize={10 * 1024 * 1024}
+          acceptedFormats={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
         />
       </div>
     </form>
