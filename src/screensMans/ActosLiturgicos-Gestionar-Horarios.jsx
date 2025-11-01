@@ -4,6 +4,7 @@ import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import Modal from '../components/Modal';
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import MySchedule from '../components/MySchedule';
+import SearchBar from '../components/SearchBar';
 import * as scheduleService from '../services/scheduleService';
 import * as chapelService from '../services/chapelService';
 import '../utils/Estilos-Generales-1.css';
@@ -199,14 +200,13 @@ export default function ActosLiturgicosHorarios() {
             const capillasData = response.data.map(chapel => ({
                 id: chapel.id,
                 nombre: chapel.name,
+                direccion: chapel.address,
                 exceptionsDisponibilidad: [],
                 exceptionsNoDisponibilidad: [],
                 savedIntervals: {}
             }));
             setCapillas(capillasData);
-            if (capillasData.length > 0) {
-                await loadSchedulesForChapel(capillasData[0].id);
-            }
+            // NO cargar automáticamente la primera capilla
         } catch (err) {
             setError(err.message || 'Error al cargar las capillas');
             console.error('Error al cargar capillas:', err);
@@ -292,8 +292,9 @@ export default function ActosLiturgicosHorarios() {
         return `${year}-${month}-${day}`;
     };
 
-    const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(0);
+    const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(null);
     const [showPanelLateral, setShowPanelLateral] = useState(false);
+    const [searchTermCapilla, setSearchTermCapilla] = useState('');
 
     // Estados por capilla
     const [exceptionsDisponibilidad, setExceptionsDisponibilidad] = useState([]);
@@ -301,6 +302,7 @@ export default function ActosLiturgicosHorarios() {
 
     // sincronizar al cambiar la capilla seleccionada
     useEffect(() => {
+        if (selectedCapillaIndex === null) return;
         const cap = capillas[selectedCapillaIndex];
         if (!cap) return;
         loadSchedulesForChapel(cap.id);
@@ -311,6 +313,10 @@ export default function ActosLiturgicosHorarios() {
     // persistir cambios locales eliminado - ya no necesitamos sincronizar localmente
 
     const handleOpenModal = (type) => {
+        if (selectedCapillaIndex === null || !capillas[selectedCapillaIndex]) {
+            alert('Por favor, selecciona una capilla primero.');
+            return;
+        }
         setModalType(type);
         setModalAction('add');
         setShowModal(true);
@@ -611,8 +617,8 @@ export default function ActosLiturgicosHorarios() {
                         currentEnd = row;
                     } else {
                         // Guardar intervalo anterior
-                        const startHour = currentStart + 8;
-                        const endHour = currentEnd + 9; // +1 porque el end_time es exclusivo
+                        const startHour = parseInt(currentStart) + 8;
+                        const endHour = parseInt(currentEnd) + 9; // +1 porque el end_time es exclusivo
                         schedules.push({
                             day_of_week: dayOfWeek,
                             start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
@@ -627,8 +633,8 @@ export default function ActosLiturgicosHorarios() {
                 
                 // Guardar último intervalo
                 if (currentStart !== null) {
-                    const startHour = currentStart + 8;
-                    const endHour = currentEnd + 9;
+                    const startHour = parseInt(currentStart) + 8;
+                    const endHour = parseInt(currentEnd) + 9;
                     schedules.push({
                         day_of_week: dayOfWeek,
                         start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
@@ -650,9 +656,28 @@ export default function ActosLiturgicosHorarios() {
 
     return (
         <div className="content-module only-this">
-            <h2 className='title-screen'>Gestionar horario - {capillas[selectedCapillaIndex]?.nombre || 'Cargando...'}</h2>
+            <h2 className='title-screen'>
+                Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex] 
+                    ? `- ${capillas[selectedCapillaIndex].nombre}` 
+                    : ''}
+            </h2>
             {error && <div className="error-message" style={{padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
             {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
+            
+            {selectedCapillaIndex === null ? (
+                <div className="app-container">
+                    <div style={{textAlign: 'center', padding: '3rem', fontSize: '1.2rem', color: '#666'}}>
+                        <p>Por favor, selecciona una capilla para gestionar sus horarios.</p>
+                        <br />
+                        <MyButtonMediumIcon
+                            icon="MdOutlineTouchApp"
+                            text="Seleccionar Capilla"
+                            onClick={() => setShowPanelLateral(true)}
+                            classNameExtra="horarios-btn"
+                        />
+                    </div>
+                </div>
+            ) : (
             <div className='app-container'>
                     <div className="horarios-container">
                         <div className="week-navigation">
@@ -676,7 +701,13 @@ export default function ActosLiturgicosHorarios() {
                                 <MyButtonMediumIcon
                                     icon="MdCreate"
                                     text={isEditing ? "Finalizar edición" : "Editar"}
-                                    onClick={toggleEditing}
+                                    onClick={() => {
+                                        if (capillas.length === 0 || !capillas[selectedCapillaIndex]) {
+                                            alert('Por favor, selecciona una capilla primero.');
+                                            return;
+                                        }
+                                        toggleEditing();
+                                    }}
                                     classNameExtra="horarios-btn"
                                 />
                             </div>
@@ -717,23 +748,6 @@ export default function ActosLiturgicosHorarios() {
                                 </div>
                             )}
                         </div>
-
-                        {/* Panel lateral: listado de capillas */}
-                        {showPanelLateral && (
-                            <MyPanelLateralConfig title="Capillas">
-                                <div className="panel-config-actions">
-                                    {capillas.map((cap, idx) => (
-                                        <button
-                                            key={cap.id}
-                                            onClick={() => { setSelectedCapillaIndex(idx); setShowPanelLateral(false); }}
-                                            className={`capilla-btn ${idx === selectedCapillaIndex ? 'active' : ''}`}
-                                        >
-                                            {cap.nombre}
-                                        </button>
-                                    ))}
-                                </div>
-                            </MyPanelLateralConfig>
-                        )}
 
                         <MySchedule
                             timeSlots={timeSlots}
@@ -817,6 +831,53 @@ export default function ActosLiturgicosHorarios() {
                             </Modal>
                     </div>
                 </div>
-            </div>
+            )}
+            
+            {/* Panel lateral: listado de capillas */}
+            {showPanelLateral && (
+                <MyPanelLateralConfig>
+                    <div className="panel-lateral-header">
+                        <h2>Seleccionar capilla</h2>
+                        <MyButtonShortAction
+                            type="close"
+                            onClick={() => setShowPanelLateral(false)}
+                            title="Cerrar"
+                        />
+                    </div>
+                    <br />
+                    <div className="sidebar-search">
+                        <SearchBar onSearchChange={setSearchTermCapilla} />
+                    </div>
+                    <div className="table-container">
+                        <div className="table-body-div">
+                            {capillas
+                                .filter(cap => 
+                                    cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
+                                    (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
+                                )
+                                .map((cap, idx) => (
+                                <div
+                                    key={cap.id}
+                                    className="table-row-div event-row"
+                                    onClick={() => { 
+                                        const originalIndex = capillas.findIndex(c => c.id === cap.id);
+                                        setSelectedCapillaIndex(originalIndex); 
+                                        setShowPanelLateral(false); 
+                                    }}
+                                >
+                                    <div className="event-cell">
+                                        <span className="event-id">{cap.id}</span>
+                                        <div className="event-info-display">
+                                            <span className="event-name">{cap.nombre}</span>
+                                            <div className="event-capilla-name">{cap.direccion || ''}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </MyPanelLateralConfig>
+            )}
+        </div>
     );
 }
