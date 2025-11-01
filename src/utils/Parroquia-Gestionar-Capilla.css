@@ -1,6 +1,34 @@
-form#add-chapel-form {
-    max-height: 70vh;
+/* Estilos para hacer el formulario scrollable */
+.chapel-form-scrollable {
+    max-height: 60vh;
     overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+/* Scrollbar personalizada */
+.chapel-form-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chapel-form-scrollable::-webkit-scrollbar-track {
+    background: var(--color-n-50);
+    border-radius: 4px;
+}
+
+.chapel-form-scrollable::-webkit-scrollbar-thumb {
+    background: var(--color-n-300);
+    border-radius: 4px;
+}
+
+.chapel-form-scrollable::-webkit-scrollbar-thumb:hover {
+    background: var(--color-n-400);
+}
+
+/* Para Firefox */
+.chapel-form-scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-n-300) var(--color-n-50);
 }
 
 /* Estilos para el contenedor de coordenadas */
@@ -15,7 +43,7 @@ form#add-chapel-form {
 .chapel-coordinates-container .inputModal {
     flex: 1;
     margin-bottom: 0;
-    
+
     font-size: 13px;
     padding: 8px 10px;
     max-width: 50%;
