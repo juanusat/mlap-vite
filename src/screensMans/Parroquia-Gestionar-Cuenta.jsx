@@ -147,14 +147,24 @@ const GestionCuenta = () => {
     };
 
     const handleSaveAccount = async () => {
-        if (tempUserInfo.contraseña && tempUserInfo.contraseña !== confirmPassword) {
-            setPasswordError("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
-            return;
-        }
-
+        // Validar que se ingresó la contraseña actual
         if (!currentPassword) {
             setPasswordError("Debes ingresar tu contraseña actual para realizar cambios.");
             return;
+        }
+
+        // Si hay nueva contraseña, validar que cumpla requisitos mínimos
+        if (tempUserInfo.contraseña) {
+            if (tempUserInfo.contraseña.length < 6) {
+                setPasswordError("La nueva contraseña debe tener al menos 6 caracteres.");
+                return;
+            }
+            
+            // Validar que las contraseñas coincidan
+            if (tempUserInfo.contraseña !== confirmPassword) {
+                setPasswordError("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
+                return;
+            }
         }
 
         try {
@@ -201,13 +211,24 @@ const GestionCuenta = () => {
             ...prevInfo,
             [name]: value
         }));
+        
+        // Si se está modificando la contraseña, validar con confirmPassword
+        if (name === 'contraseña' && confirmPassword && value !== confirmPassword) {
+            setPasswordError("Las contraseñas no coinciden.");
+        } else if (name === 'contraseña' && confirmPassword && value === confirmPassword) {
+            setPasswordError("");
+        }
     };
 
     // Handler específico para el campo de confirmar contraseña
     const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
-        // Opcional: Limpiar el error si las contraseñas coinciden mientras se escribe
-        if (e.target.value === tempUserInfo.contraseña) {
+        const newConfirmPassword = e.target.value;
+        setConfirmPassword(newConfirmPassword);
+        
+        // Mostrar alerta si las contraseñas son diferentes y ambos campos tienen contenido
+        if (tempUserInfo.contraseña && newConfirmPassword && tempUserInfo.contraseña !== newConfirmPassword) {
+            setPasswordError("Las contraseñas no coinciden.");
+        } else {
             setPasswordError("");
         }
     };
@@ -406,6 +427,8 @@ const GestionCuenta = () => {
             >
                 {isEditingAccount ? (
                     <>
+                        <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
+                        <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
                         <TextInput 
                             label="Contraseña actual" 
                             placeholder='Contraseña actual (requerida)' 
@@ -414,10 +437,22 @@ const GestionCuenta = () => {
                             name="contraseñaActual" 
                             type='password' 
                         />
-                        <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
-                        <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
-                        <TextInput label="Nueva contraseña (opcional)" placeholder='Nueva contraseña' onChange={handleInputChange} name="contraseña" type='password' />
-                        <TextInput label="Confirmar nueva contraseña" placeholder='Confirmar nueva contraseña' onChange={handleConfirmPasswordChange} value={confirmPassword} name="confirmarContraseña" type='password' />
+                        <TextInput 
+                            label="Nueva contraseña (opcional)" 
+                            placeholder='Nueva contraseña (mínimo 6 caracteres)' 
+                            onChange={handleInputChange} 
+                            value={tempUserInfo.contraseña || ''} 
+                            name="contraseña" 
+                            type='password' 
+                        />
+                        <TextInput 
+                            label="Confirmar nueva contraseña" 
+                            placeholder='Confirmar nueva contraseña' 
+                            onChange={handleConfirmPasswordChange} 
+                            value={confirmPassword} 
+                            name="confirmarContraseña" 
+                            type='password' 
+                        />
                         {passwordError && <p className="error-message">{passwordError}</p>}
                     </>
                 ) : (

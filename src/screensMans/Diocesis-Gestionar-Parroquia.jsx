@@ -31,6 +31,8 @@ export default function Parroquia() {
     password: ''
   });
 
+  const [emailError, setEmailError] = useState('');
+
   const loadParishes = async () => {
     try {
       setLoading(true);
@@ -54,6 +56,16 @@ export default function Parroquia() {
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Validar el email en tiempo real
+        if (name === 'email') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+            if (value && !emailRegex.test(value)) {
+                setEmailError('El correo debe tener el formato: ejemplo@dominio.com o ejemplo@dominio.com.co');
+            } else {
+                setEmailError('');
+            }
+        }
     };
 
     const filteredEvents = events.filter((event) =>
@@ -128,6 +140,7 @@ export default function Parroquia() {
         setShowModal(false);
         setCurrentEvent(null);
         setModalType(null);
+        setEmailError('');
         setFormData({
             name: '',
             email: '',
@@ -160,6 +173,13 @@ export default function Parroquia() {
     };
 
     const handleSave = async () => {
+        // Validar el formato del email antes de guardar
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+        if (formData.email && !emailRegex.test(formData.email)) {
+            setEmailError('El correo debe tener el formato: ejemplo@dominio.com o ejemplo@dominio.com.co');
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -216,14 +236,14 @@ export default function Parroquia() {
             case 'view':
                 return {
                     title: 'Detalles de la parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} emailError={emailError} />,
                     onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -241,7 +261,7 @@ export default function Parroquia() {
             case 'add':
                 return {
                     title: 'Añadir parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -289,7 +309,7 @@ export default function Parroquia() {
 }
 
 // Componente reutilizable para los formularios de la parroquia
-const ParroquiaForm = ({ formData, handleFormChange, isViewMode }) => {
+const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) => {
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -313,7 +333,9 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode }) => {
                 onChange={handleFormChange}
                 disabled={isViewMode}
                 required
+                placeholder="ejemplo@dominio.com"
             />
+            {emailError && <p className="error-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{emailError}</p>}
             <label htmlFor="username">Usuario:</label>
             <input
                 type="text"

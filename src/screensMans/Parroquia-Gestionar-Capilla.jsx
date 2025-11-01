@@ -333,8 +333,15 @@ function ChapelForm({ mode, initialData, onSave }) {
           type="text"
           className="inputModal"
           value={phone}
-          onChange={e => setPhone(e.target.value)}
+          onChange={e => {
+            const value = e.target.value;
+            // Solo permitir números (sin negativos, puntos, espacios, comas)
+            if (value === '' || /^\d+$/.test(value)) {
+              setPhone(value);
+            }
+          }}
           disabled={disabled}
+          placeholder="Solo números"
         />
         <label>Foto de perfil</label>
         <InputFotoPerfil
