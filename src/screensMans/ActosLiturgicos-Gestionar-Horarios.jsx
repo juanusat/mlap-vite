@@ -415,9 +415,7 @@ export default function ActosLiturgicosHorarios() {
 
     const isCellInInterval = (rowIndex, colIndex) => {
         if (!selectedIntervals[colIndex]) return false;
-        return selectedIntervals[colIndex].some(interval => {
-            return rowIndex >= interval[0] && rowIndex <= interval[1];
-        });
+        return selectedIntervals[colIndex].includes(rowIndex);
     };
 
     const hasExceptionForCell = (rowIndex, colIndex) => {
@@ -514,22 +512,14 @@ export default function ActosLiturgicosHorarios() {
                 if (!newIntervals[currentDay]) {
                     newIntervals[currentDay] = [];
                 }
-                let newInterval = [startInterval, endInterval];
-                let intervalsToRemove = [];
-                newIntervals[currentDay].forEach((interval, index) => {
-                    if ((newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
-                        (interval[0] <= newInterval[1] && interval[1] >= newInterval[0])) {
-                        newInterval = [
-                            Math.min(newInterval[0], interval[0]),
-                            Math.max(newInterval[1], interval[1])
-                        ];
-                        intervalsToRemove.push(index);
+                // Agregar todos los índices del rango
+                for (let i = startInterval; i <= endInterval; i++) {
+                    if (!newIntervals[currentDay].includes(i)) {
+                        newIntervals[currentDay].push(i);
                     }
-                });
-                const filteredIntervals = newIntervals[currentDay].filter((_, index) =>
-                    !intervalsToRemove.includes(index)
-                );
-                newIntervals[currentDay] = [...filteredIntervals, newInterval];
+                }
+                // Ordenar los índices
+                newIntervals[currentDay].sort((a, b) => a - b);
                 return newIntervals;
             });
         }
@@ -543,15 +533,8 @@ export default function ActosLiturgicosHorarios() {
         setSelectedIntervals(prevIntervals => {
             const newIntervals = { ...prevIntervals };
             if (!newIntervals[dayIndex]) return newIntervals;
-            const intervalIndex = newIntervals[dayIndex].findIndex(
-                interval => rowIndex >= interval[0] && rowIndex <= interval[1]
-            );
-            if (intervalIndex !== -1) {
-                newIntervals[dayIndex] = [
-                    ...newIntervals[dayIndex].slice(0, intervalIndex),
-                    ...newIntervals[dayIndex].slice(intervalIndex + 1)
-                ];
-            }
+            // Remover el índice específico
+            newIntervals[dayIndex] = newIntervals[dayIndex].filter(idx => idx !== rowIndex);
             return newIntervals;
         });
     };
@@ -565,23 +548,13 @@ export default function ActosLiturgicosHorarios() {
             }
             const isSelected = isCellInInterval(rowIndex, colIndex);
             if (isSelected) {
-                newIntervals[colIndex] = newIntervals[colIndex].filter(interval =>
-                    !(rowIndex >= interval[0] && rowIndex <= interval[1])
-                );
+                // Remover el índice
+                newIntervals[colIndex] = newIntervals[colIndex].filter(idx => idx !== rowIndex);
             } else {
-                let newInterval = [rowIndex, rowIndex];
-                const filteredIntervals = newIntervals[colIndex].filter(interval => {
-                    const overlaps = (newInterval[0] <= interval[1] && newInterval[1] >= interval[0]) ||
-                        (interval[0] <= newInterval[1] && interval[1] >= newInterval[0]);
-                    if (overlaps) {
-                        newInterval = [
-                            Math.min(newInterval[0], interval[0]),
-                            Math.max(newInterval[1], interval[1])
-                        ];
-                    }
-                    return !overlaps;
-                });
-                newIntervals[colIndex] = [...filteredIntervals, newInterval];
+                // Agregar el índice
+                newIntervals[colIndex].push(rowIndex);
+                // Ordenar
+                newIntervals[colIndex].sort((a, b) => a - b);
             }
             return newIntervals;
         });
