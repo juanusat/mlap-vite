@@ -4,10 +4,12 @@ import SearchBar from "../components/SearchBar";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
+import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import { 
   getPendingReservations, 
   searchPendingReservations, 
-  cancelReservation 
+  cancelReservation,
+  getReservationDetails
 } from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
@@ -32,6 +34,10 @@ export default function ReservasPendientes() {
   // Estados para el modal de confirmación
   const [showModal, setShowModal] = useState(false);
   const [reservationToDelete, setReservationToDelete] = useState(null);
+
+  // Estados para el panel lateral de detalles
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [currentReservation, setCurrentReservation] = useState(null);
 
   const loadReservations = async () => {
     try {
@@ -88,6 +94,27 @@ export default function ReservasPendientes() {
     setReservationToDelete(null);
   };
 
+  // Función para abrir el panel lateral de detalles
+  const handleOpenSidebar = async (reservation) => {
+    try {
+      setLoading(true);
+      const details = await getReservationDetails(reservation.id);
+      setCurrentReservation(details.data);
+      setShowSidebar(true);
+    } catch (err) {
+      console.error('Error al cargar detalles:', err);
+      alert(err.message || 'Error al cargar detalles de la reserva');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para cerrar el panel lateral
+  const handleCloseSidebar = () => {
+    setShowSidebar(false);
+    setCurrentReservation(null);
+  };
+
   // Función que se ejecuta al confirmar la eliminación
   const confirmDelete = async () => {
     if (reservationToDelete) {
@@ -120,6 +147,14 @@ export default function ReservasPendientes() {
       accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
     },
     { 
+      key: 'event_time', 
+      header: 'Hora', 
+      accessor: (row) => {
+        const date = new Date(row.event_date);
+        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      }
+    },
+    { 
       key: 'paid_amount', 
       header: 'Monto Pagado', 
       accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
@@ -139,6 +174,11 @@ export default function ReservasPendientes() {
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
+          <MyButtonShortAction
+            type="view"
+            title="Ver"
+            onClick={() => handleOpenSidebar(row)}
+          />
           <MyButtonShortAction
             type="delete"
             title="Cancelar"
@@ -182,7 +222,7 @@ export default function ReservasPendientes() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="80px 1fr 180px 120px 140px 120px 220px"
+                    gridColumnsLayout="80px 1fr 180px 120px 100px 140px 120px 220px"
                     columnLeftAlignIndex={[1, 2]}
                   />
                   
@@ -232,6 +272,52 @@ export default function ReservasPendientes() {
           ¿Estás seguro que quieres cancelar tu reserva para el evento de {reservationToDelete?.event_name}?
         </h4>
       </Modal>
+
+      {showSidebar && currentReservation && (
+        <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`}>
+          <div className="panel-lateral-close-btn">
+            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
+          </div>
+          <div className="sidebar-list">
+            <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
+            <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
+            <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
+            <p><strong>Hora:</strong> {new Date(currentReservation.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+            <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Estado:</strong> {
+              currentReservation.status === 'RESERVED' ? 'Reservado' :
+              currentReservation.status === 'IN_PROGRESS' ? 'En progreso' :
+              currentReservation.status === 'CANCELLED' ? 'Cancelado' :
+              currentReservation.status
+            }</p>
+            <p><strong>Pago:</strong> {currentReservation.payment_status}</p>
+            {currentReservation.chapel && (
+              <>
+                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
+                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
+              </>
+            )}
+            <hr className="divider-sidebar" />
+            <h3 className="sidebar-subtitle">Requisitos</h3>
+            {currentReservation.requirements && currentReservation.requirements.length > 0 ? (
+              currentReservation.requirements.map((req, index) => (
+                <div key={index} className="sidebar-list-item requirement-item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={req.completed}
+                      disabled
+                    />
+                    <span>{req.name}</span>
+                  </label>
+                </div>
+              ))
+            ) : (
+              <p>No hay requisitos registrados</p>
+            )}
+          </div>
+        </MyPanelLateralConfig>
+      )}
     </>
   );
 }

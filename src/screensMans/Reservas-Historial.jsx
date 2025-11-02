@@ -107,6 +107,14 @@ export default function ReservasHistorial() {
       accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
     },
     { 
+      key: 'event_time', 
+      header: 'Hora', 
+      accessor: (row) => {
+        const date = new Date(row.event_date);
+        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      }
+    },
+    { 
       key: 'paid_amount', 
       header: 'Monto', 
       accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
@@ -170,7 +178,7 @@ export default function ReservasHistorial() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="80px 1fr 180px 120px 100px 120px 220px"
+                    gridColumnsLayout="80px 1fr 180px 120px 100px 100px 120px 220px"
                     columnLeftAlignIndex={[1, 2]}
                   />
                   
@@ -217,6 +225,7 @@ export default function ReservasHistorial() {
             <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
+            <p><strong>Hora:</strong> {new Date(currentReservation.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
             <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'COMPLETED' ? 'Completado' :

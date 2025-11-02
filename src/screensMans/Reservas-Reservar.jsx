@@ -224,7 +224,7 @@ export default function ReservasReservar() {
                     <div className="reserva-form">
                         <div className="reserva-row">
                             <div className="reserva-label">Capilla / Parroquia</div>
-                            <div className="reserva-value">{formData.chapel_parish}</div>
+                            <div className="reserva-value">{formData.chapel_parish} - {formData.chapel_name}</div>
                         </div>
 
                         <div className="reserva-row">

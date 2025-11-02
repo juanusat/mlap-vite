@@ -30,6 +30,7 @@ export default function CuentasGestionar() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [workerRoles, setWorkerRoles] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
 
@@ -122,6 +123,7 @@ export default function CuentasGestionar() {
     setShowModal(false);
     setCurrentWorker(null);
     setModalType(null);
+    setModalError('');
     setFormData({ email: '', role_id: '' });
   };
 
@@ -147,18 +149,19 @@ export default function CuentasGestionar() {
   const handleSave = async () => {
     try {
       setLoading(true);
+      setModalError('');
       
       if (modalType === "invite") {
         await parishWorkerService.inviteWorker(parishId, formData.email);
         await loadWorkers();
+        handleCloseModal();
       } else if (modalType === "addRole" && currentWorker) {
         await parishWorkerService.assignRole(currentWorker.association_id, formData.role_id);
         await loadWorkers();
+        handleCloseModal();
       }
-      
-      handleCloseModal();
     } catch (err) {
-      setError(err.message || 'Error al realizar la operación');
+      setModalError(err.message || 'Error al realizar la operación');
       console.error(err);
     } finally {
       setLoading(false);
@@ -242,7 +245,7 @@ export default function CuentasGestionar() {
       case "invite":
         return {
           title: "Invitar usuario",
-          content: <UserForm formData={formData} handleFormChange={handleFormChange} mode="invite" />,
+          content: <UserForm formData={formData} handleFormChange={handleFormChange} mode="invite" error={modalError} />,
           onAccept: handleSave,
           onCancel: handleCloseModal
         };
@@ -255,6 +258,7 @@ export default function CuentasGestionar() {
               handleFormChange={handleFormChange}
               mode="addRole"
               availableRoles={availableRoles}
+              error={modalError}
             />
           ),
           onAccept: handleSave,
@@ -334,7 +338,7 @@ export default function CuentasGestionar() {
   );
 }
 
-const UserForm = ({ formData, handleFormChange, mode, availableRoles = [] }) => {
+const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], error = '' }) => {
   return (
     <div className="Inputs-add">
       {mode === "invite" && (
@@ -372,6 +376,8 @@ const UserForm = ({ formData, handleFormChange, mode, availableRoles = [] }) => 
           </select>
         </>
       )}
+      
+      {error && <p className="error-message" style={{ marginTop: '10px', color: 'red', fontSize: '14px' }}>{error}</p>}
     </div>
   );
 };
