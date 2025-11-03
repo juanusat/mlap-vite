@@ -156,6 +156,7 @@ export default function ActosLiturgicosHorarios() {
     const [startRow, setStartRow] = useState(null);
     const [currentDay, setCurrentDay] = useState(null);
     const [isMouseMoved, setIsMouseMoved] = useState(false);
+    const [modalError, setModalError] = useState('');
 
     // Semana actual
     const getMondayOfCurrentWeek = () => {
@@ -179,11 +180,16 @@ export default function ActosLiturgicosHorarios() {
 
     const ITEMS_PER_PAGE = 4;
 
+    // Franja horaria desde 06:00 hasta 22:00 (última franja 21:00 - 22:00)
     const timeSlots = [
-        '8:00 - 9:00', '9:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00',
-        '12:00 - 13:00', '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00',
-        '16:00 - 17:00', '17:00 - 18:00'
+        '6:00 - 7:00','7:00 - 8:00','8:00 - 9:00','9:00 - 10:00','10:00 - 11:00','11:00 - 12:00',
+        '12:00 - 13:00','13:00 - 14:00','14:00 - 15:00','15:00 - 16:00','16:00 - 17:00','17:00 - 18:00',
+        '18:00 - 19:00','19:00 - 20:00','20:00 - 21:00','21:00 - 22:00'
     ];
+
+    // Configuración de la grilla horaria
+    const SLOT_START_HOUR = 6; // hora inicial (6:00)
+    const SLOT_COUNT = timeSlots.length; // número de franjas
 
     const daysOfWeek = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
 
@@ -260,11 +266,11 @@ export default function ActosLiturgicosHorarios() {
                 
                 const startHour = parseInt(schedule.start_time.split(':')[0]);
                 const endHour = parseInt(schedule.end_time.split(':')[0]);
-                const startRow = startHour - 8;
-                const endRow = endHour - 8;
-                
+                const startRow = startHour - SLOT_START_HOUR;
+                const endRow = endHour - SLOT_START_HOUR;
+
                 for (let row = startRow; row < endRow; row++) {
-                    if (row >= 0 && row < 10) {
+                    if (row >= 0 && row < SLOT_COUNT) {
                         savedIntervalsData[dayKey].push(row);
                     }
                 }
@@ -339,7 +345,29 @@ export default function ActosLiturgicosHorarios() {
 
     const formatDateToDB = (dateStr) => {
         const [day, month, year] = dateStr.split('/');
-        return `${year}-${month}-${day}`;
+        let fullYear = year;
+        if (year.length === 2) {
+            fullYear = '20' + year;
+        }
+        return `${fullYear}-${month}-${day}`;
+    };
+
+    // Validaciones para fecha y hora en el modal
+    const validateDateFormat = (dateStr) => {
+        // Acepta dd/MM/YY o dd/MM/YYYY
+        if (!/^\d{2}\/\d{2}\/\d{2,4}$/.test(dateStr)) return false;
+        const [day, month, year] = dateStr.split('/');
+        const fullYear = year.length === 2 ? '20' + year : year;
+        const d = new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day));
+        return d && d.getFullYear() === parseInt(fullYear) && (d.getMonth() + 1) === parseInt(month) && d.getDate() === parseInt(day);
+    };
+
+    const validateTimeFormat = (timeStr) => {
+        // Acepta H:00 o HH:00, minutos deben ser "00"
+        if (!/^([0-1]?\d|2[0-3]):00$/.test(timeStr)) return false;
+        // además verificar que esté dentro del rango permitido (06:00 - 22:00)
+        const hour = parseInt(timeStr.split(':')[0]);
+        return hour >= SLOT_START_HOUR && hour <= (SLOT_START_HOUR + SLOT_COUNT);
     };
 
     const [selectedCapillaIndex, setSelectedCapillaIndex] = useState(null);
@@ -369,6 +397,7 @@ export default function ActosLiturgicosHorarios() {
         }
         setModalType(type);
         setModalAction('add');
+        setModalError('');
         setShowModal(true);
     };
 
@@ -416,9 +445,36 @@ export default function ActosLiturgicosHorarios() {
         setSelectedException(null);
         setSelectedExceptionType(null);
         setModalAction('add');
+        setModalError('');
     };
 
     const handleAcceptModal = async () => {
+        // Validaciones antes de enviar
+        if (modalAction !== 'delete') {
+            // Fecha válida
+            if (!validateDateFormat(fecha)) {
+                setModalError('Fecha inválida. Usa el formato dd/MM/YY o dd/MM/YYYY.');
+                return;
+            }
+
+            // Horas válidas
+            if (!validateTimeFormat(horaInicio) || !validateTimeFormat(horaFin)) {
+                setModalError('Formato de hora inválido. Usa HH:00 (ej: 10:00, 20:00).');
+                return;
+            }
+
+            const startHour = parseInt(horaInicio.split(':')[0]);
+            const endHour = parseInt(horaFin.split(':')[0]);
+            if (!(startHour < endHour)) {
+                setModalError('La hora de inicio debe ser menor a la hora de fin.');
+                return;
+            }
+            if (startHour < SLOT_START_HOUR || endHour > SLOT_START_HOUR + SLOT_COUNT) {
+                setModalError(`Las horas deben estar entre ${SLOT_START_HOUR}:00 y ${SLOT_START_HOUR + SLOT_COUNT}:00`);
+                return;
+            }
+        }
+
         try {
             setLoading(true);
             const parishIdTemp = 1;
@@ -447,7 +503,7 @@ export default function ActosLiturgicosHorarios() {
             await loadSchedulesForChapel(chapelId);
             handleCancelModal();
         } catch (err) {
-            setError(err.message || 'Error al guardar la excepción');
+            setModalError(err.message || 'Error al guardar la excepción');
             console.error('Error al guardar excepción:', err);
         } finally {
             setLoading(false);
@@ -682,8 +738,8 @@ export default function ActosLiturgicosHorarios() {
                         currentEnd = row;
                     } else {
                         // Guardar intervalo anterior
-                        const startHour = parseInt(currentStart) + 8;
-                        const endHour = parseInt(currentEnd) + 9; // +1 porque el end_time es exclusivo
+                        const startHour = parseInt(currentStart) + SLOT_START_HOUR;
+                        const endHour = parseInt(currentEnd) + SLOT_START_HOUR + 1; // +1 porque el end_time es exclusivo
                         schedules.push({
                             day_of_week: dayOfWeek,
                             start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
@@ -698,8 +754,8 @@ export default function ActosLiturgicosHorarios() {
                 
                 // Guardar último intervalo
                 if (currentStart !== null) {
-                    const startHour = parseInt(currentStart) + 8;
-                    const endHour = parseInt(currentEnd) + 9;
+                    const startHour = parseInt(currentStart) + SLOT_START_HOUR;
+                    const endHour = parseInt(currentEnd) + SLOT_START_HOUR + 1;
                     schedules.push({
                         day_of_week: dayOfWeek,
                         start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
@@ -882,12 +938,17 @@ export default function ActosLiturgicosHorarios() {
                                     <form className='form-modal-horarios'>
                                         <div className="Inputs-add">
                                             <label htmlFor="fecha">Fecha</label>
-                                            <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value)} placeholder="dd/MM/YY" required />
+                                            <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value.replace(/[^0-9/]/g, ''))} placeholder="dd/MM/YYYY" required />
                                             <label>Hora</label>
                                             <div className="time-range">
-                                                <input type="text" className="inputTime" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} placeholder="HH:MM" required />
-                                                <input type="text" className="inputTime" value={horaFin} onChange={e => setHoraFin(e.target.value)} placeholder="HH:MM" required />
+                                                <input type="text" className="inputTime" value={horaInicio} onChange={e => { setHoraInicio(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
+                                                <input type="text" className="inputTime" value={horaFin} onChange={e => { setHoraFin(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
                                             </div>
+                                            {modalError && (
+                                                <p className="error-message" style={{ width: '100%', boxSizing: 'border-box', marginTop: '8px', color: 'red' }}>
+                                                    {modalError}
+                                                </p>
+                                            )}
                                             <label htmlFor="motivo">Motivo</label>
                                             <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
                                         </div>
