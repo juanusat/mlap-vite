@@ -110,8 +110,13 @@ export default function ReservasHistorial() {
       key: 'event_time', 
       header: 'Hora', 
       accessor: (row) => {
-        const date = new Date(row.event_date);
-        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        // Si event_time viene del backend (formato TIME de PostgreSQL: "HH:MM:SS")
+        if (row.event_time) {
+          // Extraer solo HH:MM
+          return row.event_time.substring(0, 5);
+        }
+        // Fallback: intentar calcular desde event_date (por compatibilidad)
+        return new Date(row.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       }
     },
     { 
@@ -225,7 +230,7 @@ export default function ReservasHistorial() {
             <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
-            <p><strong>Hora:</strong> {new Date(currentReservation.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+            <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
             <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'COMPLETED' ? 'Completado' :

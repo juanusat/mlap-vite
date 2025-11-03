@@ -39,6 +39,10 @@ export default function ReservasPendientes() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentReservation, setCurrentReservation] = useState(null);
 
+  // Estados para el panel lateral de requisitos
+  const [showRequirementsSidebar, setShowRequirementsSidebar] = useState(false);
+  const [currentRequirements, setCurrentRequirements] = useState(null);
+
   const loadReservations = async () => {
     try {
       setLoading(true);
@@ -109,10 +113,31 @@ export default function ReservasPendientes() {
     }
   };
 
-  // Función para cerrar el panel lateral
+  // Función para cerrar el panel lateral de detalles
   const handleCloseSidebar = () => {
     setShowSidebar(false);
     setCurrentReservation(null);
+  };
+
+  // Función para abrir el panel lateral de requisitos
+  const handleOpenRequirementsSidebar = async (reservation) => {
+    try {
+      setLoading(true);
+      const details = await getReservationDetails(reservation.id);
+      setCurrentRequirements(details.data);
+      setShowRequirementsSidebar(true);
+    } catch (err) {
+      console.error('Error al cargar requisitos:', err);
+      alert(err.message || 'Error al cargar requisitos de la reserva');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para cerrar el panel lateral de requisitos
+  const handleCloseRequirementsSidebar = () => {
+    setShowRequirementsSidebar(false);
+    setCurrentRequirements(null);
   };
 
   // Función que se ejecuta al confirmar la eliminación
@@ -150,8 +175,13 @@ export default function ReservasPendientes() {
       key: 'event_time', 
       header: 'Hora', 
       accessor: (row) => {
-        const date = new Date(row.event_date);
-        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        // Si event_time viene del backend (formato TIME de PostgreSQL: "HH:MM:SS")
+        if (row.event_time) {
+          // Extraer solo HH:MM
+          return row.event_time.substring(0, 5);
+        }
+        // Fallback: intentar calcular desde event_date (por compatibilidad)
+        return new Date(row.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       }
     },
     { 
@@ -176,8 +206,13 @@ export default function ReservasPendientes() {
         <MyGroupButtonsActions>
           <MyButtonShortAction
             type="view"
-            title="Ver"
+            title="Ver detalles"
             onClick={() => handleOpenSidebar(row)}
+          />
+          <MyButtonShortAction
+            type="key"
+            title="Requisitos"
+            onClick={() => handleOpenRequirementsSidebar(row)}
           />
           <MyButtonShortAction
             type="delete"
@@ -282,7 +317,7 @@ export default function ReservasPendientes() {
             <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
-            <p><strong>Hora:</strong> {new Date(currentReservation.event_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+            <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
             <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'RESERVED' ? 'Reservado' :
@@ -297,10 +332,19 @@ export default function ReservasPendientes() {
                 <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
               </>
             )}
-            <hr className="divider-sidebar" />
+          </div>
+        </MyPanelLateralConfig>
+      )}
+
+      {showRequirementsSidebar && currentRequirements && (
+        <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`}>
+          <div className="panel-lateral-close-btn">
+            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseRequirementsSidebar} />
+          </div>
+          <div className="sidebar-list">
             <h3 className="sidebar-subtitle">Requisitos</h3>
-            {currentReservation.requirements && currentReservation.requirements.length > 0 ? (
-              currentReservation.requirements.map((req, index) => (
+            {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
+              currentRequirements.requirements.map((req, index) => (
                 <div key={index} className="sidebar-list-item requirement-item">
                   <label>
                     <input
