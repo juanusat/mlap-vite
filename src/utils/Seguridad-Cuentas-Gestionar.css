@@ -19,3 +19,11 @@
     font-size: var(--font-size-l);
     color: var(--color-n-700);
 }
+
+/* Asegurar que los mensajes de error ocupen todo el ancho del modal */
+.error-message {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+}

@@ -33,6 +33,7 @@ export default function CuentasGestionar() {
   const [modalError, setModalError] = useState('');
   const [workerRoles, setWorkerRoles] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
+  const [addRoleOptions, setAddRoleOptions] = useState([]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -106,14 +107,34 @@ export default function CuentasGestionar() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleOpenModal = (worker, action) => {
+  const handleOpenModal = async (worker, action) => {
     setCurrentWorker(worker);
     setModalType(action);
 
     if (action === "invite") {
       setFormData({ email: '', role_id: '' });
+      setAddRoleOptions([]);
     } else if (action === "addRole" && worker) {
       setFormData({ email: worker.email, role_id: '' });
+
+      // Cargar roles ya asignados al usuario y filtrar las opciones disponibles
+      try {
+        setLoading(true);
+        const resp = await parishWorkerService.listWorkerRoles(worker.association_id, 1, 200);
+        const assigned = resp.data?.active_roles || [];
+        const assignedIds = new Set(
+          assigned.map(ar => ar.role_id || ar.id || (ar.role && ar.role.id)).filter(Boolean)
+        );
+
+        const filtered = availableRoles.filter(r => !assignedIds.has(r.id));
+        setAddRoleOptions(filtered);
+      } catch (err) {
+        console.error('Error al cargar roles asignados:', err);
+        // Si falla, mostrar todas las opciones por defecto
+        setAddRoleOptions(availableRoles);
+      } finally {
+        setLoading(false);
+      }
     }
 
     setShowModal(true);
@@ -257,11 +278,11 @@ export default function CuentasGestionar() {
               formData={formData}
               handleFormChange={handleFormChange}
               mode="addRole"
-              availableRoles={availableRoles}
+              availableRoles={addRoleOptions}
               error={modalError}
             />
           ),
-          onAccept: handleSave,
+          onAccept: addRoleOptions && addRoleOptions.length ? handleSave : null,
           onCancel: handleCloseModal
         };
       case "delete":
@@ -359,21 +380,25 @@ const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], error
       {mode === "addRole" && (
         <>
           <label htmlFor="role_id">Selecciona un rol:</label>
-          <select
-            id="role_id"
-            name="role_id"
-            className="inputModal"
-            value={formData.role_id}
-            onChange={handleFormChange}
-            required
-          >
-            <option value="">Seleccione un rol</option>
-            {availableRoles.map((role) => (
-              <option key={role.id} value={role.id}>
-                {role.name}
-              </option>
-            ))}
-          </select>
+          {availableRoles.length > 0 ? (
+            <select
+              id="role_id"
+              name="role_id"
+              className="inputModal"
+              value={formData.role_id}
+              onChange={handleFormChange}
+              required
+            >
+              <option value="">Seleccione un rol</option>
+              {availableRoles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p style={{ marginTop: '8px' }}>No hay roles disponibles para asignar.</p>
+          )}
         </>
       )}
       
