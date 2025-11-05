@@ -183,7 +183,7 @@
 .mlap-select {
   flex: 1;
   padding: var(--space-body) var(--space-s);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xs);
   border: var(--border-width-m) solid var(--color-a-300);
   border-radius: var(--border-radius-xs);
   background: var(--color-a-0);

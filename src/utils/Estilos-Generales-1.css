@@ -4,9 +4,7 @@
     background: var(--color-n-0);
     padding: 20px;
     margin: 20px auto;
-    font-family: "Segoe UI", Tahoma, sans-serif;
     color: var(--color-n-700);
-    transition: all 0.3s ease-in-out;
     box-sizing: border-box
 }
 

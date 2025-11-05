@@ -78,15 +78,10 @@ export default function VistaPresentacion() {
         };
     }, [profileData]);
 
-    // Debug: log profileData and detected tipo to console to troubleshoot type detection
+    // Determine tipo internally (no debug logs)
     useEffect(() => {
         if (!profileData) return;
         try {
-            console.log('DEBUG profileData for chapel page:', profileData);
-
-            const coords = profileData.coordinates || profileData.coordinates_text || profileData.coords;
-            console.log('DEBUG coordinates candidates:', coords, 'latitude:', profileData.latitude, 'latitud:', profileData.latitud, 'location:', profileData.location);
-
             const typeCandidates = [
                 profileData.type,
                 profileData.location_type,
@@ -96,7 +91,6 @@ export default function VistaPresentacion() {
                 profileData.category
             ];
             const foundType = typeCandidates.find(v => typeof v === 'string' && v.trim().length > 0);
-            console.log('DEBUG type candidates:', typeCandidates, 'foundType:', foundType);
 
             // Detect chapel_base / parish indicator if backend provides it (many variants)
             const chapelBaseCandidates = [
@@ -108,14 +102,12 @@ export default function VistaPresentacion() {
                 profileData.parishBase
             ];
             const chapelBaseRaw = chapelBaseCandidates.find(v => v !== undefined && v !== null);
-            console.log('DEBUG chapel_base candidates:', chapelBaseCandidates, 'resolved:', chapelBaseRaw);
 
             let tipoDetected;
             if (chapelBaseRaw !== undefined) {
                 // Interpret various representations (boolean, number, string).
                 let isParish = false;
                 if (typeof chapelBaseRaw === 'boolean') {
-                    // Assumption: backend sends truthy -> indicates PARROQUIA
                     isParish = !!chapelBaseRaw;
                 } else if (typeof chapelBaseRaw === 'number') {
                     isParish = chapelBaseRaw === 1;
@@ -128,10 +120,8 @@ export default function VistaPresentacion() {
                 tipoDetected = (foundType && (foundType.toLowerCase().includes('parro') || foundType.toLowerCase().includes('parish'))) ? 'parroquia' :
                     (profileData.is_parish || profileData.is_parroquia || profileData.isParish || profileData.parish === true) ? 'parroquia' : 'capilla';
             }
-
-            console.log('DEBUG detected tipo:', tipoDetected);
         } catch (e) {
-            console.error('DEBUG error while inspecting profileData', e);
+            // swallow errors silently (no debug logging required)
         }
     }, [profileData]);
 

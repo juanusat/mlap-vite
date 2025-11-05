@@ -14,14 +14,6 @@
   font-size: 1.2rem;
   color: #666;
 }
-
-.app-container {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-}
-
 .title-screen {
   margin-bottom: 1.5rem;
   color: #2c3e50;
