@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
+import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import '../components/MyButtonMediumIcon.css';
 import './Reservas-Reservar.css';
 import { 
@@ -8,6 +9,7 @@ import {
     checkAvailability, 
     createReservation 
 } from '../services/reservationService';
+import { listMentionTypes } from '../services/mentionService';
 
 export default function ReservasReservar() {
     const [searchParams] = useSearchParams();
@@ -38,6 +40,11 @@ export default function ReservasReservar() {
     const [isAvailable, setIsAvailable] = useState(null);
     const [isChecking, setIsChecking] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    
+    // Estados para menciones
+    const [mentionTypes, setMentionTypes] = useState([]);
+    const [mentions, setMentions] = useState([{ mention_type_id: '', mention_name: '' }]);
+    const [showMentions, setShowMentions] = useState(false);
 
     useEffect(() => {
         document.title = "MLAP | Reservar evento";
@@ -54,6 +61,22 @@ export default function ReservasReservar() {
             setLoading(true);
             const response = await getReservationFormInfo(eventId);
             setFormData(response.data);
+            
+            // Verificar si el evento es una Misa para mostrar menciones
+            const isMass = response.data.event_name && 
+                          response.data.event_name.toLowerCase().includes('misa');
+            setShowMentions(isMass);
+            
+            // Si es Misa, cargar los tipos de mención
+            if (isMass) {
+                try {
+                    const types = await listMentionTypes();
+                    setMentionTypes(types);
+                } catch (mentionErr) {
+                    console.error('Error al cargar tipos de mención:', mentionErr);
+                }
+            }
+            
             setError(null);
         } catch (err) {
             console.error('Error al cargar información del formulario:', err);
@@ -114,6 +137,29 @@ export default function ReservasReservar() {
         navigate(-1);
     };
 
+    const handleAddMention = () => {
+        setMentions([...mentions, { mention_type_id: '', mention_name: '' }]);
+    };
+
+    const handleRemoveMention = (index) => {
+        if (mentions.length > 1) {
+            const newMentions = mentions.filter((_, i) => i !== index);
+            setMentions(newMentions);
+        }
+    };
+
+    const handleMentionTypeChange = (index, value) => {
+        const newMentions = [...mentions];
+        newMentions[index].mention_type_id = value;
+        setMentions(newMentions);
+    };
+
+    const handleMentionNameChange = (index, value) => {
+        const newMentions = [...mentions];
+        newMentions[index].mention_name = value;
+        setMentions(newMentions);
+    };
+
     const handleSubmit = async () => {
         if (!isAvailable) {
             setAvailabilityMessage('El horario seleccionado no está disponible');
@@ -126,7 +172,8 @@ export default function ReservasReservar() {
                 eventId, 
                 eventDate, 
                 eventTime, 
-                beneficiaryName || null
+                beneficiaryName || null,
+                showMentions ? mentions : []
             );
             
             alert(response.data.confirmation_message);
@@ -220,8 +267,8 @@ export default function ReservasReservar() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reservar evento</h2>
-                <div className='app-container'>
-                    <div className="reserva-form">
+                <div className='app-container-reserva'>
+                    <div className="reserva-form" >
                         <div className="reserva-row">
                             <div className="reserva-label">Capilla / Parroquia</div>
                             <div className="reserva-value">{formData.chapel_parish} - {formData.chapel_name}</div>
@@ -248,6 +295,100 @@ export default function ReservasReservar() {
                                 </small>
                             </div>
                         </div>
+
+                        {showMentions && (
+                            <div className="reserva-mentions-section">
+                                <div className="reserva-label" style={{marginBottom: '10px', fontWeight: 'bold'}}>
+                                    Menciones de la Misa:
+                                </div>
+                                {mentions.map((mention, index) => (
+                                    <div key={index} className="reserva-mention-item" style={{
+                                        marginBottom: '15px', 
+                                        padding: '15px', 
+                                        border: '1px solid #ddd', 
+                                        borderRadius: '8px',
+                                        backgroundColor: '#f9f9f9'
+                                    }}>
+                                        <div className="reserva-row" style={{marginBottom: '10px'}}>
+                                            <div className="reserva-label" style={{fontSize: '0.9em'}}>
+                                                Tipo de mención:
+                                            </div>
+                                            <div className="reserva-value">
+                                                <select
+                                                    className="reserva-select-input"
+                                                    value={mention.mention_type_id}
+                                                    onChange={(e) => handleMentionTypeChange(index, e.target.value)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '10px',
+                                                        borderRadius: '5px',
+                                                        border: '1px solid #ccc',
+                                                        fontSize: '1em'
+                                                    }}
+                                                >
+                                                    <option value="">Seleccione un tipo</option>
+                                                    {mentionTypes.map(type => (
+                                                        <option key={type.id} value={type.id}>
+                                                            {type.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="reserva-row">
+                                            <div className="reserva-label" style={{fontSize: '0.9em'}}>
+                                                Nombre de la persona:
+                                            </div>
+                                            <div className="reserva-value">
+                                                <input
+                                                    type="text"
+                                                    className="reserva-text-input"
+                                                    value={mention.mention_name}
+                                                    onChange={(e) => handleMentionNameChange(index, e.target.value)}
+                                                    placeholder="Ej: Juan Pérez"
+                                                    maxLength={120}
+                                                    style={{width: '100%'}}
+                                                />
+                                            </div>
+                                        </div>
+                                        {mentions.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveMention(index)}
+                                                style={{
+                                                    marginTop: '10px',
+                                                    padding: '5px 15px',
+                                                    backgroundColor: '#f44336',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '5px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.85em'
+                                                }}
+                                            >
+                                                Eliminar mención
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={handleAddMention}
+                                    style={{
+                                        padding: '10px 20px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                        fontSize: '0.95em',
+                                        marginBottom: '15px'
+                                    }}
+                                >
+                                    + Agregar otra mención
+                                </button>
+                            </div>
+                        )}
 
                         <div className="reserva-row">
                             <div className="reserva-label">Selecciona fecha:</div>
@@ -296,6 +437,13 @@ export default function ReservasReservar() {
                             />
                         </div>
                     </div>
+                    
+                    {formData?.chapel_id && formData?.parish_id && (
+                        <ChapelScheduleViewer 
+                            chapelId={formData.chapel_id} 
+                            parishId={formData.parish_id} 
+                        />
+                    )}
                 </div>
             </div>
         </>

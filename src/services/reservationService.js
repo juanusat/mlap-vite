@@ -40,7 +40,7 @@ export const checkAvailability = async (eventVariantId, eventDate, eventTime) =>
   return await handleResponse(response);
 };
 
-export const createReservation = async (eventVariantId, eventDate, eventTime, beneficiaryFullName = null) => {
+export const createReservation = async (eventVariantId, eventDate, eventTime, beneficiaryFullName = null, mentions = []) => {
   const body = {
     event_variant_id: eventVariantId,
     event_date: eventDate,
@@ -50,6 +50,20 @@ export const createReservation = async (eventVariantId, eventDate, eventTime, be
   // Solo incluir beneficiary_full_name si se proporciona
   if (beneficiaryFullName && beneficiaryFullName.trim() !== '') {
     body.beneficiary_full_name = beneficiaryFullName.trim();
+  }
+
+  // Incluir menciones si se proporcionan y son válidas
+  if (mentions && mentions.length > 0) {
+    const validMentions = mentions.filter(
+      m => m.mention_type_id && m.mention_name && m.mention_name.trim() !== ''
+    ).map(m => ({
+      mention_type_id: parseInt(m.mention_type_id),
+      mention_name: m.mention_name.trim()
+    }));
+    
+    if (validMentions.length > 0) {
+      body.mentions = validMentions;
+    }
   }
 
   const response = await fetch(`${API_URL}/api/client/reservation/create`, {

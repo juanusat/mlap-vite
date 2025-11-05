@@ -5,6 +5,7 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
@@ -225,62 +226,90 @@ export default function Reservas() {
         return {
           title: 'Detalles de la Reserva',
           content: (
-            <div className="Inputs-add">
-              <label>Evento</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.event_variant_name || ''}
-                disabled
-              />
-              <label>Capilla</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.chapel_name || ''}
-                disabled
-              />
-              <label>Fecha</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={formatDate(currentReservation.event_date)}
-                disabled
-              />
-              <label>Hora</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={formatTime(currentReservation.event_time)}
-                disabled
-              />
-              <label>Usuario</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.user_full_name || ''}
-                disabled
-              />
-              <label>Beneficiario</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.beneficiary_full_name || 'N/A'}
-                disabled
-              />
-              <label>Monto Pagado</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
-                disabled
-              />
-              <label>Estado</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={STATUS_MAP[currentReservation.status] || currentReservation.status}
-                disabled
+            <div style={{ display: 'flex', gap: '20px', maxHeight: '70vh', overflow: 'auto' }}>
+              {/* Columna izquierda: Detalles de la reserva */}
+              <div className="Inputs-add" style={{ flex: '0 0 400px' }}>
+                <label>Evento</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={currentReservation.event_variant_name || ''}
+                  disabled
+                />
+                <label>Capilla</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={currentReservation.chapel_name || ''}
+                  disabled
+                />
+                <label>Fecha</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={formatDate(currentReservation.event_date)}
+                  disabled
+                />
+                <label>Hora</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={formatTime(currentReservation.event_time)}
+                  disabled
+                />
+                <label>Usuario</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={currentReservation.user_full_name || ''}
+                  disabled
+                />
+                <label>Beneficiario</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={currentReservation.beneficiary_full_name || 'N/A'}
+                  disabled
+                />
+                {currentReservation.mentions && currentReservation.mentions.length > 0 && (
+                  <>
+                    <label style={{ marginTop: '15px', fontWeight: 'bold' }}>Menciones</label>
+                    {currentReservation.mentions.map((mention, index) => (
+                      <div key={mention.id} style={{ marginBottom: '10px', paddingLeft: '10px', borderLeft: '3px solid #4CAF50' }}>
+                        <label style={{ fontSize: '0.9em', color: '#666' }}>
+                          {mention.mention_type_name}
+                        </label>
+                        <input
+                          type="text"
+                          className="inputModal"
+                          value={mention.mention_name}
+                          disabled
+                          style={{ marginTop: '5px' }}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
+                <label>Monto Pagado</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
+                  disabled
+                />
+                <label>Estado</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={STATUS_MAP[currentReservation.status] || currentReservation.status}
+                  disabled
+                />
+              </div>
+              
+              {/* Columna derecha: Horario de la capilla */}
+              <ChapelScheduleViewer 
+                chapelId={currentReservation.chapel_id} 
+                parishId={localStorage.getItem('parish_id')} 
               />
             </div>
           ),
@@ -374,7 +403,9 @@ export default function Reservas() {
           onAccept={modalProps.onAccept}
           onCancel={modalProps.onCancel}
         >
-          {modalProps.content}
+          <div style={modalType === 'view' ? { minWidth: '1000px' } : {}}>
+            {modalProps.content}
+          </div>
         </Modal>
       </div>
     </>
