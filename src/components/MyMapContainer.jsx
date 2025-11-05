@@ -118,7 +118,9 @@ export default function MyMapContainer({
     const locationsToShow = zoom >= 15 ? locs : locs.filter(l => l.tipo === 'parroquia');
 
     locationsToShow.forEach(location => {
-      const isParroquia = location.tipo === 'parroquia';
+      // Detectar parroquia/capilla de forma más tolerante (mayúsculas, variantes, otros nombres)
+      const tipoVal = (location.tipo || location.type || location.location_type || '').toString();
+      const isParroquia = /parro|parish/i.test(tipoVal);
       const iconColor = isParroquia ? 'red' : 'blue';
       const iconSize = isParroquia ? [35, 35] : [32, 32];
 

@@ -78,13 +78,70 @@ export default function VistaPresentacion() {
         };
     }, [profileData]);
 
+    // Debug: log profileData and detected tipo to console to troubleshoot type detection
+    useEffect(() => {
+        if (!profileData) return;
+        try {
+            console.log('DEBUG profileData for chapel page:', profileData);
+
+            const coords = profileData.coordinates || profileData.coordinates_text || profileData.coords;
+            console.log('DEBUG coordinates candidates:', coords, 'latitude:', profileData.latitude, 'latitud:', profileData.latitud, 'location:', profileData.location);
+
+            const typeCandidates = [
+                profileData.type,
+                profileData.location_type,
+                profileData.locationType,
+                profileData.kind,
+                profileData.type_name,
+                profileData.category
+            ];
+            const foundType = typeCandidates.find(v => typeof v === 'string' && v.trim().length > 0);
+            console.log('DEBUG type candidates:', typeCandidates, 'foundType:', foundType);
+
+            // Detect chapel_base / parish indicator if backend provides it (many variants)
+            const chapelBaseCandidates = [
+                profileData.chapel_base,
+                profileData.chapelBase,
+                profileData.is_chapel_base,
+                profileData.isChapelBase,
+                profileData.parish_base,
+                profileData.parishBase
+            ];
+            const chapelBaseRaw = chapelBaseCandidates.find(v => v !== undefined && v !== null);
+            console.log('DEBUG chapel_base candidates:', chapelBaseCandidates, 'resolved:', chapelBaseRaw);
+
+            let tipoDetected;
+            if (chapelBaseRaw !== undefined) {
+                // Interpret various representations (boolean, number, string).
+                let isParish = false;
+                if (typeof chapelBaseRaw === 'boolean') {
+                    // Assumption: backend sends truthy -> indicates PARROQUIA
+                    isParish = !!chapelBaseRaw;
+                } else if (typeof chapelBaseRaw === 'number') {
+                    isParish = chapelBaseRaw === 1;
+                } else if (typeof chapelBaseRaw === 'string') {
+                    isParish = ['1', 'true', 'yes', 'si'].includes(chapelBaseRaw.toLowerCase());
+                }
+                tipoDetected = isParish ? 'parroquia' : 'capilla';
+            } else {
+                // Fallback heuristics when backend doesn't provide chapel_base
+                tipoDetected = (foundType && (foundType.toLowerCase().includes('parro') || foundType.toLowerCase().includes('parish'))) ? 'parroquia' :
+                    (profileData.is_parish || profileData.is_parroquia || profileData.isParish || profileData.parish === true) ? 'parroquia' : 'capilla';
+            }
+
+            console.log('DEBUG detected tipo:', tipoDetected);
+        } catch (e) {
+            console.error('DEBUG error while inspecting profileData', e);
+        }
+    }, [profileData]);
+
     // Intentar extraer coordenadas en formato usable para el mapa
     let chapelLocation = null;
     if (profileData) {
         try {
             let lat = null;
             let lng = null;
-            const coords = profileData.coordinates;
+            const coords = profileData.coordinates || profileData.coordinates_text || profileData.coords;
             if (coords && typeof coords === 'string' && coords.includes(',')) {
                 const parts = coords.split(',').map(s => s.trim());
                 lat = parseFloat(parts[0]);
@@ -95,15 +152,62 @@ export default function VistaPresentacion() {
             } else if (profileData.latitud && profileData.longitud) {
                 lat = parseFloat(profileData.latitud);
                 lng = parseFloat(profileData.longitud);
+            } else if (profileData.location && profileData.location.lat && profileData.location.lng) {
+                lat = parseFloat(profileData.location.lat);
+                lng = parseFloat(profileData.location.lng);
             }
 
             if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                // Determinar si el profile corresponde a una parroquia o capilla
+                let tipo = 'capilla';
+
+                // First, prefer an explicit chapel_base/parish_base flag if backend provides it
+                const chapelBaseCandidates = [
+                    profileData.chapel_base,
+                    profileData.chapelBase,
+                    profileData.is_chapel_base,
+                    profileData.isChapelBase,
+                    profileData.parish_base,
+                    profileData.parishBase
+                ];
+                const chapelBaseRaw = chapelBaseCandidates.find(v => v !== undefined && v !== null);
+
+                if (chapelBaseRaw !== undefined) {
+                    let isParish = false;
+                    if (typeof chapelBaseRaw === 'boolean') {
+                        isParish = !!chapelBaseRaw;
+                    } else if (typeof chapelBaseRaw === 'number') {
+                        isParish = chapelBaseRaw === 1;
+                    } else if (typeof chapelBaseRaw === 'string') {
+                        isParish = ['1', 'true', 'yes', 'si'].includes(chapelBaseRaw.toLowerCase());
+                    }
+                    tipo = isParish ? 'parroquia' : 'capilla';
+                } else {
+                    const typeCandidates = [
+                        profileData.type,
+                        profileData.location_type,
+                        profileData.locationType,
+                        profileData.kind,
+                        profileData.type_name,
+                        profileData.category
+                    ];
+
+                    const foundType = typeCandidates.find(v => typeof v === 'string' && v.trim().length > 0);
+                    if (foundType) {
+                        tipo = foundType.toLowerCase() === 'parroquia' || foundType.toLowerCase() === 'parish' ? 'parroquia' : 'capilla';
+                    } else if (profileData.is_parish || profileData.is_parroquia || profileData.isParish || profileData.parish === true) {
+                        tipo = (profileData.is_parish || profileData.is_parroquia || profileData.isParish) ? 'parroquia' : 'capilla';
+                    } else if (profileData.entity && profileData.entity.type) {
+                        tipo = ('' + profileData.entity.type).toLowerCase() === 'parroquia' ? 'parroquia' : 'capilla';
+                    }
+                }
+
                 chapelLocation = {
                     id: chapelId || profileData.id || 0,
-                    nombre: profileData.chapel_name || profileData.name || '',
+                    nombre: profileData.chapel_name || profileData.name || profileData.parish_name || '',
                     latitud: lat,
                     longitud: lng,
-                    tipo: 'capilla'
+                    tipo: tipo
                 };
             }
         } catch (e) {
