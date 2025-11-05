@@ -291,7 +291,7 @@ function ChapelForm({ mode, initialData, onSave }) {
   return (
     <>
       <form id="chapel-form" onSubmit={handleSubmit}>
-        <div className="Inputs chapel-form-scrollable">
+        <div className="Inputs-add chapel-form-scrollable">
         <label>Nombre de la capilla</label>
         <input
           type="text"
