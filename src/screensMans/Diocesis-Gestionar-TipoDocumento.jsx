@@ -23,6 +23,7 @@ export default function TipoDocumentoGestionar() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +65,7 @@ export default function TipoDocumentoGestionar() {
   const handleOpenModal = (doc, action) => {
     setCurrentDoc(doc);
     setModalType(action);
+    setModalError(null);
     if (doc) {
       setFormData({
         name: doc.name,
@@ -89,6 +91,7 @@ export default function TipoDocumentoGestionar() {
       description: '',
       code: ''
     });
+    setModalError(null);
   };
 
   const handleView = (doc) => {
@@ -116,12 +119,13 @@ export default function TipoDocumentoGestionar() {
         await loadDocumentTypes();
         handleCloseModal();
       } catch (err) {
-        if (err.message.includes('403') || err.message.includes('Prohibido')) {
-          setError('No tienes permisos para eliminar tipos de documentos.');
-        } else if (err.message.includes('401') || err.message.includes('autorizado')) {
-          setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        // Show delete errors inside modal
+        if (err.message && (err.message.includes('403') || err.message.includes('Prohibido'))) {
+          setModalError('No tienes permisos para eliminar tipos de documentos.');
+        } else if (err.message && (err.message.includes('401') || err.message.includes('autorizado'))) {
+          setModalError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
         } else {
-          setError(err.message);
+          setModalError(err.message || 'Error al eliminar el documento');
         }
         console.error('Error al eliminar:', err);
       } finally {
@@ -134,7 +138,7 @@ export default function TipoDocumentoGestionar() {
     try {
       setLoading(true);
       setError(null);
-      
+      setModalError(null);
       if (modalType === 'add') {
         await documentTypeService.createDocumentType(formData);
       } else if (modalType === 'edit' && currentDoc) {
@@ -144,12 +148,13 @@ export default function TipoDocumentoGestionar() {
       await loadDocumentTypes();
       handleCloseModal();
     } catch (err) {
-      if (err.message.includes('403') || err.message.includes('Prohibido')) {
-        setError('No tienes permisos para realizar esta operación.');
-      } else if (err.message.includes('401') || err.message.includes('autorizado')) {
-        setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      // Show save errors inside modal
+      if (err.message && (err.message.includes('403') || err.message.includes('Prohibido'))) {
+        setModalError('No tienes permisos para realizar esta operación.');
+      } else if (err.message && (err.message.includes('401') || err.message.includes('autorizado'))) {
+        setModalError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
       } else {
-        setError(err.message);
+        setModalError(err.message || 'Error al guardar el tipo de documento');
       }
       console.error('Error al guardar:', err);
     } finally {
@@ -211,21 +216,35 @@ export default function TipoDocumentoGestionar() {
       case 'view':
         return {
           title: 'Visualizar documento',
-          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+          content: (
+            <>
+              <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />
+            </>
+          ),
           onAccept: handleCloseModal,
           onCancel: handleCloseModal
         };
       case 'edit':
         return {
           title: 'Editar documento',
-          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+          content: (
+            <>
+              <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+              {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+            </>
+          ),
           onAccept: handleSave,
           onCancel: handleCloseModal
         };
       case 'add':
         return {
           title: 'Añadir documento',
-          content: <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+          content: (
+            <>
+              <DocForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+              {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+            </>
+          ),
           onAccept: handleSave,
           onCancel: handleCloseModal
         };
@@ -235,6 +254,7 @@ export default function TipoDocumentoGestionar() {
           content: currentDoc && (
             <div>
               <h4>¿Deseas eliminar el documento?</h4>
+              {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
             </div>
           ),
           onAccept: confirmDelete,

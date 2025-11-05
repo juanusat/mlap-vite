@@ -7,6 +7,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Ensure map layers stay behind UI modals and overlays */
+.map-container,
+.map-container .leaflet-container,
+.map-container .leaflet-pane,
+.map-container .leaflet-tile,
+.map-container .leaflet-overlay-pane,
+.map-container .leaflet-shadow-pane,
+.map-container .leaflet-marker-pane,
+.map-container .leaflet-popup-pane,
+.map-container .leaflet-control-container {
+  z-index: 0 !important;
+}
+
 .zoom-info {
   position: absolute;
   bottom: 20px;
