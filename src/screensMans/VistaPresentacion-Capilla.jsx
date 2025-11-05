@@ -281,7 +281,6 @@ export default function VistaPresentacion() {
                             <div><strong>Dirección:</strong> {profileData.address || 'No disponible'}</div>
                             <div><strong>Correo:</strong> {profileData.email || 'No disponible'}</div>
                             <div><strong>Teléfono:</strong> {profileData.phone || 'No disponible'}</div>
-                            <div><strong>Estado:</strong> {profileData.active ? "Activa" : "Inactiva"}</div>
                             {chapelLocation ? (
                                 <div style={{ width: '100%' }}>
                                     <MyMapContainer
