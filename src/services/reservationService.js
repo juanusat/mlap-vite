@@ -171,3 +171,77 @@ export const getReservationDetails = async (reservationId) => {
   return await handleResponse(response);
 };
 
+
+// ===== Servicios para Gestión Administrativa de Reservas =====
+
+export const listReservationsForManagement = async (page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/list`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const searchReservationsForManagement = async (search, page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      search,
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const getReservationDetailsForManagement = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const updateReservationStatus = async (reservationId, newStatus) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      new_status: newStatus,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const rejectReservation = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/reject`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
