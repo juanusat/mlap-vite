@@ -30,12 +30,29 @@ export default function Register() {
   };
 
   useEffect(() => {
-    const mockDocumentTypes = [
-      { id: 1, name: 'DNI' },
-      { id: 2, name: 'C.E.' },
-      { id: 3, name: 'Pasaporte' }
-    ];
-    setDocumentTypes(mockDocumentTypes);
+    let mounted = true;
+
+    const fetchDocumentTypes = async () => {
+      try {
+        // Public endpoint created: GET /api/public/document-types
+        const resp = await apiFetch('/api/public/document-types');
+
+        if (!resp.ok) {
+          console.warn('No se pudieron obtener tipos de documento (backend público), el select quedará vacío.');
+          return;
+        }
+
+        const body = await resp.json();
+        const types = body && body.data ? body.data : [];
+        if (mounted) setDocumentTypes(types);
+      } catch (e) {
+        console.warn('Error al obtener tipos de documento:', e);
+      }
+    };
+
+    fetchDocumentTypes();
+
+    return () => { mounted = false; };
   }, []);
 
   const handleInputChange = (e) => {

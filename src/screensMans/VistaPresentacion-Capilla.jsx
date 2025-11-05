@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ScreenMan from "../components/ScreenMan";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import MyMapContainer from '../components/MyMapContainer';
 import { getChapelProfile } from "../services/publicChurchService";
 import "../utils/VistaPresentacion-Capilla.css";
 import "../utils/Estilos-Generales-1.css";
@@ -77,6 +78,133 @@ export default function VistaPresentacion() {
         };
     }, [profileData]);
 
+    // Determine tipo internally (no debug logs)
+    useEffect(() => {
+        if (!profileData) return;
+        try {
+            const typeCandidates = [
+                profileData.type,
+                profileData.location_type,
+                profileData.locationType,
+                profileData.kind,
+                profileData.type_name,
+                profileData.category
+            ];
+            const foundType = typeCandidates.find(v => typeof v === 'string' && v.trim().length > 0);
+
+            // Detect chapel_base / parish indicator if backend provides it (many variants)
+            const chapelBaseCandidates = [
+                profileData.chapel_base,
+                profileData.chapelBase,
+                profileData.is_chapel_base,
+                profileData.isChapelBase,
+                profileData.parish_base,
+                profileData.parishBase
+            ];
+            const chapelBaseRaw = chapelBaseCandidates.find(v => v !== undefined && v !== null);
+
+            let tipoDetected;
+            if (chapelBaseRaw !== undefined) {
+                // Interpret various representations (boolean, number, string).
+                let isParish = false;
+                if (typeof chapelBaseRaw === 'boolean') {
+                    isParish = !!chapelBaseRaw;
+                } else if (typeof chapelBaseRaw === 'number') {
+                    isParish = chapelBaseRaw === 1;
+                } else if (typeof chapelBaseRaw === 'string') {
+                    isParish = ['1', 'true', 'yes', 'si'].includes(chapelBaseRaw.toLowerCase());
+                }
+                tipoDetected = isParish ? 'parroquia' : 'capilla';
+            } else {
+                // Fallback heuristics when backend doesn't provide chapel_base
+                tipoDetected = (foundType && (foundType.toLowerCase().includes('parro') || foundType.toLowerCase().includes('parish'))) ? 'parroquia' :
+                    (profileData.is_parish || profileData.is_parroquia || profileData.isParish || profileData.parish === true) ? 'parroquia' : 'capilla';
+            }
+        } catch (e) {
+            // swallow errors silently (no debug logging required)
+        }
+    }, [profileData]);
+
+    // Intentar extraer coordenadas en formato usable para el mapa
+    let chapelLocation = null;
+    if (profileData) {
+        try {
+            let lat = null;
+            let lng = null;
+            const coords = profileData.coordinates || profileData.coordinates_text || profileData.coords;
+            if (coords && typeof coords === 'string' && coords.includes(',')) {
+                const parts = coords.split(',').map(s => s.trim());
+                lat = parseFloat(parts[0]);
+                lng = parseFloat(parts[1]);
+            } else if (profileData.latitude && profileData.longitude) {
+                lat = parseFloat(profileData.latitude);
+                lng = parseFloat(profileData.longitude);
+            } else if (profileData.latitud && profileData.longitud) {
+                lat = parseFloat(profileData.latitud);
+                lng = parseFloat(profileData.longitud);
+            } else if (profileData.location && profileData.location.lat && profileData.location.lng) {
+                lat = parseFloat(profileData.location.lat);
+                lng = parseFloat(profileData.location.lng);
+            }
+
+            if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                // Determinar si el profile corresponde a una parroquia o capilla
+                let tipo = 'capilla';
+
+                // First, prefer an explicit chapel_base/parish_base flag if backend provides it
+                const chapelBaseCandidates = [
+                    profileData.chapel_base,
+                    profileData.chapelBase,
+                    profileData.is_chapel_base,
+                    profileData.isChapelBase,
+                    profileData.parish_base,
+                    profileData.parishBase
+                ];
+                const chapelBaseRaw = chapelBaseCandidates.find(v => v !== undefined && v !== null);
+
+                if (chapelBaseRaw !== undefined) {
+                    let isParish = false;
+                    if (typeof chapelBaseRaw === 'boolean') {
+                        isParish = !!chapelBaseRaw;
+                    } else if (typeof chapelBaseRaw === 'number') {
+                        isParish = chapelBaseRaw === 1;
+                    } else if (typeof chapelBaseRaw === 'string') {
+                        isParish = ['1', 'true', 'yes', 'si'].includes(chapelBaseRaw.toLowerCase());
+                    }
+                    tipo = isParish ? 'parroquia' : 'capilla';
+                } else {
+                    const typeCandidates = [
+                        profileData.type,
+                        profileData.location_type,
+                        profileData.locationType,
+                        profileData.kind,
+                        profileData.type_name,
+                        profileData.category
+                    ];
+
+                    const foundType = typeCandidates.find(v => typeof v === 'string' && v.trim().length > 0);
+                    if (foundType) {
+                        tipo = foundType.toLowerCase() === 'parroquia' || foundType.toLowerCase() === 'parish' ? 'parroquia' : 'capilla';
+                    } else if (profileData.is_parish || profileData.is_parroquia || profileData.isParish || profileData.parish === true) {
+                        tipo = (profileData.is_parish || profileData.is_parroquia || profileData.isParish) ? 'parroquia' : 'capilla';
+                    } else if (profileData.entity && profileData.entity.type) {
+                        tipo = ('' + profileData.entity.type).toLowerCase() === 'parroquia' ? 'parroquia' : 'capilla';
+                    }
+                }
+
+                chapelLocation = {
+                    id: chapelId || profileData.id || 0,
+                    nombre: profileData.chapel_name || profileData.name || profileData.parish_name || '',
+                    latitud: lat,
+                    longitud: lng,
+                    tipo: tipo
+                };
+            }
+        } catch (e) {
+            chapelLocation = null;
+        }
+    }
+
     if (loading) {
         return (
             <ScreenMan title="Capillas" options={options}>
@@ -143,8 +271,21 @@ export default function VistaPresentacion() {
                             <div><strong>Dirección:</strong> {profileData.address || 'No disponible'}</div>
                             <div><strong>Correo:</strong> {profileData.email || 'No disponible'}</div>
                             <div><strong>Teléfono:</strong> {profileData.phone || 'No disponible'}</div>
-                            <div><strong>Coordenadas:</strong> {profileData.coordinates || 'No disponible'}</div>
-                            <div><strong>Estado:</strong> {profileData.active ? "Activa" : "Inactiva"}</div>
+                            {chapelLocation ? (
+                                <div style={{ width: '100%' }}>
+                                    <MyMapContainer
+                                        locations={[chapelLocation]}
+                                        mapCenter={{ latitud: chapelLocation.latitud, longitud: chapelLocation.longitud }}
+                                        initialCenter={[chapelLocation.latitud, chapelLocation.longitud]}
+                                        initialZoom={15}
+                                        interactive={false}
+                                        mapHeight={'500px'}
+                                    />
+                                </div>
+                            ) : (
+                                <div><strong>Coordenadas:</strong> {profileData.coordinates || 'No disponible'}</div>
+                            )}
+                            
                         </div>
                     </section>
 
