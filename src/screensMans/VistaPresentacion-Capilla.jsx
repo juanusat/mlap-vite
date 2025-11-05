@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ScreenMan from "../components/ScreenMan";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import MyMapContainer from '../components/MyMapContainer';
 import { getChapelProfile } from "../services/publicChurchService";
 import "../utils/VistaPresentacion-Capilla.css";
 import "../utils/Estilos-Generales-1.css";
@@ -77,6 +78,39 @@ export default function VistaPresentacion() {
         };
     }, [profileData]);
 
+    // Intentar extraer coordenadas en formato usable para el mapa
+    let chapelLocation = null;
+    if (profileData) {
+        try {
+            let lat = null;
+            let lng = null;
+            const coords = profileData.coordinates;
+            if (coords && typeof coords === 'string' && coords.includes(',')) {
+                const parts = coords.split(',').map(s => s.trim());
+                lat = parseFloat(parts[0]);
+                lng = parseFloat(parts[1]);
+            } else if (profileData.latitude && profileData.longitude) {
+                lat = parseFloat(profileData.latitude);
+                lng = parseFloat(profileData.longitude);
+            } else if (profileData.latitud && profileData.longitud) {
+                lat = parseFloat(profileData.latitud);
+                lng = parseFloat(profileData.longitud);
+            }
+
+            if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                chapelLocation = {
+                    id: chapelId || profileData.id || 0,
+                    nombre: profileData.chapel_name || profileData.name || '',
+                    latitud: lat,
+                    longitud: lng,
+                    tipo: 'capilla'
+                };
+            }
+        } catch (e) {
+            chapelLocation = null;
+        }
+    }
+
     if (loading) {
         return (
             <ScreenMan title="Capillas" options={options}>
@@ -143,8 +177,22 @@ export default function VistaPresentacion() {
                             <div><strong>Dirección:</strong> {profileData.address || 'No disponible'}</div>
                             <div><strong>Correo:</strong> {profileData.email || 'No disponible'}</div>
                             <div><strong>Teléfono:</strong> {profileData.phone || 'No disponible'}</div>
-                            <div><strong>Coordenadas:</strong> {profileData.coordinates || 'No disponible'}</div>
                             <div><strong>Estado:</strong> {profileData.active ? "Activa" : "Inactiva"}</div>
+                            {chapelLocation ? (
+                                <div style={{ width: '100%' }}>
+                                    <MyMapContainer
+                                        locations={[chapelLocation]}
+                                        mapCenter={{ latitud: chapelLocation.latitud, longitud: chapelLocation.longitud }}
+                                        initialCenter={[chapelLocation.latitud, chapelLocation.longitud]}
+                                        initialZoom={15}
+                                        interactive={false}
+                                        mapHeight={'500px'}
+                                    />
+                                </div>
+                            ) : (
+                                <div><strong>Coordenadas:</strong> {profileData.coordinates || 'No disponible'}</div>
+                            )}
+                            
                         </div>
                     </section>
 

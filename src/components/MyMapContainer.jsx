@@ -8,7 +8,9 @@ export default function MyMapContainer({
   mapCenter = null, // Nueva prop para controlar el centrado del mapa
   initialCenter = [-6.77, -79.84],
   initialZoom = 13,
-  onZoomChange
+  onZoomChange,
+  interactive = true, // si false, desactiva interacciones del mapa
+  mapHeight = '600px'
 }) {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
@@ -50,7 +52,18 @@ export default function MyMapContainer({
       return;
     }
 
-    const leafletMap = window.L.map(mapRef.current).setView(initialCenter, initialZoom);
+    // Controlar interactividad
+    const mapOptions = {
+      dragging: interactive,
+      touchZoom: interactive,
+      scrollWheelZoom: interactive,
+      doubleClickZoom: interactive,
+      boxZoom: interactive,
+      keyboard: interactive,
+      zoomControl: interactive
+    };
+
+    const leafletMap = window.L.map(mapRef.current, mapOptions).setView(initialCenter, initialZoom);
 
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -159,7 +172,7 @@ export default function MyMapContainer({
 
   return (
     <div className="map-container">
-      <div ref={mapRef} style={{ width: '100%', height: '600px' }} />
+      <div ref={mapRef} style={{ width: '100%', height: mapHeight }} />
       <div className={`zoom-info ${currentZoom >= 15 ? 'show-chapels' : ''}`}>
         {currentZoom >= 15
           ? "🔍 Zoom alto: Se muestran parroquias y capillas"
