@@ -46,3 +46,7 @@
 .password-display .my-button-short-action {
   min-width: 60px; /* Para que el texto "Ver" u "Ocultar" quepa */
 }
+
+.my-btn-short-action.btn-short-arrowfold.expandable-icon {
+  color: var(--color-n-1000);
+} 

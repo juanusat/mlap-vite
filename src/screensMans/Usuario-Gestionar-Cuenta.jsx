@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
-import MyButtonShortAction from '../components/MyButtonShortAction';
+
 import TextInput from '../components/formsUI/TextInput';
 import SelectInput from '../components/formsUI/SelectInput';
 import InputFotoPerfil from '../components/inputFotoPerfil';
-import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
 import { getUserAccount, updatePersonalInfo, updateCredentials, getDocumentTypes } from '../services/userService';
 import useSession from '../hooks/useSession';
@@ -87,7 +85,6 @@ const GestionCuenta = () => {
     };
 
     const handleSavePersonal = async () => {
-        // Validar que se haya seleccionado un tipo de documento
         if (!tempUserInfo.tipoDocumentoId || tempUserInfo.tipoDocumentoId === '') {
             setError("Debe seleccionar un tipo de documento");
             return;
