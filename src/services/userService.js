@@ -1,5 +1,22 @@
 const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
+export const getDocumentTypes = async () => {
+  const response = await fetch(`${API_URL}/api/diocese/document-types/active`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener tipos de documento');
+  }
+
+  return await response.json();
+};
+
 export const getUserAccount = async () => {
   const response = await fetch(`${API_URL}/api/user/account`, {
     method: 'GET',
@@ -26,6 +43,9 @@ export const updatePersonalInfo = async (data) => {
     formData.append('maternal_surname', data.maternal_surname);
   }
   formData.append('document', data.document);
+  if (data.document_type_id) {
+    formData.append('document_type_id', data.document_type_id);
+  }
   
   if (data.profile_photo) {
     formData.append('profile_photo', data.profile_photo);

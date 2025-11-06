@@ -11,7 +11,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     padding: 0.5rem 0.75rem;
     border: 2px solid var(--color-n-100);
     border-radius: var(--border-radius-s);
@@ -26,13 +27,15 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: var(--color-b-500);
     outline: none;
 }
 
 .form-group input[disabled],
-.form-group textarea[disabled] {
+.form-group textarea[disabled],
+.form-group select[disabled] {
     background: var(--color-n-50);
     color: var( --color-n-100);
     border-color: var(--color-grey-50);
