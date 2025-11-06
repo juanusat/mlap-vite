@@ -112,7 +112,10 @@ export default function ReservasReservar() {
             const response = await checkAvailability(eventId, eventDate, eventTime);
             
             setIsAvailable(response.data.available);
-            setAvailabilityMessage(response.message);
+            
+            // Priorizar el mensaje de reason sobre message
+            const messageToShow = response.data.reason || response.message;
+            setAvailabilityMessage(messageToShow);
             
         } catch (err) {
             console.error('Error al verificar disponibilidad:', err);

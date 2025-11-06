@@ -63,6 +63,7 @@ export default function EventosLiturgicos() {
         event_id: variant.event_id,
         event_type: variant.variant_type,
         monto: variant.current_price || 0,
+        duracion: variant.duration_minutes || 60,
       }));
       
       setEvents(formattedEvents);
@@ -94,6 +95,7 @@ export default function EventosLiturgicos() {
         event_id: variant.event_id,
         event_type: variant.variant_type,
         monto: variant.current_price || 0,
+        duracion: variant.duration_minutes || 60,
       }));
       
       setEvents(formattedEvents);
@@ -199,6 +201,11 @@ export default function EventosLiturgicos() {
           variantData.max_capacity = parseInt(eventData.personas);
         }
 
+        // Solo agregar duration_minutes si se proporciona un valor
+        if (eventData.duracion && eventData.duracion !== '') {
+          variantData.duration_minutes = parseInt(eventData.duracion);
+        }
+
         await eventVariantService.createEventVariant(variantData);
         loadEventVariants();
       } else if (modalType === "edit" && currentEvent) {
@@ -213,6 +220,11 @@ export default function EventosLiturgicos() {
         
         if (eventData.tipo === "Comunitario" && eventData.personas) {
           variantData.max_capacity = parseInt(eventData.personas);
+        }
+
+        // Solo agregar duration_minutes si se proporciona un valor
+        if (eventData.duracion && eventData.duracion !== '') {
+          variantData.duration_minutes = parseInt(eventData.duracion);
         }
 
         await eventVariantService.updateEventVariant(currentEvent.id, variantData);
@@ -289,7 +301,6 @@ export default function EventosLiturgicos() {
     { key: "nombre", header: "Nombre", accessor: (row) => row.nombre },
     { key: "descripcion", header: "Descripción", accessor: (row) => row.descripcion },
     { key: "capilla", header: "Capilla", accessor: (row) => row.capilla },
-    { key: "tipo", header: "Tipo", accessor: (row) => row.tipo },
     { key: "personas", header: "Personas", accessor: (row) => row.personas },
     { key: "monto", header: "Monto (S/.)", accessor: (row) => `S/. ${parseFloat(row.monto || 0).toFixed(2)}` },
     {
@@ -334,8 +345,8 @@ export default function EventosLiturgicos() {
         <DynamicTable
           columns={eventColumns}
           data={filteredEvents}
-          gridColumnsLayout="90px 180px 1fr 200px 140px 140px 130px 140px 220px"
-          columnLeftAlignIndex={[2, 3, 4]}
+          gridColumnsLayout="90px 180px 1fr 200px 140px 130px 140px 220px"
+          columnLeftAlignIndex={[2, 3]}
         />
       </div>
 
@@ -371,6 +382,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
   const [tipo, setTipo] = useState(initialData.tipo || defaultTipo);
   const [personas, setPersonas] = useState(initialData.personas === "-" ? "" : initialData.personas || "");
   const [monto, setMonto] = useState(initialData.monto || 0);
+  const [duracion, setDuracion] = useState(initialData.duracion || "");
   const [eventSearch, setEventSearch] = useState("");
 
   const handleEventSearchChange = (value) => {
@@ -403,7 +415,8 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
       event_id: eventId,
       tipo,
       personas: normalizedPersonas,
-      monto
+      monto,
+      duracion
     });
   };
 
@@ -472,6 +485,25 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
           step="0.01"
           required
         />
+      </div>
+
+      {/* Duración */}
+      <div className="Inputs-add">
+        <label htmlFor="duracion">Duración (minutos)</label>
+        <input
+          type="number"
+          id="duracion"
+          className="inputModal"
+          value={duracion}
+          onChange={(e) => setDuracion(e.target.value)}
+          disabled={isView}
+          min="1"
+          step="1"
+          placeholder="60 (por defecto)"
+        />
+        <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+          Opcional: Si no se especifica, se usará 60 minutos por defecto
+        </small>
       </div>
 
       {/* Capilla */}
