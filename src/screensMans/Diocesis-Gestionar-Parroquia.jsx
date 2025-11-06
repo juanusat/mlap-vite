@@ -98,6 +98,7 @@ export default function Parroquia() {
         setCurrentEvent(event);
         setModalType('view');
         setFormData({
+            id: event.id,
             name: event.name,
             email: event.email,
             username: event.username || '',
@@ -110,6 +111,7 @@ export default function Parroquia() {
         setCurrentEvent(event);
         setModalType('edit');
         setFormData({
+            id: event.id,
             name: event.name,
             email: event.email,
             username: event.username || '',
@@ -349,7 +351,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
             />
             {!isViewMode && (
                 <>
-                    <label htmlFor="password">Clave:</label>
+                    <label htmlFor="password">Clave{formData.id ? '' : ''}:</label>
                     <input
                         type="password"
                         className="inputModal"
@@ -358,6 +360,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                         value={formData.password}
                         onChange={handleFormChange}
                         required={!formData.id}
+                        placeholder={formData.id ? 'Dejar vacío para no cambiar' : 'Ingrese la contraseña'}
                     />
                 </>
             )}
