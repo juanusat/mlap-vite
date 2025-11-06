@@ -451,6 +451,27 @@ export default function ActosLiturgicosHorarios() {
     const handleAcceptModal = async () => {
         // Validaciones antes de enviar
         if (modalAction !== 'delete') {
+            // Validar que todos los campos estén completos
+            if (!fecha || fecha.trim() === '') {
+                setModalError('La fecha es obligatoria.');
+                return;
+            }
+
+            if (!horaInicio || horaInicio.trim() === '') {
+                setModalError('La hora de inicio es obligatoria.');
+                return;
+            }
+
+            if (!horaFin || horaFin.trim() === '') {
+                setModalError('La hora de fin es obligatoria.');
+                return;
+            }
+
+            if (!motivo || motivo.trim() === '') {
+                setModalError('El motivo es obligatorio.');
+                return;
+            }
+
             // Fecha válida
             if (!validateDateFormat(fecha)) {
                 setModalError('Fecha inválida. Usa el formato dd/MM/YY o dd/MM/YYYY.');
@@ -937,9 +958,9 @@ export default function ActosLiturgicosHorarios() {
                                 ) : (
                                     <form className='form-modal-horarios'>
                                         <div className="Inputs-add">
-                                            <label htmlFor="fecha">Fecha</label>
+                                            <label htmlFor="fecha">Fecha <span style={{color: 'red'}}>*</span></label>
                                             <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value.replace(/[^0-9/]/g, ''))} placeholder="dd/MM/YYYY" required />
-                                            <label>Hora</label>
+                                            <label>Hora <span style={{color: 'red'}}>*</span></label>
                                             <div className="time-range">
                                                 <input type="text" className="inputTime" value={horaInicio} onChange={e => { setHoraInicio(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
                                                 <input type="text" className="inputTime" value={horaFin} onChange={e => { setHoraFin(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
@@ -949,7 +970,7 @@ export default function ActosLiturgicosHorarios() {
                                                     {modalError}
                                                 </p>
                                             )}
-                                            <label htmlFor="motivo">Motivo</label>
+                                            <label htmlFor="motivo">Motivo <span style={{color: 'red'}}>*</span></label>
                                             <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
                                         </div>
                                     </form>
