@@ -87,6 +87,12 @@ const GestionCuenta = () => {
     };
 
     const handleSavePersonal = async () => {
+        // Validar que se haya seleccionado un tipo de documento
+        if (!tempUserInfo.tipoDocumentoId || tempUserInfo.tipoDocumentoId === '') {
+            setError("Debe seleccionar un tipo de documento");
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
@@ -220,6 +226,7 @@ const GestionCuenta = () => {
                             name="tipoDocumentoId"
                             value={tempUserInfo.tipoDocumentoId} 
                             onChange={(e) => setTempUserInfo(prev => ({...prev, tipoDocumentoId: e.target.value}))}
+                            required={true}
                             options={[
                                 { value: '', label: 'Seleccione un tipo' },
                                 ...documentTypes.map(type => ({ value: type.id, label: type.name }))
