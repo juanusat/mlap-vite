@@ -9,7 +9,8 @@ import {
     checkAvailability, 
     createReservation 
 } from '../services/reservationService';
-import { listMentionTypes } from '../services/mentionService';
+
+const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
 export default function ReservasReservar() {
     const [searchParams] = useSearchParams();
@@ -70,8 +71,20 @@ export default function ReservasReservar() {
             // Si es Misa, cargar los tipos de mención
             if (isMass) {
                 try {
-                    const types = await listMentionTypes();
-                    setMentionTypes(types);
+                    const mentionResponse = await fetch(`${API_URL}/api/mention-types`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (mentionResponse.ok) {
+                        const mentionData = await mentionResponse.json();
+                        setMentionTypes(mentionData.data || []);
+                    } else {
+                        console.error('Error al cargar tipos de mención');
+                    }
                 } catch (mentionErr) {
                     console.error('Error al cargar tipos de mención:', mentionErr);
                 }
@@ -280,6 +293,13 @@ export default function ReservasReservar() {
                         <div className="reserva-row">
                             <div className="reserva-label">Evento</div>
                             <div className="reserva-value">{formData.event_name}</div>
+                        </div>
+
+                        <div className="reserva-row">
+                            <div className="reserva-label">Duración</div>
+                            <div className="reserva-value">
+                                {formData.duration_minutes} minutos
+                            </div>
                         </div>
 
                         <div className="reserva-row">
