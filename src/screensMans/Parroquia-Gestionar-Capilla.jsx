@@ -316,8 +316,8 @@ function ChapelForm({ mode, initialData, onSave }) {
             className="inputModal"
             value={coordinates}
             onChange={e => setCoordinates(e.target.value)}
-            disabled={disabled}
-            placeholder="Latitud, Longitud"
+            disabled={true}
+            placeholder="Use el botón para seleccionar ubicación"
           />
           {!disabled && (
             <button

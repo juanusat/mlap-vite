@@ -316,7 +316,8 @@ const GestionCuenta = () => {
                                 value={tempUserInfo.coordenadas} 
                                 onChange={handleInputChange} 
                                 name="coordenadas"
-                                placeholder="Ej: -6.77, -79.84"
+                                placeholder="Use el botón para seleccionar ubicación"
+                                disabled={true}
                             />
                             <button 
                                 className="btn-select-location" 
@@ -326,9 +327,19 @@ const GestionCuenta = () => {
                                 <FaMapMarkedAlt /> Seleccionar ubicación
                             </button>
                         </div>
+                        <p className="info-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'var(--color-n-500)', fontSize: '13px' }}>
+                            ℹ️ Las coordenadas deben seleccionarse mediante el botón "Seleccionar ubicación"
+                        </p>
                         
                         <TextInput label="Celular" value={tempUserInfo.celular} onChange={handleInputChange} name="celular" />
-                        <TextInput label="Email" value={tempUserInfo.email} onChange={handleInputChange} name="email" type="email" placeholder="correo@ejemplo.com" />
+                        <TextInput 
+                            label="Email" 
+                            value={tempUserInfo.email} 
+                            onChange={handleInputChange} 
+                            name="email" 
+                            type="email" 
+                            placeholder="correo@ejemplo.com"
+                        />
                         
                         <div className="color-input-container">
                             <InputColorPicker 
@@ -436,7 +447,16 @@ const GestionCuenta = () => {
                 {isEditingAccount ? (
                     <>
                         <TextInput label="Usuario" value={tempUserInfo.usuario} onChange={handleInputChange} name="usuario" />
-                        <TextInput label="Correo" value={tempUserInfo.correo} onChange={handleInputChange} name="correo" />
+                        <TextInput 
+                            label="Correo" 
+                            value={tempUserInfo.correo} 
+                            onChange={handleInputChange} 
+                            name="correo"
+                            disabled={true}
+                        />
+                        <p className="info-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'var(--color-n-500)', fontSize: '13px' }}>
+                            ℹ️ El correo de la cuenta no puede ser modificado
+                        </p>
                         <TextInput 
                             label="Contraseña actual" 
                             placeholder='Contraseña actual (requerida)' 
