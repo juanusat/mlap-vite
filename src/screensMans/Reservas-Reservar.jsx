@@ -29,9 +29,16 @@ export default function ReservasReservar() {
     
     const getNextHour = () => {
         const now = new Date();
-        const nextHour = new Date(now);
-        nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-        return nextHour.toTimeString().slice(0, 5);
+        let nextHour = now.getHours() + 1;
+        
+        // Asegurar que la hora esté entre 6 y 22
+        if (nextHour < 6) {
+            nextHour = 6;
+        } else if (nextHour > 22) {
+            nextHour = 6;
+        }
+        
+        return `${String(nextHour).padStart(2, '0')}:00`;
     };
     
     const [eventDate, setEventDate] = useState(getTomorrowDate());
@@ -106,7 +113,17 @@ export default function ReservasReservar() {
     };
 
     const handleTimeChange = (e) => {
-        setEventTime(e.target.value);
+        const selectedTime = e.target.value;
+        const [hours] = selectedTime.split(':').map(Number);
+        
+        // Validar que la hora esté entre 6 y 22
+        if (hours < 6 || hours > 22) {
+            setAvailabilityMessage('La hora debe estar entre las 06:00 y las 22:00');
+            setIsAvailable(false);
+            return;
+        }
+        
+        setEventTime(selectedTime);
         setAvailabilityMessage('');
         setIsAvailable(null);
     };
@@ -114,6 +131,14 @@ export default function ReservasReservar() {
     const handleCheckAvailability = async () => {
         if (!eventDate || !eventTime) {
             setAvailabilityMessage('Por favor seleccione fecha y hora');
+            setIsAvailable(false);
+            return;
+        }
+
+        // Validar rango de hora (6:00 - 22:00)
+        const [hours] = eventTime.split(':').map(Number);
+        if (hours < 6 || hours > 22) {
+            setAvailabilityMessage('La hora debe estar entre las 06:00 y las 22:00');
             setIsAvailable(false);
             return;
         }
@@ -434,8 +459,13 @@ export default function ReservasReservar() {
                                     className="reserva-time-input"
                                     value={eventTime}
                                     onChange={handleTimeChange}
+                                    min="06:00"
+                                    max="22:00"
                                     step="3600"
                                 />
+                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                    Horario disponible: 06:00 - 22:00
+                                </small>
                             </div>
                         </div>
 
