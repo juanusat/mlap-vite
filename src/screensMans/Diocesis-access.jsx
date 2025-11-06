@@ -13,6 +13,7 @@ export default function Diocesis() {
 
   const options = [
     { href: 'gestionar-tipo-doc', icon: <MdDomainVerification />, label: 'Gestionar tipos documentos' },
+    { href: 'gestionar-tipo-menciones', icon: <MdDomainVerification />, label: 'Gestionar tipos menciones' },
     { href: 'gestionar-cuenta-parroquia', icon: <MdDomainVerification />, label: 'Gestionar parroquias' },
     { href: 'gestionar-eventos-generales', icon: <MdDomainVerification />, label: 'Gestionar eventos generales' },
     { href: 'gestionar-requisitos-generales', icon: <MdDomainVerification />, label: 'Gestionar requisitos generales' },
