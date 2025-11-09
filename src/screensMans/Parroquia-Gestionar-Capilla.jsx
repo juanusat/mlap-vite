@@ -291,7 +291,7 @@ function ChapelForm({ mode, initialData, onSave }) {
   return (
     <>
       <form id="chapel-form" onSubmit={handleSubmit}>
-        <div className="Inputs chapel-form-scrollable">
+        <div className="Inputs-add chapel-form-scrollable">
         <label>Nombre de la capilla</label>
         <input
           type="text"
@@ -316,8 +316,8 @@ function ChapelForm({ mode, initialData, onSave }) {
             className="inputModal"
             value={coordinates}
             onChange={e => setCoordinates(e.target.value)}
-            disabled={disabled}
-            placeholder="Latitud, Longitud"
+            disabled={true}
+            placeholder="Use el botón para seleccionar ubicación"
           />
           {!disabled && (
             <button

@@ -26,9 +26,7 @@
   font-weight: 400;
 }
 
-/* Password-View.css */
 .password-row {
-  /* Alinea el label y el div del password horizontalmente */
   display: grid;
   grid-template-columns: 230px 1fr;
   align-items: baseline;
@@ -36,13 +34,15 @@
 }
 
 .password-display {
-  /* Contenedor del valor de la contraseña y el botón */
   display: flex;
   align-items: center;
   gap: 1em;
 }
 
-/* Estilos para el botón de ver/ocultar */
 .password-display .my-button-short-action {
-  min-width: 60px; /* Para que el texto "Ver" u "Ocultar" quepa */
+  min-width: 60px; 
 }
+
+.my-btn-short-action.btn-short-arrowfold.expandable-icon {
+  color: var(--color-n-1000);
+} 

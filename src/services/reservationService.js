@@ -40,7 +40,7 @@ export const checkAvailability = async (eventVariantId, eventDate, eventTime) =>
   return await handleResponse(response);
 };
 
-export const createReservation = async (eventVariantId, eventDate, eventTime, beneficiaryFullName = null) => {
+export const createReservation = async (eventVariantId, eventDate, eventTime, beneficiaryFullName = null, mentions = []) => {
   const body = {
     event_variant_id: eventVariantId,
     event_date: eventDate,
@@ -50,6 +50,20 @@ export const createReservation = async (eventVariantId, eventDate, eventTime, be
   // Solo incluir beneficiary_full_name si se proporciona
   if (beneficiaryFullName && beneficiaryFullName.trim() !== '') {
     body.beneficiary_full_name = beneficiaryFullName.trim();
+  }
+
+  // Incluir menciones si se proporcionan y son válidas
+  if (mentions && mentions.length > 0) {
+    const validMentions = mentions.filter(
+      m => m.mention_type_id && m.mention_name && m.mention_name.trim() !== ''
+    ).map(m => ({
+      mention_type_id: parseInt(m.mention_type_id),
+      mention_name: m.mention_name.trim()
+    }));
+    
+    if (validMentions.length > 0) {
+      body.mentions = validMentions;
+    }
   }
 
   const response = await fetch(`${API_URL}/api/client/reservation/create`, {
@@ -171,3 +185,77 @@ export const getReservationDetails = async (reservationId) => {
   return await handleResponse(response);
 };
 
+
+// ===== Servicios para Gestión Administrativa de Reservas =====
+
+export const listReservationsForManagement = async (page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/list`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const searchReservationsForManagement = async (search, page = 1, limit = 10) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      search,
+      page,
+      limit,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const getReservationDetailsForManagement = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const updateReservationStatus = async (reservationId, newStatus) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      new_status: newStatus,
+    }),
+  });
+
+  return await handleResponse(response);
+};
+
+export const rejectReservation = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/reject`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};

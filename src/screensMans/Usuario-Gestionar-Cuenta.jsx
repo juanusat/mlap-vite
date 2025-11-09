@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import MyGroupButtonsActions from '../components/MyGroupButtonsActions';
-import MyButtonShortAction from '../components/MyButtonShortAction';
+
 import TextInput from '../components/formsUI/TextInput';
+import SelectInput from '../components/formsUI/SelectInput';
 import InputFotoPerfil from '../components/inputFotoPerfil';
-import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ExpandableContainer from '../components/Contenedor-Desplegable';
-import { getUserAccount, updatePersonalInfo, updateCredentials } from '../services/userService';
+import { getUserAccount, updatePersonalInfo, updateCredentials, getDocumentTypes } from '../services/userService';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
 import '../utils/Usuario-Gestionar.css';
@@ -17,6 +16,7 @@ const GestionCuenta = () => {
     useEffect(() => {
         document.title = "MLAP | Mi cuenta";
         loadUserData();
+        loadDocumentTypes();
     }, []);
 
     const [userInfo, setUserInfo] = useState({
@@ -24,12 +24,15 @@ const GestionCuenta = () => {
         apellidoPaterno: "",
         apellidoMaterno: "",
         documentoIdentidad: "",
+        tipoDocumentoId: "",
+        tipoDocumentoNombre: "",
         fotoPerfil: "",
         usuario: "",
         correo: "",
         contraseña: ""
     });
 
+    const [documentTypes, setDocumentTypes] = useState([]);
     const [fotoPerfilData, setFotoPerfilData] = useState(null);
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingAccount, setIsEditingAccount] = useState(false);
@@ -51,6 +54,8 @@ const GestionCuenta = () => {
                 apellidoPaterno: data.paternal_surname,
                 apellidoMaterno: data.maternal_surname || "",
                 documentoIdentidad: data.document,
+                tipoDocumentoId: data.document_type_id || "",
+                tipoDocumentoNombre: data.document_type_name || "No especificado",
                 fotoPerfil: data.profile_photo || "",
                 usuario: data.username,
                 correo: data.email,
@@ -64,6 +69,15 @@ const GestionCuenta = () => {
         }
     };
 
+    const loadDocumentTypes = async () => {
+        try {
+            const response = await getDocumentTypes();
+            setDocumentTypes(response.data || []);
+        } catch (err) {
+            console.error("Error al cargar tipos de documento:", err);
+        }
+    };
+
     const handleEditPersonal = () => {
         setIsEditingPersonal(true);
         setFotoPerfilData(null);
@@ -71,6 +85,11 @@ const GestionCuenta = () => {
     };
 
     const handleSavePersonal = async () => {
+        if (!tempUserInfo.tipoDocumentoId || tempUserInfo.tipoDocumentoId === '') {
+            setError("Debe seleccionar un tipo de documento");
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
@@ -80,6 +99,7 @@ const GestionCuenta = () => {
                 paternal_surname: tempUserInfo.apellidoPaterno,
                 maternal_surname: tempUserInfo.apellidoMaterno,
                 document: tempUserInfo.documentoIdentidad,
+                document_type_id: tempUserInfo.tipoDocumentoId,
             };
             
             if (fotoPerfilData && fotoPerfilData.file) {
@@ -198,6 +218,17 @@ const GestionCuenta = () => {
                         <TextInput label="Nombres" value={tempUserInfo.nombres} onChange={handleInputChange} name="nombres" />
                         <TextInput label="Apellido paterno" value={tempUserInfo.apellidoPaterno} onChange={handleInputChange} name="apellidoPaterno" />
                         <TextInput label="Apellido materno" value={tempUserInfo.apellidoMaterno} onChange={handleInputChange} name="apellidoMaterno" />
+                        <SelectInput 
+                            label="Tipo de documento" 
+                            name="tipoDocumentoId"
+                            value={tempUserInfo.tipoDocumentoId} 
+                            onChange={(e) => setTempUserInfo(prev => ({...prev, tipoDocumentoId: e.target.value}))}
+                            required={true}
+                            options={[
+                                { value: '', label: 'Seleccione un tipo' },
+                                ...documentTypes.map(type => ({ value: type.id, label: type.name }))
+                            ]}
+                        />
                         <TextInput label="Documento de Identidad" value={tempUserInfo.documentoIdentidad} onChange={handleInputChange} name="documentoIdentidad" />
                         <div className="foto-input-container">
                             <label className="foto-label">Foto perfil:</label>
@@ -223,6 +254,10 @@ const GestionCuenta = () => {
                         <div className="info-item">
                             <span className="info-label">Apellido materno:</span>
                             <span className="info-value">{userInfo.apellidoMaterno}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Tipo de documento:</span>
+                            <span className="info-value">{userInfo.tipoDocumentoNombre}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Documento de identidad:</span>

@@ -98,6 +98,7 @@ export default function Parroquia() {
         setCurrentEvent(event);
         setModalType('view');
         setFormData({
+            id: event.id,
             name: event.name,
             email: event.email,
             username: event.username || '',
@@ -110,6 +111,7 @@ export default function Parroquia() {
         setCurrentEvent(event);
         setModalType('edit');
         setFormData({
+            id: event.id,
             name: event.name,
             email: event.email,
             username: event.username || '',
@@ -310,6 +312,9 @@ export default function Parroquia() {
 
 // Componente reutilizable para los formularios de la parroquia
 const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) => {
+    // Determina si es modo edición (cuando existe formData.id)
+    const isEditMode = formData.id && !isViewMode;
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -331,11 +336,16 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 name="email"
                 value={formData.email}
                 onChange={handleFormChange}
-                disabled={isViewMode}
+                disabled={isViewMode || isEditMode}
                 required
                 placeholder="ejemplo@dominio.com"
             />
             {emailError && <p className="error-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{emailError}</p>}
+            {isEditMode && (
+                <p className="info-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'var(--color-n-500)', fontSize: '13px' }}>
+                    ℹ️ El correo no puede ser modificado una vez creada la parroquia
+                </p>
+            )}
             <label htmlFor="username">Usuario:</label>
             <input
                 type="text"
@@ -349,7 +359,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
             />
             {!isViewMode && (
                 <>
-                    <label htmlFor="password">Clave:</label>
+                    <label htmlFor="password">Clave{formData.id ? '' : ''}:</label>
                     <input
                         type="password"
                         className="inputModal"
@@ -358,6 +368,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                         value={formData.password}
                         onChange={handleFormChange}
                         required={!formData.id}
+                        placeholder={formData.id ? 'Dejar vacío para no cambiar' : 'Ingrese la contraseña'}
                     />
                 </>
             )}
