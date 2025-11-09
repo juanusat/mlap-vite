@@ -4,7 +4,7 @@ import MyButtonShortAction from './MyButtonShortAction';
 import * as scheduleService from '../services/scheduleService';
 import './ChapelScheduleViewer.css';
 
-const ChapelScheduleViewer = ({ chapelId, parishId }) => {
+const ChapelScheduleViewer = ({ chapelId, parishId, onCellClick = null, enableCellClick = false }) => {
   const [chapelSchedule, setChapelSchedule] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -198,8 +198,31 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
         : '';
       const isSelected = cell.available && !hasException;
 
+      const handleClick = () => {
+        if (enableCellClick && onCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad'))) {
+          // Obtener la fecha de la celda
+          const cellDate = weekDates[colIndex];
+          
+          // Obtener la hora de inicio del slot (rowIndex corresponde a la franja horaria)
+          const SLOT_START_HOUR = 6;
+          const hour = SLOT_START_HOUR + rowIndex;
+          
+          // Formatear fecha como YYYY-MM-DD
+          const dateStr = cellDate.toISOString().split('T')[0];
+          
+          // Formatear hora como HH:00
+          const timeStr = `${String(hour).padStart(2, '0')}:00`;
+          
+          onCellClick(dateStr, timeStr);
+        }
+      };
+
       return (
-        <div className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''}`}>
+        <div 
+          className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${enableCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad')) ? 'clickable' : ''}`}
+          onClick={handleClick}
+          style={enableCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad')) ? { cursor: 'pointer' } : {}}
+        >
           {isSelected && (
             <div className="interval-marker"></div>
           )}

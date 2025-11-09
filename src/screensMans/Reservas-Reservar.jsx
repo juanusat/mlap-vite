@@ -235,6 +235,14 @@ export default function ReservasReservar() {
         }
     };
 
+    const handleScheduleCellClick = (dateStr, timeStr) => {
+        setEventDate(dateStr);
+        setEventTime(timeStr);
+        
+        setAvailabilityMessage('');
+        setIsAvailable(null);
+    };
+
     if (loading) {
         return (
             <div className="content-module only-this">
@@ -494,7 +502,9 @@ export default function ReservasReservar() {
                     {formData?.chapel_id && formData?.parish_id && (
                         <ChapelScheduleViewer 
                             chapelId={formData.chapel_id} 
-                            parishId={formData.parish_id} 
+                            parishId={formData.parish_id}
+                            enableCellClick={true}
+                            onCellClick={handleScheduleCellClick}
                         />
                     )}
                 </div>
