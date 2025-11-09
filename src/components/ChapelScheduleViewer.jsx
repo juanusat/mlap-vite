@@ -152,6 +152,11 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
       if (chapelSchedule.specific && Array.isArray(chapelSchedule.specific)) {
         console.log('Procesando', chapelSchedule.specific.length, 'horarios específicos');
         chapelSchedule.specific.forEach(exception => {
+          if (!exception.date || !exception.start_time || !exception.end_time) {
+            console.warn('Horario específico con datos incompletos, saltando:', exception);
+            return;
+          }
+
           // exception.date es en formato "YYYY-MM-DD" o "YYYY-MM-DDTHH:MM:SS"
           const exceptionDateStr = exception.date.split('T')[0]; // "YYYY-MM-DD"
           
