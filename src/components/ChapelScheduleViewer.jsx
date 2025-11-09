@@ -4,7 +4,7 @@ import MyButtonShortAction from './MyButtonShortAction';
 import * as scheduleService from '../services/scheduleService';
 import './ChapelScheduleViewer.css';
 
-const ChapelScheduleViewer = ({ chapelId, parishId }) => {
+const ChapelScheduleViewer = ({ chapelId, parishId, onCellClick = null, enableCellClick = false }) => {
   const [chapelSchedule, setChapelSchedule] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,7 +48,6 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
   useEffect(() => {
     const loadChapelSchedule = async () => {
       if (!chapelId || !parishId) {
-        console.log('ChapelScheduleViewer: chapelId o parishId no disponibles', { chapelId, parishId });
         setChapelSchedule(null);
         return;
       }
@@ -57,17 +56,10 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
         setLoading(true);
         setError(null);
         
-        console.log('ChapelScheduleViewer: ===== CARGANDO HORARIOS =====');
-        console.log('ChapelScheduleViewer: Chapel ID:', chapelId);
-        console.log('ChapelScheduleViewer: Parish ID:', parishId);
-        console.log('ChapelScheduleViewer: Semana del:', currentWeekStart.toISOString().split('T')[0]);
-        
         const generalSchedulesResponse = await scheduleService.listGeneralSchedules(parishId, chapelId);
-        console.log('ChapelScheduleViewer: Horarios generales obtenidos:', generalSchedulesResponse);
         
         const startDate = weekDates[0].toISOString().split('T')[0];
         const endDate = weekDates[6].toISOString().split('T')[0];
-        console.log('ChapelScheduleViewer: Rango de fechas para excepciones:', { startDate, endDate });
         
         const specificSchedulesResponse = await scheduleService.listSpecificSchedules(
           parishId, 
@@ -81,14 +73,12 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
             }
           }
         );
-        console.log('ChapelScheduleViewer: Horarios específicos obtenidos:', specificSchedulesResponse);
         
         setChapelSchedule({
           general: generalSchedulesResponse?.data || [],
           specific: specificSchedulesResponse?.data || []
         });
       } catch (err) {
-        console.error('ChapelScheduleViewer: Error al cargar horario de capilla:', err);
         setError(err.message || 'Error al cargar horario');
         setChapelSchedule(null);
       } finally {
@@ -100,14 +90,10 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
   }, [chapelId, parishId, currentWeekStart]);
 
   const prepareScheduleData = () => {
-    console.log('prepareScheduleData: Iniciando. chapelSchedule:', chapelSchedule);
     
     if (!chapelSchedule) {
-      console.log('prepareScheduleData: chapelSchedule es null/undefined');
       return null;
     }
-
-    console.log('prepareScheduleData: Procesando horarios. general:', chapelSchedule.general?.length || 0, 'specific:', chapelSchedule.specific?.length || 0);
 
     try {
       const daysOfWeek = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
@@ -125,24 +111,23 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
         Array(7).fill(null).map(() => ({ available: false, exception: null }))
       );
 
-      // Procesar horarios generales - day_of_week es 0-6 (0=Lunes, 6=Domingo)
+      // Procesar horarios generales - day_of_week es 0-6 (0=Domingo, 1=Lunes, ..., 6=Sábado en PostgreSQL)
       if (chapelSchedule.general && Array.isArray(chapelSchedule.general)) {
-        console.log('Procesando', chapelSchedule.general.length, 'horarios generales');
         chapelSchedule.general.forEach(schedule => {
-          const dayOfWeek = schedule.day_of_week; // 0=Lun, 1=Mar, ..., 6=Dom
+          const dayOfWeekDB = schedule.day_of_week; // 0=Dom, 1=Lun, 2=Mar, ..., 6=Sab (PostgreSQL)
           const startTime = schedule.start_time; // "HH:MM:SS"
           const endTime = schedule.end_time;
 
+          const dayIndex = dayOfWeekDB === 0 ? 6 : dayOfWeekDB - 1;
+
           const startHour = parseInt(startTime.split(':')[0]);
           const endHour = parseInt(endTime.split(':')[0]);
-
-          console.log('General schedule:', { dayOfWeek, startHour, endHour });
 
           // Marcar las celdas del horario general
           for (let hour = startHour; hour < endHour; hour++) {
             const rowIndex = hour - SLOT_START_HOUR;
             if (rowIndex >= 0 && rowIndex < timeSlots.length) {
-              scheduleMatrix[rowIndex][dayOfWeek].available = true;
+              scheduleMatrix[rowIndex][dayIndex].available = true;
             }
           }
         });
@@ -150,8 +135,11 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
 
       // Procesar horarios específicos (excepciones) para la semana actual
       if (chapelSchedule.specific && Array.isArray(chapelSchedule.specific)) {
-        console.log('Procesando', chapelSchedule.specific.length, 'horarios específicos');
         chapelSchedule.specific.forEach(exception => {
+          if (!exception.date || !exception.start_time || !exception.end_time) {
+            return;
+          }
+
           // exception.date es en formato "YYYY-MM-DD" o "YYYY-MM-DDTHH:MM:SS"
           const exceptionDateStr = exception.date.split('T')[0]; // "YYYY-MM-DD"
           
@@ -169,14 +157,6 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
           const startHour = parseInt(exception.start_time.split(':')[0]);
           const endHour = parseInt(exception.end_time.split(':')[0]);
           const exceptionType = exception.exception_type; // 'OPEN' o 'CLOSED'
-
-          console.log('Specific schedule:', { 
-            date: exception.date, 
-            dayIndex, 
-            startHour, 
-            endHour, 
-            exceptionType 
-          });
 
           // Aplicar excepción
           for (let hour = startHour; hour < endHour; hour++) {
@@ -196,10 +176,8 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
       }
 
       const result = { timeSlots, daysOfWeek, scheduleMatrix };
-      console.log('prepareScheduleData: Retornando resultado exitoso');
       return result;
     } catch (err) {
-      console.error('prepareScheduleData: Error capturado:', err);
       return null;
     }
   };
@@ -222,8 +200,31 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
         : '';
       const isSelected = cell.available && !hasException;
 
+      const handleClick = () => {
+        if (enableCellClick && onCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad'))) {
+          // Obtener la fecha de la celda
+          const cellDate = weekDates[colIndex];
+          
+          // Obtener la hora de inicio del slot (rowIndex corresponde a la franja horaria)
+          const SLOT_START_HOUR = 6;
+          const hour = SLOT_START_HOUR + rowIndex;
+          
+          // Formatear fecha como YYYY-MM-DD
+          const dateStr = cellDate.toISOString().split('T')[0];
+          
+          // Formatear hora como HH:00
+          const timeStr = `${String(hour).padStart(2, '0')}:00`;
+          
+          onCellClick(dateStr, timeStr);
+        }
+      };
+
       return (
-        <div className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''}`}>
+        <div 
+          className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${enableCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad')) ? 'clickable' : ''}`}
+          onClick={handleClick}
+          style={enableCellClick && (isSelected || (hasException && exceptionType === 'disponibilidad')) ? { cursor: 'pointer' } : {}}
+        >
           {isSelected && (
             <div className="interval-marker"></div>
           )}
@@ -233,7 +234,6 @@ const ChapelScheduleViewer = ({ chapelId, parishId }) => {
         </div>
       );
     } catch (err) {
-      console.error('Error en renderScheduleCell:', err);
       return (
         <div className="grid-cell day-cell"></div>
       );

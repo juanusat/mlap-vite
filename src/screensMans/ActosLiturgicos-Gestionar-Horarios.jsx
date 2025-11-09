@@ -238,7 +238,6 @@ export default function ActosLiturgicosHorarios() {
             // NO cargar automáticamente la primera capilla
         } catch (err) {
             setError(err.message || 'Error al cargar las capillas');
-            console.error('Error al cargar capillas:', err);
         } finally {
             setLoading(false);
         }
@@ -297,7 +296,6 @@ export default function ActosLiturgicosHorarios() {
                     endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
                 };
             });
-            console.log('✅ Excepciones de disponibilidad cargadas:', dispExceptions);
             setExceptionsDisponibilidad(dispExceptions);
             
             // Cargar excepciones de no disponibilidad
@@ -318,12 +316,10 @@ export default function ActosLiturgicosHorarios() {
                     endTime: ex.end_time ? ex.end_time.substring(0, 5) : null
                 };
             });
-            console.log('✅ Excepciones de no disponibilidad cargadas:', noDispExceptions);
             setExceptionsNoDisponibilidad(noDispExceptions);
             
         } catch (err) {
             setError(err.message || 'Error al cargar los horarios');
-            console.error('Error al cargar horarios:', err);
         } finally {
             setLoading(false);
         }
@@ -430,7 +426,6 @@ export default function ActosLiturgicosHorarios() {
             await loadSchedulesForChapel(chapelId);
         } catch (err) {
             setError(err.message || 'Error al eliminar la excepción');
-            console.error('Error al eliminar excepción:', err);
         } finally {
             setLoading(false);
         }
@@ -525,7 +520,6 @@ export default function ActosLiturgicosHorarios() {
             handleCancelModal();
         } catch (err) {
             setModalError(err.message || 'Error al guardar la excepción');
-            console.error('Error al guardar excepción:', err);
         } finally {
             setLoading(false);
         }
@@ -553,16 +547,7 @@ export default function ActosLiturgicosHorarios() {
         
         // Debug logs
         if (rowIndex === 0 && colIndex === 0 && allExceptions.length > 0) {
-            console.log('🔍 Debug hasExceptionForCell:');
-            console.log('  - dateStr (grid):', dateStr);
-            console.log('  - timeSlot (grid):', timeSlot);
-            console.log('  - Total exceptions:', allExceptions.length);
-            console.log('  - exceptionsDisponibilidad:', exceptionsDisponibilidad);
-            console.log('  - exceptionsNoDisponibilidad:', exceptionsNoDisponibilidad);
             if (allExceptions.length > 0) {
-                console.log('  - Primer excepción fecha:', allExceptions[0].fecha);
-                console.log('  - Primer excepción startTime:', allExceptions[0].startTime);
-                console.log('  - Primer excepción endTime:', allExceptions[0].endTime);
             }
         }
         
@@ -790,7 +775,6 @@ export default function ActosLiturgicosHorarios() {
             setIsEditing(false);
         } catch (err) {
             setError(err.message || 'Error al guardar los horarios');
-            console.error('Error al guardar horarios:', err);
         } finally {
             setLoading(false);
         }
