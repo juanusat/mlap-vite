@@ -111,12 +111,14 @@ const ChapelScheduleViewer = ({ chapelId, parishId, onCellClick = null, enableCe
         Array(7).fill(null).map(() => ({ available: false, exception: null }))
       );
 
-      // Procesar horarios generales - day_of_week es 0-6 (0=Lunes, 6=Domingo)
+      // Procesar horarios generales - day_of_week es 0-6 (0=Domingo, 1=Lunes, ..., 6=Sábado en PostgreSQL)
       if (chapelSchedule.general && Array.isArray(chapelSchedule.general)) {
         chapelSchedule.general.forEach(schedule => {
-          const dayOfWeek = schedule.day_of_week; // 0=Lun, 1=Mar, ..., 6=Dom
+          const dayOfWeekDB = schedule.day_of_week; // 0=Dom, 1=Lun, 2=Mar, ..., 6=Sab (PostgreSQL)
           const startTime = schedule.start_time; // "HH:MM:SS"
           const endTime = schedule.end_time;
+
+          const dayIndex = dayOfWeekDB === 0 ? 6 : dayOfWeekDB - 1;
 
           const startHour = parseInt(startTime.split(':')[0]);
           const endHour = parseInt(endTime.split(':')[0]);
@@ -125,7 +127,7 @@ const ChapelScheduleViewer = ({ chapelId, parishId, onCellClick = null, enableCe
           for (let hour = startHour; hour < endHour; hour++) {
             const rowIndex = hour - SLOT_START_HOUR;
             if (rowIndex >= 0 && rowIndex < timeSlots.length) {
-              scheduleMatrix[rowIndex][dayOfWeek].available = true;
+              scheduleMatrix[rowIndex][dayIndex].available = true;
             }
           }
         });
