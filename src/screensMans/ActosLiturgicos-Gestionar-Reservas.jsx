@@ -196,7 +196,7 @@ export default function Reservas() {
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
-    { key: 'user_full_name', header: 'Usuario', accessor: (row) => row.user_full_name },
+    { key: 'user_full_name', header: 'Usuario', accessor: (row) => row.user_full_name || row.user_person?.full_name },
     { key: 'event_variant_name', header: 'Evento', accessor: (row) => row.event_variant_name },
     { key: 'chapel_name', header: 'Capilla', accessor: (row) => row.chapel_name },
     { key: 'event_date', header: 'Fecha', accessor: (row) => formatDate(row.event_date) },
@@ -226,6 +226,20 @@ export default function Reservas() {
           title: 'Detalles de la Reserva',
           content: (
             <div className="Inputs-add">
+              <label>ID</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.id || ''}
+                disabled
+              />
+              <label>Usuario</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.user_full_name || currentReservation.user_person?.full_name || ''}
+                disabled
+              />
               <label>Evento</label>
               <input
                 type="text"
@@ -247,46 +261,6 @@ export default function Reservas() {
                 value={formatDate(currentReservation.event_date)}
                 disabled
               />
-              <label>Hora</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={formatTime(currentReservation.event_time)}
-                disabled
-              />
-              <label>Usuario</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.user_full_name || ''}
-                disabled
-              />
-              <label>Beneficiario</label>
-              <input
-                type="text"
-                className="inputModal"
-                value={currentReservation.beneficiary_full_name || 'N/A'}
-                disabled
-              />
-              {currentReservation.mentions && currentReservation.mentions.length > 0 && (
-                <>
-                  <label style={{ marginTop: '15px', fontWeight: 'bold' }}>Menciones</label>
-                  {currentReservation.mentions.map((mention, index) => (
-                    <div key={mention.id} style={{ marginBottom: '10px', paddingLeft: '10px', borderLeft: '3px solid #4CAF50' }}>
-                      <label style={{ fontSize: '0.9em', color: '#666' }}>
-                        {mention.mention_type_name}
-                      </label>
-                      <input
-                        type="text"
-                        className="inputModal"
-                        value={mention.mention_name}
-                        disabled
-                        style={{ marginTop: '5px' }}
-                      />
-                    </div>
-                  ))}
-                </>
-              )}
               <label>Monto Pagado</label>
               <input
                 type="text"
