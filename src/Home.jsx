@@ -6,6 +6,7 @@ import MyBarSearchGen from './components/MyBarSearchGen';
 import ScreenMan from './components/ScreenMan';
 import MyModuleAccess from './components/MyModuleAccess';
 import MyButtonCenteredSides from './components/MyButtonCenteredSides';
+import useSession from './hooks/useSession';
 
 import {
   MdChurch,
@@ -20,6 +21,7 @@ import {
 export default function Home() {
   const searchBarRef = useRef(null);
   const navigate = useNavigate();
+  const { sessionData } = useSession(() => navigate('/acceso'));
 
   const scrollToSearch = () => {
     searchBarRef.current?.scrollAndFocus();
@@ -28,6 +30,61 @@ export default function Home() {
   const handleModuleClick = (route) => {
     navigate(route);
   };
+
+  const getAvailableModules = () => {
+    if (!sessionData || !sessionData.context_type) return [];
+    
+    const mode = sessionData.context_type;
+    
+    switch (mode) {
+      case 'DIOCESE':
+        return [
+          {
+            icon: <MdDescription />,
+            text: "Diócesis",
+            route: "/man-diocesis"
+          }
+        ];
+      
+      case 'PARISHIONER':
+        return [
+          {
+            icon: <MdCalendarMonth />,
+            text: "Reservas",
+            route: "/man-reservas"
+          },
+          {
+            icon: <MdOutlineAccountBox />,
+            text: "Usuario",
+            route: "/man-usuario"
+          }
+        ];
+      
+      case 'PARISH':
+        return [
+          {
+            icon: <MdEventNote />,
+            text: "Actos litúrgicos",
+            route: "/man-actos-liturgicos"
+          },
+          {
+            icon: <MdSecurity />,
+            text: "Seguridad",
+            route: "/man-seguridad"
+          },
+          {
+            icon: <MdChurch />,
+            text: "Parroquia",
+            route: "/man-parroquia"
+          }
+        ];
+      
+      default:
+        return [];
+    }
+  };
+
+  const availableModules = getAvailableModules();
 
   return (
     <ScreenMan>
@@ -54,36 +111,18 @@ export default function Home() {
         <section className="mlap-home-modules">
           <h3>Módulos</h3>
           <div className="mlap-home-modules-list">
-            <MyModuleAccess
-              icon={<MdEventNote />}
-              text="Actos litúrgicos"
-              onClick={() => handleModuleClick('/man-actos-liturgicos')}
-            />
-            <MyModuleAccess
-              icon={<MdCalendarMonth />}
-              text="Reservas"
-              onClick={() => handleModuleClick('/man-reservas')}
-            />
-            <MyModuleAccess
-              icon={<MdSecurity />}
-              text="Seguridad"
-              onClick={() => handleModuleClick('/man-seguridad')}
-            />
-            <MyModuleAccess
-              icon={<MdOutlineAccountBox />}
-              text="Usuario"
-              onClick={() => handleModuleClick('/man-usuario')}
-            />
-            <MyModuleAccess
-              icon={<MdChurch />}
-              text="Parroquia"
-              onClick={() => handleModuleClick('/man-parroquia')}
-            />
-            <MyModuleAccess
-              icon={<MdDescription />}
-              text="Diócesis"
-              onClick={() => handleModuleClick('/man-diocesis')}
-            />
+            {availableModules.length > 0 ? (
+              availableModules.map((module, index) => (
+                <MyModuleAccess
+                  key={index}
+                  icon={module.icon}
+                  text={module.text}
+                  onClick={() => handleModuleClick(module.route)}
+                />
+              ))
+            ) : (
+              <p>No hay módulos disponibles para tu nivel de acceso.</p>
+            )}
           </div>
         </section>
       </div>

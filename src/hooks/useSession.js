@@ -25,6 +25,10 @@ export const useSession = (onUnauthorized) => {
         }
         return;
       }
+      if (err.message === 'FORBIDDEN_CONTEXT_NOT_SET') {
+        setError('FORBIDDEN_CONTEXT_NOT_SET');
+        return;
+      }
       setError(err.message);
     } finally {
       setLoading(false);
