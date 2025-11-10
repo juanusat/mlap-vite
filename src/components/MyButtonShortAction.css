@@ -92,3 +92,6 @@
 .btn-short-time {
   color: var(--color-a-600);
 }
+.btn-short-pay {
+  color: var(--color-green-btn-hover);
+}

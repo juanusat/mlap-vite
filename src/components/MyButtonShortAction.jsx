@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdBlock, 
-  MdAddModerator, MdAccessTime , MdOutlineKeyboardArrowDown } from "react-icons/md";
+  MdAddModerator, MdAccessTime , MdOutlineKeyboardArrowDown, MdPayment } from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title, classNameCustom = '' }) {
@@ -47,6 +47,9 @@ export default function MyButtonShortAction({ type, onClick, title, classNameCus
   } else if (type === 'arrowDown') {
     icon = <MdOutlineKeyboardArrowDown />;
     className = 'btn-short-arrowfold';
+  } else if (type === 'pay') {
+    icon = <MdPayment />;
+    className = 'btn-short-pay';
   } else {
     icon = null;
     className = '';

@@ -34,6 +34,7 @@ export default function Reservas() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [paymentAmount, setPaymentAmount] = useState('');
 
   const loadReservations = async () => {
     try {
@@ -97,6 +98,13 @@ export default function Reservas() {
     setShowModal(true);
   };
 
+  const handlePay = (reservation) => {
+    setCurrentReservation(reservation);
+    setPaymentAmount('');
+    setModalType('pay');
+    setShowModal(true);
+  };
+
   const handleTime = (reservation) => {
     setCurrentReservation(reservation);
     setModalType('time');
@@ -135,15 +143,6 @@ export default function Reservas() {
     }
   };
 
-  const handleOpenSidebar = (reservation) => {
-    setCurrentReservation(reservation);
-    setShowSidebar(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setShowSidebar(false);
-    setCurrentReservation(null);
-  };
 
   const handleComplete = async () => {
     if (!currentReservation) return;
@@ -177,10 +176,42 @@ export default function Reservas() {
     }
   };
 
+  const handleProcessPayment = async () => {
+    if (!currentReservation || !paymentAmount) return;
+    
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) {
+      setError('El monto debe ser mayor a 0');
+      return;
+    }
+
+    const currentPaid = parseFloat(currentReservation.paid_amount || 0);
+    const totalPrice = parseFloat(currentReservation.current_price || 0);
+    const newTotal = currentPaid + amount;
+
+    if (newTotal > totalPrice) {
+      setError('El monto total pagado no puede exceder el precio del evento');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      await reservationService.addPayment(currentReservation.id, amount);
+      await loadReservations();
+      handleCloseModal();
+    } catch (err) {
+      setError(err.message || 'Error al procesar el pago');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentReservation(null);
     setModalType(null);
+    setPaymentAmount('');
   };
 
   const formatDate = (dateString) => {
@@ -189,10 +220,6 @@ export default function Reservas() {
     return date.toLocaleDateString('es-ES');
   };
 
-  const formatTime = (timeString) => {
-    if (!timeString) return '';
-    return timeString.substring(0, 5);
-  };
 
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
@@ -200,7 +227,8 @@ export default function Reservas() {
     { key: 'event_variant_name', header: 'Evento', accessor: (row) => row.event_variant_name },
     { key: 'chapel_name', header: 'Capilla', accessor: (row) => row.chapel_name },
     { key: 'event_date', header: 'Fecha', accessor: (row) => formatDate(row.event_date) },
-    { key: 'paid_amount', header: 'Monto', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
+    { key: 'current_price', header: 'Precio', accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` },
+    { key: 'paid_amount', header: 'Pagado', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
     { key: 'status', header: 'Estado', accessor: (row) => STATUS_MAP[row.status] || row.status },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
@@ -208,6 +236,9 @@ export default function Reservas() {
           <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
           {row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
+          )}
+          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && (
+            <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
@@ -261,7 +292,14 @@ export default function Reservas() {
                 value={currentReservation?.event_date ? formatDate(currentReservation.event_date) : ''}
                 disabled
               />
-              <label>Monto Pagado</label>
+              <label>Precio</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${parseFloat(currentReservation?.current_price || 0).toFixed(2)}`}
+                disabled
+              />
+              <label>Pagado</label>
               <input
                 type="text"
                 className="inputModal"
@@ -328,6 +366,51 @@ export default function Reservas() {
           onAccept: handleReject,
           onCancel: handleCloseModal
         };
+      case 'pay':
+        const currentPaid = parseFloat(currentReservation.paid_amount || 0);
+        const totalPrice = parseFloat(currentReservation.current_price || 0);
+        const remaining = totalPrice - currentPaid;
+        return {
+          title: 'Pagar Reserva',
+          content: (
+            <div className="Inputs-add">
+              <label>Precio Total</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${totalPrice.toFixed(2)}`}
+                disabled
+              />
+              <label>Monto Pagado</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${currentPaid.toFixed(2)}`}
+                disabled
+              />
+              <label>Monto Restante</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${remaining.toFixed(2)}`}
+                disabled
+              />
+              <label>Monto a Pagar</label>
+              <input
+                type="number"
+                className="inputModal"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                placeholder="0.00"
+                min="0.01"
+                max={remaining}
+                step="0.01"
+              />
+            </div>
+          ),
+          onAccept: handleProcessPayment,
+          onCancel: handleCloseModal
+        };
       default:
         return {
           title: '',
@@ -356,7 +439,7 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="90px 230px 230px auto 120px 100px 130px 240px"
+            gridColumnsLayout="90px 200px 200px auto 120px 100px 100px 130px 220px"
             columnLeftAlignIndex={[1, 2, 3]}
           />
         </div>

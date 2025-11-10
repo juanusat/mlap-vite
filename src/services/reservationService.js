@@ -259,3 +259,18 @@ export const rejectReservation = async (reservationId) => {
 
   return await handleResponse(response);
 };
+
+export const addPayment = async (reservationId, amount) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/payment`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      amount: amount,
+    }),
+  });
+
+  return await handleResponse(response);
+};
