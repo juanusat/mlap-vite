@@ -6,9 +6,10 @@
     gap: 20px;
 }
 
-input[type="checkbox"] {
+.sidebar-list-item.requirement-item input[type="checkbox"] {
     width: 20px;
     height: 20px; 
+    flex-shrink: 0;
 }
 
 form{
