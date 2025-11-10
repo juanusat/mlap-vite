@@ -440,7 +440,7 @@ export default function Reservas() {
             columns={reservationColumns}
             data={reservations}
             gridColumnsLayout="90px 200px 200px auto 120px 100px 100px 130px 220px"
-            columnLeftAlignIndex={[1, 2, 3]}
+            columnLeftAlignIndex={[2, 3, 4]}
           />
         </div>
         <Modal
