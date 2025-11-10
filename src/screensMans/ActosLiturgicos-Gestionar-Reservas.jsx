@@ -73,8 +73,8 @@ export default function Reservas() {
   const handleView = async (reservation) => {
     try {
       setLoading(true);
-      const details = await reservationService.getReservationDetailsForManagement(reservation.id);
-      setCurrentReservation(details);
+      const response = await reservationService.getReservationDetailsForManagement(reservation.id);
+      setCurrentReservation(response.data);
       setModalType('view');
       setShowModal(true);
     } catch (err) {
@@ -230,49 +230,49 @@ export default function Reservas() {
               <input
                 type="text"
                 className="inputModal"
-                value={currentReservation.id || ''}
+                value={currentReservation?.id || ''}
                 disabled
               />
               <label>Usuario</label>
               <input
                 type="text"
                 className="inputModal"
-                value={currentReservation.user_full_name || currentReservation.user_person?.full_name || ''}
+                value={currentReservation?.user_full_name || ''}
                 disabled
               />
               <label>Evento</label>
               <input
                 type="text"
                 className="inputModal"
-                value={currentReservation.event_variant_name || ''}
+                value={currentReservation?.event_variant_name || ''}
                 disabled
               />
               <label>Capilla</label>
               <input
                 type="text"
                 className="inputModal"
-                value={currentReservation.chapel_name || ''}
+                value={currentReservation?.chapel_name || ''}
                 disabled
               />
               <label>Fecha</label>
               <input
                 type="text"
                 className="inputModal"
-                value={formatDate(currentReservation.event_date)}
+                value={currentReservation?.event_date ? formatDate(currentReservation.event_date) : ''}
                 disabled
               />
               <label>Monto Pagado</label>
               <input
                 type="text"
                 className="inputModal"
-                value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
+                value={`$ ${parseFloat(currentReservation?.paid_amount || 0).toFixed(2)}`}
                 disabled
               />
               <label>Estado</label>
               <input
                 type="text"
                 className="inputModal"
-                value={STATUS_MAP[currentReservation.status] || currentReservation.status}
+                value={currentReservation?.status ? (STATUS_MAP[currentReservation.status] || currentReservation.status) : ''}
                 disabled
               />
             </div>
