@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSessionInfo, changeCurrentRole, changeParishContext } from '../utils/authAPI';
+import { usePermissions } from '../contexts/PermissionsContext';
 
 export const useSession = (onUnauthorized) => {
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const onUnauthorizedRef = useRef(onUnauthorized);
+  const { setPermissions } = usePermissions();
 
   useEffect(() => {
     onUnauthorizedRef.current = onUnauthorized;
@@ -16,6 +18,12 @@ export const useSession = (onUnauthorized) => {
       setLoading(true);
       const data = await getSessionInfo();
       setSessionData(data);
+      // Cargar permisos en el contexto
+      if (data?.permissions) {
+        setPermissions(data.permissions);
+      } else {
+        setPermissions([]);
+      }
       setError(null);
     } catch (err) {
       console.error('Error al obtener información de sesión:', err);
@@ -29,7 +37,7 @@ export const useSession = (onUnauthorized) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setPermissions]);
 
   const changeRole = useCallback(async (roleId) => {
     try {

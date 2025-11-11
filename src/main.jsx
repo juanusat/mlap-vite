@@ -11,6 +11,7 @@ import Comenzar from './Begin.jsx';
 import Buscar from './screensMans/Busqueda-parroquia.jsx';
 import VistaPresentacion from './screensMans/VistaPresentacion-Capilla.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import { PermissionsProvider } from './contexts/PermissionsContext.jsx';
 
 import ActosLiturgicos from './screensMans/ActosLiturgicos-access.jsx';
 import ActosLiturgicosGestionar from './screensMans/ActosLiturgicos-Gestionar-Actos.jsx';
@@ -58,8 +59,9 @@ import Reporte01D from './screensMans/Diocesis-Reporte01.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
+    <PermissionsProvider>
+      <BrowserRouter>
+        <Routes>
         <Route path="/" element={<Navigate to="/acceso" replace />} />
         <Route path="/acceso" element={<Login />} />
         <Route path="/registro" element={<Register />} />
@@ -111,7 +113,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="gestionar-requisitos-generales" element={<DiocesisRequisitosGestionarSoloBarra />} />
           <Route path="reporte01-d" element={<Reporte01D />} />
         </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </PermissionsProvider>
   </React.StrictMode>
 );
