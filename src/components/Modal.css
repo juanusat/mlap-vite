@@ -20,6 +20,9 @@
   width: auto;
   min-width: 380px;
   max-width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   transform: scale(0.95);
   transition: transform 0.3s ease-in-out;
 }
@@ -43,6 +46,10 @@
   color: var(--color-n-600);
   max-width: none;
   gap: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  padding-right: 5px;
 }
 
 .modal-close-btn {
