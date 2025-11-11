@@ -163,6 +163,30 @@ export default function RolesGestionar() {
         document.title = "MLAP | Gestionar roles";
     }, []);
 
+    useEffect(() => {
+        if (sessionData) {
+            console.log('\n=== PANTALLA: Gestionar Roles ===');
+            console.log('SessionData:', sessionData);
+            console.log('Permisos disponibles:', sessionData.permissions?.length || 0);
+            
+            // Probar permisos específicos de esta pantalla
+            const permisosARoles = [
+                'SEGURIDAD_ROL_C',
+                'ESTADO_ROL_U',
+                'SEGURIDAD_ROL_R',
+                'SEGURIDAD_ROL_PERMISOS_U',
+                'SEGURIDAD_ROL_DATA_U',
+                'SEGURIDAD_ROL_D'
+            ];
+            
+            console.log('\n📋 Evaluación de permisos para botones:');
+            permisosARoles.forEach(codigo => {
+                const tiene = hasPermission(codigo);
+                console.log(`  ${tiene ? '✅' : '❌'} ${codigo}: ${tiene}`);
+            });
+        }
+    }, [sessionData, hasPermission]);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);

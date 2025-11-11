@@ -120,16 +120,29 @@ export default function CuentasGestionar() {
     } else if (action === "addRole" && worker) {
       setFormData({ email: worker.email, role_id: '' });
 
-      // Cargar roles ya asignados al usuario y filtrar las opciones disponibles
+      // Recargar roles disponibles y cargar roles ya asignados al usuario
       try {
         setLoading(true);
+        
+        // Recargar roles disponibles directamente
+        const rolesResponse = await fetch(`${import.meta.env.VITE_SERVER_BACKEND_URL}/api/parish/${parishId}/roles`, {
+          credentials: 'include'
+        });
+        
+        let freshRoles = [];
+        if (rolesResponse.ok) {
+          const rolesData = await rolesResponse.json();
+          freshRoles = rolesData.data || [];
+          setAvailableRoles(freshRoles);
+        }
+        
         const resp = await parishWorkerService.listWorkerRoles(worker.association_id, 1, 200);
         const assigned = resp.data?.active_roles || [];
         const assignedIds = new Set(
           assigned.map(ar => ar.role_id || ar.id || (ar.role && ar.role.id)).filter(Boolean)
         );
 
-        const filtered = availableRoles.filter(r => !assignedIds.has(r.id));
+        const filtered = freshRoles.filter(r => !assignedIds.has(r.id));
         setAddRoleOptions(filtered);
       } catch (err) {
         console.error('Error al cargar roles asignados:', err);

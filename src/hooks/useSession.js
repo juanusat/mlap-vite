@@ -18,10 +18,19 @@ export const useSession = (onUnauthorized) => {
       setLoading(true);
       const data = await getSessionInfo();
       setSessionData(data);
+      
+      console.log('\n=== FRONTEND: useSession - fetchSession ===');
+      console.log('Datos de sesión recibidos:', data);
+      console.log('¿Es administrador de parroquia?:', data?.is_parish_admin);
+      console.log('Rol actual:', data?.current_role);
+      
       // Cargar permisos en el contexto
       if (data?.permissions) {
+        console.log(`✅ Permisos recibidos del backend: ${data.permissions.length}`);
+        console.log('Primeros 10 permisos:', data.permissions.slice(0, 10));
         setPermissions(data.permissions);
       } else {
+        console.log('⚠️ NO hay permisos en la respuesta - estableciendo array vacío');
         setPermissions([]);
       }
       setError(null);

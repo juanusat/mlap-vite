@@ -3,7 +3,7 @@ import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, M
   MdAddModerator, MdAccessTime , MdOutlineKeyboardArrowDown, MdPayment } from "react-icons/md";
 import './MyButtonShortAction.css';
 
-export default function MyButtonShortAction({ type, onClick, title, classNameCustom = '' }) {
+export default function MyButtonShortAction({ type, onClick, title, classNameCustom = '', disabled = false }) {
   let icon, className;
   if (type === 'edit') {
     icon = <MdCreate />;
