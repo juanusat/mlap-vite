@@ -262,31 +262,20 @@ export default function ReservasPendientes() {
                   />
                   
                   {totalPages > 1 && (
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center',
-                      gap: '10px',
-                      marginTop: '20px',
-                      padding: '10px'
-                    }}>
-                      <button 
+                    <div className="pagination">
+                      <MyButtonShortAction
+                        type="back"
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
-                        style={{ padding: '5px 15px' }}
-                      >
-                        Anterior
-                      </button>
-                      <span>
-                        Página {currentPage} de {totalPages} ({totalRecords} registros)
-                      </span>
-                      <button 
+                        title='Atrás'
+                      />
+                      <span>Página {currentPage} de {totalPages}</span>
+                      <MyButtonShortAction
+                        type="next"
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                         disabled={currentPage === totalPages}
-                        style={{ padding: '5px 15px' }}
-                      >
-                        Siguiente
-                      </button>
+                        title='Siguiente'
+                      />
                     </div>
                   )}
                 </>
