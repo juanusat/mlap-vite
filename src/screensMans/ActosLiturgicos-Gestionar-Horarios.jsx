@@ -7,6 +7,7 @@ import MySchedule from '../components/MySchedule';
 import SearchBar from '../components/SearchBar';
 import * as scheduleService from '../services/scheduleService';
 import * as chapelService from '../services/chapelService';
+import usePermission from '../hooks/usePermission';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -17,7 +18,11 @@ function ExcepcionesSection({
     onAdd,
     onEdit,
     onDelete,
-    ITEMS_PER_PAGE = 4
+    ITEMS_PER_PAGE = 4,
+    hasPermission,
+    addPermission,
+    editPermission,
+    deletePermission
 }) {
     const [activeTab, setActiveTab] = useState('futuras');
     const [page, setPage] = useState(0);
@@ -104,6 +109,7 @@ function ExcepcionesSection({
                         type="add"
                         title={`Agregar ${title.toLowerCase()}`}
                         onClick={onAdd}
+                        disabled={!hasPermission(addPermission)}
                     />
                     {hasNextPage(page) && (
                         <MyButtonShortAction
@@ -126,8 +132,18 @@ function ExcepcionesSection({
                         <div className="exception-cell">{exception.hora}</div>
                         <div className="exception-cell actions-cell">
                             <div className="exception-actions">
-                                <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => onEdit(exception)} />
-                                <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => onDelete(exception)} />
+                                <MyButtonShortAction 
+                                    type="edit" 
+                                    title="Editar excepción" 
+                                    onClick={() => onEdit(exception)} 
+                                    disabled={!hasPermission(editPermission)}
+                                />
+                                <MyButtonShortAction 
+                                    type="delete" 
+                                    title="Eliminar excepción" 
+                                    onClick={() => onDelete(exception)} 
+                                    disabled={!hasPermission(deletePermission)}
+                                />
                             </div>
                         </div>
                     </div>
@@ -138,6 +154,8 @@ function ExcepcionesSection({
 }
 
 export default function ActosLiturgicosHorarios() {
+      const hasPermission = usePermission();
+      
       React.useEffect(() => {
         document.title = "MLAP | Gestionar Horarios";
         loadCapillas();
@@ -827,6 +845,7 @@ export default function ActosLiturgicosHorarios() {
                                 <MyButtonMediumIcon
                                     icon="MdCreate"
                                     text={isEditing ? "Finalizar edición" : "Editar"}
+                                    disabled={!hasPermission('ACTOS_LITURGICOS_HORA_C') && !hasPermission('ACTOS_LITURGICOS_HORA_U')}
                                     onClick={() => {
                                         if (capillas.length === 0 || !capillas[selectedCapillaIndex]) {
                                             alert('Por favor, selecciona una capilla primero.');
@@ -915,6 +934,10 @@ export default function ActosLiturgicosHorarios() {
                                     onEdit={exception => handleEditException(exception, 'disponibilidad')}
                                     onDelete={exception => handleDeleteException(exception, 'disponibilidad')}
                                     ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                                    hasPermission={hasPermission}
+                                    addPermission="EXCEP_DISP_C"
+                                    editPermission="EXCEP_DISP_U"
+                                    deletePermission="EXCEP_DISP_D"
                                 />
                                 <ExcepcionesSection
                                     title="Excepciones - No disponibilidad"
@@ -923,6 +946,10 @@ export default function ActosLiturgicosHorarios() {
                                     onEdit={exception => handleEditException(exception, 'noDisponibilidad')}
                                     onDelete={exception => handleDeleteException(exception, 'noDisponibilidad')}
                                     ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                                    hasPermission={hasPermission}
+                                    addPermission="EXCEP_NO_DISP_C"
+                                    editPermission="EXCEP_NO_DISP_U"
+                                    deletePermission="EXCEP_NO_DISP_D"
                                 />
                             </div>
 

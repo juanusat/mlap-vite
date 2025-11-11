@@ -10,8 +10,11 @@ import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
 import * as eventVariantService from "../services/eventVariantService";
 import * as chapelEventRequirementService from "../services/chapelEventRequirementService";
+import usePermission from "../hooks/usePermission";
 
 export default function ActosLiturgicosRequisitos() {
+    const hasPermission = usePermission();
+    
     React.useEffect(() => {
     document.title = "MLAP | Gestionar requisitos";
   }, []);
@@ -258,7 +261,7 @@ export default function ActosLiturgicosRequisitos() {
         <ToggleSwitch
           isEnabled={row.active}
           onToggle={() => handleToggle(row.id, row.active)}
-          disabled={!row.is_editable}
+          disabled={!row.is_editable || !hasPermission('ESTADO_REQ_ACTOS_LIT_U')}
         />
       ),
     },
@@ -271,18 +274,19 @@ export default function ActosLiturgicosRequisitos() {
             type="view"
             title="Ver"
             onClick={() => handleViewRequirement(row)}
+            disabled={!hasPermission('ACTOS_LITURGICOS_REQ_R')}
           />
           <MyButtonShortAction
             type="edit"
             title="Editar"
             onClick={() => handleEditRequirement(row)}
-            disabled={!row.is_editable}
+            disabled={!row.is_editable || !hasPermission('ACTOS_LITURGICOS_REQ_U')}
           />
           <MyButtonShortAction
             type="delete"
             title="Eliminar"
             onClick={() => handleDeleteConfirmation(row)}
-            disabled={!row.is_editable}
+            disabled={!row.is_editable || !hasPermission('ACTOS_LITURGICOS_REQ_D')}
           />
         </MyGroupButtonsActions>
       ),
@@ -334,6 +338,7 @@ export default function ActosLiturgicosRequisitos() {
                   type="add"
                   onClick={handleAddRequirement}
                   title="Añadir"
+                  disabled={!hasPermission('ACTOS_LITURGICOS_REQ_C')}
                 />
               </MyGroupButtonsActions>
             </div>
