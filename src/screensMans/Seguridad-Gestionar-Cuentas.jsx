@@ -8,11 +8,14 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import usePermission from '../hooks/usePermission';
 import * as parishWorkerService from '../services/parishWorkerService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Seguridad-Cuentas-Gestionar.css";
 
 export default function CuentasGestionar() {
+  const hasPermission = usePermission();
+
   useEffect(() => {
     document.title = "MLAP | Gestionar cuentas";
   }, []);
@@ -245,6 +248,7 @@ export default function CuentasGestionar() {
         <ToggleSwitch
           isEnabled={w.active}
           onToggle={() => handleToggle(w)}
+          disabled={!hasPermission('ESTADO_SEGURIDAD_ASOC_USER_U')}
         />
       ),
     },
@@ -253,9 +257,24 @@ export default function CuentasGestionar() {
       header: 'Acciones',
       accessor: (w) => (
         <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
-          <MyButtonShortAction type="file" title="Añadir rol" onClick={() => handleOpenModal(w, "addRole")} />
-          <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleOpenModal(w, "delete")} />
+          <MyButtonShortAction 
+            type="view" 
+            title="Ver roles" 
+            onClick={() => handleViewRoles(w)} 
+            disabled={!hasPermission('SEGURIDAD_ASOC_USER_R')}
+          />
+          <MyButtonShortAction 
+            type="file" 
+            title="Añadir rol" 
+            onClick={() => handleOpenModal(w, "addRole")} 
+            disabled={!hasPermission('SEGURIDAD_ASOC_USER_U')}
+          />
+          <MyButtonShortAction 
+            type="delete" 
+            title="Eliminar usuario" 
+            onClick={() => handleOpenModal(w, "delete")} 
+            disabled={!hasPermission('SEGURIDAD_ASOC_USER_D')}
+          />
         </MyGroupButtonsActions>
       ),
     },
@@ -319,7 +338,12 @@ export default function CuentasGestionar() {
             <div className="center-container">
               <SearchBar onSearchChange={setSearchTerm} />
             </div>
-            <MyButtonShortAction type="add" onClick={() => handleOpenModal(null, "invite")} title="Añadir usuario" />
+            <MyButtonShortAction 
+              type="add" 
+              onClick={() => handleOpenModal(null, "invite")} 
+              title="Añadir usuario" 
+              disabled={!hasPermission('SEGURIDAD_ASOC_USER_C')}
+            />
           </div>
           <DynamicTable
             columns={columns}
@@ -349,7 +373,12 @@ export default function CuentasGestionar() {
             {workerRoles.map((role) => (
               <div key={role.user_role_id} className="sidebar-list-item">
                 {role.role_name}
-                <MyButtonShortAction type="delete" title="Eliminar rol" onClick={() => handleDeleteRole(role.user_role_id)} />
+                <MyButtonShortAction 
+                  type="delete" 
+                  title="Eliminar rol" 
+                  onClick={() => handleDeleteRole(role.user_role_id)} 
+                  disabled={!hasPermission('SEGURIDAD_ASOC_USER_D')}
+                />
               </div>
             ))}
           </div>

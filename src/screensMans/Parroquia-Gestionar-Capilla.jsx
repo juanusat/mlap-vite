@@ -10,11 +10,14 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyModalGreatSize from '../components/MyModalGreatSize';
 import MyMapSelector from '../components/MyMapSelector';
+import usePermission from '../hooks/usePermission';
 import * as chapelService from '../services/chapelService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Parroquia-Gestionar-Capilla.css';
 
 export default function GestionCapillas() {
+  const hasPermission = usePermission();
+
   useEffect(() => {
     document.title = "MLAP | Gestionar capillas";
     loadChapels();
@@ -123,15 +126,31 @@ export default function GestionCapillas() {
         <ToggleSwitch
           isEnabled={row.active}
           onToggle={() => handleToggle(row.id, row.active)}
+          disabled={!hasPermission('ESTADO_PARROQUIA_CAPILLA_U')}
         />
       ),
     },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver" onClick={() => openModal('view', row)} />
-          <MyButtonShortAction type="edit" title="Editar" onClick={() => openModal('edit', row)} />
-          <MyButtonShortAction type="delete" title="Eliminar" onClick={() => openModal('delete', row)} />
+          <MyButtonShortAction 
+            type="view" 
+            title="Ver" 
+            onClick={() => openModal('view', row)} 
+            disabled={!hasPermission('PARROQUIA_CAPILLA_R')}
+          />
+          <MyButtonShortAction 
+            type="edit" 
+            title="Editar" 
+            onClick={() => openModal('edit', row)} 
+            disabled={!hasPermission('PARROQUIA_CAPILLA_U')}
+          />
+          <MyButtonShortAction 
+            type="delete" 
+            title="Eliminar" 
+            onClick={() => openModal('delete', row)} 
+            disabled={!hasPermission('PARROQUIA_CAPILLA_D')}
+          />
         </MyGroupButtonsActions>
       )
     },
@@ -188,7 +207,12 @@ export default function GestionCapillas() {
           <div className="center-container">
             <SearchBar onSearchChange={setSearchTerm} />
           </div>
-          <MyButtonShortAction type="add" onClick={() => openModal('add')} title="Añadir" />
+          <MyButtonShortAction 
+            type="add" 
+            onClick={() => openModal('add')} 
+            title="Añadir" 
+            disabled={!hasPermission('PARROQUIA_CAPILLA_C')}
+          />
         </div>
         <DynamicTable
           columns={chapelColumns}

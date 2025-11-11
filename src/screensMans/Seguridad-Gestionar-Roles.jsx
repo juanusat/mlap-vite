@@ -7,6 +7,7 @@ import ToggleSwitch from '../components/Toggle';
 import Modal from '../components/Modal';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import usePermission from '../hooks/usePermission';
 import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css'; 
@@ -154,6 +155,7 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 
 // --------------------- PRINCIPAL ---------------------
 export default function RolesGestionar() {
+    const hasPermission = usePermission();
     const logout = useLogout();
     const { sessionData } = useSession(logout);
     
@@ -542,6 +544,7 @@ export default function RolesGestionar() {
                 <ToggleSwitch
                     isEnabled={row.Estado}
                     onToggle={() => handleToggle(row.ID, row.Estado)}
+                    disabled={!hasPermission('ESTADO_SEGURIDAD_ROL_U')}
                 />
             )
         },
@@ -550,10 +553,26 @@ export default function RolesGestionar() {
             header: 'Acciones',
             accessor: rol => (
                 <MyGroupButtonsActions>
-                    <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
-                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
-                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
-                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
+                    <MyButtonShortAction 
+                        type="view" 
+                        onClick={() => handleOpenModal(rol, 'view')} 
+                        disabled={!hasPermission('SEGURIDAD_ROL_R')}
+                    />
+                    <MyButtonShortAction 
+                        type="key" 
+                        onClick={() => handleOpenModal(rol, 'permissions')} 
+                        disabled={!hasPermission('SEGURIDAD_ROL_PERMISOS_U')}
+                    />
+                    <MyButtonShortAction 
+                        type="edit" 
+                        onClick={() => handleOpenModal(rol, 'edit')} 
+                        disabled={!hasPermission('SEGURIDAD_ROL_U')}
+                    />
+                    <MyButtonShortAction 
+                        type="delete" 
+                        onClick={() => handleOpenModal(rol, 'delete')} 
+                        disabled={!hasPermission('SEGURIDAD_ROL_D')}
+                    />
                 </MyGroupButtonsActions>
             )
         }
@@ -568,7 +587,12 @@ export default function RolesGestionar() {
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
                     <MyGroupButtonsActions>
-                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal(null, 'add')} />
+                        <MyButtonShortAction 
+                            type="add" 
+                            title="Añadir" 
+                            onClick={() => handleOpenModal(null, 'add')} 
+                            disabled={!hasPermission('SEGURIDAD_ROL_C')}
+                        />
                     </MyGroupButtonsActions>
                 </div>
 

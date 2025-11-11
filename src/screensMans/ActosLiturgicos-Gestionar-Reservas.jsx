@@ -6,6 +6,7 @@ import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import * as reservationService from '../services/reservationService';
+import usePermission from '../hooks/usePermission';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
 
@@ -19,6 +20,8 @@ const STATUS_MAP = {
 };
 
 export default function Reservas() {
+  const hasPermission = usePermission();
+
   React.useEffect(() => {
     document.title = "MLAP | Gestionar reservas";
     loadReservations();
@@ -233,15 +236,35 @@ export default function Reservas() {
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
+          <MyButtonShortAction 
+            type="view" 
+            title="Ver" 
+            onClick={() => handleView(row)} 
+            disabled={!hasPermission('ACTOS_LITURGICOS_RESER_R')}
+          />
           {row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
-            <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
+            <MyButtonShortAction 
+              type="edit" 
+              title="Editar" 
+              onClick={() => handleEdit(row)} 
+              disabled={!hasPermission('ACTOS_LITURGICOS_RESER_U')}
+            />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && (
-            <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
+            <MyButtonShortAction 
+              type="pay" 
+              title="Pagar" 
+              onClick={() => handlePay(row)} 
+              disabled={!hasPermission('ACTOS_LITURGICOS_RESER_U')}
+            />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
-            <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
+            <MyButtonShortAction 
+              type="block" 
+              title="Bloquear" 
+              onClick={() => handleBlock(row)} 
+              disabled={!hasPermission('ACTOS_LITURGICOS_RESER_U')}
+            />
           )}
         </MyGroupButtonsActions>
       )

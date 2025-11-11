@@ -9,10 +9,13 @@ import InputFotoPerfil from '../components/inputFotoPerfil';
 import InputColorPicker from '../components/inputColorPicker';
 import MyModalGreatSize from '../components/MyModalGreatSize';
 import MyMapSelector from '../components/MyMapSelector';
+import usePermission from '../hooks/usePermission';
 import * as parishService from '../services/parishService';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
 
 const GestionCuenta = () => {
+    const hasPermission = usePermission();
+
     useEffect(() => {
         document.title = "MLAP | Gestionar cuenta parroquia";
         loadAccountData();
@@ -304,6 +307,7 @@ const GestionCuenta = () => {
                 onEdit={handleEditPersonal}
                 onSave={handleSavePersonal}
                 onCancel={handleCancelPersonal}
+                disabledEdit={!hasPermission('PARROQUIA_INFO_U')}
             >
                 {isEditingPersonal ? (
                     <>
@@ -443,6 +447,7 @@ const GestionCuenta = () => {
                 onEdit={handleEditAccount}
                 onSave={handleSaveAccount}
                 onCancel={handleCancelAccount}
+                disabledEdit={!hasPermission('PARROQUIA_DATOS_CUENTA_U')}
             >
                 {isEditingAccount ? (
                     <>
