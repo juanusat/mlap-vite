@@ -4,7 +4,6 @@ import SearchBar from "../components/SearchBar";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
-import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
