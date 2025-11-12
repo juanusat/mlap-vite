@@ -97,6 +97,12 @@ export default function Reservas() {
     setShowModal(true);
   };
 
+  const handlePay = (reservation) => {
+    setCurrentReservation(reservation);
+    setModalType('pay');
+    setShowModal(true);
+  };
+
   const handleTime = (reservation) => {
     setCurrentReservation(reservation);
     setModalType('time');
@@ -177,6 +183,24 @@ export default function Reservas() {
     }
   };
 
+  const handlePaymentSubmit = async (paymentData) => {
+    if (!currentReservation) return;
+    
+    try {
+      setLoading(true);
+      await reservationService.updateReservation(currentReservation.id, {
+        paid_amount: parseFloat(paymentData.paid_amount)
+      });
+      await loadReservations();
+      handleCloseModal();
+    } catch (err) {
+      setError(err.message || 'Error al registrar el pago');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentReservation(null);
@@ -209,6 +233,9 @@ export default function Reservas() {
           <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
           {row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
+          )}
+          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && (
+            <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
@@ -371,6 +398,18 @@ export default function Reservas() {
           onAccept: handleReject,
           onCancel: handleCloseModal
         };
+      case 'pay':
+        return {
+          title: 'Registrar Pago',
+          content: (
+            <PaymentForm 
+              reservation={currentReservation} 
+              onSubmit={handlePaymentSubmit}
+            />
+          ),
+          onAccept: () => document.getElementById('payment-form')?.requestSubmit(),
+          onCancel: handleCloseModal
+        };
       default:
         return {
           title: '',
@@ -382,6 +421,52 @@ export default function Reservas() {
   };
 
   const modalProps = getModalContentAndActions();
+
+  function PaymentForm({ reservation, onSubmit }) {
+    const [paidAmount, setPaidAmount] = useState(reservation?.paid_amount || 0);
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      onSubmit({ paid_amount: paidAmount });
+    };
+
+    return (
+      <form id="payment-form" onSubmit={handleSubmit}>
+        <div className="Inputs-add">
+          <label>Precio del Evento</label>
+          <input
+            type="text"
+            className="inputModal"
+            value={`$ ${parseFloat(reservation?.current_price || 0).toFixed(2)}`}
+            disabled
+          />
+          
+          <label>Monto Actual Pagado</label>
+          <input
+            type="text"
+            className="inputModal"
+            value={`$ ${parseFloat(reservation?.paid_amount || 0).toFixed(2)}`}
+            disabled
+          />
+          
+          <label>Nuevo Monto Pagado</label>
+          <input
+            type="number"
+            className="inputModal"
+            value={paidAmount}
+            onChange={(e) => setPaidAmount(e.target.value)}
+            min="0"
+            step="0.01"
+            required
+          />
+          
+          <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+            Ingrese el monto total acumulado que ha pagado el cliente
+          </small>
+        </div>
+      </form>
+    );
+  }
 
   return (
     <>
@@ -399,8 +484,8 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="70px 200px 200px 1fr 110px 100px 100px 120px 240px"
-            columnLeftAlignIndex={[1, 2, 3, 4]}
+            gridColumnsLayout="70px 200px 1fr 160px 110px 100px 100px 120px 260px"
+            columnLeftAlignIndex={[1, 2, 3]}
           />
         </div>
         <Modal
