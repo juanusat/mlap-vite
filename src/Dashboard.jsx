@@ -8,9 +8,9 @@ export default function Dashboard() {
     document.title = "MLAP | Bienvenida";
   }, []);
   const navigate = useNavigate();
-  const { sessionData, loading } = useSession(() => navigate('/acceso'));
+  const { sessionData, loading, error } = useSession(() => navigate('/acceso'));
 
-  if (loading || !sessionData) {
+  if (loading) {
     return (
       <div className="mlap-login-container">
         <div className="loading-message">Cargando...</div>
@@ -18,17 +18,31 @@ export default function Dashboard() {
     );
   }
 
-  const { mode, parish, roles, userFullName } = sessionData;
+  if (!sessionData || !sessionData.context_type) {
+    navigate('/comenzar');
+    return null;
+  }
+
+  if (error === 'FORBIDDEN_CONTEXT_NOT_SET') {
+    navigate('/comenzar');
+    return null;
+  }
+
+  const mode = sessionData.context_type;
+  const parish = sessionData.parish;
+  const roles = sessionData.available_roles || [];
+  const userFullName = sessionData.person?.full_name;
 
   switch (mode) {
-    case 'worker':
+    case 'PARISH':
       return <WorkerDashboard parish={parish} roles={roles} userFullName={userFullName} />;
-    case 'parishioner':
+    case 'PARISHIONER':
       return <ParishionerDashboard userFullName={userFullName} />;
-    case 'diocese':
+    case 'DIOCESE':
       return <DioceseDashboard userFullName={userFullName} />;
     default:
-      return <Home />;
+      navigate('/comenzar');
+      return null;
   }
 }
 

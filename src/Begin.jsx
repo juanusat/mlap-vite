@@ -57,7 +57,7 @@ export default function Begin() {
 
       const roles = rolesData?.data || [];
       
-      navigate('/inicio', { state: { parish, roles, userFullName, mode: 'worker' } });
+      navigate('/inicio', { state: { parish, roles, userFullName, mode: 'PARISH' } });
       
     } catch (err) {
       setError('No se pudo conectar con el servidor');
@@ -87,7 +87,7 @@ export default function Begin() {
         return;
       }
       
-      navigate('/inicio', { state: { userFullName, mode: 'parishioner' } });
+      navigate('/inicio', { state: { userFullName, mode: 'PARISHIONER' } });
       
     } catch (err) {
       setError('No se pudo conectar con el servidor');
@@ -116,7 +116,7 @@ export default function Begin() {
         return;
       }
       
-      navigate('/inicio', { state: { userFullName, mode: 'diocese' } });
+      navigate('/inicio', { state: { userFullName, mode: 'DIOCESE' } });
       
     } catch (err) {
       setError('No se pudo conectar con el servidor');
