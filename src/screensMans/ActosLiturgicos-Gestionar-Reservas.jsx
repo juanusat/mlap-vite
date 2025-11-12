@@ -484,7 +484,7 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="70px 200px 1fr 160px 110px 100px 100px 120px 260px"
+            gridColumnsLayout="70px 180px 1fr 160px 110px 100px 100px 120px 220px"
             columnLeftAlignIndex={[1, 2, 3]}
           />
         </div>
