@@ -201,7 +201,8 @@ export default function Reservas() {
     { key: 'event_variant_name', header: 'Evento', accessor: (row) => row.event_variant_name },
     { key: 'chapel_name', header: 'Capilla', accessor: (row) => row.chapel_name },
     { key: 'event_date', header: 'Fecha', accessor: (row) => formatDate(row.event_date) },
-    { key: 'paid_amount', header: 'Monto', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
+    { key: 'current_price', header: 'Precio', accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` },
+    { key: 'paid_amount', header: 'Pagado', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
     { key: 'status', header: 'Estado', accessor: (row) => STATUS_MAP[row.status] || row.status },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
@@ -290,6 +291,13 @@ export default function Reservas() {
                     ))}
                   </>
                 )}
+                <label>Precio del Evento</label>
+                <input
+                  type="text"
+                  className="inputModal"
+                  value={`$ ${parseFloat(currentReservation.current_price || 0).toFixed(2)}`}
+                  disabled
+                />
                 <label>Monto Pagado</label>
                 <input
                   type="text"
@@ -392,8 +400,8 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="90px 230px 230px auto 120px 100px 130px 240px"
-            columnLeftAlignIndex={[1, 2, 3]}
+            gridColumnsLayout="70px 200px 200px 1fr 110px 100px 100px 120px 240px"
+            columnLeftAlignIndex={[1, 2, 3, 4]}
           />
         </div>
         <Modal
