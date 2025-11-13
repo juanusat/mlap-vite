@@ -23,9 +23,24 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
     try {
       console.log(`Cambiando rol a: ${rol.name} en parroquia: ${sessionData?.parish?.name}`);
       await changeRole(rol.id);
+      
+      await refetch();
+      
+      const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
+      const sessionResp = await fetch(`${API_BASE}/api/auth/session`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (sessionResp.ok) {
+        const sessionResult = await sessionResp.json();
+        if (sessionResult.data?.permissions) {
+          console.log('Permisos del rol activo:', sessionResult.data.permissions);
+        }
+      }
+      
       setPerfilModalOpen(false);
     } catch (error) {
-      // El error ya se maneja en el hook useSession
       console.error('Error al cambiar rol:', error);
     }
   };

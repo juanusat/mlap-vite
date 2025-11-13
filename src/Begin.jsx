@@ -57,7 +57,29 @@ export default function Begin() {
 
       const roles = rolesData?.data || [];
       
-      navigate('/inicio', { state: { parish, roles, userFullName, mode: 'PARISH' } });
+      if (roles.length > 0) {
+        const firstRoleId = roles[0].id;
+        const selectRoleResp = await apiFetch('/api/auth/select-role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roleId: firstRoleId }),
+        });
+        
+        if (!selectRoleResp.ok) {
+          const selectRoleData = await selectRoleResp.json();
+          setError(selectRoleData?.message || selectRoleData?.error || 'Error al seleccionar el rol');
+          return;
+        }
+
+        const sessionResp = await apiFetch('/api/auth/session');
+        const sessionData = await sessionResp.json();
+        
+        if (sessionResp.ok && sessionData.data?.permissions) {
+          console.log('Permisos del rol activo:', sessionData.data.permissions);
+        }
+      }
+      
+      navigate('/inicio');
       
     } catch (err) {
       setError('No se pudo conectar con el servidor');

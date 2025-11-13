@@ -9,12 +9,16 @@ import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Gestionar.css";
 import * as eventVariantService from "../services/eventVariantService";
 import * as chapelService from "../services/chapelService";
+import usePermissions from "../hooks/usePermissions";
+import { PERMISSIONS } from "../utils/permissions";
+import PermissionGuard from "../components/PermissionGuard";
 
 export default function EventosLiturgicos() {
   useEffect(() => {
     document.title = "MLAP | Gestionar actos litúrgicos";
   }, []);
   
+  const { hasPermission } = usePermissions();
   const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -307,10 +311,14 @@ export default function EventosLiturgicos() {
       key: "estado",
       header: "Estado",
       accessor: (row) => (
-        <ToggleSwitch
-          isEnabled={row.estado === "Activo"}
-          onToggle={() => handleToggle(row.id)}
-        />
+        hasPermission(PERMISSIONS.ESTADO_ACTOS_LITURGICOS_U) ? (
+          <ToggleSwitch
+            isEnabled={row.estado === "Activo"}
+            onToggle={() => handleToggle(row.id)}
+          />
+        ) : (
+          <span>{row.estado}</span>
+        )
       ),
     },
     {
@@ -319,8 +327,12 @@ export default function EventosLiturgicos() {
       accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver" onClick={() => openModal("view", row)} />
-          <MyButtonShortAction type="edit" title="Editar" onClick={() => openModal("edit", row)} />
-          <MyButtonShortAction type="delete" title="Eliminar" onClick={() => openModal("delete", row)} />
+          <PermissionGuard permission={PERMISSIONS.ACTOS_LITURGICOS_ACTOS_U}>
+            <MyButtonShortAction type="edit" title="Editar" onClick={() => openModal("edit", row)} />
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.ACTOS_LITURGICOS_ACTOS_D}>
+            <MyButtonShortAction type="delete" title="Eliminar" onClick={() => openModal("delete", row)} />
+          </PermissionGuard>
         </MyGroupButtonsActions>
       ),
     },
@@ -335,7 +347,9 @@ export default function EventosLiturgicos() {
             <SearchBar onSearchChange={setSearchTerm} />
           </div>
           <MyGroupButtonsActions>
-            <MyButtonShortAction type="add" onClick={() => openModal("add")} title="Añadir" />
+            <PermissionGuard permission={PERMISSIONS.ACTOS_LITURGICOS_ACTOS_C}>
+              <MyButtonShortAction type="add" onClick={() => openModal("add")} title="Añadir" />
+            </PermissionGuard>
           </MyGroupButtonsActions>
         </div>
         
