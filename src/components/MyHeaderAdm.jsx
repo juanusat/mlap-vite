@@ -15,7 +15,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
-  
+
   // Usar el hook personalizado para manejar la sesión
   const { sessionData, loading, error, refetch, changeRole, clearError } = useSession(logout);
 
@@ -42,6 +42,34 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
       setPerfilModalOpen(false);
     } catch (error) {
       console.error('Error al cambiar rol:', error);
+    }
+  };
+
+  const handleOpenPerfilModal = async () => {
+    setPerfilModalOpen(true);
+    
+    // Recargar permisos del rol actual
+    try {
+      const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
+      const sessionResp = await fetch(`${API_BASE}/api/auth/session`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (sessionResp.ok) {
+        const sessionResult = await sessionResp.json();
+        if (sessionResult.data?.permissions) {
+          const permisos = (sessionResult.data.is_diocese_user || sessionResult.data.is_parish_admin)
+            ? ['ALL']
+            : Array.isArray(sessionResult.data.permissions)
+              ? sessionResult.data.permissions
+              : [sessionResult.data.permissions];
+
+          console.log('Permisos activos:', permisos);
+        }
+      }
+    } catch (error) {
+      console.error('Error al recargar permisos:', error);
     }
   };
 
@@ -145,7 +173,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               role="button"
               className='btn-nb perfil-btn'
               aria-label="usuario"
-              onClick={() => setPerfilModalOpen(true)}
+              onClick={handleOpenPerfilModal}
             >
               <img 
                 src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)} 
