@@ -5,8 +5,11 @@ import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import ToggleSwitch from '../components/Toggle';
 import Modal from '../components/Modal';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css'; 
@@ -156,11 +159,8 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 export default function RolesGestionar() {
     const logout = useLogout();
     const { sessionData } = useSession(logout);
+    const { hasPermission, isParishAdmin } = usePermissions();
     
-    useEffect(() => {
-        document.title = "MLAP | Gestionar roles";
-    }, []);
-
     const [searchTerm, setSearchTerm] = useState('');
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -180,14 +180,44 @@ export default function RolesGestionar() {
     const [availablePermissions, setAvailablePermissions] = useState([]);
     const [collapsedModules, setCollapsedModules] = useState({});
 
+    // Verificar permiso de lectura de roles
+    const canReadRoles = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_R);
+
     useEffect(() => {
-        if (sessionData?.parish?.id) {
+        document.title = "MLAP | Gestionar roles";
+    }, []);
+
+    useEffect(() => {
+        if (sessionData?.parish?.id && canReadRoles) {
             loadRoles();
         }
-    }, [sessionData, currentPage]);
+    }, [sessionData, currentPage, canReadRoles]);
+
+    useEffect(() => {
+        if (!sessionData?.parish?.id || !canReadRoles) return;
+        
+        const timeoutId = setTimeout(() => {
+            if (searchTerm !== '') {
+                setCurrentPage(1);
+            }
+            loadRoles();
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm, canReadRoles]);
+
+    // Si no tiene permiso, mostrar mensaje
+    if (!canReadRoles) {
+        return (
+            <div className="content-module only-this">
+                <h2 className='title-screen'>Gestión de roles</h2>
+                <NoPermissionMessage message="No tienes permisos para listar roles. Contacta con el administrador de tu parroquia para obtener acceso." />
+            </div>
+        );
+    }
 
     const loadRoles = async () => {
-        if (!sessionData?.parish?.id) return;
+        if (!sessionData?.parish?.id || !canReadRoles) return;
         
         try {
             setLoading(true);
@@ -212,19 +242,6 @@ export default function RolesGestionar() {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (!sessionData?.parish?.id) return;
-        
-        const timeoutId = setTimeout(() => {
-            if (searchTerm !== '') {
-                setCurrentPage(1);
-            }
-            loadRoles();
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm]);
 
     const toggleModule = (moduleId) => {
         setCollapsedModules(prev => ({

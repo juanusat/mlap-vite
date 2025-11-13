@@ -6,19 +6,19 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import * as parishWorkerService from '../services/parishWorkerService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Seguridad-Cuentas-Gestionar.css";
 
 export default function CuentasGestionar() {
-  useEffect(() => {
-    document.title = "MLAP | Gestionar cuentas";
-  }, []);
-
   const logout = useLogout();
   const { sessionData, loading: sessionLoading } = useSession(logout);
+  const { hasPermission, isParishAdmin } = usePermissions();
   
   const [workers, setWorkers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -41,16 +41,37 @@ export default function CuentasGestionar() {
   });
 
   const parishId = sessionData?.parish?.id;
+  
+  // Verificar permiso de lectura de asociaciones de usuarios
+  const canReadWorkers = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_R);
 
   useEffect(() => {
-    if (parishId) {
+    document.title = "MLAP | Gestionar cuentas";
+  }, []);
+
+  useEffect(() => {
+    if (parishId && canReadWorkers) {
       loadWorkers();
       loadAvailableRoles();
     }
-  }, [parishId, currentPage]);
+  }, [parishId, currentPage, canReadWorkers]);
+
+  useEffect(() => {
+    if (!canReadWorkers) return;
+    
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        setCurrentPage(1);
+        loadWorkers();
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      loadWorkers();
+    }
+  }, [searchTerm, canReadWorkers]);
 
   const loadWorkers = async () => {
-    if (!parishId) return;
+    if (!parishId || !canReadWorkers) return;
     
     try {
       setLoading(true);
@@ -74,7 +95,7 @@ export default function CuentasGestionar() {
   };
 
   const loadAvailableRoles = async () => {
-    if (!parishId) return;
+    if (!parishId || !canReadWorkers) return;
     
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_BACKEND_URL}/api/parish/${parishId}/roles`, {
@@ -90,17 +111,15 @@ export default function CuentasGestionar() {
     }
   };
 
-  useEffect(() => {
-    if (searchTerm) {
-      const timer = setTimeout(() => {
-        setCurrentPage(1);
-        loadWorkers();
-      }, 500);
-      return () => clearTimeout(timer);
-    } else {
-      loadWorkers();
-    }
-  }, [searchTerm]);
+  // Si no tiene permiso, mostrar mensaje
+  if (!canReadWorkers) {
+    return (
+      <div className="content-module only-this">
+        <h2 className='title-screen'>Gestión de cuentas</h2>
+        <NoPermissionMessage message="No tienes permisos para listar cuentas de usuarios. Contacta con el administrador de tu parroquia para obtener acceso." />
+      </div>
+    );
+  }
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;

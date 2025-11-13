@@ -1,0 +1,32 @@
+.no-permission-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-n-600);
+}
+
+.no-permission-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: var(--color-n-400);
+}
+
+.no-permission-title {
+  margin-bottom: 10px;
+  color: var(--color-n-700);
+}
+
+.no-permission-message {
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.no-permission-help {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: var(--color-n-500);
+}

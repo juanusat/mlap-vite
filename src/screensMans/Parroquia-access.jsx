@@ -1,10 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdAccountBalance, MdHomeFilled } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Parroquia.css';
-import usePermissions from '../hooks/usePermissions';
-import { PERMISSION_GROUPS } from '../utils/permissions';
 
 export default function Parroquia() {
     React.useEffect(() => {
@@ -12,35 +10,24 @@ export default function Parroquia() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-parroquia';
-  const { hasAnyPermission, isParishAdmin } = usePermissions();
 
-  const allOptions = [
+  const options = [
     { 
       href: 'gestionar-cuenta', 
       icon: <MdAccountBalance />, 
-      label: 'Gestionar cuenta',
-      permissions: PERMISSION_GROUPS.PARROQUIA_INFO
+      label: 'Gestionar cuenta'
     },
     { 
       href: 'gestionar-capilla', 
       icon: <MdHomeFilled />, 
-      label: 'Gestionar capilla',
-      permissions: PERMISSION_GROUPS.PARROQUIA_CAPILLA
+      label: 'Gestionar capilla'
     },
     { 
       href: 'reporte01-p', 
       icon: <MdAccountBalance />, 
-      label: 'Reporte 01',
-      permissions: PERMISSION_GROUPS.PARROQUIA_INFO
+      label: 'Reporte 01'
     },
   ];
-
-  const options = useMemo(() => {
-    if (isParishAdmin) return allOptions;
-    return allOptions.filter(option => 
-      !option.permissions || hasAnyPermission(option.permissions)
-    );
-  }, [isParishAdmin, hasAnyPermission]);
 
   return (
     <ScreenMan title="Módulo Parroquia" options={options}>

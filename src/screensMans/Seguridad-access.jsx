@@ -1,10 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdAccountBox, MdRecentActors } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Seguridad.css';
-import usePermissions from '../hooks/usePermissions';
-import { PERMISSION_GROUPS } from '../utils/permissions';
 
 export default function Seguridad() {
     React.useEffect(() => {
@@ -12,35 +10,24 @@ export default function Seguridad() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-seguridad';
-  const { hasAnyPermission, isParishAdmin } = usePermissions();
 
-  const allOptions = [
+  const options = [
     { 
       href: 'cuentas-gestionar', 
       icon: <MdAccountBox />, 
-      label: 'Gestionar cuentas',
-      permissions: PERMISSION_GROUPS.SEGURIDAD_CUENTAS
+      label: 'Gestionar cuentas'
     },
     { 
       href: 'roles-gestionar', 
       icon: <MdRecentActors />, 
-      label: 'Gestionar roles',
-      permissions: PERMISSION_GROUPS.SEGURIDAD_ROLES
+      label: 'Gestionar roles'
     },
     { 
       href: 'reporte01-s', 
       icon: <MdRecentActors />, 
-      label: 'Reporte 01',
-      permissions: PERMISSION_GROUPS.SEGURIDAD_CUENTAS
+      label: 'Reporte 01'
     },
   ];
-
-  const options = useMemo(() => {
-    if (isParishAdmin) return allOptions;
-    return allOptions.filter(option => 
-      !option.permissions || hasAnyPermission(option.permissions)
-    );
-  }, [isParishAdmin, hasAnyPermission]);
 
   return (
     <ScreenMan title="Módulo de seguridad" options={options}>
