@@ -9,14 +9,15 @@ import InputFotoPerfil from '../components/inputFotoPerfil';
 import InputColorPicker from '../components/inputColorPicker';
 import MyModalGreatSize from '../components/MyModalGreatSize';
 import MyMapSelector from '../components/MyMapSelector';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import * as parishService from '../services/parishService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import '../utils/Parroquia-Cuenta-Gestionar.css';
+import '../utils/permissions.css';
 
 const GestionCuenta = () => {
-    useEffect(() => {
-        document.title = "MLAP | Gestionar cuenta parroquia";
-        loadAccountData();
-    }, []);
+    const { hasPermission, isParishAdmin } = usePermissions();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -50,9 +51,13 @@ const GestionCuenta = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    // Estados para el modal del mapa
     const [showMapModal, setShowMapModal] = useState(false);
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+
+    const canReadInfo = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_INFO_R);
+    const canUpdateInfo = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_INFO_U);
+    const canReadCredentials = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_DATOS_CUENTA_R);
+    const canUpdateCredentials = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_DATOS_CUENTA_U);
 
     const parseCoordinates = (coordString) => {
         if (!coordString) return [0, 0];
@@ -90,7 +95,19 @@ const GestionCuenta = () => {
         }
     };
 
+    useEffect(() => {
+        document.title = "MLAP | Gestionar cuenta parroquia";
+        if (canReadInfo || canReadCredentials) {
+            loadAccountData();
+        }
+    }, [canReadInfo, canReadCredentials]);
+
+    if (!canReadInfo && !canReadCredentials) {
+        return <NoPermissionMessage message="No tienes permisos para acceder a la gestión de cuenta de la parroquia" />;
+    }
+
     const handleEditPersonal = () => {
+        if (!canUpdateInfo) return;
         setIsEditingPersonal(true);
         setTempUserInfo(userInfo);
         setFotoPerfilData(null);
@@ -142,6 +159,7 @@ const GestionCuenta = () => {
     };
 
     const handleEditAccount = () => {
+        if (!canUpdateCredentials) return;
         setIsEditingAccount(true);
         setTempUserInfo(userInfo);
         setConfirmPassword("");
@@ -296,6 +314,7 @@ const GestionCuenta = () => {
         <div className="content-module only-this">
             <h2 className='title-screen'>Gestión de cuenta de parroquia</h2>
 
+            {canReadInfo && (
             <ExpandableContainer
                 title='Información de la parroquia'
                 type='edit'
@@ -304,6 +323,7 @@ const GestionCuenta = () => {
                 onEdit={handleEditPersonal}
                 onSave={handleSavePersonal}
                 onCancel={handleCancelPersonal}
+                editButtonClassName={!canUpdateInfo ? 'action-denied' : ''}
             >
                 {isEditingPersonal ? (
                     <>
@@ -434,7 +454,9 @@ const GestionCuenta = () => {
                     </>
                 )}
             </ExpandableContainer>
+            )}
 
+            {canReadCredentials && (
             <ExpandableContainer
                 title='Datos de la cuenta'
                 type='edit'
@@ -443,6 +465,7 @@ const GestionCuenta = () => {
                 onEdit={handleEditAccount}
                 onSave={handleSaveAccount}
                 onCancel={handleCancelAccount}
+                editButtonClassName={!canUpdateCredentials ? 'action-denied' : ''}
             >
                 {isEditingAccount ? (
                     <>
@@ -504,6 +527,7 @@ const GestionCuenta = () => {
                     </>
                 )}
             </ExpandableContainer>
+            )}
 
             {loading && <div className="loading-message">Cargando...</div>}
             {error && <div className="error-message">{error}</div>}

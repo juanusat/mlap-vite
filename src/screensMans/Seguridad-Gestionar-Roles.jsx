@@ -5,11 +5,15 @@ import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import ToggleSwitch from '../components/Toggle';
 import Modal from '../components/Modal';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
-import '../utils/Seguridad-Roles-Gestionar.css'; 
+import '../utils/Seguridad-Roles-Gestionar.css';
+import '../utils/permissions.css'; 
 
 const PERMISSIONS_STRUCTURE = {
     'ACTOS_LITURGICOS': { 
@@ -38,11 +42,14 @@ const PERMISSIONS_STRUCTURE = {
             'HORARIOS': {
                 name: 'Gestionar horarios',
                 permissions: [
+                    { id: 'ACTOS_LITURGICOS_HORA_R', name: 'Leer horarios' },
                     { id: 'ACTOS_LITURGICOS_HORA_C', name: 'Crear horario' },
                     { id: 'ACTOS_LITURGICOS_HORA_U', name: 'Actualizar horario' },
+                    { id: 'EXCEP_DISP_R', name: 'Leer excepciones - Disponibilidad' },
                     { id: 'EXCEP_DISP_C', name: 'Crear Excepción - Disponibilidad' },
                     { id: 'EXCEP_DISP_U', name: 'Actualizar Excepción - Disponibilidad' },
                     { id: 'EXCEP_DISP_D', name: 'Eliminar Excepción - Disponibilidad' },
+                    { id: 'EXCEP_NO_DISP_R', name: 'Leer excepciones - NO Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_C', name: 'Crear Excepción NO - Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_U', name: 'Actualizar Excepción NO - Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_D', name: 'Eliminar Excepción NO - Disponibilidad' },
@@ -156,11 +163,8 @@ const RoleForm = ({ formData, handleFormChange, isViewMode }) => {
 export default function RolesGestionar() {
     const logout = useLogout();
     const { sessionData } = useSession(logout);
+    const { hasPermission, isParishAdmin } = usePermissions();
     
-    useEffect(() => {
-        document.title = "MLAP | Gestionar roles";
-    }, []);
-
     const [searchTerm, setSearchTerm] = useState('');
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -180,14 +184,48 @@ export default function RolesGestionar() {
     const [availablePermissions, setAvailablePermissions] = useState([]);
     const [collapsedModules, setCollapsedModules] = useState({});
 
+    const canReadRoles = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_R);
+    const canCreateRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_C);
+    const canUpdateRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_DATA_U);
+    const canUpdateStatus = isParishAdmin || hasPermission(PERMISSIONS.ESTADO_ROL_U);
+    const canUpdatePermissions = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_PERMS_U);
+    const canDeleteRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_D);
+
     useEffect(() => {
-        if (sessionData?.parish?.id) {
+        document.title = "MLAP | Gestionar roles";
+    }, []);
+
+    useEffect(() => {
+        if (sessionData?.parish?.id && canReadRoles) {
             loadRoles();
         }
-    }, [sessionData, currentPage]);
+    }, [sessionData, currentPage, canReadRoles]);
+
+    useEffect(() => {
+        if (!sessionData?.parish?.id || !canReadRoles) return;
+        
+        const timeoutId = setTimeout(() => {
+            if (searchTerm !== '') {
+                setCurrentPage(1);
+            }
+            loadRoles();
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm, canReadRoles]);
+
+    // Si no tiene permiso, mostrar mensaje
+    if (!canReadRoles) {
+        return (
+            <div className="content-module only-this">
+                <h2 className='title-screen'>Gestión de roles</h2>
+                <NoPermissionMessage message="No tienes permisos para listar roles. Contacta con el administrador de tu parroquia para obtener acceso." />
+            </div>
+        );
+    }
 
     const loadRoles = async () => {
-        if (!sessionData?.parish?.id) return;
+        if (!sessionData?.parish?.id || !canReadRoles) return;
         
         try {
             setLoading(true);
@@ -212,19 +250,6 @@ export default function RolesGestionar() {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (!sessionData?.parish?.id) return;
-        
-        const timeoutId = setTimeout(() => {
-            if (searchTerm !== '') {
-                setCurrentPage(1);
-            }
-            loadRoles();
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm]);
 
     const toggleModule = (moduleId) => {
         setCollapsedModules(prev => ({
@@ -335,6 +360,11 @@ export default function RolesGestionar() {
     };
 
     const handleOpenModal = (rol, action) => {
+        if (action === 'add' && !canCreateRole) return;
+        if (action === 'edit' && !canUpdateRole) return;
+        if (action === 'delete' && !canDeleteRole) return;
+        if (action === 'permissions' && !canUpdatePermissions) return;
+        
         setCurrentRol(rol);
         setModalType(action);
 
@@ -403,7 +433,7 @@ export default function RolesGestionar() {
     };
 
     const handleToggle = async (rolId, currentStatus) => {
-        if (!sessionData?.parish?.id) return;
+        if (!sessionData?.parish?.id || !canUpdateStatus) return;
 
         try {
             setLoading(true);
@@ -542,6 +572,7 @@ export default function RolesGestionar() {
                 <ToggleSwitch
                     isEnabled={row.Estado}
                     onToggle={() => handleToggle(row.ID, row.Estado)}
+                    disabled={!canUpdateStatus}
                 />
             )
         },
@@ -551,9 +582,21 @@ export default function RolesGestionar() {
             accessor: rol => (
                 <MyGroupButtonsActions>
                     <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
-                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
-                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
-                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
+                    <MyButtonShortAction 
+                        type="key" 
+                        onClick={() => handleOpenModal(rol, 'permissions')} 
+                        classNameCustom={!canUpdatePermissions ? 'action-denied' : ''}
+                    />
+                    <MyButtonShortAction 
+                        type="edit" 
+                        onClick={() => handleOpenModal(rol, 'edit')} 
+                        classNameCustom={!canUpdateRole ? 'action-denied' : ''}
+                    />
+                    <MyButtonShortAction 
+                        type="delete" 
+                        onClick={() => handleOpenModal(rol, 'delete')} 
+                        classNameCustom={!canDeleteRole ? 'action-denied' : ''}
+                    />
                 </MyGroupButtonsActions>
             )
         }
@@ -568,7 +611,12 @@ export default function RolesGestionar() {
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
                     <MyGroupButtonsActions>
-                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal(null, 'add')} />
+                        <MyButtonShortAction 
+                            type="add" 
+                            title="Añadir" 
+                            onClick={() => handleOpenModal(null, 'add')} 
+                            classNameCustom={!canCreateRole ? 'action-denied' : ''}
+                        />
                     </MyGroupButtonsActions>
                 </div>
 

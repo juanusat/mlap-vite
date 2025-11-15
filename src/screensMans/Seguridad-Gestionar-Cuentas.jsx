@@ -6,19 +6,20 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import useSession from '../hooks/useSession';
 import useLogout from '../hooks/useLogout';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import * as parishWorkerService from '../services/parishWorkerService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Seguridad-Cuentas-Gestionar.css";
+import '../utils/permissions.css';
 
 export default function CuentasGestionar() {
-  useEffect(() => {
-    document.title = "MLAP | Gestionar cuentas";
-  }, []);
-
   const logout = useLogout();
   const { sessionData, loading: sessionLoading } = useSession(logout);
+  const { hasPermission, isParishAdmin } = usePermissions();
   
   const [workers, setWorkers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -41,16 +42,40 @@ export default function CuentasGestionar() {
   });
 
   const parishId = sessionData?.parish?.id;
+  
+  const canReadWorkers = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_R);
+  const canCreateWorker = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_C);
+  const canUpdateStatus = isParishAdmin || hasPermission(PERMISSIONS.ESTADO_ASOC_USER_U);
+  const canAddRole = isParishAdmin || hasPermission(PERMISSIONS.ROL_ASOC_USER_C);
+  const canDeleteWorker = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_D);
 
   useEffect(() => {
-    if (parishId) {
+    document.title = "MLAP | Gestionar cuentas";
+  }, []);
+
+  useEffect(() => {
+    if (parishId && canReadWorkers) {
       loadWorkers();
       loadAvailableRoles();
     }
-  }, [parishId, currentPage]);
+  }, [parishId, currentPage, canReadWorkers]);
+
+  useEffect(() => {
+    if (!canReadWorkers) return;
+    
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        setCurrentPage(1);
+        loadWorkers();
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      loadWorkers();
+    }
+  }, [searchTerm, canReadWorkers]);
 
   const loadWorkers = async () => {
-    if (!parishId) return;
+    if (!parishId || !canReadWorkers) return;
     
     try {
       setLoading(true);
@@ -74,7 +99,7 @@ export default function CuentasGestionar() {
   };
 
   const loadAvailableRoles = async () => {
-    if (!parishId) return;
+    if (!parishId || !canReadWorkers) return;
     
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_BACKEND_URL}/api/parish/${parishId}/roles`, {
@@ -90,17 +115,15 @@ export default function CuentasGestionar() {
     }
   };
 
-  useEffect(() => {
-    if (searchTerm) {
-      const timer = setTimeout(() => {
-        setCurrentPage(1);
-        loadWorkers();
-      }, 500);
-      return () => clearTimeout(timer);
-    } else {
-      loadWorkers();
-    }
-  }, [searchTerm]);
+  // Si no tiene permiso, mostrar mensaje
+  if (!canReadWorkers) {
+    return (
+      <div className="content-module only-this">
+        <h2 className='title-screen'>Gestión de cuentas</h2>
+        <NoPermissionMessage message="No tienes permisos para listar cuentas de usuarios. Contacta con el administrador de tu parroquia para obtener acceso." />
+      </div>
+    );
+  }
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -108,6 +131,10 @@ export default function CuentasGestionar() {
   };
 
   const handleOpenModal = async (worker, action) => {
+    if (action === "invite" && !canCreateWorker) return;
+    if (action === "addRole" && !canAddRole) return;
+    if (action === "delete" && !canDeleteWorker) return;
+    
     setCurrentWorker(worker);
     setModalType(action);
 
@@ -221,6 +248,8 @@ export default function CuentasGestionar() {
   };
 
   const handleToggle = async (worker) => {
+    if (!canUpdateStatus) return;
+    
     try {
       setLoading(true);
       await parishWorkerService.updateAssociationStatus(worker.association_id, !worker.active);
@@ -245,19 +274,42 @@ export default function CuentasGestionar() {
         <ToggleSwitch
           isEnabled={w.active}
           onToggle={() => handleToggle(w)}
+          disabled={!canUpdateStatus || w.is_parish_admin}
         />
       ),
     },
     {
       key: 'acciones',
       header: 'Acciones',
-      accessor: (w) => (
-        <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
-          <MyButtonShortAction type="file" title="Añadir rol" onClick={() => handleOpenModal(w, "addRole")} />
-          <MyButtonShortAction type="delete" title="Eliminar usuario" onClick={() => handleOpenModal(w, "delete")} />
-        </MyGroupButtonsActions>
-      ),
+      accessor: (w) => {
+        if (w.is_parish_admin) {
+          return (
+            <MyGroupButtonsActions>
+              <span style={{ color: 'var(--color-n-500)', fontSize: '0.9em', fontStyle: 'italic' }}>
+                Párroco
+              </span>
+            </MyGroupButtonsActions>
+          );
+        }
+        
+        return (
+          <MyGroupButtonsActions>
+            <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
+            <MyButtonShortAction 
+              type="file" 
+              title="Añadir rol" 
+              onClick={() => handleOpenModal(w, "addRole")} 
+              classNameCustom={!canAddRole ? 'action-denied' : ''}
+            />
+            <MyButtonShortAction 
+              type="delete" 
+              title="Eliminar usuario" 
+              onClick={() => handleOpenModal(w, "delete")} 
+              classNameCustom={!canDeleteWorker ? 'action-denied' : ''}
+            />
+          </MyGroupButtonsActions>
+        );
+      },
     },
   ];
 
@@ -319,7 +371,12 @@ export default function CuentasGestionar() {
             <div className="center-container">
               <SearchBar onSearchChange={setSearchTerm} />
             </div>
-            <MyButtonShortAction type="add" onClick={() => handleOpenModal(null, "invite")} title="Añadir usuario" />
+            <MyButtonShortAction 
+              type="add" 
+              onClick={() => handleOpenModal(null, "invite")} 
+              title="Añadir usuario" 
+              classNameCustom={!canCreateWorker ? 'action-denied' : ''}
+            />
           </div>
           <DynamicTable
             columns={columns}
@@ -349,7 +406,12 @@ export default function CuentasGestionar() {
             {workerRoles.map((role) => (
               <div key={role.user_role_id} className="sidebar-list-item">
                 {role.role_name}
-                <MyButtonShortAction type="delete" title="Eliminar rol" onClick={() => handleDeleteRole(role.user_role_id)} />
+                <MyButtonShortAction 
+                  type="delete" 
+                  title="Eliminar rol" 
+                  onClick={() => handleDeleteRole(role.user_role_id)} 
+                  classNameCustom={!canDeleteWorker ? 'action-denied' : ''}
+                />
               </div>
             ))}
           </div>

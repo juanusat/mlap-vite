@@ -15,6 +15,15 @@ export const useSession = (onUnauthorized) => {
     try {
       setLoading(true);
       const data = await getSessionInfo();
+      
+      if (data.force_logout) {
+        alert(data.logout_reason || 'Tu sesión ha sido cerrada por el administrador.');
+        if (onUnauthorizedRef.current) {
+          onUnauthorizedRef.current();
+        }
+        return;
+      }
+      
       setSessionData(data);
       setError(null);
     } catch (err) {

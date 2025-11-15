@@ -4,8 +4,8 @@ import { MdBook, MdListAlt, MdSchedule, MdBookmark, MdAssessment } from "react-i
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Actos.css';
 import { useEffect, useMemo } from "react";
-import usePermissions from '../hooks/usePermissions';
-import { PERMISSION_GROUPS } from '../utils/permissions';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 
 export default function ActosLiturgicos() {
   useEffect(() => {
@@ -13,59 +13,55 @@ export default function ActosLiturgicos() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-actos-liturgicos';
-  const { hasAnyPermission, isParishAdmin } = usePermissions();
+  const { hasPermission } = usePermissions();
   
   const allOptions = [
     { 
       href: 'gestionar-actos',
       icon: <MdBookmark />, 
       label: 'Gestionar actos litúrgicos',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_ACTOS
+      permission: PERMISSIONS.ACTOS_LITURGICOS_ACTOS_R
     },
     { 
       href: 'gestionar-requisitos', 
       icon: <MdListAlt />, 
       label: 'Gestionar requisitos',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_REQUISITOS
+      permission: PERMISSIONS.ACTOS_LITURGICOS_REQ_R
     },
     { 
       href: 'gestionar-horarios', 
       icon: <MdSchedule />, 
       label: 'Gestionar horarios',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_HORARIOS
+      permission: PERMISSIONS.ACTOS_LITURGICOS_HORA_R
     },
     { 
       href: 'gestionar-reservas',
       icon: <MdBook />, 
       label: 'Gestionar reservas',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_RESERVAS
+      permission: PERMISSIONS.ACTOS_LITURGICOS_RESER_R
     },
     { 
       href: 'reporte01-a', 
       icon: <MdAssessment />,
-      label: 'Reporte 01',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_ACTOS
+      label: 'Reporte 01'
     },
     { 
       href: 'reporte02-a', 
       icon: <MdAssessment />,
-      label: 'Reporte 02',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_RESERVAS
+      label: 'Reporte 02'
     },
     { 
       href: 'reporte03-a', 
       icon: <MdAssessment />,
-      label: 'Reporte 03',
-      permissions: PERMISSION_GROUPS.ACTOS_LITURGICOS_HORARIOS
+      label: 'Reporte 03'
     },
   ];
 
   const options = useMemo(() => {
-    if (isParishAdmin) return allOptions;
     return allOptions.filter(option => 
-      !option.permissions || hasAnyPermission(option.permissions)
+      !option.permission || hasPermission(option.permission)
     );
-  }, [isParishAdmin, hasAnyPermission]);
+  }, [hasPermission]);
   
   return (
     <ScreenMan title="Módulo de actos litúrgicos" options={options}>

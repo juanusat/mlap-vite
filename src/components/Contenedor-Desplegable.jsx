@@ -4,7 +4,7 @@ import MyButtonShortAction from './MyButtonShortAction';
 import MyGroupButtonsActions from './MyGroupButtonsActions';
 import MyButtonMediumIcon from './MyButtonMediumIcon';
 
-const ExpandableContainer = ({ title, children, type, showDeleteButton, isEditing, onEdit, onSave, onCancel }) => {
+const ExpandableContainer = ({ title, children, type, showDeleteButton, isEditing, onEdit, onSave, onCancel, editButtonClassName }) => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     const toggleExpand = () => {
@@ -22,7 +22,12 @@ const ExpandableContainer = ({ title, children, type, showDeleteButton, isEditin
                         onClick={toggleExpand} 
                         classNameCustom={`expandable-icon ${isExpanded ? 'expanded' : ''}`} 
                     />
-                    <MyButtonShortAction type={type} title='Editar' onClick={onEdit} />
+                    <MyButtonShortAction 
+                        type={type} 
+                        title='Editar' 
+                        onClick={onEdit} 
+                        classNameCustom={editButtonClassName}
+                    />
                     {showDeleteButton === 'si' && <MyButtonShortAction type='delete' title='Eliminar' />}
                 </MyGroupButtonsActions>
             </div>
