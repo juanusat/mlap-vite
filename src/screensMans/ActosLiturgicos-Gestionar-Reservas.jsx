@@ -23,18 +23,9 @@ const STATUS_MAP = {
 };
 
 export default function Reservas() {
-  React.useEffect(() => {
-    document.title = "MLAP | Gestionar reservas";
-    loadReservations();
-  }, []);
-  
   const { hasPermission } = usePermissions();
   const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_R);
   const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_U);
-
-  if (!canRead) {
-    return <NoPermissionMessage />;
-  }
 
   const [reservations, setReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -202,6 +193,17 @@ export default function Reservas() {
     setCurrentReservation(null);
     setModalType(null);
   };
+
+  React.useEffect(() => {
+    document.title = "MLAP | Gestionar reservas";
+    if (canRead) {
+      loadReservations();
+    }
+  }, [canRead]);
+
+  if (!canRead) {
+    return <NoPermissionMessage />;
+  }
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
