@@ -34,6 +34,13 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
       
       if (sessionResp.ok) {
         const sessionResult = await sessionResp.json();
+        
+        if (sessionResult.data?.force_logout) {
+          alert(sessionResult.data.logout_reason || 'Tu sesión ha sido cerrada por el administrador.');
+          logout();
+          return;
+        }
+        
         if (sessionResult.data?.permissions) {
           console.log('Permisos del rol activo:', sessionResult.data.permissions);
         }
@@ -48,7 +55,6 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const handleOpenPerfilModal = async () => {
     setPerfilModalOpen(true);
     
-    // Recargar permisos del rol actual
     try {
       const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
       const sessionResp = await fetch(`${API_BASE}/api/auth/session`, {
@@ -58,6 +64,13 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
       
       if (sessionResp.ok) {
         const sessionResult = await sessionResp.json();
+        
+        if (sessionResult.data?.force_logout) {
+          alert(sessionResult.data.logout_reason || 'Tu sesión ha sido cerrada por el administrador.');
+          logout();
+          return;
+        }
+        
         if (sessionResult.data?.permissions) {
           const permisos = (sessionResult.data.is_diocese_user || sessionResult.data.is_parish_admin)
             ? ['ALL']
