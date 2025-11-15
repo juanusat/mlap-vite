@@ -274,30 +274,42 @@ export default function CuentasGestionar() {
         <ToggleSwitch
           isEnabled={w.active}
           onToggle={() => handleToggle(w)}
-          disabled={!canUpdateStatus}
+          disabled={!canUpdateStatus || w.is_parish_admin}
         />
       ),
     },
     {
       key: 'acciones',
       header: 'Acciones',
-      accessor: (w) => (
-        <MyGroupButtonsActions>
-          <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
-          <MyButtonShortAction 
-            type="file" 
-            title="Añadir rol" 
-            onClick={() => handleOpenModal(w, "addRole")} 
-            classNameCustom={!canAddRole ? 'action-denied' : ''}
-          />
-          <MyButtonShortAction 
-            type="delete" 
-            title="Eliminar usuario" 
-            onClick={() => handleOpenModal(w, "delete")} 
-            classNameCustom={!canDeleteWorker ? 'action-denied' : ''}
-          />
-        </MyGroupButtonsActions>
-      ),
+      accessor: (w) => {
+        if (w.is_parish_admin) {
+          return (
+            <MyGroupButtonsActions>
+              <span style={{ color: 'var(--color-n-500)', fontSize: '0.9em', fontStyle: 'italic' }}>
+                Párroco
+              </span>
+            </MyGroupButtonsActions>
+          );
+        }
+        
+        return (
+          <MyGroupButtonsActions>
+            <MyButtonShortAction type="view" title="Ver roles" onClick={() => handleViewRoles(w)} />
+            <MyButtonShortAction 
+              type="file" 
+              title="Añadir rol" 
+              onClick={() => handleOpenModal(w, "addRole")} 
+              classNameCustom={!canAddRole ? 'action-denied' : ''}
+            />
+            <MyButtonShortAction 
+              type="delete" 
+              title="Eliminar usuario" 
+              onClick={() => handleOpenModal(w, "delete")} 
+              classNameCustom={!canDeleteWorker ? 'action-denied' : ''}
+            />
+          </MyGroupButtonsActions>
+        );
+      },
     },
   ];
 
