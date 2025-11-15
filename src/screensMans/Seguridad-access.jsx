@@ -2,6 +2,8 @@ import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdAccountBox, MdRecentActors } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import '../utils/Modulo-Seguridad.css';
 
 export default function Seguridad() {
@@ -10,24 +12,28 @@ export default function Seguridad() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-seguridad';
+  const { hasPermission, isParishAdmin } = usePermissions();
 
   const options = [
     { 
       href: 'cuentas-gestionar', 
       icon: <MdAccountBox />, 
-      label: 'Gestionar cuentas'
+      label: 'Gestionar cuentas',
+      show: isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_R)
     },
     { 
       href: 'roles-gestionar', 
       icon: <MdRecentActors />, 
-      label: 'Gestionar roles'
+      label: 'Gestionar roles',
+      show: isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_R)
     },
     { 
       href: 'reporte01-s', 
       icon: <MdRecentActors />, 
-      label: 'Reporte 01'
+      label: 'Reporte 01',
+      show: true
     },
-  ];
+  ].filter(option => option.show);
 
   return (
     <ScreenMan title="Módulo de seguridad" options={options}>

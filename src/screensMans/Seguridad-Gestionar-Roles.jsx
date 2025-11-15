@@ -12,7 +12,8 @@ import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
 import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
-import '../utils/Seguridad-Roles-Gestionar.css'; 
+import '../utils/Seguridad-Roles-Gestionar.css';
+import '../utils/permissions.css'; 
 
 const PERMISSIONS_STRUCTURE = {
     'ACTOS_LITURGICOS': { 
@@ -180,8 +181,12 @@ export default function RolesGestionar() {
     const [availablePermissions, setAvailablePermissions] = useState([]);
     const [collapsedModules, setCollapsedModules] = useState({});
 
-    // Verificar permiso de lectura de roles
     const canReadRoles = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_R);
+    const canCreateRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_C);
+    const canUpdateRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_DATA_U);
+    const canUpdateStatus = isParishAdmin || hasPermission(PERMISSIONS.ESTADO_ROL_U);
+    const canUpdatePermissions = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_PERMS_U);
+    const canDeleteRole = isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_D);
 
     useEffect(() => {
         document.title = "MLAP | Gestionar roles";
@@ -352,6 +357,11 @@ export default function RolesGestionar() {
     };
 
     const handleOpenModal = (rol, action) => {
+        if (action === 'add' && !canCreateRole) return;
+        if (action === 'edit' && !canUpdateRole) return;
+        if (action === 'delete' && !canDeleteRole) return;
+        if (action === 'permissions' && !canUpdatePermissions) return;
+        
         setCurrentRol(rol);
         setModalType(action);
 
@@ -420,7 +430,7 @@ export default function RolesGestionar() {
     };
 
     const handleToggle = async (rolId, currentStatus) => {
-        if (!sessionData?.parish?.id) return;
+        if (!sessionData?.parish?.id || !canUpdateStatus) return;
 
         try {
             setLoading(true);
@@ -559,6 +569,7 @@ export default function RolesGestionar() {
                 <ToggleSwitch
                     isEnabled={row.Estado}
                     onToggle={() => handleToggle(row.ID, row.Estado)}
+                    disabled={!canUpdateStatus}
                 />
             )
         },
@@ -568,9 +579,21 @@ export default function RolesGestionar() {
             accessor: rol => (
                 <MyGroupButtonsActions>
                     <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
-                    <MyButtonShortAction type="key" onClick={() => handleOpenModal(rol, 'permissions')} />
-                    <MyButtonShortAction type="edit" onClick={() => handleOpenModal(rol, 'edit')} />
-                    <MyButtonShortAction type="delete" onClick={() => handleOpenModal(rol, 'delete')} />
+                    <MyButtonShortAction 
+                        type="key" 
+                        onClick={() => handleOpenModal(rol, 'permissions')} 
+                        classNameCustom={!canUpdatePermissions ? 'action-denied' : ''}
+                    />
+                    <MyButtonShortAction 
+                        type="edit" 
+                        onClick={() => handleOpenModal(rol, 'edit')} 
+                        classNameCustom={!canUpdateRole ? 'action-denied' : ''}
+                    />
+                    <MyButtonShortAction 
+                        type="delete" 
+                        onClick={() => handleOpenModal(rol, 'delete')} 
+                        classNameCustom={!canDeleteRole ? 'action-denied' : ''}
+                    />
                 </MyGroupButtonsActions>
             )
         }
@@ -585,7 +608,12 @@ export default function RolesGestionar() {
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
                     <MyGroupButtonsActions>
-                        <MyButtonShortAction type="add" title="Añadir" onClick={() => handleOpenModal(null, 'add')} />
+                        <MyButtonShortAction 
+                            type="add" 
+                            title="Añadir" 
+                            onClick={() => handleOpenModal(null, 'add')} 
+                            classNameCustom={!canCreateRole ? 'action-denied' : ''}
+                        />
                     </MyGroupButtonsActions>
                 </div>
 
