@@ -2,6 +2,8 @@ import React from 'react';
 import ScreenMan from '../components/ScreenMan';
 import { MdAccountBalance, MdHomeFilled } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import '../utils/Modulo-Parroquia.css';
 
 export default function Parroquia() {
@@ -10,24 +12,28 @@ export default function Parroquia() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-parroquia';
+  const { hasPermission, isParishAdmin } = usePermissions();
 
   const options = [
     { 
       href: 'gestionar-cuenta', 
       icon: <MdAccountBalance />, 
-      label: 'Gestionar cuenta'
+      label: 'Gestionar cuenta',
+      show: isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_INFO_R) || hasPermission(PERMISSIONS.PARROQUIA_DATOS_CUENTA_R)
     },
     { 
       href: 'gestionar-capilla', 
       icon: <MdHomeFilled />, 
-      label: 'Gestionar capilla'
+      label: 'Gestionar capilla',
+      show: isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_R)
     },
     { 
       href: 'reporte01-p', 
       icon: <MdAccountBalance />, 
-      label: 'Reporte 01'
+      label: 'Reporte 01',
+      show: true
     },
-  ];
+  ].filter(option => option.show);
 
   return (
     <ScreenMan title="Módulo Parroquia" options={options}>

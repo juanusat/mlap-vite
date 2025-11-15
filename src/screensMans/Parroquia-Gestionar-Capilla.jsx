@@ -10,15 +10,16 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import InputFotoPerfil from '../components/inputFotoPerfil';
 import MyModalGreatSize from '../components/MyModalGreatSize';
 import MyMapSelector from '../components/MyMapSelector';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import * as chapelService from '../services/chapelService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Parroquia-Gestionar-Capilla.css';
+import '../utils/permissions.css';
 
 export default function GestionCapillas() {
-  useEffect(() => {
-    document.title = "MLAP | Gestionar capillas";
-    loadChapels();
-  }, []);
+  const { hasPermission, isParishAdmin } = usePermissions();
   
   const [chapels, setChapels] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +28,12 @@ export default function GestionCapillas() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const canRead = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_R);
+  const canCreate = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_C);
+  const canUpdate = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_U);
+  const canDelete = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_D);
+  const canUpdateStatus = isParishAdmin || hasPermission(PERMISSIONS.ESTADO_CAPILLA_U);
 
   const loadChapels = async () => {
     try {
@@ -42,6 +49,17 @@ export default function GestionCapillas() {
     }
   };
 
+  useEffect(() => {
+    document.title = "MLAP | Gestionar capillas";
+    if (canRead) {
+      loadChapels();
+    }
+  }, [canRead]);
+
+  if (!canRead) {
+    return <NoPermissionMessage message="No tienes permisos para acceder a la gestión de capillas" />;
+  }
+
   const filteredChapels = chapels.filter((chapel) =>
     Object.values(chapel).some((value) =>
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
@@ -49,6 +67,8 @@ export default function GestionCapillas() {
   );
 
   const handleToggle = async (chapelId, currentStatus) => {
+    if (!canUpdateStatus) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -63,6 +83,10 @@ export default function GestionCapillas() {
   };
 
   const openModal = (type, chapel = null) => {
+    if (type === 'add' && !canCreate) return;
+    if (type === 'edit' && !canUpdate) return;
+    if (type === 'delete' && !canDelete) return;
+    
     setModalType(type);
     setCurrentChapel(chapel);
     setShowModal(true);
@@ -123,6 +147,7 @@ export default function GestionCapillas() {
         <ToggleSwitch
           isEnabled={row.active}
           onToggle={() => handleToggle(row.id, row.active)}
+          disabled={!canUpdateStatus}
         />
       ),
     },
@@ -130,8 +155,18 @@ export default function GestionCapillas() {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver" onClick={() => openModal('view', row)} />
-          <MyButtonShortAction type="edit" title="Editar" onClick={() => openModal('edit', row)} />
-          <MyButtonShortAction type="delete" title="Eliminar" onClick={() => openModal('delete', row)} />
+          <MyButtonShortAction 
+            type="edit" 
+            title="Editar" 
+            onClick={() => openModal('edit', row)} 
+            classNameCustom={!canUpdate ? 'action-denied' : ''}
+          />
+          <MyButtonShortAction 
+            type="delete" 
+            title="Eliminar" 
+            onClick={() => openModal('delete', row)}
+            classNameCustom={!canDelete ? 'action-denied' : ''}
+          />
         </MyGroupButtonsActions>
       )
     },
@@ -188,7 +223,12 @@ export default function GestionCapillas() {
           <div className="center-container">
             <SearchBar onSearchChange={setSearchTerm} />
           </div>
-          <MyButtonShortAction type="add" onClick={() => openModal('add')} title="Añadir" />
+          <MyButtonShortAction 
+            type="add" 
+            onClick={() => openModal('add')} 
+            title="Añadir" 
+            classNameCustom={!canCreate ? 'action-denied' : ''}
+          />
         </div>
         <DynamicTable
           columns={chapelColumns}
