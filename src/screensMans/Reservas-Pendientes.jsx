@@ -167,6 +167,11 @@ export default function ReservasPendientes() {
     },
     { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
     { 
+      key: 'chapel_name', 
+      header: 'Capilla', 
+      accessor: (row) => row.chapel_name 
+    },
+    { 
       key: 'event_date', 
       header: 'Fecha', 
       accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
@@ -185,8 +190,13 @@ export default function ReservasPendientes() {
       }
     },
     { 
+      key: 'current_price', 
+      header: 'Precio', 
+      accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` 
+    },
+    { 
       key: 'paid_amount', 
-      header: 'Monto Pagado', 
+      header: 'Pagado', 
       accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
     },
     { 
@@ -257,8 +267,8 @@ export default function ReservasPendientes() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="80px 1fr 180px 120px 100px 140px 120px 220px"
-                    columnLeftAlignIndex={[1, 2]}
+                    gridColumnsLayout="70px auto auto auto 110px 90px 110px 110px 110px 220px"
+                    columnLeftAlignIndex={[2, 3, 4]}
                   />
                   
                   {totalPages > 1 && (
@@ -316,9 +326,16 @@ export default function ReservasPendientes() {
           <div className="sidebar-list">
             <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
+            {currentReservation.chapel && (
+              <>
+                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
+                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
+              </>
+            )}
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
             <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
-            <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Precio del evento:</strong> $ {parseFloat(currentReservation.current_price || 0).toFixed(2)}</p>
+            <p><strong>Monto pagado:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'RESERVED' ? 'Reservado' :
               currentReservation.status === 'IN_PROGRESS' ? 'En progreso' :
@@ -326,12 +343,6 @@ export default function ReservasPendientes() {
               currentReservation.status
             }</p>
             <p><strong>Pago:</strong> {currentReservation.payment_status}</p>
-            {currentReservation.chapel && (
-              <>
-                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
-                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
-              </>
-            )}
           </div>
         </MyPanelLateralConfig>
       )}
