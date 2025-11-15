@@ -7,6 +7,9 @@ import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
 
@@ -25,6 +28,14 @@ export default function Reservas() {
     loadReservations();
   }, []);
   
+  const { hasPermission } = usePermissions();
+  const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_R);
+  const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_U);
+
+  if (!canRead) {
+    return <NoPermissionMessage />;
+  }
+
   const [reservations, setReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -87,12 +98,20 @@ export default function Reservas() {
   };
 
   const handleEdit = (reservation) => {
+    if (!canUpdate) {
+      alert("No tienes permisos para editar reservas.");
+      return;
+    }
     setCurrentReservation(reservation);
     setModalType('edit');
     setShowModal(true);
   };
 
   const handleBlock = (reservation) => {
+    if (!canUpdate) {
+      alert("No tienes permisos para bloquear reservas.");
+      return;
+    }
     setCurrentReservation(reservation);
     setModalType('block');
     setShowModal(true);
@@ -207,10 +226,10 @@ export default function Reservas() {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
-          {row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
+          {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
           )}
-          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
+          {canUpdate && (row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
           )}
         </MyGroupButtonsActions>

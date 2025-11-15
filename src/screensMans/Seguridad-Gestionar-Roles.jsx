@@ -42,11 +42,14 @@ const PERMISSIONS_STRUCTURE = {
             'HORARIOS': {
                 name: 'Gestionar horarios',
                 permissions: [
+                    { id: 'ACTOS_LITURGICOS_HORA_R', name: 'Leer horarios' },
                     { id: 'ACTOS_LITURGICOS_HORA_C', name: 'Crear horario' },
                     { id: 'ACTOS_LITURGICOS_HORA_U', name: 'Actualizar horario' },
+                    { id: 'EXCEP_DISP_R', name: 'Leer excepciones - Disponibilidad' },
                     { id: 'EXCEP_DISP_C', name: 'Crear Excepción - Disponibilidad' },
                     { id: 'EXCEP_DISP_U', name: 'Actualizar Excepción - Disponibilidad' },
                     { id: 'EXCEP_DISP_D', name: 'Eliminar Excepción - Disponibilidad' },
+                    { id: 'EXCEP_NO_DISP_R', name: 'Leer excepciones - NO Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_C', name: 'Crear Excepción NO - Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_U', name: 'Actualizar Excepción NO - Disponibilidad' },
                     { id: 'EXCEP_NO_DISP_D', name: 'Eliminar Excepción NO - Disponibilidad' },

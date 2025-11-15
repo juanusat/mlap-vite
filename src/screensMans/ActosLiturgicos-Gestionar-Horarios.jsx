@@ -7,6 +7,9 @@ import MySchedule from '../components/MySchedule';
 import SearchBar from '../components/SearchBar';
 import * as scheduleService from '../services/scheduleService';
 import * as chapelService from '../services/chapelService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import '../utils/Estilos-Generales-1.css';
 import './ActosLiturgicos-Gestionar-Horarios.css';
 
@@ -17,6 +20,9 @@ function ExcepcionesSection({
     onAdd,
     onEdit,
     onDelete,
+    canCreate,
+    canUpdate,
+    canDelete,
     ITEMS_PER_PAGE = 4
 }) {
     const [activeTab, setActiveTab] = useState('futuras');
@@ -100,11 +106,13 @@ function ExcepcionesSection({
                             onClick={() => setPage(prev => prev - 1)}
                         />
                     )}
-                    <MyButtonShortAction
-                        type="add"
-                        title={`Agregar ${title.toLowerCase()}`}
-                        onClick={onAdd}
-                    />
+                    {canCreate && (
+                        <MyButtonShortAction
+                            type="add"
+                            title={`Agregar ${title.toLowerCase()}`}
+                            onClick={onAdd}
+                        />
+                    )}
                     {hasNextPage(page) && (
                         <MyButtonShortAction
                             type="next"
@@ -126,8 +134,12 @@ function ExcepcionesSection({
                         <div className="exception-cell">{exception.hora}</div>
                         <div className="exception-cell actions-cell">
                             <div className="exception-actions">
-                                <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => onEdit(exception)} />
-                                <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => onDelete(exception)} />
+                                {canUpdate && (
+                                    <MyButtonShortAction type="edit" title="Editar excepción" onClick={() => onEdit(exception)} />
+                                )}
+                                {canDelete && (
+                                    <MyButtonShortAction type="delete" title="Eliminar excepción" onClick={() => onDelete(exception)} />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -142,6 +154,16 @@ export default function ActosLiturgicosHorarios() {
         document.title = "MLAP | Gestionar Horarios";
         loadCapillas();
     }, []);
+
+    const { hasPermission } = usePermissions();
+    const canCreateSchedule = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_HORA_C);
+    const canUpdateSchedule = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_HORA_U);
+    const canCreateDispException = hasPermission(PERMISSIONS.EXCEP_DISP_C);
+    const canUpdateDispException = hasPermission(PERMISSIONS.EXCEP_DISP_U);
+    const canDeleteDispException = hasPermission(PERMISSIONS.EXCEP_DISP_D);
+    const canCreateNoDispException = hasPermission(PERMISSIONS.EXCEP_NO_DISP_C);
+    const canUpdateNoDispException = hasPermission(PERMISSIONS.EXCEP_NO_DISP_U);
+    const canDeleteNoDispException = hasPermission(PERMISSIONS.EXCEP_NO_DISP_D);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -391,6 +413,11 @@ export default function ActosLiturgicosHorarios() {
             alert('Por favor, selecciona una capilla primero.');
             return;
         }
+        const canCreate = type === 'disponibilidad' ? canCreateDispException : canCreateNoDispException;
+        if (!canCreate) {
+            alert('No tienes permisos para crear esta excepción.');
+            return;
+        }
         setModalType(type);
         setModalAction('add');
         setModalError('');
@@ -398,6 +425,11 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const handleEditException = (exception, type) => {
+        const canEdit = type === 'disponibilidad' ? canUpdateDispException : canUpdateNoDispException;
+        if (!canEdit) {
+            alert('No tienes permisos para editar esta excepción.');
+            return;
+        }
         setModalType(type);
         setModalAction('edit');
         setFecha(exception.fecha);
@@ -411,6 +443,11 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const handleDeleteException = async (exception, type) => {
+        const canDel = type === 'disponibilidad' ? canDeleteDispException : canDeleteNoDispException;
+        if (!canDel) {
+            alert('No tienes permisos para eliminar esta excepción.');
+            return;
+        }
         if (!window.confirm('¿Estás seguro de que quieres eliminar esta excepción?')) {
             return;
         }
@@ -914,6 +951,9 @@ export default function ActosLiturgicosHorarios() {
                                     onAdd={() => handleOpenModal('disponibilidad')}
                                     onEdit={exception => handleEditException(exception, 'disponibilidad')}
                                     onDelete={exception => handleDeleteException(exception, 'disponibilidad')}
+                                    canCreate={canCreateDispException}
+                                    canUpdate={canUpdateDispException}
+                                    canDelete={canDeleteDispException}
                                     ITEMS_PER_PAGE={ITEMS_PER_PAGE}
                                 />
                                 <ExcepcionesSection
@@ -922,6 +962,9 @@ export default function ActosLiturgicosHorarios() {
                                     onAdd={() => handleOpenModal('noDisponibilidad')}
                                     onEdit={exception => handleEditException(exception, 'noDisponibilidad')}
                                     onDelete={exception => handleDeleteException(exception, 'noDisponibilidad')}
+                                    canCreate={canCreateNoDispException}
+                                    canUpdate={canUpdateNoDispException}
+                                    canDelete={canDeleteNoDispException}
                                     ITEMS_PER_PAGE={ITEMS_PER_PAGE}
                                 />
                             </div>

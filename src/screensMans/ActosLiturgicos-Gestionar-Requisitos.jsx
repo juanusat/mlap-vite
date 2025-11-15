@@ -10,11 +10,25 @@ import "../utils/Estilos-Generales-1.css";
 import "../utils/ActosLiturgicos-Requisitos.css";
 import * as eventVariantService from "../services/eventVariantService";
 import * as chapelEventRequirementService from "../services/chapelEventRequirementService";
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 
 export default function ActosLiturgicosRequisitos() {
     React.useEffect(() => {
     document.title = "MLAP | Gestionar requisitos";
   }, []);
+
+  const { hasPermission } = usePermissions();
+  const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_R);
+  const canCreate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_C);
+  const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_U);
+  const canDelete = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_D);
+  const canUpdateStatus = hasPermission(PERMISSIONS.ESTADO_REQ_ACTOS_LIT_U);
+
+  if (!canRead) {
+    return <NoPermissionMessage />;
+  }
 
   const [requirements, setRequirements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -89,6 +103,10 @@ export default function ActosLiturgicosRequisitos() {
   const handleClosePanel = () => setShowPanel(false);
 
   const handleAddRequirement = () => {
+    if (!canCreate) {
+      alert("No tienes permisos para crear requisitos.");
+      return;
+    }
     if (!selectedEventVariant) {
       alert("Por favor, selecciona un evento primero.");
       return;
@@ -111,6 +129,10 @@ export default function ActosLiturgicosRequisitos() {
   };
 
   const handleEditRequirement = (req) => {
+    if (!canUpdate) {
+      alert("No tienes permisos para editar requisitos.");
+      return;
+    }
     if (!req.is_editable) {
       alert("Los requisitos base no se pueden editar.");
       return;
@@ -121,6 +143,10 @@ export default function ActosLiturgicosRequisitos() {
   };
 
   const handleDeleteConfirmation = (req) => {
+    if (!canDelete) {
+      alert("No tienes permisos para eliminar requisitos.");
+      return;
+    }
     if (!req.is_editable) {
       alert("Los requisitos base no se pueden eliminar.");
       return;
@@ -171,6 +197,10 @@ export default function ActosLiturgicosRequisitos() {
   };
 
   const handleToggle = async (requirementId, currentActive) => {
+    if (!canUpdateStatus) {
+      alert("No tienes permisos para cambiar el estado de requisitos.");
+      return;
+    }
     const requirement = requirements.find(r => r.id === requirementId);
     if (!requirement || !requirement.is_editable) {
       alert("Solo se puede cambiar el estado de requisitos adicionales.");
@@ -255,11 +285,15 @@ export default function ActosLiturgicosRequisitos() {
       key: "estado",
       header: "Estado",
       accessor: (row) => (
-        <ToggleSwitch
-          isEnabled={row.active}
-          onToggle={() => handleToggle(row.id, row.active)}
-          disabled={!row.is_editable}
-        />
+        canUpdateStatus ? (
+          <ToggleSwitch
+            isEnabled={row.active}
+            onToggle={() => handleToggle(row.id, row.active)}
+            disabled={!row.is_editable}
+          />
+        ) : (
+          <span>{row.active ? 'Activo' : 'Inactivo'}</span>
+        )
       ),
     },
     {
@@ -272,18 +306,22 @@ export default function ActosLiturgicosRequisitos() {
             title="Ver"
             onClick={() => handleViewRequirement(row)}
           />
-          <MyButtonShortAction
-            type="edit"
-            title="Editar"
-            onClick={() => handleEditRequirement(row)}
-            disabled={!row.is_editable}
-          />
-          <MyButtonShortAction
-            type="delete"
-            title="Eliminar"
-            onClick={() => handleDeleteConfirmation(row)}
-            disabled={!row.is_editable}
-          />
+          {canUpdate && (
+            <MyButtonShortAction
+              type="edit"
+              title="Editar"
+              onClick={() => handleEditRequirement(row)}
+              disabled={!row.is_editable}
+            />
+          )}
+          {canDelete && (
+            <MyButtonShortAction
+              type="delete"
+              title="Eliminar"
+              onClick={() => handleDeleteConfirmation(row)}
+              disabled={!row.is_editable}
+            />
+          )}
         </MyGroupButtonsActions>
       ),
     },
@@ -330,11 +368,13 @@ export default function ActosLiturgicosRequisitos() {
                   title="Seleccionar evento"
                   onClick={handleSelectEvent}
                 />
-                <MyButtonShortAction
-                  type="add"
-                  onClick={handleAddRequirement}
-                  title="Añadir"
-                />
+                {canCreate && (
+                  <MyButtonShortAction
+                    type="add"
+                    onClick={handleAddRequirement}
+                    title="Añadir"
+                  />
+                )}
               </MyGroupButtonsActions>
             </div>
           </div>

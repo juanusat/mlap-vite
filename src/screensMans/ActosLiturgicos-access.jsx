@@ -3,7 +3,9 @@ import ScreenMan from '../components/ScreenMan';
 import { MdBook, MdListAlt, MdSchedule, MdBookmark, MdAssessment } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Actos.css';
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
 
 export default function ActosLiturgicos() {
   useEffect(() => {
@@ -11,27 +13,32 @@ export default function ActosLiturgicos() {
   }, []);
   const location = useLocation();
   const isBasePath = location.pathname === '/man-actos-liturgicos';
+  const { hasPermission } = usePermissions();
   
-  const options = [
+  const allOptions = [
     { 
       href: 'gestionar-actos',
       icon: <MdBookmark />, 
-      label: 'Gestionar actos litúrgicos'
+      label: 'Gestionar actos litúrgicos',
+      permission: PERMISSIONS.ACTOS_LITURGICOS_ACTOS_R
     },
     { 
       href: 'gestionar-requisitos', 
       icon: <MdListAlt />, 
-      label: 'Gestionar requisitos'
+      label: 'Gestionar requisitos',
+      permission: PERMISSIONS.ACTOS_LITURGICOS_REQ_R
     },
     { 
       href: 'gestionar-horarios', 
       icon: <MdSchedule />, 
-      label: 'Gestionar horarios'
+      label: 'Gestionar horarios',
+      permission: PERMISSIONS.ACTOS_LITURGICOS_HORA_R
     },
     { 
       href: 'gestionar-reservas',
       icon: <MdBook />, 
-      label: 'Gestionar reservas'
+      label: 'Gestionar reservas',
+      permission: PERMISSIONS.ACTOS_LITURGICOS_RESER_R
     },
     { 
       href: 'reporte01-a', 
@@ -49,6 +56,12 @@ export default function ActosLiturgicos() {
       label: 'Reporte 03'
     },
   ];
+
+  const options = useMemo(() => {
+    return allOptions.filter(option => 
+      !option.permission || hasPermission(option.permission)
+    );
+  }, [hasPermission]);
   
   return (
     <ScreenMan title="Módulo de actos litúrgicos" options={options}>
