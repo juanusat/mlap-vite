@@ -89,7 +89,9 @@ export default function Home() {
   return (
     <ScreenMan>
       <div className="content-module">
-        <MyBarSearchGen ref={searchBarRef} mode="navigate" />
+        {sessionData?.context_type === 'PARISHIONER' && (
+          <MyBarSearchGen ref={searchBarRef} mode="navigate" />
+        )}
         <section className="mlap-home-welcome">
           <div className="mlap-home-welcome-img" />
           <div className="mlap-home-welcome-info">
@@ -102,9 +104,11 @@ export default function Home() {
                 MLAP es un sistema de gestión de eventos litúrgicos desarollo por el equipo de software "La Orden Oscura". Este proyecto ha sido creado para todas las personas creyentes y no creyentes para facilitarles el registro de algún acto litúrgico católico.<br /><br />
                 No lo pienses más y empieza a explorar y a reservar en tu parroquia de tu región favorita.
               </p>
-              <MyButtonCenteredSides>
-                <button className="mlap-home-reserve-btn" onClick={scrollToSearch}>Reservar ahora</button>
-              </MyButtonCenteredSides>
+              {sessionData?.context_type === 'PARISHIONER' && (
+                <MyButtonCenteredSides>
+                  <button className="mlap-home-reserve-btn" onClick={scrollToSearch}>Reservar ahora</button>
+                </MyButtonCenteredSides>
+              )}
             </div>
           </div>
         </section>

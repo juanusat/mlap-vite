@@ -15,20 +15,13 @@ import { PERMISSIONS } from '../utils/permissions';
 import NoPermissionMessage from '../components/NoPermissionMessage';
 
 export default function ActosLiturgicosRequisitos() {
-    React.useEffect(() => {
-    document.title = "MLAP | Gestionar requisitos";
-  }, []);
-
+  // Todos los hooks deben estar al inicio, antes de cualquier return condicional
   const { hasPermission } = usePermissions();
   const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_R);
   const canCreate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_C);
   const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_U);
   const canDelete = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REQ_D);
   const canUpdateStatus = hasPermission(PERMISSIONS.ESTADO_REQ_ACTOS_LIT_U);
-
-  if (!canRead) {
-    return <NoPermissionMessage />;
-  }
 
   const [requirements, setRequirements] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,6 +35,10 @@ export default function ActosLiturgicosRequisitos() {
   const [showPanel, setShowPanel] = useState(false);
   const [selectedEventVariant, setSelectedEventVariant] = useState(null);
   const [searchTermEvent, setSearchTermEvent] = useState("");
+
+  React.useEffect(() => {
+    document.title = "MLAP | Gestionar requisitos";
+  }, []);
 
   useEffect(() => {
     loadEventVariants();
@@ -215,6 +212,11 @@ export default function ActosLiturgicosRequisitos() {
       alert("Error al actualizar estado: " + err.message);
     }
   };
+
+  // Verificar permisos después de que todos los hooks hayan sido llamados
+  if (!canRead) {
+    return <NoPermissionMessage />;
+  }
 
   const getModalProps = () => {
     switch (modalType) {
