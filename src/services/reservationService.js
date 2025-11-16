@@ -259,3 +259,16 @@ export const rejectReservation = async (reservationId) => {
 
   return await handleResponse(response);
 };
+
+export const updateReservation = async (reservationId, updateData) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(updateData),
+  });
+
+  return await handleResponse(response);
+};

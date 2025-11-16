@@ -75,8 +75,8 @@ export default function Reservas() {
   const handleView = async (reservation) => {
     try {
       setLoading(true);
-      const details = await reservationService.getReservationDetailsForManagement(reservation.id);
-      setCurrentReservation(details);
+      const response = await reservationService.getReservationDetailsForManagement(reservation.id);
+      setCurrentReservation(response.data);
       setModalType('view');
       setShowModal(true);
     } catch (err) {
@@ -255,7 +255,8 @@ export default function Reservas() {
           {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
           )}
-          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && (
+          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && 
+           parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) && (
             <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
@@ -274,97 +275,88 @@ export default function Reservas() {
         return {
           title: 'Detalles de la Reserva',
           content: (
-            <div style={{ display: 'flex', gap: '20px', maxHeight: '70vh', overflow: 'auto' }}>
-              {/* Columna izquierda: Detalles de la reserva */}
-              <div className="Inputs-add" style={{ flex: '0 0 400px' }}>
-                <label>Evento</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={currentReservation.event_variant_name || ''}
-                  disabled
-                />
-                <label>Capilla</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={currentReservation.chapel_name || ''}
-                  disabled
-                />
-                <label>Fecha</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={formatDate(currentReservation.event_date)}
-                  disabled
-                />
-                <label>Hora</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={formatTime(currentReservation.event_time)}
-                  disabled
-                />
-                <label>Usuario</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={currentReservation.user_full_name || ''}
-                  disabled
-                />
-                <label>Beneficiario</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={currentReservation.beneficiary_full_name || 'N/A'}
-                  disabled
-                />
-                {currentReservation.mentions && currentReservation.mentions.length > 0 && (
-                  <>
-                    <label style={{ marginTop: '15px', fontWeight: 'bold' }}>Menciones</label>
-                    {currentReservation.mentions.map((mention, index) => (
-                      <div key={mention.id} style={{ marginBottom: '10px', paddingLeft: '10px', borderLeft: '3px solid #4CAF50' }}>
-                        <label style={{ fontSize: '0.9em', color: '#666' }}>
-                          {mention.mention_type_name}
-                        </label>
-                        <input
-                          type="text"
-                          className="inputModal"
-                          value={mention.mention_name}
-                          disabled
-                          style={{ marginTop: '5px' }}
-                        />
-                      </div>
-                    ))}
-                  </>
-                )}
-                <label>Precio del Evento</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={`$ ${parseFloat(currentReservation.current_price || 0).toFixed(2)}`}
-                  disabled
-                />
-                <label>Monto Pagado</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
-                  disabled
-                />
-                <label>Estado</label>
-                <input
-                  type="text"
-                  className="inputModal"
-                  value={STATUS_MAP[currentReservation.status] || currentReservation.status}
-                  disabled
-                />
-              </div>
-              
-              {/* Columna derecha: Horario de la capilla */}
-              <ChapelScheduleViewer 
-                chapelId={currentReservation.chapel_id} 
-                parishId={localStorage.getItem('parish_id')} 
+            <div className="Inputs-add">
+              <label>Evento</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.event_variant_name || ''}
+                disabled
+              />
+              <label>Capilla</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.chapel_name || ''}
+                disabled
+              />
+              <label>Fecha</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={formatDate(currentReservation.event_date)}
+                disabled
+              />
+              <label>Hora</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={formatTime(currentReservation.event_time)}
+                disabled
+              />
+              <label>Usuario</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.user_full_name || ''}
+                disabled
+              />
+              <label>Beneficiario</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={currentReservation.beneficiary_full_name || 'N/A'}
+                disabled
+              />
+              {currentReservation.mentions && currentReservation.mentions.length > 0 && (
+                <>
+                  <label style={{ marginTop: '15px', fontWeight: 'bold' }}>Menciones</label>
+                  {currentReservation.mentions.map((mention, index) => (
+                    <div key={mention.id} style={{ marginBottom: '10px', paddingLeft: '10px', borderLeft: '3px solid #4CAF50' }}>
+                      <label style={{ fontSize: '0.9em', color: '#666' }}>
+                        {mention.mention_type_name}
+                      </label>
+                      <input
+                        type="text"
+                        className="inputModal"
+                        value={mention.mention_name}
+                        disabled
+                        style={{ marginTop: '5px' }}
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+              <label>Precio del Evento</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${parseFloat(currentReservation.current_price || 0).toFixed(2)}`}
+                disabled
+              />
+              <label>Monto Pagado</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
+                disabled
+              />
+              <label>Estado</label>
+              <input
+                type="text"
+                className="inputModal"
+                value={STATUS_MAP[currentReservation.status] || currentReservation.status}
+                disabled
               />
             </div>
           ),
@@ -445,10 +437,19 @@ export default function Reservas() {
 
   function PaymentForm({ reservation, onSubmit }) {
     const [paidAmount, setPaidAmount] = useState(reservation?.paid_amount || 0);
+    const currentPrice = parseFloat(reservation?.current_price || 0);
+    const maxPayment = currentPrice;
 
     const handleSubmit = (e) => {
       e.preventDefault();
-      onSubmit({ paid_amount: paidAmount });
+      const amount = parseFloat(paidAmount);
+      
+      if (amount > maxPayment) {
+        alert(`El monto pagado no puede exceder el precio del evento: $ ${maxPayment.toFixed(2)}`);
+        return;
+      }
+      
+      onSubmit({ paid_amount: amount });
     };
 
     return (
@@ -458,7 +459,7 @@ export default function Reservas() {
           <input
             type="text"
             className="inputModal"
-            value={`$ ${parseFloat(reservation?.current_price || 0).toFixed(2)}`}
+            value={`$ ${currentPrice.toFixed(2)}`}
             disabled
           />
           
@@ -477,12 +478,13 @@ export default function Reservas() {
             value={paidAmount}
             onChange={(e) => setPaidAmount(e.target.value)}
             min="0"
+            max={maxPayment}
             step="0.01"
             required
           />
           
           <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
-            Ingrese el monto total acumulado que ha pagado el cliente
+            Ingrese el monto total acumulado que ha pagado el cliente (máximo: $ {maxPayment.toFixed(2)})
           </small>
         </div>
       </form>
@@ -516,9 +518,7 @@ export default function Reservas() {
           onAccept={modalProps.onAccept}
           onCancel={modalProps.onCancel}
         >
-          <div style={modalType === 'view' ? { minWidth: '1000px' } : {}}>
-            {modalProps.content}
-          </div>
+          {modalProps.content}
         </Modal>
       </div>
     </>
