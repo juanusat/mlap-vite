@@ -225,6 +225,11 @@ export default function ReservasPendientes() {
             onClick={() => handleOpenRequirementsSidebar(row)}
           />
           <MyButtonShortAction
+            type="print"
+            title="Imprimir"
+            onClick={() => window.print()}
+          />
+          <MyButtonShortAction
             type="delete"
             title="Cancelar"
             onClick={() => handleDeleteReservation(row)}

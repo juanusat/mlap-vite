@@ -95,3 +95,6 @@
 .btn-short-pay {
   color: var(--color-green-btn-hover);
 }
+.btn-short-print {
+  color: var(--color-n-800);
+}
