@@ -140,6 +140,181 @@ export default function ReservasPendientes() {
     setCurrentRequirements(null);
   };
 
+  // Función para imprimir el recibo de una reserva
+  const handlePrintReceipt = async (reservation) => {
+    try {
+      setLoading(true);
+      const details = await getReservationDetails(reservation.id);
+      const data = details.data;
+      
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Recibo de Reserva #${data.id}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              max-width: 600px;
+              margin: 20px auto;
+              padding: 20px;
+            }
+            .receipt {
+              border: 2px solid #333;
+              padding: 30px;
+              border-radius: 10px;
+            }
+            .header {
+              text-align: center;
+              border-bottom: 2px solid #333;
+              padding-bottom: 20px;
+              margin-bottom: 20px;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 24px;
+            }
+            .header p {
+              margin: 5px 0;
+              color: #666;
+            }
+            .section {
+              margin: 20px 0;
+            }
+            .row {
+              display: flex;
+              justify-content: space-between;
+              padding: 10px 0;
+              border-bottom: 1px solid #ddd;
+            }
+            .row:last-child {
+              border-bottom: none;
+            }
+            .label {
+              font-weight: bold;
+              color: #333;
+            }
+            .value {
+              color: #555;
+            }
+            .total {
+              margin-top: 20px;
+              padding-top: 20px;
+              border-top: 2px solid #333;
+              font-size: 18px;
+              font-weight: bold;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              color: #666;
+              font-size: 12px;
+            }
+            @media print {
+              body {
+                margin: 0;
+              }
+              .receipt {
+                border: none;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <div class="header">
+              <h1>RECIBO DE RESERVA</h1>
+              <p>Reserva #${data.id}</p>
+              <p>${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+            
+            <div class="section">
+              <h3>Información del Evento</h3>
+              <div class="row">
+                <span class="label">Evento:</span>
+                <span class="value">${data.event_variant_name}</span>
+              </div>
+              <div class="row">
+                <span class="label">Capilla:</span>
+                <span class="value">${data.chapel?.name || 'N/A'}</span>
+              </div>
+              ${data.chapel?.parish_name ? `
+              <div class="row">
+                <span class="label">Parroquia:</span>
+                <span class="value">${data.chapel.parish_name}</span>
+              </div>` : ''}
+              <div class="row">
+                <span class="label">Fecha:</span>
+                <span class="value">${new Date(data.event_date).toLocaleDateString('es-ES')}</span>
+              </div>
+              <div class="row">
+                <span class="label">Hora:</span>
+                <span class="value">${data.event_time ? data.event_time.substring(0, 5) : 'N/A'}</span>
+              </div>
+            </div>
+            
+            <div class="section">
+              <h3>Información del Beneficiario</h3>
+              <div class="row">
+                <span class="label">Nombre completo:</span>
+                <span class="value">${data.beneficiary_full_name}</span>
+              </div>
+            </div>
+            
+            <div class="section">
+              <h3>Detalles de Pago</h3>
+              <div class="row">
+                <span class="label">Precio del evento:</span>
+                <span class="value">$ ${parseFloat(data.current_price || 0).toFixed(2)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Monto pagado:</span>
+                <span class="value">$ ${parseFloat(data.paid_amount || 0).toFixed(2)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Saldo pendiente:</span>
+                <span class="value">$ ${(parseFloat(data.current_price || 0) - parseFloat(data.paid_amount || 0)).toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <div class="total">
+              <div class="row">
+                <span class="label">Estado:</span>
+                <span class="value">${
+                  data.status === 'RESERVED' ? 'Reservado' :
+                  data.status === 'IN_PROGRESS' ? 'En progreso' :
+                  data.status === 'CANCELLED' ? 'Cancelado' :
+                  data.status
+                }</span>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p>Gracias por su preferencia</p>
+              <p>Este es un comprobante de su reserva</p>
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = function() {
+                window.close();
+              };
+            };
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    } catch (err) {
+      console.error('Error al imprimir:', err);
+      alert(err.message || 'Error al generar el recibo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Función que se ejecuta al confirmar la eliminación
   const confirmDelete = async () => {
     if (reservationToDelete) {
@@ -227,7 +402,7 @@ export default function ReservasPendientes() {
           <MyButtonShortAction
             type="print"
             title="Imprimir"
-            onClick={() => window.print()}
+            onClick={() => handlePrintReceipt(row)}
           />
           <MyButtonShortAction
             type="delete"
