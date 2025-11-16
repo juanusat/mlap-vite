@@ -245,6 +245,7 @@ export default function Reservas() {
     { key: 'event_variant_name', header: 'Evento', accessor: (row) => row.event_variant_name },
     { key: 'chapel_name', header: 'Capilla', accessor: (row) => row.chapel_name },
     { key: 'event_date', header: 'Fecha', accessor: (row) => formatDate(row.event_date) },
+    { key: 'event_time', header: 'Hora', accessor: (row) => formatTime(row.event_time) },
     { key: 'current_price', header: 'Precio', accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` },
     { key: 'paid_amount', header: 'Pagado', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
     { key: 'status', header: 'Estado', accessor: (row) => STATUS_MAP[row.status] || row.status },
@@ -503,7 +504,7 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="70px 180px 1fr 160px 110px 100px 100px 120px 220px"
+            gridColumnsLayout="70px 180px 1fr 160px 110px 90px 100px 100px 120px 220px"
             columnLeftAlignIndex={[1, 2, 3]}
           />
         </div>
