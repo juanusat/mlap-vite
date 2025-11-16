@@ -151,65 +151,65 @@ export default function ReservasPendientes() {
       const printContainer = document.createElement('div');
       printContainer.style.display = 'none';
       printContainer.innerHTML = `
-        <div id="print-receipt" style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px;">
-          <div style="border: 2px solid #333; padding: 30px; border-radius: 10px;">
-            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px;">
-              <h1 style="margin: 0; font-size: 24px;">RECIBO DE RESERVA</h1>
-              <p style="margin: 5px 0; color: #666;">Reserva #${data.id}</p>
-              <p style="margin: 5px 0; color: #666;">${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <div id="print-receipt" style="font-family: Arial, sans-serif; max-width: 400px; margin: 10px auto; padding: 10px; font-size: 11px;">
+          <div style="border: 1px solid #333; padding: 15px;">
+            <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+              <h1 style="margin: 0; font-size: 16px;">RECIBO DE RESERVA</h1>
+              <p style="margin: 3px 0; color: #666; font-size: 10px;">Reserva #${data.id}</p>
+              <p style="margin: 3px 0; color: #666; font-size: 10px;">${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
             
-            <div style="margin: 20px 0;">
-              <h3>Información del Evento</h3>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+            <div style="margin: 10px 0;">
+              <h3 style="font-size: 12px; margin: 5px 0;">Información del Evento</h3>
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Evento:</span>
                 <span style="color: #555;">${data.event_variant_name}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Capilla:</span>
                 <span style="color: #555;">${data.chapel?.name || 'N/A'}</span>
               </div>
               ${data.chapel?.parish_name ? `
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Parroquia:</span>
                 <span style="color: #555;">${data.chapel.parish_name}</span>
               </div>` : ''}
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Fecha:</span>
                 <span style="color: #555;">${new Date(data.event_date).toLocaleDateString('es-ES')}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Hora:</span>
                 <span style="color: #555;">${data.event_time ? data.event_time.substring(0, 5) : 'N/A'}</span>
               </div>
             </div>
             
-            <div style="margin: 20px 0;">
-              <h3>Información del Beneficiario</h3>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+            <div style="margin: 10px 0;">
+              <h3 style="font-size: 12px; margin: 5px 0;">Información del Beneficiario</h3>
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Nombre completo:</span>
                 <span style="color: #555;">${data.beneficiary_full_name}</span>
               </div>
             </div>
             
-            <div style="margin: 20px 0;">
-              <h3>Detalles de Pago</h3>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+            <div style="margin: 10px 0;">
+              <h3 style="font-size: 12px; margin: 5px 0;">Detalles de Pago</h3>
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Precio del evento:</span>
                 <span style="color: #555;">$ ${parseFloat(data.current_price || 0).toFixed(2)}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #ddd;">
                 <span style="font-weight: bold; color: #333;">Monto pagado:</span>
                 <span style="color: #555;">$ ${parseFloat(data.paid_amount || 0).toFixed(2)}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
                 <span style="font-weight: bold; color: #333;">Saldo pendiente:</span>
                 <span style="color: #555;">$ ${(parseFloat(data.current_price || 0) - parseFloat(data.paid_amount || 0)).toFixed(2)}</span>
               </div>
             </div>
             
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #333; font-size: 18px; font-weight: bold;">
-              <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 12px; font-weight: bold;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
                 <span>Estado:</span>
                 <span>${
                   data.status === 'RESERVED' ? 'Reservado' :
@@ -220,9 +220,9 @@ export default function ReservasPendientes() {
               </div>
             </div>
             
-            <div style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
-              <p>Gracias por su preferencia</p>
-              <p>Este es un comprobante de su reserva</p>
+            <div style="margin-top: 15px; text-align: center; color: #666; font-size: 9px;">
+              <p style="margin: 3px 0;">Gracias por su preferencia</p>
+              <p style="margin: 3px 0;">Este es un comprobante de su reserva</p>
             </div>
           </div>
         </div>
