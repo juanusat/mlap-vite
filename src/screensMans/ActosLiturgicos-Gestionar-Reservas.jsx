@@ -482,10 +482,6 @@ export default function Reservas() {
             step="0.01"
             required
           />
-          
-          <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
-            Ingrese el monto total acumulado que ha pagado el cliente (máximo: $ {maxPayment.toFixed(2)})
-          </small>
         </div>
       </form>
     );
