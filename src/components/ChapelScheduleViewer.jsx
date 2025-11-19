@@ -56,12 +56,12 @@ const ChapelScheduleViewer = ({ chapelId, parishId, onCellClick = null, enableCe
         setLoading(true);
         setError(null);
         
-        const generalSchedulesResponse = await scheduleService.listGeneralSchedules(parishId, chapelId);
+        const generalSchedulesResponse = await scheduleService.publicListGeneralSchedules(parishId, chapelId);
         
         const startDate = weekDates[0].toISOString().split('T')[0];
         const endDate = weekDates[6].toISOString().split('T')[0];
         
-        const specificSchedulesResponse = await scheduleService.listSpecificSchedules(
+        const specificSchedulesResponse = await scheduleService.publicListSpecificSchedules(
           parishId, 
           chapelId, 
           1, 

@@ -824,7 +824,7 @@ export default function ActosLiturgicosHorarios() {
                     ? `- ${capillas[selectedCapillaIndex].nombre}` 
                     : ''}
             </h2>
-            {error && <div className="error-message" style={{padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
+            {error && <div className="error-message" style={{display: 'none', padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
             {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
             
             {selectedCapillaIndex === null ? (

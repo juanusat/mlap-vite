@@ -113,3 +113,35 @@ export const deleteSpecificSchedule = async (parishId, chapelId, scheduleId) => 
 
   return await handleResponse(response);
 };
+
+export const publicListGeneralSchedules = async (parishId, chapelId) => {
+  const response = await fetch(
+    `${API_URL}/api/public/schedules/parishes/${parishId}/chapels/${chapelId}/general-schedules/list`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    }
+  );
+
+  return await handleResponse(response);
+};
+
+export const publicListSpecificSchedules = async (parishId, chapelId, page = 1, limit = 100, filters = {}) => {
+  const response = await fetch(
+    `${API_URL}/api/public/schedules/parishes/${parishId}/chapels/${chapelId}/specific-schedules/list`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ page, limit, filters }),
+    }
+  );
+
+  return await handleResponse(response);
+};
