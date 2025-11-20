@@ -67,22 +67,16 @@ export default function ActosLiturgicos() {
     }
   ];
 
-  // Lógica de permisos adaptada para opciones anidadas
   const options = useMemo(() => {
-    // Función para verificar si una opción o alguno de sus hijos tiene permiso
     const filterOptions = (option) => {
-        // 1. Si es una opción con hijos (un grupo, como "Informes")
         if (option.children) {
-            // Filtra los hijos que tienen permiso
             const allowedChildren = option.children.filter(child => 
                 !child.permission || hasPermission(child.permission)
             );
             
-            // Si hay hijos permitidos, incluye el grupo padre (con sus hijos filtrados)
             if (allowedChildren.length > 0) {
                 return { ...option, children: allowedChildren };
             }
-            // Si no hay hijos permitidos, omite el grupo padre
             return null;
         }
 
