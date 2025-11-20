@@ -1,28 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Tabla from '../components/Tabla';
+import { getRoleFrequency } from '../services/reportService';
 import '../components/Tabla.css';
 import "../utils/Seguridad-Reporte01.css";
 
 export default function Reporte01S() {
-    React.useEffect(() => {
+    const [rolesData, setRolesData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [totalWorkers, setTotalWorkers] = useState(0);
+
+    useEffect(() => {
         document.title = "MLAP | Reporte 01-Seguridad";
+        loadRoleFrequency();
     }, []);
 
-    // Datos de ejemplo para frecuencia de roles
-    const rolesData = [
-        { id: 1, rol: 'Párroco', trabajadores: 50 },
-        { id: 2, rol: 'Secretario', trabajadores: 35 },
-        { id: 3, rol: 'Coordinador de Liturgia', trabajadores: 28 },
-        { id: 4, rol: 'Catequista', trabajadores: 45 },
-        { id: 5, rol: 'Ministro Extraordinario', trabajadores: 32 },
-        { id: 6, rol: 'Lector', trabajadores: 40 },
-        { id: 7, rol: 'Acólito', trabajadores: 25 },
-        { id: 8, rol: 'Coordinador de Música', trabajadores: 18 },
-        { id: 9, rol: 'Encargado de Mantenimiento', trabajadores: 15 },
-        { id: 10, rol: 'Tesorero', trabajadores: 12 }
-    ];
+    const loadRoleFrequency = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getRoleFrequency();
+            const roles = response.data.roles || [];
+            
+            const transformedData = roles.map((role) => ({
+                id: role.role_id,
+                rol: role.role_name,
+                trabajadores: parseInt(role.worker_count)
+            }));
+            
+            setRolesData(transformedData);
+            setTotalWorkers(response.data.total_workers);
+        } catch (error) {
+            console.error('Error al cargar frecuencia de roles:', error);
+            setRolesData([]);
+            setTotalWorkers(0);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-    // Definir columnas de la tabla
     const columns = [
         {
             key: 'rol',
@@ -39,17 +53,38 @@ export default function Reporte01S() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reporte 01: Frecuencia de roles asignados</h2>
+                <h2 className='title-screen'>Reporte 1: Frecuencia de roles asignados</h2>
                 <div className='app-container'>
-                    <div className="reporte-seguridad-container">
-                        <Tabla
-                            columns={columns}
-                            data={rolesData}
-                            itemsPerPage={10}
-                            gridColumnsLayout="1fr 200px"
-                            columnLeftAlignIndex={[1]}
-                        />
-                    </div>
+                    {isLoading && (
+                        <div className="loading-message">
+                            <p>Cargando datos...</p>
+                        </div>
+                    )}
+
+                    {!isLoading && (
+                        <div className="reporte-seguridad-container">
+                            <div className="reporte-summary">
+                                <div className="summary-card">
+                                    <span className="summary-label">Total de trabajadores asignados:</span>
+                                    <span className="summary-value">{totalWorkers}</span>
+                                </div>
+                            </div>
+
+                            {rolesData.length === 0 ? (
+                                <div className="empty-message">
+                                    <p>No hay datos de roles para mostrar.</p>
+                                </div>
+                            ) : (
+                                <Tabla
+                                    columns={columns}
+                                    data={rolesData}
+                                    itemsPerPage={10}
+                                    gridColumnsLayout="1fr 200px"
+                                    columnLeftAlignIndex={[1]}
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </>

@@ -1,90 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Tabla from '../components/Tabla';
 import '../components/Tabla.css';
 import "../utils/Usuario-Reporte01.css";
+import { getUserAuditLog } from '../services/reportService';
+
+const actionTypeLabels = {
+  'PASSWORD_CHANGE': 'Cambio de contraseña',
+  'ACCOUNT_ACTIVATED': 'Cuenta activada',
+  'ACCOUNT_DEACTIVATED': 'Cuenta desactivada',
+  'USERNAME_CHANGE': 'Cambio de nombre de usuario',
+  'ACCOUNT_CREATED': 'Cuenta creada',
+  'ACCOUNT_DELETED': 'Cuenta eliminada'
+};
 
 export default function Reporte01U() {
-    React.useEffect(() => {
+    const [auditLogsData, setAuditLogsData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [total, setTotal] = useState(0);
+
+    useEffect(() => {
         document.title = "MLAP | Reporte 01-Usuario";
+        loadUserAuditLog();
     }, []);
 
-    // Datos de ejemplo de la bitácora de cambios en la cuenta
-    const cambiosCuentaData = [
-        { 
-            id: 1, 
-            cambio: 'Actualización de contraseña', 
-            fecha: '23/10/2025 14:30',
-            usuario: 'Juan Pérez'
-        },
-        { 
-            id: 2, 
-            cambio: 'Cambio de correo electrónico', 
-            fecha: '22/10/2025 09:15',
-            usuario: 'María González'
-        },
-        { 
-            id: 3, 
-            cambio: 'Modificación de nombre de usuario', 
-            fecha: '21/10/2025 16:45',
-            usuario: 'Pedro Rodríguez'
-        },
-        { 
-            id: 4, 
-            cambio: 'Actualización de foto de perfil', 
-            fecha: '20/10/2025 11:20',
-            usuario: 'Ana Martínez'
-        },
-        { 
-            id: 5, 
-            cambio: 'Cambio de número de teléfono', 
-            fecha: '19/10/2025 08:50',
-            usuario: 'Carlos López'
-        },
-        { 
-            id: 6, 
-            cambio: 'Actualización de dirección', 
-            fecha: '18/10/2025 15:10',
-            usuario: 'Lucía Fernández'
-        },
-        { 
-            id: 7, 
-            cambio: 'Cambio de rol asignado', 
-            fecha: '17/10/2025 10:35',
-            usuario: 'Roberto Silva'
-        },
-        { 
-            id: 8, 
-            cambio: 'Actualización de contraseña', 
-            fecha: '16/10/2025 13:25',
-            usuario: 'Carmen Díaz'
-        },
-        { 
-            id: 9, 
-            cambio: 'Modificación de datos personales', 
-            fecha: '15/10/2025 17:00',
-            usuario: 'José Ramírez'
-        },
-        { 
-            id: 10, 
-            cambio: 'Cambio de configuración de privacidad', 
-            fecha: '14/10/2025 09:40',
-            usuario: 'Isabel Torres'
-        },
-        { 
-            id: 11, 
-            cambio: 'Actualización de correo electrónico', 
-            fecha: '13/10/2025 12:15',
-            usuario: 'Miguel Ángel Castro'
-        },
-        { 
-            id: 12, 
-            cambio: 'Cambio de contraseña', 
-            fecha: '12/10/2025 14:55',
-            usuario: 'Elena Morales'
-        }
-    ];
+    const loadUserAuditLog = async () => {
+        try {
+            setIsLoading(true);
+            const response = await getUserAuditLog();
+            
+            if (response.data && response.data.audit_logs) {
+                const transformedData = response.data.audit_logs.map(log => ({
+                    id: log.id,
+                    cambio: actionTypeLabels[log.action_type] || log.action_type,
+                    descripcion: log.description || '',
+                    fecha: new Date(log.created_at).toLocaleString('es-MX', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                }));
 
-    // Definir columnas de la tabla
+                setAuditLogsData(transformedData);
+                setTotal(response.data.total || 0);
+            }
+        } catch (error) {
+            console.error('Error al cargar bitácora de usuario:', error);
+            setAuditLogsData([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const columns = [
         {
             key: 'cambio',
@@ -101,19 +69,23 @@ export default function Reporte01U() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reporte 01: Cambios en la cuenta</h2>
+                <h2 className='title-screen'>Reporte 1: Cambios en la cuenta</h2>
                 <div className='app-container'>
                     <div className="reporte-usuario-container">
                         <div className="reporte-info">
                             <p>Historial de cambios registrados en la bitácora de usuario</p>
                         </div>
-                        <Tabla
-                            columns={columns}
-                            data={cambiosCuentaData}
-                            itemsPerPage={10}
-                            gridColumnsLayout="2fr 1fr"
-                            columnLeftAlignIndex={[1]}
-                        />
+                        {isLoading ? (
+                            <p>Cargando datos...</p>
+                        ) : (
+                            <Tabla
+                                columns={columns}
+                                data={auditLogsData}
+                                itemsPerPage={10}
+                                gridColumnsLayout="2fr 1fr"
+                                columnLeftAlignIndex={[1]}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

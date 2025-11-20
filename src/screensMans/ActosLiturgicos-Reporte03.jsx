@@ -1,27 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MyButtonShortAction from '../components/MyButtonShortAction';
 import MySchedule from '../components/MySchedule';
+import { getOccupancyMap } from '../services/reportService';
+import { searchChapels } from '../services/chapelService';
 import '../components/MyButtonShortAction.css';
 import "../utils/ActosLiturgicos-Reporte03.css";
 
 export default function Reporte03A() {
-    React.useEffect(() => {
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [selectedChapel, setSelectedChapel] = useState(null);
+    const [availableChapels, setAvailableChapels] = useState([]);
+    const [occupancyData, setOccupancyData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
         document.title = "MLAP | Reporte 03-Actos liturgicos";
+        loadAvailableChapels();
     }, []);
 
-    // Mes actual
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    useEffect(() => {
+        if (selectedChapel) {
+            fetchOccupancyByChapel(selectedChapel);
+        }
+    }, [selectedChapel, currentMonth]);
 
-    // Datos de ejemplo para la ocupación (porcentaje de 0-100)
-    // En producción, estos datos vendrían del backend
-    const occupancyData = {
-        0: { 0: 0, 1: 15, 2: 30, 3: 60, 4: 25, 5: 90, 6: 95, 7: 5, 8: 80, 9: 45 }, // Lun
-        1: { 0: 20, 1: 55, 2: 70, 3: 40, 4: 80, 5: 35, 6: 50, 7: 10, 8: 65, 9: 88 }, // Mar
-        2: { 0: 40, 1: 90, 2: 95, 3: 75, 4: 30, 5: 85, 6: 65, 7: 18, 8: 52, 9: 77 }, // Mie
-        3: { 0: 95, 1: 70, 2: 50, 3: 85, 4: 40, 5: 60, 6: 30, 7: 22, 8: 48, 9: 92 }, // Jue
-        4: { 0: 30, 1: 60, 2: 45, 3: 90, 4: 75, 5: 55, 6: 20, 7: 12, 8: 68, 9: 83 }, // Vie
-        5: { 0: 75, 1: 40, 2: 85, 3: 95, 4: 50, 5: 90, 6: 70, 7: 28, 8: 100, 9: 58 }, // Sab
-        6: { 0: 90, 1: 75, 2: 60, 3: 85, 4: 95, 5: 40, 6: 95, 7: 35, 8: 72, 9: 62 }  // Dom
+    const loadAvailableChapels = async () => {
+        try {
+            const response = await searchChapels(1, 100, '');
+            const chapels = response.data || [];
+            setAvailableChapels(chapels);
+            if (chapels.length > 0) {
+                setSelectedChapel(chapels[0].name);
+            }
+        } catch (error) {
+            console.error('Error al cargar capillas:', error);
+        }
+    };
+
+    const fetchOccupancyByChapel = async (chapelName) => {
+        setIsLoading(true);
+        try {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth() + 1;
+            const response = await getOccupancyMap(chapelName, year, month);
+            
+            const transformedData = {};
+            const occupancyArray = response.data.occupancy || [];
+            
+            occupancyArray.forEach(slot => {
+                const timeIndex = timeSlots.findIndex(t => t.startsWith(slot.time));
+                if (timeIndex === -1) return;
+                
+                transformedData[0] = transformedData[0] || {};
+                transformedData[1] = transformedData[1] || {};
+                transformedData[2] = transformedData[2] || {};
+                transformedData[3] = transformedData[3] || {};
+                transformedData[4] = transformedData[4] || {};
+                transformedData[5] = transformedData[5] || {};
+                transformedData[6] = transformedData[6] || {};
+                
+                transformedData[0][timeIndex] = slot.monday || 0;
+                transformedData[1][timeIndex] = slot.tuesday || 0;
+                transformedData[2][timeIndex] = slot.wednesday || 0;
+                transformedData[3][timeIndex] = slot.thursday || 0;
+                transformedData[4][timeIndex] = slot.friday || 0;
+                transformedData[5][timeIndex] = slot.saturday || 0;
+                transformedData[6][timeIndex] = slot.sunday || 0;
+            });
+            
+            setOccupancyData(transformedData);
+        } catch (error) {
+            console.error('Error al cargar datos de ocupación:', error);
+            setOccupancyData({});
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const timeSlots = [
@@ -68,77 +121,104 @@ export default function Reporte03A() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reporte 03: Horarios con más/menos ocupación</h2>
+                <h2 className='title-screen'>Mapa 1: Horarios con más/menos ocupación</h2>
                 <div className='app-container'>
                     <div className="reporte03-container">
                         
-                        {/* Navegación de mes */}
-                        <div className="month-navigation">
-                            <MyButtonShortAction
-                                type="back"
-                                title="Mes anterior"
-                                onClick={() => navigateMonth(-1)}
-                            />
-                            <span className="month-info">
-                                {getMonthYear()}
-                            </span>
-                            <MyButtonShortAction
-                                type="next"
-                                title="Mes siguiente"
-                                onClick={() => navigateMonth(1)}
-                            />
-                        </div>
+                        <div className="controls-row">
+                            <div className="chapel-selector">
+                                <label htmlFor="chapel-select-occupancy">Capilla:</label>
+                                <select 
+                                    id="chapel-select-occupancy"
+                                    value={selectedChapel || ''}
+                                    onChange={(e) => setSelectedChapel(e.target.value)}
+                                    disabled={isLoading}
+                                >
+                                    {availableChapels.map(chapel => (
+                                        <option key={chapel.id} value={chapel.name}>
+                                            {chapel.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        {/* Leyenda de ocupación - Mapa de calor */}
-                        <div className='occupancy-legend'>
-                            <span className='legend-title'>Nivel de ocupación (Mapa de calor):</span>
-                            <div className='legend-item'>
-                                <div className='legend-color heatmap-zero'></div>
-                                <span>0%</span>
-                            </div>
-                            <div className='legend-item'>
-                                <div className='legend-color heatmap-low'></div>
-                                <span>1-25%</span>
-                            </div>
-                            <div className='legend-item'>
-                                <div className='legend-color heatmap-medium-low'></div>
-                                <span>26-50%</span>
-                            </div>
-                            <div className='legend-item'>
-                                <div className='legend-color heatmap-medium-high'></div>
-                                <span>51-75%</span>
-                            </div>
-                            <div className='legend-item'>
-                                <div className='legend-color heatmap-high'></div>
-                                <span>76-100%</span>
+                            <div className="month-navigation">
+                                <MyButtonShortAction
+                                    type="back"
+                                    title="Mes anterior"
+                                    onClick={() => navigateMonth(-1)}
+                                    disabled={isLoading}
+                                />
+                                <span className="month-info">
+                                    {getMonthYear()}
+                                </span>
+                                <MyButtonShortAction
+                                    type="next"
+                                    title="Mes siguiente"
+                                    onClick={() => navigateMonth(1)}
+                                    disabled={isLoading}
+                                />
                             </div>
                         </div>
 
-                        {/* Grilla de horarios - Mapa de calor */}
-                        <MySchedule
-                            timeSlots={timeSlots}
-                            daysOfWeek={daysOfWeek}
-                            showDates={false}
-                            mode="heatmap"
-                            renderCell={(rowIndex, colIndex) => {
-                                const occupancy = occupancyData[colIndex]?.[rowIndex] || 0;
-                                const bgColor = getHeatmapColor(occupancy);
-                                const textColor = getTextColor(occupancy);
-                                
-                                return (
-                                    <div
-                                        className="grid-cell heatmap-cell"
-                                        style={{ 
-                                            backgroundColor: bgColor,
-                                            color: textColor
-                                        }}
-                                        title={`Ocupación: ${occupancy}%`}
-                                    >
-                                        <span className="heatmap-percentage">{occupancy}%</span>
+                        {isLoading && (
+                            <div className="loading-message">
+                                <p>Cargando datos de ocupación...</p>
+                            </div>
+                        )}
+
+                        {!isLoading && (
+                            <>
+                                <div className='occupancy-legend'>
+                                    <span className='legend-title'>Nivel de ocupación (Mapa de calor):</span>
+                                    <div className='legend-item'>
+                                        <div className='legend-color heatmap-zero'></div>
+                                        <span>0%</span>
                                     </div>
-                                );
-                            }}
-                        />
+                                    <div className='legend-item'>
+                                        <div className='legend-color heatmap-low'></div>
+                                        <span>1-25%</span>
+                                    </div>
+                                    <div className='legend-item'>
+                                        <div className='legend-color heatmap-medium-low'></div>
+                                        <span>26-50%</span>
+                                    </div>
+                                    <div className='legend-item'>
+                                        <div className='legend-color heatmap-medium-high'></div>
+                                        <span>51-75%</span>
+                                    </div>
+                                    <div className='legend-item'>
+                                        <div className='legend-color heatmap-high'></div>
+                                        <span>76-100%</span>
+                                    </div>
+                                </div>
+
+                                <MySchedule
+                                    timeSlots={timeSlots}
+                                    daysOfWeek={daysOfWeek}
+                                    showDates={false}
+                                    mode="heatmap"
+                                    renderCell={(rowIndex, colIndex) => {
+                                        const occupancy = occupancyData[colIndex]?.[rowIndex] || 0;
+                                        const bgColor = getHeatmapColor(occupancy);
+                                        const textColor = getTextColor(occupancy);
+                                        
+                                        return (
+                                            <div
+                                                className="grid-cell heatmap-cell"
+                                                style={{ 
+                                                    backgroundColor: bgColor,
+                                                    color: textColor
+                                                }}
+                                                title={`Ocupación: ${occupancy}%`}
+                                            >
+                                                <span className="heatmap-percentage">{occupancy}%</span>
+                                            </div>
+                                        );
+                                    }}
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
