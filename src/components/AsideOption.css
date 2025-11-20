@@ -6,6 +6,7 @@
     background-color: transparent;
     transition: background 0.2s;
     padding-inline-end: var(--space-xs);
+    cursor: pointer;
 }
 
 .aside-group-header:hover {
