@@ -40,12 +40,16 @@ export default function Reporte01R() {
         }
     };
 
-    // Definir columnas de la tabla
     const columns = [
         {
             key: 'evento',
             header: 'Evento',
             accessor: (row) => row.evento
+        },
+        {
+            key: 'capilla',
+            header: 'Capilla',
+            accessor: (row) => row.capilla
         },
         {
             key: 'parroquia',
@@ -56,29 +60,49 @@ export default function Reporte01R() {
             key: 'fecha',
             header: 'Fecha',
             accessor: (row) => row.fecha
+        },
+        {
+            key: 'hora',
+            header: 'Hora',
+            accessor: (row) => row.hora
         }
     ];
 
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reporte 01: Cantidad de reservas canceladas</h2>
+                <h2 className='title-screen'>Reporte 1: Reservas canceladas</h2>
                 <div className='app-container'>
-                    <div className="reporte-reservas-container">
-                        <div className="reporte-summary">
-                            <div className="summary-card">
-                                <span className="summary-label">Total de reservas canceladas:</span>
-                                <span className="summary-value">{reservasCanceladasData.length}</span>
-                            </div>
+                    {isLoading && (
+                        <div className="loading-message">
+                            <p>Cargando datos...</p>
                         </div>
-                        <Tabla
-                            columns={columns}
-                            data={reservasCanceladasData}
-                            itemsPerPage={10}
-                            gridColumnsLayout="1fr 2fr 150px"
-                            columnLeftAlignIndex={[1, 2]}
-                        />
-                    </div>
+                    )}
+
+                    {!isLoading && (
+                        <div className="reporte-reservas-container">
+                            <div className="reporte-summary">
+                                <div className="summary-card">
+                                    <span className="summary-label">Total de reservas canceladas:</span>
+                                    <span className="summary-value">{total}</span>
+                                </div>
+                            </div>
+                            
+                            {reservasCanceladasData.length === 0 ? (
+                                <div className="empty-message">
+                                    <p>No hay reservas canceladas.</p>
+                                </div>
+                            ) : (
+                                <Tabla
+                                    columns={columns}
+                                    data={reservasCanceladasData}
+                                    itemsPerPage={10}
+                                    gridColumnsLayout="1fr 1.5fr 1.5fr 120px 80px"
+                                    columnLeftAlignIndex={[1, 2]}
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </>
