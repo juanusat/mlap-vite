@@ -144,3 +144,20 @@ export const getCompletedReservations = async () => {
 
   return await response.json();
 };
+
+export const getRoleFrequency = async () => {
+  const response = await fetch(`${API_URL}/api/reports/role-frequency`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener frecuencia de roles');
+  }
+
+  return await response.json();
+};
