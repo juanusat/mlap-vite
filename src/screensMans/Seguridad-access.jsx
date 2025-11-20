@@ -31,16 +31,18 @@ export default function Seguridad() {
       label: 'Informes',
       icon: <MdBarChart />,
       href: null,
+      show: true,
       children: [
         {
           href: 'reporte01-s',
           icon: <MdDomainVerification />,
-          label: 'Reporte 01'
+          label: 'Reporte 01',
+          show: true
         }
       ]
     },
 
-  ];
+  ].filter(option => option.show);
 
   return (
     <ScreenMan title="Módulo de seguridad" options={options}>

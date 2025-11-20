@@ -41,7 +41,6 @@ export default function ActosLiturgicos() {
       label: 'Gestionar reservas',
       permission: PERMISSIONS.ACTOS_LITURGICOS_RESER_R
     },
-    // Opción Agrupada para Informes/Reportes
     {
       label: 'Informes', // Nuevo nombre de la opción
       icon: <MdBarChart />, // Icono sugerido para informes (MdBarChart)
