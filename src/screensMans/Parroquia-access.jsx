@@ -1,13 +1,13 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdAccountBalance, MdHomeFilled } from "react-icons/md";
+import { MdAccountBalance, MdHomeFilled, MdDomainVerification, MdBarChart } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
 import '../utils/Modulo-Parroquia.css';
 
 export default function Parroquia() {
-    React.useEffect(() => {
+  React.useEffect(() => {
     document.title = "MLAP | Módulo parroquia";
   }, []);
   const location = useLocation();
@@ -15,23 +15,31 @@ export default function Parroquia() {
   const { hasPermission, isParishAdmin } = usePermissions();
 
   const options = [
-    { 
-      href: 'gestionar-cuenta', 
-      icon: <MdAccountBalance />, 
+    {
+      href: 'gestionar-cuenta',
+      icon: <MdAccountBalance />,
       label: 'Gestionar cuenta',
       show: isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_INFO_R) || hasPermission(PERMISSIONS.PARROQUIA_DATOS_CUENTA_R)
     },
-    { 
-      href: 'gestionar-capilla', 
-      icon: <MdHomeFilled />, 
+    {
+      href: 'gestionar-capilla',
+      icon: <MdHomeFilled />,
       label: 'Gestionar capilla',
       show: isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_R)
     },
-    { 
-      href: 'reporte01-p', 
-      icon: <MdAccountBalance />, 
-      label: 'Reporte 01',
-      show: true
+    {
+      label: 'Informes',
+      icon: <MdBarChart />,
+      href: null,
+      show: true,
+      children: [
+        {
+          href: 'reporte01-p',
+          icon: <MdDomainVerification />,
+          label: 'Gráfico 01',
+          show: true
+        }
+      ]
     },
   ].filter(option => option.show);
 

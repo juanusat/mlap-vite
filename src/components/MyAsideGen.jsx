@@ -1,8 +1,10 @@
+// MyAsideGen.jsx (Modificado)
 import React from 'react';
 import '../App.css';
 import { MdOutlineHome } from "react-icons/md";
 import './MyAsideGen.css';
 import MyAsideButton1 from './MyAsideButton1';
+import AsideOption from './AsideOption'; // <-- IMPORTANTE: Importar el nuevo componente
 
 export default function MyAsideGen({ title, options = [], isOpen, onToggle }) {
   return (
@@ -14,15 +16,13 @@ export default function MyAsideGen({ title, options = [], isOpen, onToggle }) {
         <hr className='mt-2 mb-4' />
         <div className="titleModule mt-2 mb-1">{title}</div>
         <nav className="mlap-home-sidebar-nav">
+          {/* USAMOS ASIDEOPTION PARA MANEJAR OPCIONES SIMPLES O GRUPOS */}
           {options.map((option, index) => (
-            <MyAsideButton1 
-              key={index} 
-              href={option.href} 
-              icon={option.icon}
-              onClick={onToggle}
-            >
-              {option.label}
-            </MyAsideButton1>
+            <AsideOption 
+              key={option.href || option.label || index} // Usar label si no hay href (es un grupo)
+              option={option} 
+              onToggle={onToggle}
+            />
           ))}
         </nav>
       </aside>

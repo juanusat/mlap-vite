@@ -1,7 +1,7 @@
 .screenman-aside {
     color: var(--color-n-0);
-    min-width:var(--min-width-small);
-    background: var(--color-b-500,var(--color-n-0));
+    min-width: var(--min-width-small);
+    background: var(--color-b-500, var(--color-n-0));
     border-right: var(--border-width-s) solid var(--color-n-50);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.04);
     transition: transform 0.3s ease-in-out;
@@ -31,6 +31,8 @@ hr {
     display: none;
 }
 
+
+
 @media (max-width: 1024px) {
     .screenman-aside {
         position: absolute;
@@ -42,11 +44,11 @@ hr {
         z-index: 1001;
         transform: translateX(-100%);
     }
-    
+
     .screenman-aside.open {
         transform: translateX(0);
     }
-    
+
     /* El overlay solo se muestra en modo responsivo */
     .aside-overlay {
         display: inline-block;
@@ -65,6 +67,7 @@ hr {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }

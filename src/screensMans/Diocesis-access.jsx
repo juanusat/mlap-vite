@@ -1,11 +1,11 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdDomainVerification } from "react-icons/md";
+import { MdDomainVerification, MdBarChart } from "react-icons/md";
 import { href, Outlet, useLocation } from 'react-router-dom';
-import '../utils/Modulo-Actos.css'; // puedes usar el mismo CSS para mantener consistencia
+import '../utils/Modulo-Actos.css'; 
 
 export default function Diocesis() {
-    React.useEffect(() => {
+  React.useEffect(() => {
     document.title = "MLAP | Módulo diócesis";
   }, []);
   const location = useLocation();
@@ -17,7 +17,18 @@ export default function Diocesis() {
     { href: 'gestionar-cuenta-parroquia', icon: <MdDomainVerification />, label: 'Gestionar parroquias' },
     { href: 'gestionar-eventos-generales', icon: <MdDomainVerification />, label: 'Gestionar eventos generales' },
     { href: 'gestionar-requisitos-generales', icon: <MdDomainVerification />, label: 'Gestionar requisitos generales' },
-    {href: 'reporte01-d', icon: <MdDomainVerification />, label: 'Reporte 01' },
+    {
+      label: 'Informes',
+      icon: <MdBarChart />,
+      href: null,
+      children: [
+        {
+          href: 'reporte01-d',
+          icon: <MdDomainVerification />,
+          label: 'Gráfico 01'
+        }
+      ]
+    }
   ];
 
   return (

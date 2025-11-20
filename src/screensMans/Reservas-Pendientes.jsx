@@ -286,15 +286,15 @@ export default function ReservasPendientes() {
               <h3>Detalles de Pago</h3>
               <div class="row">
                 <span class="label">Precio del evento:</span>
-                <span class="value">$ ${parseFloat(data.current_price || 0).toFixed(2)}</span>
+                <span class="value">S/. ${parseFloat(data.current_price || 0).toFixed(2)}</span>
               </div>
               <div class="row">
                 <span class="label">Monto pagado:</span>
-                <span class="value">$ ${parseFloat(data.paid_amount || 0).toFixed(2)}</span>
+                <span class="value">S/. ${parseFloat(data.paid_amount || 0).toFixed(2)}</span>
               </div>
               <div class="row">
                 <span class="label">Saldo pendiente:</span>
-                <span class="value">$ ${(parseFloat(data.current_price || 0) - parseFloat(data.paid_amount || 0)).toFixed(2)}</span>
+                <span class="value">S/. ${(parseFloat(data.current_price || 0) - parseFloat(data.paid_amount || 0)).toFixed(2)}</span>
               </div>
             </div>
             
