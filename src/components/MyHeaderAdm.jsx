@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoWhite from './../assets/logo-mlap-white.svg';
 import { MdNotificationsNone, MdClose, MdArrowForward, MdLogout } from "react-icons/md";
 import './MyHeaderAdm.css';
 import '../App.css';
-import NotificacionSimple from './NotificacionSimple';
+import NotificationModal from './NotificationModal';
 import useLogout from '../hooks/useLogout';
 import useSession from '../hooks/useSession';
+import * as notificationService from '../services/notificationService';
 
 const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
@@ -15,8 +16,9 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const logout = useLogout();
   const [notificacionesModalOpen, setNotificacionesModalOpen] = useState(false);
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
 
-  // Usar el hook personalizado para manejar la sesión
   const { sessionData, loading, error, refetch, changeRole, clearError } = useSession(logout);
 
   const handleRolSelect = async (rol) => {
@@ -104,26 +106,35 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
     return `${API_URL}/api/static/uploads/${photoFilename}`;
   };
 
-  // Datos de ejemplo para las notificaciones
-  const [notificaciones, setNotificaciones] = useState([
-    { id: 1, mensaje: "Nueva solicitud de documento pendiente de revisión", fecha: "Hace 5 minutos", leida: false },
-    { id: 2, mensaje: "Documento aprobado: DNI-001", fecha: "Hace 1 hora", leida: false },
-    { id: 3, mensaje: "Actualización del sistema completada", fecha: "Hace 2 horas", leida: true },
-    { id: 4, mensaje: "Nuevo usuario registrado en el sistema", fecha: "Hace 3 horas", leida: false },
-    { id: 5, mensaje: "Mantenimiento programado para mañana", fecha: "Hace 4 horas", leida: true },
-    { id: 6, mensaje: "Reporte mensual disponible", fecha: "Hace 5 horas", leida: true },
-    { id: 7, mensaje: "Nueva política de documentación publicada", fecha: "Hace 6 horas", leida: false },
-    { id: 8, mensaje: "Recordatorio: Reunión de equipo", fecha: "Hace 7 horas", leida: true },
-    { id: 9, mensaje: "Actualización de permisos completada", fecha: "Hace 8 horas", leida: true },
-    { id: 10, mensaje: "Backup del sistema realizado con éxito", fecha: "Hace 9 horas", leida: true },
-  ]);
+  useEffect(() => {
+    if (notificacionesModalOpen) {
+      fetchNotifications();
+    }
+  }, [notificacionesModalOpen]);
 
-  const handleMarcarLeida = (notifId) => {
-    setNotificaciones(prev => 
-      prev.map(notif => 
-        notif.id === notifId ? { ...notif, leida: true } : notif
-      )
-    );
+  const fetchNotifications = async () => {
+    try {
+      setLoadingNotifications(true);
+      const response = await notificationService.getNotifications();
+      setNotifications(response.data || []);
+    } catch (err) {
+      console.error('Error al cargar notificaciones:', err);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await notificationService.markAsRead(notificationId);
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif.id === notificationId ? { ...notif, read: true } : notif
+        )
+      );
+    } catch (err) {
+      console.error('Error al marcar notificación como leída:', err);
+    }
   };
 
   return (
@@ -198,33 +209,12 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
         </div>
       </header>
 
-      {notificacionesModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-notificaciones">
-            <div className="modal-notificaciones-header">
-              <h2>Notificaciones</h2>
-              <button
-                className="btn-nb"
-                onClick={() => setNotificacionesModalOpen(false)}
-                style={{ color: 'var(--color-n-900)' }}
-              >
-                <MdClose />
-              </button>
-            </div>
-            <div className="notificaciones-lista">
-              {notificaciones.map((notif) => (
-                <NotificacionSimple
-                  key={notif.id}
-                  mensaje={notif.mensaje}
-                  fecha={notif.fecha}
-                  leida={notif.leida}
-                  onMarcarLeida={() => handleMarcarLeida(notif.id)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <NotificationModal
+        isOpen={notificacionesModalOpen}
+        onClose={() => setNotificacionesModalOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+      />
 
       {perfilModalOpen && (
         <div className="modal-overlay">
