@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MdCheckCircleOutline, MdCheckCircle } from 'react-icons/md';
 import './NotificacionSimple.css';
 
-export default function NotificacionSimple({ mensaje, fecha, leida = false, onMarcarLeida }) {
+export default function NotificacionSimple({ mensaje, body, fecha, leida = false, onMarcarLeida }) {
   const [isLeida, setIsLeida] = useState(leida);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -19,6 +19,7 @@ export default function NotificacionSimple({ mensaje, fecha, leida = false, onMa
     <div className={`notificacion-simple ${isLeida ? 'leida' : 'no-leida'}`}>
       <div className="notificacion-contenido">
         <p className="notificacion-mensaje">{mensaje}</p>
+        {body && <p className="notificacion-body">{body}</p>}
         <span className="notificacion-fecha">{fecha}</span>
       </div>
       {!isLeida && (
