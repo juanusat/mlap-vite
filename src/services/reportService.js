@@ -110,3 +110,37 @@ export const getChapelEvents = async (parishName, chapelName) => {
 
   return await response.json();
 };
+
+export const getCancelledReservations = async () => {
+  const response = await fetch(`${API_URL}/api/reports/cancelled-reservations`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener reservas canceladas');
+  }
+
+  return await response.json();
+};
+
+export const getCompletedReservations = async () => {
+  const response = await fetch(`${API_URL}/api/reports/completed-reservations`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener reservas completadas');
+  }
+
+  return await response.json();
+};

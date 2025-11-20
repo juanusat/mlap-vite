@@ -1,88 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Tabla from '../components/Tabla';
+import { getCancelledReservations } from '../services/reportService';
 import '../components/Tabla.css';
 import "../utils/Reservas-Reporte01.css";
 
 export default function Reporte01R() {
-    React.useEffect(() => {
+    const [reservasCanceladasData, setReservasCanceladasData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [total, setTotal] = useState(0);
+
+    useEffect(() => {
         document.title = "MLAP | Reporte 01-Reservas";
+        loadCancelledReservations();
     }, []);
 
-    // Datos de ejemplo para reservas canceladas
-    const reservasCanceladasData = [
-        { 
-            id: 1, 
-            evento: 'Bautismo', 
-            parroquia: 'Parroquia Santa María',
-            fecha: '20/10/2025'
-        },
-        { 
-            id: 2, 
-            evento: 'Matrimonio', 
-            parroquia: 'Parroquia San José',
-            fecha: '19/10/2025'
-        },
-        { 
-            id: 3, 
-            evento: 'Confirmación', 
-            parroquia: 'Parroquia del Carmen',
-            fecha: '18/10/2025'
-        },
-        { 
-            id: 4, 
-            evento: 'Primera Comunión', 
-            parroquia: 'Parroquia Santa Ana',
-            fecha: '17/10/2025'
-        },
-        { 
-            id: 5, 
-            evento: 'Bautismo', 
-            parroquia: 'Parroquia San Miguel',
-            fecha: '16/10/2025'
-        },
-        { 
-            id: 6, 
-            evento: 'Matrimonio', 
-            parroquia: 'Parroquia María Auxiliadora',
-            fecha: '15/10/2025'
-        },
-        { 
-            id: 7, 
-            evento: 'Confirmación', 
-            parroquia: 'Parroquia San Pedro',
-            fecha: '14/10/2025'
-        },
-        { 
-            id: 8, 
-            evento: 'Bautismo', 
-            parroquia: 'Parroquia Santa Rosa',
-            fecha: '13/10/2025'
-        },
-        { 
-            id: 9, 
-            evento: 'Primera Comunión', 
-            parroquia: 'Parroquia San Juan',
-            fecha: '12/10/2025'
-        },
-        { 
-            id: 10, 
-            evento: 'Matrimonio', 
-            parroquia: 'Parroquia Nuestra Señora de Fátima',
-            fecha: '11/10/2025'
-        },
-        { 
-            id: 11, 
-            evento: 'Confirmación', 
-            parroquia: 'Parroquia Santa Teresa',
-            fecha: '10/10/2025'
-        },
-        { 
-            id: 12, 
-            evento: 'Bautismo', 
-            parroquia: 'Parroquia San Francisco',
-            fecha: '09/10/2025'
+    const loadCancelledReservations = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getCancelledReservations();
+            const reservations = response.data.reservations || [];
+            
+            const transformedData = reservations.map((res, index) => ({
+                id: res.id,
+                evento: res.event_name,
+                parroquia: res.parish_name,
+                capilla: res.chapel_name,
+                fecha: new Date(res.event_date).toLocaleDateString('es-ES'),
+                hora: res.event_time.substring(0, 5)
+            }));
+            
+            setReservasCanceladasData(transformedData);
+            setTotal(response.data.total);
+        } catch (error) {
+            console.error('Error al cargar reservas canceladas:', error);
+            setReservasCanceladasData([]);
+            setTotal(0);
+        } finally {
+            setIsLoading(false);
         }
-    ];
+    };
 
     // Definir columnas de la tabla
     const columns = [
