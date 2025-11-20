@@ -161,3 +161,20 @@ export const getRoleFrequency = async () => {
 
   return await response.json();
 };
+
+export const getUserAuditLog = async () => {
+  const response = await fetch(`${API_URL}/api/reports/user-audit-log`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener bitácora de usuario');
+  }
+
+  return await response.json();
+};
