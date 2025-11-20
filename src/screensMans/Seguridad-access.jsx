@@ -1,13 +1,13 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdAccountBox, MdRecentActors } from "react-icons/md";
+import { MdAccountBox, MdRecentActors, MdDomainVerification, MdBarChart  } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
 import '../utils/Modulo-Seguridad.css';
 
 export default function Seguridad() {
-    React.useEffect(() => {
+  React.useEffect(() => {
     document.title = "MLAP | Módulo seguridad";
   }, []);
   const location = useLocation();
@@ -15,25 +15,32 @@ export default function Seguridad() {
   const { hasPermission, isParishAdmin } = usePermissions();
 
   const options = [
-    { 
-      href: 'cuentas-gestionar', 
-      icon: <MdAccountBox />, 
+    {
+      href: 'cuentas-gestionar',
+      icon: <MdAccountBox />,
       label: 'Gestionar cuentas',
       show: isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ASOC_USER_R)
     },
-    { 
-      href: 'roles-gestionar', 
-      icon: <MdRecentActors />, 
+    {
+      href: 'roles-gestionar',
+      icon: <MdRecentActors />,
       label: 'Gestionar roles',
       show: isParishAdmin || hasPermission(PERMISSIONS.SEGURIDAD_ROL_R)
     },
-    { 
-      href: 'reporte01-s', 
-      icon: <MdRecentActors />, 
-      label: 'Reporte 01',
-      show: true
+    {
+      label: 'Informes',
+      icon: <MdBarChart />,
+      href: null,
+      children: [
+        {
+          href: 'reporte01-s',
+          icon: <MdDomainVerification />,
+          label: 'Reporte 01'
+        }
+      ]
     },
-  ].filter(option => option.show);
+
+  ];
 
   return (
     <ScreenMan title="Módulo de seguridad" options={options}>
