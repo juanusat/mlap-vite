@@ -40,7 +40,6 @@
 .notificaciones-lista {
   overflow-y: auto;
   flex: 1;
-  padding: 1rem;
 }
 
 .sin-notificaciones {
