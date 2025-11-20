@@ -1,67 +1,80 @@
-import React from 'react';
-import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
-import '../components/MyButtonMediumIcon.css';
+import React, { useState, useEffect } from 'react';
 import DateInput from '../components/formsUI/DateInput';
+import { getReservationsByDateRange } from '../services/reportService';
 import "../utils/ActosLiturgicos-Reporte02.css";
 
 export default function Reporte02A() {
-    const [startDate, setStartDate] = React.useState('');
-    const [endDate, setEndDate] = React.useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [chartData, setChartData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Datos de ejemplo para el gráfico de líneas
-    const chartData = [
-        { day: 1, value: 20 },
-        { day: 2, value: 120 },
-        { day: 3, value: 165 },
-        { day: 4, value: 165 },
-        { day: 5, value: 260 },
-        { day: 6, value: 315 },
-        { day: 7, value: 220 },
-        { day: 8, value: 165 },
-        { day: 9, value: 105 },
-        { day: 10, value: 105 }
-    ];
+    useEffect(() => {
+        document.title = "MLAP | Reporte 02-Actos liturgicos";
+    }, []);
 
-    // Calcular valores mínimo y máximo para escala
-    const maxValue = Math.max(...chartData.map(d => d.value));
+    const loadData = async () => {
+        if (!startDate || !endDate) {
+            alert('Por favor seleccione ambas fechas');
+            return;
+        }
+
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('La fecha de inicio debe ser anterior a la fecha de fin');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await getReservationsByDateRange(startDate, endDate);
+            const transformedData = response.data.daily_reservations.map(item => ({
+                day: parseInt(item.day_number),
+                value: parseInt(item.count),
+                date: item.date
+            }));
+            setChartData(transformedData);
+        } catch (error) {
+            console.error('Error al cargar datos:', error);
+            alert(`Error al cargar datos: ${error.message}`);
+            setChartData([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const maxValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value)) : 0;
     const minValue = 0;
     const chartHeight = 450;
 
-    // Generar valores del eje Y
     const yAxisValues = [];
-    const step = 20;
-    for (let i = minValue; i <= maxValue + 20; i += step) {
+    const step = maxValue > 0 ? Math.ceil(maxValue / 10) : 20;
+    for (let i = minValue; i <= maxValue + step; i += step) {
         yAxisValues.push(i);
     }
     yAxisValues.reverse();
 
-    // Calcular posición Y de cada punto
     const calculateY = (value) => {
+        if (maxValue === minValue) return chartHeight / 2;
         const percentage = (value - minValue) / (maxValue - minValue);
         return chartHeight - (percentage * chartHeight);
     };
 
-    // Generar path SVG para la línea
     const generatePath = () => {
-        const xStep = 800 / (chartData.length - 1); // Ancho del área del gráfico dividido entre puntos
+        if (chartData.length === 0) return '';
+        const xStep = 800 / (chartData.length - 1 || 1);
         return chartData.map((point, index) => {
             const x = index * xStep;
             const y = calculateY(point.value);
             return `${index === 0 ? 'M' : 'L'} ${x},${y}`;
         }).join(' ');
     };
-
-    React.useEffect(() => {
-        document.title = "MLAP | Reporte 02-Actos liturgicos";
-    }, []);
     
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Reporte 02: Reservas por rango de fecha</h2>
+                <h2 className='title-screen'>Gráfico 2: Reservas por rango de fecha</h2>
                 <div className='app-container reporte02-container'>
                     
-                    {/* Filtros de fecha */}
                     <div className="date-filters">
                         <div className="date-filter-group">
                             <span className="date-label">Desde</span>
@@ -70,6 +83,7 @@ export default function Reporte02A() {
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
                                 placeholder="Seleccione una fecha"
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="date-filter-group">
@@ -79,83 +93,103 @@ export default function Reporte02A() {
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
                                 placeholder="Seleccione una fecha"
+                                disabled={isLoading}
                             />
                         </div>
+                        <button 
+                            className="load-data-btn"
+                            onClick={loadData}
+                            disabled={isLoading || !startDate || !endDate}
+                        >
+                            {isLoading ? 'Cargando...' : 'Generar Gráfico'}
+                        </button>
                     </div>
 
-                    {/* Gráfico de líneas */}
-                    <div className="line-chart-container">
-                        <div className="chart-y-axis">
-                            <div className="y-axis-title">Cantidad de reservas</div>
-                            {yAxisValues.map((value, index) => (
-                                <div key={index} className="y-axis-value">{value}</div>
-                            ))}
+                    {isLoading && (
+                        <div className="loading-message">
+                            <p>Cargando datos...</p>
                         </div>
-                        
-                        <div className="line-chart-area">
-                            <svg 
-                                className="line-chart-svg" 
-                                viewBox="0 0 800 450" 
-                                preserveAspectRatio="none"
-                            >
-                                {/* Línea del gráfico */}
-                                <path
-                                    d={generatePath()}
-                                    fill="none"
-                                    stroke="#000"
-                                    strokeWidth="2"
-                                />
+                    )}
+
+                    {!isLoading && chartData.length === 0 && (
+                        <div className="empty-message">
+                            <p>Seleccione un rango de fechas y haga clic en "Generar Gráfico" para ver los datos.</p>
+                        </div>
+                    )}
+
+                    {!isLoading && chartData.length > 0 && (
+                        <div className="line-chart-container">
+                            <div className="chart-y-axis">
+                                <div className="y-axis-title">Cantidad de reservas</div>
+                                {yAxisValues.map((value, index) => (
+                                    <div key={index} className="y-axis-value">{value}</div>
+                                ))}
+                            </div>
+                            
+                            <div className="line-chart-area">
+                                <svg 
+                                    className="line-chart-svg" 
+                                    viewBox="0 0 800 450" 
+                                    preserveAspectRatio="none"
+                                >
+                                    <path
+                                        d={generatePath()}
+                                        fill="none"
+                                        stroke="#000"
+                                        strokeWidth="2"
+                                    />
+                                    
+                                    {chartData.map((point, index) => {
+                                        const xStep = 800 / (chartData.length - 1 || 1);
+                                        const x = index * xStep;
+                                        const y = calculateY(point.value);
+                                        return (
+                                            <g key={index}>
+                                                <circle
+                                                    cx={x}
+                                                    cy={y}
+                                                    r="8"
+                                                    fill="#E53935"
+                                                    stroke="#000"
+                                                    strokeWidth="2"
+                                                    className="chart-point"
+                                                    data-value={point.value}
+                                                    data-day={point.day}
+                                                />
+                                            </g>
+                                        );
+                                    })}
+                                </svg>
                                 
-                                {/* Puntos en la línea */}
                                 {chartData.map((point, index) => {
-                                    const xStep = 800 / (chartData.length - 1);
-                                    const x = index * xStep;
-                                    const y = calculateY(point.value);
+                                    const xStep = 100 / (chartData.length - 1 || 1);
+                                    const xPercent = index * xStep;
+                                    const yPercent = (calculateY(point.value) / chartHeight) * 100;
+                                    
                                     return (
-                                        <g key={index}>
-                                            <circle
-                                                cx={x}
-                                                cy={y}
-                                                r="8"
-                                                fill="#E53935"
-                                                stroke="#000"
-                                                strokeWidth="2"
-                                                className="chart-point"
-                                                data-value={point.value}
-                                                data-day={point.day}
-                                            />
-                                        </g>
+                                        <div 
+                                            key={index}
+                                            className="point-tooltip"
+                                            style={{
+                                                left: `${xPercent}%`,
+                                                top: `${yPercent}%`
+                                            }}
+                                        >
+                                            <strong>Día {point.day}</strong>
+                                            <br />
+                                            {point.date}
+                                            <br />
+                                            Cantidad: {point.value}
+                                        </div>
                                     );
                                 })}
-                            </svg>
+                            </div>
                             
-                            {/* Tooltips para cada punto */}
-                            {chartData.map((point, index) => {
-                                const xStep = 100 / (chartData.length - 1);
-                                const xPercent = index * xStep;
-                                const yPercent = (calculateY(point.value) / chartHeight) * 100;
-                                
-                                return (
-                                    <div 
-                                        key={index}
-                                        className="point-tooltip"
-                                        style={{
-                                            left: `${xPercent}%`,
-                                            top: `${yPercent}%`
-                                        }}
-                                    >
-                                        <strong>Día {point.day}</strong>
-                                        <br />
-                                        Cantidad: {point.value}
-                                    </div>
-                                );
-                            })}
+                            <div className="chart-x-axis">
+                                <div className="x-axis-label">Días</div>
+                            </div>
                         </div>
-                        
-                        <div className="chart-x-axis">
-                            <div className="x-axis-label">Días</div>
-                        </div>
-                    </div>
+                    )}
                     
                 </div>
             </div>

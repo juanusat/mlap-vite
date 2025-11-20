@@ -17,6 +17,26 @@ export const getReservationsByChapel = async (chapelName) => {
   return await response.json();
 };
 
+export const getReservationsByDateRange = async (startDate, endDate) => {
+  const response = await fetch(
+    `${API_URL}/api/reports/reservations-by-date-range?start_date=${startDate}&end_date=${endDate}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al obtener reservas por rango de fechas');
+  }
+
+  return await response.json();
+};
+
 export const getOccupancyMap = async (chapelName, year, month) => {
   const response = await fetch(
     `${API_URL}/api/reports/occupancy-map?chapel_name=${encodeURIComponent(chapelName)}&year=${year}&month=${month}`,
