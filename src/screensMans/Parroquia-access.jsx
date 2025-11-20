@@ -36,7 +36,7 @@ export default function Parroquia() {
         {
           href: 'reporte01-p',
           icon: <MdDomainVerification />,
-          label: 'Reporte 01',
+          label: 'Gráfico 01',
           show: true
         }
       ]

@@ -49,18 +49,18 @@ export default function ActosLiturgicos() {
         { 
           href: 'reporte01-a', 
           icon: <MdAssessment />,
-          label: 'Reporte 01'
+          label: 'Gráfico 01'
           // Nota: Puedes agregar permisos individuales a los reportes si es necesario
         },
         { 
           href: 'reporte02-a', 
           icon: <MdAssessment />,
-          label: 'Reporte 02'
+          label: 'Gráfico 02'
         },
         { 
           href: 'reporte03-a', 
           icon: <MdAssessment />,
-          label: 'Reporte 03'
+          label: 'Mapa 01'
         },
       ]
     }

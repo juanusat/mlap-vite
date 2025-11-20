@@ -1,20 +1,33 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdPerson } from "react-icons/md";
+import { MdPerson, MdDomainVerification, MdBarChart } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import '../utils/Modulo-Usuario.css';
 
 export default function Usuario() {
-    React.useEffect(() => {
+  React.useEffect(() => {
     document.title = "MLAP | Módulo usuario";
   }, []);
-  
+
   const location = useLocation();
   const isBasePath = location.pathname === '/man-usuario';
 
   const options = [
     { href: 'gestionar-cuenta', icon: <MdPerson />, label: 'Mi cuenta' },
-    { href: 'reporte01-u', icon: <MdPerson />, label: 'Reporte 01: Cambios en la cuenta' },
+    {
+      label: 'Informes',
+      icon: <MdBarChart />,
+      href: null,
+      show: true,
+      children: [
+        {
+          href: 'reporte01-u',
+          icon: <MdPerson />,
+          label: 'Reporte 01',
+          show: true
+        }
+      ]
+    },
   ];
 
   return (

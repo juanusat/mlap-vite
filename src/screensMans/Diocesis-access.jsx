@@ -25,7 +25,7 @@ export default function Diocesis() {
         {
           href: 'reporte01-d',
           icon: <MdDomainVerification />,
-          label: 'Reporte 01'
+          label: 'Gráfico 01'
         }
       ]
     }
