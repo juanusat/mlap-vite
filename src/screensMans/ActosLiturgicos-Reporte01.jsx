@@ -43,12 +43,31 @@ export default function Reporte01A() {
         try {
             const response = await getReservationsByChapel(chapelName);
             const stats = response.data.statistics;
+            let totalReservasCapilla = 0;
+            stats.forEach(s => {
+                const cantidad = Number(s.count) || 0;
+                totalReservasCapilla += cantidad;
+                console.log(`Capilla: ${chapelName} | Estado: ${s.status} | Cantidad: ${cantidad}`);
+            });
+            console.log(`Total de reservas obtenidas para capilla ${chapelName}: ${totalReservasCapilla}`);
+
+            // Filtrar solo reservas con estado FULFILLED
+            const fulfilledStats = stats.filter(s => s.status === 'FULFILLED');
+            // Agrupar por evento base real
+            const resumenPorEvento = {};
+            fulfilledStats.forEach(s => {
+                if (s.reservations && Array.isArray(s.reservations)) {
+                    s.reservations.forEach(r => {
+                        const eventoBase = r.event_base_name || 'Evento';
+                        resumenPorEvento[eventoBase] = (resumenPorEvento[eventoBase] || 0) + 1;
+                        console.log(`Reserva FULFILLED | Usuario: ${r.user_id} | Beneficiario: ${r.beneficiary_full_name} | Evento base: ${eventoBase}`);
+                    });
+                }
+            });
 
             const chapelData = {
                 capilla: chapelName,
-                bautismo: stats.find(s => s.status === 'COMPLETED')?.count || 0,
-                matrimonio: stats.find(s => s.status === 'FULFILLED')?.count || 0,
-                confirmacion: stats.find(s => s.status === 'RESERVED')?.count || 0
+                resumenEventos: resumenPorEvento
             };
 
             setReportData(prev => [...prev, chapelData]);
@@ -67,15 +86,15 @@ export default function Reporte01A() {
     };
 
     const calculateTotals = () => {
-        const totalBautismos = reportData.reduce((sum, item) => sum + item.bautismo, 0);
-        const totalMatrimonios = reportData.reduce((sum, item) => sum + item.matrimonio, 0);
-        const totalConfirmaciones = reportData.reduce((sum, item) => sum + item.confirmacion, 0);
-        const totalReservas = totalBautismos + totalMatrimonios + totalConfirmaciones;
-
+        let totalReservas = 0;
+        reportData.forEach(item => {
+            if (item.resumenEventos) {
+                Object.values(item.resumenEventos).forEach(val => {
+                    totalReservas += Number(val);
+                });
+            }
+        });
         setTotals({
-            totalBautismos,
-            totalMatrimonios,
-            totalConfirmaciones,
             totalReservas
         });
     };
@@ -145,7 +164,6 @@ export default function Reporte01A() {
 
                         {!isLoading && reportData.length > 0 && (
                             <div className="chart-summary-wrapper">
-                                
                                 <div className="chart-section">
                                     <GroupedBarChart 
                                         data={reportData}
@@ -154,52 +172,27 @@ export default function Reporte01A() {
                                 </div>
 
                                 <div className="summary-section">
-                                    <h3 className="summary-title">Resumen por Evento</h3>
-                                    
-                                    <div className="summary-item">
-                                        <div className="summary-indicator bautismo-indicator"></div>
-                                        <div className="summary-content">
-                                            <span className="summary-label">Bautismo</span>
-                                            <span className="summary-value">{totals.totalBautismos}</span>
-                                        </div>
+                                    <h3 className="summary-title">Resumen por Capilla (solo FULFILLED)</h3>
+                                    <div className="summary-cards-container">
+                                        {reportData.map((item) => (
+                                            <div className="summary-card-content" key={item.capilla}>
+                                                <h4 className="summary-card-title">{item.capilla}</h4>
+                                                {item.resumenEventos && Object.entries(item.resumenEventos).map(([evento, cantidad]) => (
+                                                    <div className="summary-item" key={evento}>
+                                                        <div className="summary-indicator"></div>
+                                                        <div className="summary-content">
+                                                            <span className="summary-label">{evento}</span>
+                                                            <span className="summary-value">{cantidad}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
                                     </div>
-
-                                    <div className="summary-item">
-                                        <div className="summary-indicator matrimonio-indicator"></div>
-                                        <div className="summary-content">
-                                            <span className="summary-label">Matrimonio</span>
-                                            <span className="summary-value">{totals.totalMatrimonios}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="summary-item">
-                                        <div className="summary-indicator confirmacion-indicator"></div>
-                                        <div className="summary-content">
-                                            <span className="summary-label">Confirmación</span>
-                                            <span className="summary-value">{totals.totalConfirmaciones}</span>
-                                        </div>
-                                    </div>
-
                                     <div className="summary-divider"></div>
-
                                     <div className="summary-total">
-                                        <span className="total-label">Total de Reservas</span>
+                                        <span className="total-label">Total de Reservas (FULFILLED)</span>
                                         <span className="total-value">{totals.totalReservas}</span>
-                                    </div>
-
-                                    <div className="chart-legend-section">
-                                        <div className="chart-legend-item">
-                                            <div className="summary-indicator bautismo-indicator"></div>
-                                            <span>Bautismo</span>
-                                        </div>
-                                        <div className="chart-legend-item">
-                                            <div className="summary-indicator matrimonio-indicator"></div>
-                                            <span>Matrimonio</span>
-                                        </div>
-                                        <div className="chart-legend-item">
-                                            <div className="summary-indicator confirmacion-indicator"></div>
-                                            <span>Confirmación</span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
