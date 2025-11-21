@@ -6,6 +6,135 @@
     padding: 20px;
 }
 
+/* === CONTROLES DE FILTRO === */
+.filter-controls {
+    margin-bottom: 25px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chapel-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.chapel-selector label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.chapel-selector select {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chapel-selector select:hover {
+    border-color: var(--color-b-400);
+}
+
+.chapel-selector select:focus {
+    outline: none;
+    border-color: var(--color-b-500);
+    box-shadow: 0 0 0 3px rgba(var(--color-b-rgb), 0.1);
+}
+
+.chapel-selector select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* === CAPILLAS SELECCIONADAS === */
+.selected-chapels {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.selected-chapels h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.selected-chapels ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.selected-chapels li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--color-b-100);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.selected-chapels li:hover {
+    background: var(--color-b-200);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.remove-chapel-btn {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.remove-chapel-btn:hover {
+    background: #ffebee;
+    color: #c62828;
+    transform: scale(1.1);
+}
+
+.remove-chapel-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.loading-message,
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 1rem;
+}
+
 /* === WRAPPER DE GRÁFICO Y RESUMEN === */
 .chart-summary-wrapper {
     display: flex;
@@ -38,6 +167,31 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.summary-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary-card-content {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.summary-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-b-600);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-b-200);
 }
 
 .summary-title {
