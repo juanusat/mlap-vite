@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactEcharts from 'echarts-for-react';
 import DateInput from '../components/formsUI/DateInput';
 import { getReservationsByDateRange } from '../services/reportService';
 import "../utils/ActosLiturgicos-Reporte02.css";
@@ -28,9 +29,8 @@ export default function Reporte02A() {
         try {
             const response = await getReservationsByDateRange(startDate, endDate);
             const transformedData = response.data.daily_reservations.map(item => ({
-                day: parseInt(item.day_number),
-                value: parseInt(item.count),
-                date: item.date
+                date: item.date,
+                count: parseInt(item.count)
             }));
             setChartData(transformedData);
         } catch (error) {
@@ -42,31 +42,103 @@ export default function Reporte02A() {
         }
     };
 
-    const maxValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value)) : 0;
-    const minValue = 0;
-    const chartHeight = 450;
+    const getChartOption = () => {
+        const dates = chartData.map(item => item.date);
+        const counts = chartData.map(item => item.count);
 
-    const yAxisValues = [];
-    const step = maxValue > 0 ? Math.ceil(maxValue / 10) : 20;
-    for (let i = minValue; i <= maxValue + step; i += step) {
-        yAxisValues.push(i);
-    }
-    yAxisValues.reverse();
-
-    const calculateY = (value) => {
-        if (maxValue === minValue) return chartHeight / 2;
-        const percentage = (value - minValue) / (maxValue - minValue);
-        return chartHeight - (percentage * chartHeight);
-    };
-
-    const generatePath = () => {
-        if (chartData.length === 0) return '';
-        const xStep = 800 / (chartData.length - 1 || 1);
-        return chartData.map((point, index) => {
-            const x = index * xStep;
-            const y = calculateY(point.value);
-            return `${index === 0 ? 'M' : 'L'} ${x},${y}`;
-        }).join(' ');
+        return {
+            tooltip: {
+                trigger: 'axis',
+                formatter: (params) => {
+                    const param = params[0];
+                    return `${param.axisValue}: ${param.value}`;
+                },
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                borderColor: 'transparent',
+                textStyle: {
+                    color: '#000000ff',
+                    fontSize: 11
+                },
+                padding: [5, 8],
+                extraCssText: 'box-shadow: 0 2px 6px rgba(0,0,0,0.15); border-radius: 4px; max-width: 100px; max-height: 50px;'
+            },
+            grid: {
+                left: '10%',
+                right: '5%',
+                bottom: '15%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLabel: {
+                    rotate: 45,
+                    fontSize: 11,
+                    color: '#666'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#000',
+                        width: 2
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Cantidad de reservas',
+                nameLocation: 'middle',
+                nameGap: 50,
+                nameTextStyle: {
+                    color: '#000',
+                    fontSize: 13,
+                    fontWeight: 'bold'
+                },
+                minInterval: 1,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#000',
+                        width: 2
+                    }
+                },
+                axisLabel: {
+                    color: '#666'
+                },
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed',
+                        color: '#e0e0e0'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: 'Reservas',
+                    type: 'line',
+                    data: counts,
+                    smooth: false,
+                    lineStyle: {
+                        color: '#000',
+                        width: 2
+                    },
+                    itemStyle: {
+                        color: '#E53935',
+                        borderColor: '#000',
+                        borderWidth: 2
+                    },
+                    symbolSize: 10,
+                    emphasis: {
+                        itemStyle: {
+                            color: '#C62828',
+                            borderColor: '#000',
+                            borderWidth: 3
+                        },
+                        symbolSize: 14
+                    }
+                }
+            ]
+        };
     };
     
     return (
@@ -119,75 +191,10 @@ export default function Reporte02A() {
 
                     {!isLoading && chartData.length > 0 && (
                         <div className="line-chart-container">
-                            <div className="chart-y-axis">
-                                <div className="y-axis-title">Cantidad de reservas</div>
-                                {yAxisValues.map((value, index) => (
-                                    <div key={index} className="y-axis-value">{value}</div>
-                                ))}
-                            </div>
-                            
-                            <div className="line-chart-area">
-                                <svg 
-                                    className="line-chart-svg" 
-                                    viewBox="0 0 800 450" 
-                                    preserveAspectRatio="none"
-                                >
-                                    <path
-                                        d={generatePath()}
-                                        fill="none"
-                                        stroke="#000"
-                                        strokeWidth="2"
-                                    />
-                                    
-                                    {chartData.map((point, index) => {
-                                        const xStep = 800 / (chartData.length - 1 || 1);
-                                        const x = index * xStep;
-                                        const y = calculateY(point.value);
-                                        return (
-                                            <g key={index}>
-                                                <circle
-                                                    cx={x}
-                                                    cy={y}
-                                                    r="8"
-                                                    fill="#E53935"
-                                                    stroke="#000"
-                                                    strokeWidth="2"
-                                                    className="chart-point"
-                                                    data-value={point.value}
-                                                    data-day={point.day}
-                                                />
-                                            </g>
-                                        );
-                                    })}
-                                </svg>
-                                
-                                {chartData.map((point, index) => {
-                                    const xStep = 100 / (chartData.length - 1 || 1);
-                                    const xPercent = index * xStep;
-                                    const yPercent = (calculateY(point.value) / chartHeight) * 100;
-                                    
-                                    return (
-                                        <div 
-                                            key={index}
-                                            className="point-tooltip"
-                                            style={{
-                                                left: `${xPercent}%`,
-                                                top: `${yPercent}%`
-                                            }}
-                                        >
-                                            <strong>Día {point.day}</strong>
-                                            <br />
-                                            {point.date}
-                                            <br />
-                                            Cantidad: {point.value}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            
-                            <div className="chart-x-axis">
-                                <div className="x-axis-label">Días</div>
-                            </div>
+                            <ReactEcharts 
+                                option={getChartOption()}
+                                className="line-chart-echarts"
+                            />
                         </div>
                     )}
                     

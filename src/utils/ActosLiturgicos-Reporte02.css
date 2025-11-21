@@ -56,15 +56,21 @@
 
 /* Contenedor del gráfico de líneas */
 .line-chart-container {
-    display: flex;
-    gap: 1rem;
     padding: 2rem;
-    padding-left: 3rem;
-    padding-bottom: 4rem;
     background-color: white;
     border-radius: 8px;
     border: 1px solid #ddd;
-    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.line-chart-echarts {
+    width: 100%;
+    height: 500px;
+}
+
+.line-chart-echarts > div {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Eje Y */
@@ -164,16 +170,22 @@
 /* Eje X */
 .chart-x-axis {
     position: absolute;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0.5rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
 }
 
-.x-axis-label {
-    text-align: center;
-    font-size: var(--font-size-base);
+.x-axis-date {
+    position: absolute;
+    transform: translateX(-50%) rotate(-45deg);
+    transform-origin: center top;
+    font-size: 0.7rem;
     color: #666;
-    font-weight: bold;
+    white-space: nowrap;
+    margin-top: 0.5rem;
 }
 
 /* Hover effect mejorado para puntos */
