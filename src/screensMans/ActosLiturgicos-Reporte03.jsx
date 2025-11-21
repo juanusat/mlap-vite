@@ -42,14 +42,32 @@ export default function Reporte03A() {
         try {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth() + 1;
+            
+            console.log(`\n=== FRONTEND: Solicitando datos ===`);
+            console.log(`Capilla: ${chapelName}`);
+            console.log(`Año: ${year}, Mes: ${month}`);
+            
             const response = await getOccupancyMap(chapelName, year, month);
+            
+            console.log(`\n=== FRONTEND: Respuesta recibida ===`);
+            console.log('Response completa:', response);
+            console.log('Ocupación:', response.data.occupancy);
             
             const transformedData = {};
             const occupancyArray = response.data.occupancy || [];
             
-            occupancyArray.forEach(slot => {
+            console.log(`\n=== FRONTEND: Transformando datos ===`);
+            console.log(`Total de franjas horarias: ${occupancyArray.length}`);
+            
+            occupancyArray.forEach((slot, index) => {
+                console.log(`\nFranja ${index + 1}:`, slot);
                 const timeIndex = timeSlots.findIndex(t => t.startsWith(slot.time));
-                if (timeIndex === -1) return;
+                console.log(`  Hora: ${slot.time}, TimeIndex: ${timeIndex}`);
+                
+                if (timeIndex === -1) {
+                    console.log(`  ⚠️ Hora ${slot.time} no encontrada en timeSlots`);
+                    return;
+                }
                 
                 transformedData[0] = transformedData[0] || {};
                 transformedData[1] = transformedData[1] || {};
@@ -59,6 +77,7 @@ export default function Reporte03A() {
                 transformedData[5] = transformedData[5] || {};
                 transformedData[6] = transformedData[6] || {};
                 
+                // Guardar el conteo de reservas (no porcentaje)
                 transformedData[0][timeIndex] = slot.monday || 0;
                 transformedData[1][timeIndex] = slot.tuesday || 0;
                 transformedData[2][timeIndex] = slot.wednesday || 0;
@@ -66,7 +85,12 @@ export default function Reporte03A() {
                 transformedData[4][timeIndex] = slot.friday || 0;
                 transformedData[5][timeIndex] = slot.saturday || 0;
                 transformedData[6][timeIndex] = slot.sunday || 0;
+                
+                console.log(`  Lun: ${slot.monday}, Mar: ${slot.tuesday}, Mie: ${slot.wednesday}, Jue: ${slot.thursday}, Vie: ${slot.friday}, Sab: ${slot.saturday}, Dom: ${slot.sunday}`);
             });
+            
+            console.log(`\n=== FRONTEND: Datos transformados ===`);
+            console.log('transformedData:', transformedData);
             
             setOccupancyData(transformedData);
         } catch (error) {
@@ -78,7 +102,7 @@ export default function Reporte03A() {
     };
 
     const timeSlots = [
-        '8:00 - 9:00', '9:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00',
+        '08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00',
         '12:00 - 13:00', '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00',
         '16:00 - 17:00', '17:00 - 18:00'
     ];
@@ -102,19 +126,30 @@ export default function Reporte03A() {
         return `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
     };
 
-    // Función para obtener el color del mapa de calor
-    const getHeatmapColor = (percentage) => {
-        if (percentage === 0) return '#FFFFFF'; // Blanco (0%)
-        if (percentage <= 25) return '#A8E6CF'; // Verde claro (1-25%)
-        if (percentage <= 50) return '#FFD93D'; // Amarillo (26-50%)
-        if (percentage <= 75) return '#FF9A3C'; // Naranja (51-75%)
-        return '#D32F2F'; // Rojo oscuro (76-100%)
+    // Función para convertir conteo de reservas a porcentaje según rangos
+    // 1-3 reservas = 1-25%, 4-6 = 26-50%, 7-9 = 51-75%, 10+ = 76-100%
+    const getPercentageFromCount = (count) => {
+        if (count === 0) return 0;
+        if (count >= 1 && count <= 3) return 12.5; // Promedio de 1-25%
+        if (count >= 4 && count <= 6) return 37.5; // Promedio de 26-50%
+        if (count >= 7 && count <= 9) return 62.5; // Promedio de 51-75%
+        if (count >= 10) return 87.5; // Promedio de 76-100%
+        return 0;
     };
 
-    // Función para obtener el color del texto según el fondo
-    const getTextColor = (percentage) => {
-        if (percentage <= 25) return '#2E7D32'; // Verde oscuro para fondos claros
-        if (percentage <= 50) return '#F57C00'; // Naranja oscuro
+    // Función para obtener el color del mapa de calor según conteo
+    const getHeatmapColor = (count) => {
+        if (count === 0) return '#FFFFFF'; // Blanco (0 reservas)
+        if (count >= 1 && count <= 3) return '#A8E6CF'; // Verde claro (1-3 reservas = 1-25%)
+        if (count >= 4 && count <= 6) return '#FFD93D'; // Amarillo (4-6 reservas = 26-50%)
+        if (count >= 7 && count <= 9) return '#FF9A3C'; // Naranja (7-9 reservas = 51-75%)
+        return '#D32F2F'; // Rojo oscuro (10+ reservas = 76-100%)
+    };
+
+    // Función para obtener el color del texto según el conteo
+    const getTextColor = (count) => {
+        if (count >= 1 && count <= 3) return '#2E7D32'; // Verde oscuro para fondos claros
+        if (count >= 4 && count <= 6) return '#F57C00'; // Naranja oscuro
         return '#FFFFFF'; // Blanco para fondos oscuros
     };
 
@@ -173,23 +208,23 @@ export default function Reporte03A() {
                                     <span className='legend-title'>Nivel de ocupación (Mapa de calor):</span>
                                     <div className='legend-item'>
                                         <div className='legend-color heatmap-zero'></div>
-                                        <span>0%</span>
+                                        <span>0 reservas (0%)</span>
                                     </div>
                                     <div className='legend-item'>
                                         <div className='legend-color heatmap-low'></div>
-                                        <span>1-25%</span>
+                                        <span>1-3 reservas (1-25%)</span>
                                     </div>
                                     <div className='legend-item'>
                                         <div className='legend-color heatmap-medium-low'></div>
-                                        <span>26-50%</span>
+                                        <span>4-6 reservas (26-50%)</span>
                                     </div>
                                     <div className='legend-item'>
                                         <div className='legend-color heatmap-medium-high'></div>
-                                        <span>51-75%</span>
+                                        <span>7-9 reservas (51-75%)</span>
                                     </div>
                                     <div className='legend-item'>
                                         <div className='legend-color heatmap-high'></div>
-                                        <span>76-100%</span>
+                                        <span>10+ reservas (76-100%)</span>
                                     </div>
                                 </div>
 
@@ -199,9 +234,10 @@ export default function Reporte03A() {
                                     showDates={false}
                                     mode="heatmap"
                                     renderCell={(rowIndex, colIndex) => {
-                                        const occupancy = occupancyData[colIndex]?.[rowIndex] || 0;
-                                        const bgColor = getHeatmapColor(occupancy);
-                                        const textColor = getTextColor(occupancy);
+                                        const reservationCount = occupancyData[colIndex]?.[rowIndex] || 0;
+                                        const percentage = getPercentageFromCount(reservationCount);
+                                        const bgColor = getHeatmapColor(reservationCount);
+                                        const textColor = getTextColor(reservationCount);
                                         
                                         return (
                                             <div
@@ -210,9 +246,9 @@ export default function Reporte03A() {
                                                     backgroundColor: bgColor,
                                                     color: textColor
                                                 }}
-                                                title={`Ocupación: ${occupancy}%`}
+                                                title={`${reservationCount} reserva${reservationCount !== 1 ? 's' : ''} (${Math.round(percentage)}%)`}
                                             >
-                                                <span className="heatmap-percentage">{occupancy}%</span>
+                                                <span className="heatmap-percentage">{reservationCount}</span>
                                             </div>
                                         );
                                     }}
