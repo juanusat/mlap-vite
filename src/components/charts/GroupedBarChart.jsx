@@ -2,10 +2,8 @@ import React from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 export default function GroupedBarChart({ data, categories }) {
-    // Extraer los datos para cada serie
-    const bautismoData = data.map(item => item.bautismo);
-    const matrimonioData = data.map(item => item.matrimonio);
-    const confirmacionData = data.map(item => item.confirmacion);
+    // Extraer el total de reservas FULFILLED por capilla
+    const totalReservasData = data.map(item => item.totalReservas || 0);
 
     const option = {
         tooltip: {
@@ -72,35 +70,20 @@ export default function GroupedBarChart({ data, categories }) {
         },
         series: [
             {
-                name: 'Bautismo',
+                name: 'Total Reservas FULFILLED',
                 type: 'bar',
-                data: bautismoData,
+                data: totalReservasData,
                 itemStyle: {
-                    color: '#EF9A9A', // Color para Bautismo
-                    borderRadius: [4, 4, 0, 0] // Bordes redondeados superiores
-                },
-                barGap: '10%', // Espacio entre barras del mismo grupo
-                barCategoryGap: '30%' // Espacio entre grupos de barras
-            },
-            {
-                name: 'Matrimonio',
-                type: 'bar',
-                data: matrimonioData,
-                itemStyle: {
-                    color: '#64B5F6', // Color para Matrimonio
+                    color: '#5C6BC0',
                     borderRadius: [4, 4, 0, 0]
                 },
-                barGap: '10%'
-            },
-            {
-                name: 'Confirmación',
-                type: 'bar',
-                data: confirmacionData,
-                itemStyle: {
-                    color: '#81C784', // Color para Confirmación
-                    borderRadius: [4, 4, 0, 0]
-                },
-                barGap: '10%'
+                barWidth: '60%',
+                label: {
+                    show: true,
+                    position: 'top',
+                    color: '#333',
+                    fontWeight: 'bold'
+                }
             }
         ]
     };

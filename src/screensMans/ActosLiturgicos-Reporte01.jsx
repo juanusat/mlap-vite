@@ -65,9 +65,13 @@ export default function Reporte01A() {
                 }
             });
 
+            // Calcular total de reservas fulfilled para esta capilla
+            const totalFulfilledCapilla = Object.values(resumenPorEvento).reduce((sum, val) => sum + Number(val), 0);
+
             const chapelData = {
                 capilla: chapelName,
-                resumenEventos: resumenPorEvento
+                resumenEventos: resumenPorEvento,
+                totalReservas: totalFulfilledCapilla
             };
 
             setReportData(prev => [...prev, chapelData]);
@@ -172,26 +176,34 @@ export default function Reporte01A() {
                                 </div>
 
                                 <div className="summary-section">
-                                    <h3 className="summary-title">Resumen por Capilla (solo FULFILLED)</h3>
+                                    <h3 className="summary-title">Resumen por Capilla</h3>
                                     <div className="summary-cards-container">
                                         {reportData.map((item) => (
                                             <div className="summary-card-content" key={item.capilla}>
                                                 <h4 className="summary-card-title">{item.capilla}</h4>
-                                                {item.resumenEventos && Object.entries(item.resumenEventos).map(([evento, cantidad]) => (
-                                                    <div className="summary-item" key={evento}>
-                                                        <div className="summary-indicator"></div>
+                                                {item.totalReservas === 0 ? (
+                                                    <div className="summary-item">
                                                         <div className="summary-content">
-                                                            <span className="summary-label">{evento}</span>
-                                                            <span className="summary-value">{cantidad}</span>
+                                                            <span className="summary-label" style={{fontStyle: 'italic', color: '#999'}}>Sin reservas</span>
                                                         </div>
                                                     </div>
-                                                ))}
+                                                ) : (
+                                                    item.resumenEventos && Object.entries(item.resumenEventos).map(([evento, cantidad]) => (
+                                                        <div className="summary-item" key={evento}>
+                                                            <div className="summary-indicator"></div>
+                                                            <div className="summary-content">
+                                                                <span className="summary-label">{evento}</span>
+                                                                <span className="summary-value">{cantidad}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                     <div className="summary-divider"></div>
                                     <div className="summary-total">
-                                        <span className="total-label">Total de Reservas (FULFILLED)</span>
+                                        <span className="total-label">Total de Reservas</span>
                                         <span className="total-value">{totals.totalReservas}</span>
                                     </div>
                                 </div>
