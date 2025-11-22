@@ -7,7 +7,8 @@ import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
 import { 
   getHistoryReservations, 
   searchHistoryReservations,
-  getReservationDetails
+  getReservationDetails,
+  getReservationPaymentsForParishioner
 } from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
@@ -25,7 +26,10 @@ export default function ReservasHistorial() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estados de paginación
+  const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
+  const [payments, setPayments] = useState([]);
+  const [paymentReservation, setPaymentReservation] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -93,6 +97,27 @@ export default function ReservasHistorial() {
     setCurrentReservation(null);
   };
 
+  const handleViewPayments = async (reservation) => {
+    try {
+      setLoading(true);
+      const response = await getReservationPaymentsForParishioner(reservation.id);
+      setPayments(response.data);
+      setPaymentReservation(reservation);
+      setShowPaymentSidebar(true);
+    } catch (err) {
+      console.error('Error al cargar pagos:', err);
+      alert(err.message || 'Error al cargar historial de pagos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClosePaymentSidebar = () => {
+    setShowPaymentSidebar(false);
+    setPayments([]);
+    setPaymentReservation(null);
+  };
+
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
     { 
@@ -145,6 +170,11 @@ export default function ReservasHistorial() {
             title="Ver"
             onClick={() => handleOpenSidebar(row)}
           />
+          <MyButtonShortAction
+            type="receipt"
+            title="Ver pagos"
+            onClick={() => handleViewPayments(row)}
+          />
         </MyGroupButtonsActions>
       )
     },
@@ -153,7 +183,7 @@ export default function ReservasHistorial() {
   return (
     <>
       <div className="content-module only-this">
-        <h2 className='title-screen'>Historial de Reservas</h2>
+        <h2 className='title-screen'>Historial de reservas</h2>
         <div className="app-container">
           {loading ? (
             <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -183,7 +213,7 @@ export default function ReservasHistorial() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="80px 1fr 180px 120px 100px 100px 120px 220px"
+                    gridColumnsLayout="80px 1fr 180px 120px 100px 100px 120px 280px"
                     columnLeftAlignIndex={[1, 2]}
                   />
                   
@@ -263,6 +293,43 @@ export default function ReservasHistorial() {
               ))
             ) : (
               <p>No hay requisitos registrados</p>
+            )}
+          </div>
+        </MyPanelLateralConfig>
+      )}
+
+      {showPaymentSidebar && paymentReservation && (
+        <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`}>
+          <div className="panel-lateral-close-btn">
+            <MyButtonShortAction type="close" title="Cerrar" onClick={handleClosePaymentSidebar} />
+          </div>
+          <div className="sidebar-list">
+            <p><strong>Evento:</strong> {paymentReservation.event_name}</p>
+            <p><strong>Total:</strong> $ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
+            
+            <hr className="divider-sidebar" />
+            
+            <h3 className="sidebar-subtitle">Pagos realizados</h3>
+            {payments.length > 0 ? (
+              <div className="payments-list">
+                {payments.map((payment, index) => (
+                  <div key={index} className="payment-item">
+                    <div className="payment-header">
+                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-date">
+                        {new Date(payment.payment_date).toLocaleDateString('es-ES')}
+                      </span>
+                    </div>
+                    {payment.registered_by && (
+                      <div className="payment-worker">
+                        Registrado por: {payment.registered_by}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No hay pagos registrados aún</p>
             )}
           </div>
         </MyPanelLateralConfig>

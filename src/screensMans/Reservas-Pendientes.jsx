@@ -5,11 +5,14 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from '../components/MyPanelLateralConfig';
+import PaymentModal from '../components/PaymentModal';
 import { 
   getPendingReservations, 
   searchPendingReservations, 
   cancelReservation,
-  getReservationDetails
+  getReservationDetails,
+  getReservationPaymentsForParishioner,
+  createPaymentForParishioner
 } from '../services/reservationService';
 import "../utils/Estilos-Generales-1.css";
 import "../utils/Reservas-Gestionar.css";
@@ -42,6 +45,13 @@ export default function ReservasPendientes() {
   // Estados para el panel lateral de requisitos
   const [showRequirementsSidebar, setShowRequirementsSidebar] = useState(false);
   const [currentRequirements, setCurrentRequirements] = useState(null);
+
+  const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
+  const [payments, setPayments] = useState([]);
+  const [paymentReservation, setPaymentReservation] = useState(null);
+
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentPaymentReservation, setCurrentPaymentReservation] = useState(null);
 
   const loadReservations = async () => {
     try {
@@ -140,7 +150,49 @@ export default function ReservasPendientes() {
     setCurrentRequirements(null);
   };
 
-  // Función para imprimir el recibo de una reserva
+  const handleViewPayments = async (reservation) => {
+    try {
+      setLoading(true);
+      const response = await getReservationPaymentsForParishioner(reservation.id);
+      setPayments(response.data);
+      setPaymentReservation(reservation);
+      setShowPaymentSidebar(true);
+    } catch (err) {
+      console.error('Error al cargar pagos:', err);
+      alert(err.message || 'Error al cargar historial de pagos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClosePaymentSidebar = () => {
+    setShowPaymentSidebar(false);
+    setPayments([]);
+    setPaymentReservation(null);
+  };
+
+  const handleOpenPaymentModal = (reservation) => {
+    setCurrentPaymentReservation(reservation);
+    setShowPaymentModal(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setCurrentPaymentReservation(null);
+  };
+
+  const handlePaymentSubmit = async (paymentData) => {
+    try {
+      await createPaymentForParishioner(currentPaymentReservation.id, paymentData);
+      alert('Pago procesado exitosamente');
+      handleClosePaymentModal();
+      await loadReservations();
+    } catch (err) {
+      console.error('Error al procesar pago:', err);
+      throw new Error(err.message || 'Error al procesar el pago');
+    }
+  };
+
   const handlePrintReceipt = async (reservation) => {
     try {
       setLoading(true);
@@ -407,30 +459,46 @@ export default function ReservasPendientes() {
       }
     },
     {
-      key: 'acciones', header: 'Acciones', accessor: (row) => (
-        <MyGroupButtonsActions>
-          <MyButtonShortAction
-            type="view"
-            title="Ver detalles"
-            onClick={() => handleOpenSidebar(row)}
-          />
-          <MyButtonShortAction
-            type="key"
-            title="Requisitos"
-            onClick={() => handleOpenRequirementsSidebar(row)}
-          />
-          <MyButtonShortAction
-            type="print"
-            title="Imprimir"
-            onClick={() => handlePrintReceipt(row)}
-          />
-          <MyButtonShortAction
-            type="delete"
-            title="Cancelar"
-            onClick={() => handleDeleteReservation(row)}
-          />
-        </MyGroupButtonsActions>
-      )
+      key: 'acciones', header: 'Acciones', accessor: (row) => {
+        const hasPendingBalance = parseFloat(row.paid_amount) < parseFloat(row.current_price);
+        
+        return (
+          <MyGroupButtonsActions>
+            <MyButtonShortAction
+              type="view"
+              title="Ver detalles"
+              onClick={() => handleOpenSidebar(row)}
+            />
+            <MyButtonShortAction
+              type="key"
+              title="Requisitos"
+              onClick={() => handleOpenRequirementsSidebar(row)}
+            />
+            <MyButtonShortAction
+              type="receipt"
+              title="Ver pagos"
+              onClick={() => handleViewPayments(row)}
+            />
+            {hasPendingBalance && (
+              <MyButtonShortAction
+                type="pay"
+                title="Realizar pago"
+                onClick={() => handleOpenPaymentModal(row)}
+              />
+            )}
+            <MyButtonShortAction
+              type="print"
+              title="Imprimir"
+              onClick={() => handlePrintReceipt(row)}
+            />
+            <MyButtonShortAction
+              type="delete"
+              title="Cancelar"
+              onClick={() => handleDeleteReservation(row)}
+            />
+          </MyGroupButtonsActions>
+        );
+      }
     },
   ];
 
@@ -467,7 +535,7 @@ export default function ReservasPendientes() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="70px auto auto auto 110px 90px 110px 110px 110px 220px"
+                    gridColumnsLayout="70px auto auto auto 110px 90px 110px 110px 110px 280px"
                     columnLeftAlignIndex={[2, 3, 4]}
                   />
                   
@@ -573,6 +641,52 @@ export default function ReservasPendientes() {
           </div>
         </MyPanelLateralConfig>
       )}
+
+      {showPaymentSidebar && paymentReservation && (
+        <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`}>
+          <div className="panel-lateral-close-btn">
+            <MyButtonShortAction type="close" title="Cerrar" onClick={handleClosePaymentSidebar} />
+          </div>
+          <div className="sidebar-list">
+            <p><strong>Evento:</strong> {paymentReservation.event_name}</p>
+            <p><strong>Total:</strong> $ {parseFloat(paymentReservation.current_price).toFixed(2)}</p>
+            <p><strong>Pagado:</strong> $ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Saldo:</strong> $ {(parseFloat(paymentReservation.current_price) - parseFloat(paymentReservation.paid_amount)).toFixed(2)}</p>
+            
+            <hr className="divider-sidebar" />
+            
+            <h3 className="sidebar-subtitle">Pagos realizados</h3>
+            {payments.length > 0 ? (
+              <div className="payments-list">
+                {payments.map((payment, index) => (
+                  <div key={index} className="payment-item">
+                    <div className="payment-header">
+                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-date">
+                        {new Date(payment.payment_date).toLocaleDateString('es-ES')}
+                      </span>
+                    </div>
+                    {payment.registered_by && (
+                      <div className="payment-worker">
+                        Registrado por: {payment.registered_by}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No hay pagos registrados aún</p>
+            )}
+          </div>
+        </MyPanelLateralConfig>
+      )}
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={handleClosePaymentModal}
+        reservation={currentPaymentReservation}
+        onPaymentSuccess={handlePaymentSubmit}
+      />
     </>
   );
 }

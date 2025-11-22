@@ -272,3 +272,54 @@ export const updateReservation = async (reservationId, updateData) => {
 
   return await handleResponse(response);
 };
+
+export const getReservationPayments = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/payments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const createPayment = async (reservationId, paymentData) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/payments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(paymentData),
+  });
+
+  return await handleResponse(response);
+};
+
+export const getReservationPaymentsForParishioner = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}/payments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const createPaymentForParishioner = async (reservationId, paymentData) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}/payments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(paymentData),
+  });
+
+  return await handleResponse(response);
+};
+

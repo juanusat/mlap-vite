@@ -36,6 +36,8 @@ export default function Reservas() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [payments, setPayments] = useState([]);
+  const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
 
   const loadReservations = async () => {
     try {
@@ -119,6 +121,27 @@ export default function Reservas() {
     setShowModal(true);
   };
 
+  const handleViewPayments = async (reservation) => {
+    try {
+      setLoading(true);
+      const response = await reservationService.getReservationPayments(reservation.id);
+      setPayments(response.data || []);
+      setCurrentReservation(reservation);
+      setShowPaymentSidebar(true);
+    } catch (err) {
+      setError(err.message || 'Error al cargar pagos');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClosePaymentSidebar = () => {
+    setShowPaymentSidebar(false);
+    setPayments([]);
+    setCurrentReservation(null);
+  };
+
   const handleAccept = async () => {
     if (!currentReservation) return;
     
@@ -198,8 +221,8 @@ export default function Reservas() {
     
     try {
       setLoading(true);
-      await reservationService.updateReservation(currentReservation.id, {
-        paid_amount: parseFloat(paymentData.paid_amount)
+      await reservationService.createPayment(currentReservation.id, {
+        amount: parseFloat(paymentData.amount)
       });
       await loadReservations();
       handleCloseModal();
@@ -256,10 +279,11 @@ export default function Reservas() {
           {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
           )}
-          {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS') && 
-           parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) && (
+          {canUpdate && parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) && 
+           row.status !== 'REJECTED' && row.status !== 'CANCELLED' && (
             <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
           )}
+          <MyButtonShortAction type="receipt" title="Ver Pagos" onClick={() => handleViewPayments(row)} />
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
           )}
@@ -437,20 +461,26 @@ export default function Reservas() {
   const modalProps = getModalContentAndActions();
 
   function PaymentForm({ reservation, onSubmit }) {
-    const [paidAmount, setPaidAmount] = useState(reservation?.paid_amount || 0);
+    const [amount, setAmount] = useState('');
     const currentPrice = parseFloat(reservation?.current_price || 0);
-    const maxPayment = currentPrice;
+    const paidAmount = parseFloat(reservation?.paid_amount || 0);
+    const remaining = currentPrice - paidAmount;
 
     const handleSubmit = (e) => {
       e.preventDefault();
-      const amount = parseFloat(paidAmount);
+      const paymentAmount = parseFloat(amount);
       
-      if (amount > maxPayment) {
-        alert(`El monto pagado no puede exceder el precio del evento: $ ${maxPayment.toFixed(2)}`);
+      if (paymentAmount <= 0) {
+        alert('El monto debe ser mayor a 0');
         return;
       }
       
-      onSubmit({ paid_amount: amount });
+      if (paymentAmount > remaining) {
+        alert(`El monto no puede exceder el saldo pendiente: $ ${remaining.toFixed(2)}`);
+        return;
+      }
+      
+      onSubmit({ amount: paymentAmount });
     };
 
     return (
@@ -468,18 +498,26 @@ export default function Reservas() {
           <input
             type="text"
             className="inputModal"
-            value={`$ ${parseFloat(reservation?.paid_amount || 0).toFixed(2)}`}
+            value={`$ ${paidAmount.toFixed(2)}`}
             disabled
           />
           
-          <label>Nuevo Monto Pagado</label>
+          <label>Saldo Pendiente</label>
+          <input
+            type="text"
+            className="inputModal"
+            value={`$ ${remaining.toFixed(2)}`}
+            disabled
+          />
+          
+          <label>Monto a Pagar</label>
           <input
             type="number"
             className="inputModal"
-            value={paidAmount}
-            onChange={(e) => setPaidAmount(e.target.value)}
-            min="0"
-            max={maxPayment}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            min="0.01"
+            max={remaining}
             step="0.01"
             required
           />
@@ -504,7 +542,7 @@ export default function Reservas() {
           <DynamicTable
             columns={reservationColumns}
             data={reservations}
-            gridColumnsLayout="70px 180px 1fr 160px 110px 90px 100px 100px 120px 220px"
+            gridColumnsLayout="70px 180px 1fr 160px 110px 90px 100px 100px 120px 260px"
             columnLeftAlignIndex={[1, 2, 3]}
           />
         </div>
@@ -517,6 +555,36 @@ export default function Reservas() {
         >
           {modalProps.content}
         </Modal>
+        
+        {showPaymentSidebar && (
+          <div className="sidebar-overlay" onClick={handleClosePaymentSidebar}>
+            <div className="sidebar-panel" onClick={(e) => e.stopPropagation()}>
+              <div className="sidebar-header">
+                <h3>Historial de Pagos - Reserva #{currentReservation?.id}</h3>
+                <button onClick={handleClosePaymentSidebar}>✕</button>
+              </div>
+              <div className="sidebar-content">
+                {payments.length === 0 ? (
+                  <p>No hay pagos registrados</p>
+                ) : (
+                  <div className="payments-list">
+                    {payments.map((payment) => (
+                      <div key={payment.id} className="payment-item">
+                        <div className="payment-info">
+                          <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                          <span className="payment-date">{new Date(payment.payment_date).toLocaleString('es-ES')}</span>
+                        </div>
+                        {payment.registered_by_worker_name && (
+                          <div className="payment-worker">Registrado por: {payment.registered_by_worker_name}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
