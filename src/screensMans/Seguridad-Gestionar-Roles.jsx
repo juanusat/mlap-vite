@@ -13,11 +13,11 @@ import { PERMISSIONS } from '../utils/permissions';
 import * as roleService from '../services/roleService';
 import "../utils/Estilos-Generales-1.css";
 import '../utils/Seguridad-Roles-Gestionar.css';
-import '../utils/permissions.css'; 
+import '../utils/permissions.css';
 
 const PERMISSIONS_STRUCTURE = {
-    'ACTOS_LITURGICOS': { 
-        name: 'Actos Litúrgicos', 
+    'ACTOS_LITURGICOS': {
+        name: 'Actos Litúrgicos',
         submodules: {
             'ACTOS': {
                 name: 'Gestionar actos litúrgicos',
@@ -60,6 +60,8 @@ const PERMISSIONS_STRUCTURE = {
                 permissions: [
                     { id: 'ACTOS_LITURGICOS_RESER_R', name: 'Leer reservas' },
                     { id: 'ACTOS_LITURGICOS_RESER_U', name: 'Actualizar reservas' },
+                    { id: 'ACTOS_LITURGICOS_RESER_PAY_R', name: 'Leer pagos de reserva' },
+                    { id: 'ACTOS_LITURGICOS_RESER_PAY_C', name: 'Registrar pago de reserva' },
                 ]
             },
         }
@@ -112,6 +114,21 @@ const PERMISSIONS_STRUCTURE = {
                     { id: 'PARROQUIA_CAPILLA_D', name: 'Eliminar capilla' },
                 ]
             },
+        }
+    },
+    'REPORTES': {
+        name: 'Reportes',
+        submodules: {
+            'GENERAL': {
+                name: 'Visualización de Reportes',
+                permissions: [
+                    { id: 'ACTOS_LITURGICOS_REP01', name: 'Ver Reporte 01 - Actos Litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_REP02', name: 'Ver Reporte 02 - Actos Litúrgicos' },
+                    { id: 'ACTOS_LITURGICOS_REP03', name: 'Ver Reporte 03 - Actos Litúrgicos' },
+                    { id: 'PARROQUIA_REP01', name: 'Ver Reporte 01 - Parroquia' },
+                    { id: 'SEGURIDAD_REP01', name: 'Ver Reporte 01 - Seguridad' },
+                ]
+            }
         }
     }
 };
@@ -166,7 +183,7 @@ export default function RolesGestionar() {
     const logout = useLogout();
     const { sessionData } = useSession(logout);
     const { hasPermission, isParishAdmin } = usePermissions();
-    
+
     const [searchTerm, setSearchTerm] = useState('');
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -181,10 +198,10 @@ export default function RolesGestionar() {
         nombre: '',
         descripcion: ''
     });
-    
+
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
-    
+
     const [permissionsForm, setPermissionsForm] = useState({});
     const [availablePermissions, setAvailablePermissions] = useState([]);
     const [collapsedModules, setCollapsedModules] = useState({});
@@ -208,7 +225,7 @@ export default function RolesGestionar() {
 
     useEffect(() => {
         if (!sessionData?.parish?.id || !canReadRoles) return;
-        
+
         const timeoutId = setTimeout(() => {
             if (searchTerm !== '') {
                 setCurrentPage(1);
@@ -231,7 +248,7 @@ export default function RolesGestionar() {
 
     const loadRoles = async () => {
         if (!sessionData?.parish?.id || !canReadRoles) return;
-        
+
         try {
             setLoading(true);
             let data;
@@ -240,7 +257,7 @@ export default function RolesGestionar() {
             } else {
                 data = await roleService.listRoles(sessionData.parish.id, currentPage, 10);
             }
-            
+
             setRoles(data.roles.map(role => ({
                 ID: role.role_id,
                 Rol: role.name,
@@ -274,12 +291,12 @@ export default function RolesGestionar() {
             setLoading(true);
             console.log('=== CARGA DE PERMISOS DESDE BD ===');
             console.log('Solicitando permisos para Rol ID:', rol.ID);
-            
+
             const permissions = await roleService.getRolePermissions(sessionData.parish.id, rol.ID);
-            
+
             console.log('✅ Permisos recibidos del backend (BD):', permissions.length);
             console.log('✅ Permisos activos (granted=true) en BD:', permissions.filter(p => p.granted).length);
-            
+
             // Mostrar detalle de permisos activos
             const activePerms = permissions.filter(p => p.granted);
             if (activePerms.length > 0) {
@@ -290,18 +307,18 @@ export default function RolesGestionar() {
             } else {
                 console.log('⚠️ No hay permisos activos en BD para este rol');
             }
-            
+
             setAvailablePermissions(permissions);
-            
+
             const permissionsMap = {};
             permissions.forEach(perm => {
                 permissionsMap[perm.code] = perm.granted;
             });
-            
+
             console.log('Mapa de permisos creado:', Object.keys(permissionsMap).length, 'permisos');
-            
+
             setPermissionsForm(permissionsMap);
-            
+
             const initialCollapseState = Object.keys(PERMISSIONS_STRUCTURE).reduce((acc, moduleId) => {
                 acc[moduleId] = false;
                 return acc;
@@ -325,11 +342,11 @@ export default function RolesGestionar() {
 
         try {
             setLoading(true);
-            
+
             console.log('=== GUARDADO DE PERMISOS ===');
             console.log('Estado del formulario completo:', permissionsForm);
             console.log('Permisos disponibles:', availablePermissions.length);
-            
+
             // Crear array de permisos usando TODOS los permisos disponibles
             // y tomando el valor de granted desde permissionsForm (si existe) o false por defecto
             const permissions = availablePermissions.map(perm => ({
@@ -343,7 +360,7 @@ export default function RolesGestionar() {
 
             const result = await roleService.updateRolePermissions(sessionData.parish.id, currentRol.ID, permissions);
             console.log('Resultado del guardado:', result);
-            
+
             alert('Permisos guardados exitosamente');
             handleCloseModal();
         } catch (error) {
@@ -356,7 +373,7 @@ export default function RolesGestionar() {
 
     const handleFormChange = (e) => {
         const { name, type, checked } = e.target;
-        
+
         if (type === 'checkbox') {
             setPermissionsForm(prev => ({ ...prev, [name]: checked }));
         } else {
@@ -369,7 +386,7 @@ export default function RolesGestionar() {
         if (action === 'edit' && !canUpdateRole) return;
         if (action === 'delete' && !canDeleteRole) return;
         if (action === 'permissions' && !canUpdatePermissions) return;
-        
+
         setCurrentRol(rol);
         setModalType(action);
 
@@ -480,21 +497,21 @@ export default function RolesGestionar() {
                 {Object.keys(PERMISSIONS_STRUCTURE).map(moduleId => {
                     const module = PERMISSIONS_STRUCTURE[moduleId];
                     const isCollapsed = collapsedModules[moduleId];
-                    
+
                     return (
                         <div key={moduleId} className="permission-module-group">
-                            
+
                             {/* Título del Módulo con botón de colapso */}
-                            <h3 
-                                className="module-title collapsible-header" 
+                            <h3
+                                className="module-title collapsible-header"
                                 onClick={() => toggleModule(moduleId)}
                             >
                                 <span className={`collapse-icon ${isCollapsed ? 'collapsed' : 'expanded'}`}>
-                                    {isCollapsed ? '▶' : '▼'} 
+                                    {isCollapsed ? '▶' : '▼'}
                                 </span>
                                 {module.name}
                             </h3>
-                            
+
                             {/* Contenido que se colapsa */}
                             {!isCollapsed && (
                                 <div className="module-content">
@@ -504,7 +521,7 @@ export default function RolesGestionar() {
                                             <div key={submoduleId} className="permission-submodule-group">
                                                 {/* Título del Submódulo */}
                                                 <h4 className="submodule-title">{submodule.name}</h4>
-                                                
+
                                                 <div className="permissions-checkboxes">
                                                     {/* Iteración por Permisos Individuales */}
                                                     {submodule.permissions.map(permission => (
@@ -575,7 +592,7 @@ export default function RolesGestionar() {
                 return {
                     title: `Permisos del rol: ${currentRol ? currentRol.Rol : 'N/A'}`,
                     content: getPermissionsModalContent(),
-                    onAccept: handleSavePermissions, 
+                    onAccept: handleSavePermissions,
                     onCancel: handleCloseModal
                 };
             default:
@@ -584,7 +601,7 @@ export default function RolesGestionar() {
     };
 
     const modalProps = getModalContentAndActions();
-    
+
     const columns = [
         { key: 'ID', header: 'ID', accessor: row => row.ID },
         { key: 'Rol', header: 'Rol', accessor: row => row.Rol },
@@ -606,19 +623,19 @@ export default function RolesGestionar() {
             accessor: rol => (
                 <MyGroupButtonsActions>
                     <MyButtonShortAction type="view" onClick={() => handleOpenModal(rol, 'view')} />
-                    <MyButtonShortAction 
-                        type="key" 
-                        onClick={() => handleOpenModal(rol, 'permissions')} 
+                    <MyButtonShortAction
+                        type="key"
+                        onClick={() => handleOpenModal(rol, 'permissions')}
                         classNameCustom={!canUpdatePermissions ? 'action-denied' : ''}
                     />
-                    <MyButtonShortAction 
-                        type="edit" 
-                        onClick={() => handleOpenModal(rol, 'edit')} 
+                    <MyButtonShortAction
+                        type="edit"
+                        onClick={() => handleOpenModal(rol, 'edit')}
                         classNameCustom={!canUpdateRole ? 'action-denied' : ''}
                     />
-                    <MyButtonShortAction 
-                        type="delete" 
-                        onClick={() => handleOpenModal(rol, 'delete')} 
+                    <MyButtonShortAction
+                        type="delete"
+                        onClick={() => handleOpenModal(rol, 'delete')}
                         classNameCustom={!canDeleteRole ? 'action-denied' : ''}
                     />
                 </MyGroupButtonsActions>
@@ -635,10 +652,10 @@ export default function RolesGestionar() {
                         <SearchBar onSearchChange={setSearchTerm} />
                     </div>
                     <MyGroupButtonsActions>
-                        <MyButtonShortAction 
-                            type="add" 
-                            title="Añadir" 
-                            onClick={() => handleOpenModal(null, 'add')} 
+                        <MyButtonShortAction
+                            type="add"
+                            title="Añadir"
+                            onClick={() => handleOpenModal(null, 'add')}
                             classNameCustom={!canCreateRole ? 'action-denied' : ''}
                         />
                     </MyGroupButtonsActions>
