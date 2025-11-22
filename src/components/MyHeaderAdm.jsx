@@ -161,7 +161,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
 
   return (
     <>
-      <header className="mlap-home-header py-1" style={{ background: 'var(--color-a-500)' }}>
+      <header className="mlap-home-header py-1">
         <div className="maxWCont">
           <div className="mlap-home-header-logo">
             {/* Botón hamburguesa para móvil */}
@@ -179,10 +179,10 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               onClick={() => navigate('/inicio')}
               aria-label="Ir a inicio"
             >
-              <img src={logoWhite} alt="MLAP Logo" style={{ height: 36 }} />
+              <img src={logoWhite} alt="MLAP Logo" />
             </button>
           </div>
-          <div className="mlap-home-header-bar" style={{ color: '#fff' }}>
+          <div className="mlap-home-header-bar">
             <div className="parroquia-actual">
               {loading ? (
                 <span>Cargando...</span>
@@ -209,7 +209,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
             </div>
             <button
               role="button"
-              className='btn-nb'
+              className='btn-nb notif-btn'
               aria-label="notificaciones"
               onClick={(e) => {
                 if (e.altKey) {
@@ -222,21 +222,10 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
                   setNotificacionesModalOpen(true);
                 }
               }}
-              style={{ position: 'relative' }}
             >
               <MdNotificationsNone />
               {unreadCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-5px',
-                  right: '-5px',
-                  backgroundColor: 'red',
-                  color: 'white',
-                  borderRadius: '50%',
-                  padding: '2px 6px',
-                  fontSize: '10px',
-                  fontWeight: 'bold'
-                }}>
+                <span className="notif-badge">
                   {unreadCount}
                 </span>
               )}
@@ -274,7 +263,6 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
                 onClick={() => {
                   setPerfilModalOpen(false);
                 }}
-                style={{ color: 'var(--color-n-900)' }}
               >
                 <MdClose />
               </button>

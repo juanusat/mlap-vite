@@ -1,3 +1,7 @@
+.mlap-home-header {
+    background: var(--color-a-500);
+}
+
 .mlap-home-header .maxWCont {
     display: flex;
     align-items: center;
@@ -10,10 +14,15 @@
     gap: var(--space-m);
 }
 
+.logo-btn img {
+    height: 36px;
+}
+
 .mlap-home-header-bar {
     display: flex;
     align-items: center;
     gap: var(--space-m);
+    color: #fff;
 }
 
 .parroquia-actual {
@@ -48,6 +57,35 @@ button.btn-nb {
 
 button.btn-nb:hover {
     background-color: var(--color-semi-trans);
+}
+
+.btn-nb.notif-btn {
+    position: relative;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .perfil-btn {
@@ -136,6 +174,10 @@ button.btn-nb:hover {
     margin: var(--size-0);
     color: var(--color-n-900);
     font-size: var(--border-radius-xl);
+}
+
+.modal-perfil-header .btn-nb {
+    color: var(--color-n-900);
 }
 
 .perfil-info {
