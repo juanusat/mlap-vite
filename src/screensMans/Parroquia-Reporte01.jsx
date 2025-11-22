@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { getEventsByChapel } from '../services/reportService';
 import { searchChapels } from '../services/chapelService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/Parroquia-Reporte01.css";
 
 export default function Reporte01P() {
@@ -10,10 +13,15 @@ export default function Reporte01P() {
     const [eventData, setEventData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { hasPermission } = usePermissions();
+    const canRead = hasPermission(PERMISSIONS.PARROQUIA_REP01);
+
     useEffect(() => {
         document.title = "MLAP | Reporte 01-Parroquia";
-        loadAvailableChapels();
-    }, []);
+        if (canRead) {
+            loadAvailableChapels();
+        }
+    }, [canRead]);
 
     useEffect(() => {
         if (selectedChapel) {
@@ -39,15 +47,15 @@ export default function Reporte01P() {
         try {
             const response = await getEventsByChapel(chapelName);
             const events = response.data.events || [];
-            
+
             const colors = ['#F28B82', '#4FC3F7', '#66BB6A', '#BA68C8', '#FFD54F', '#FF8A65', '#81C784', '#CE93D8'];
-            
+
             const transformedData = events.map((event, index) => ({
                 name: event.event_name,
                 value: parseInt(event.count),
                 color: colors[index % colors.length]
             }));
-            
+
             setEventData(transformedData);
         } catch (error) {
             console.error('Error al cargar datos de eventos:', error);
@@ -119,7 +127,11 @@ export default function Reporte01P() {
             ]
         };
     };
-    
+
+    if (!canRead) {
+        return <NoPermissionMessage />;
+    }
+
     return (
         <>
             <div className="content-module only-this">
@@ -127,7 +139,7 @@ export default function Reporte01P() {
                 <div className='app-container'>
                     <div className="filter-controls">
                         <label htmlFor="chapel-select-events">Capilla:</label>
-                        <select 
+                        <select
                             id="chapel-select-events"
                             value={selectedChapel || ''}
                             onChange={(e) => setSelectedChapel(e.target.value)}
@@ -155,8 +167,8 @@ export default function Reporte01P() {
 
                     {!isLoading && eventData.length > 0 && (
                         <div className="chart-container">
-                            <ReactECharts 
-                                option={getChartOption()} 
+                            <ReactECharts
+                                option={getChartOption()}
                                 style={{ height: '500px', width: '100%' }}
                                 opts={{ renderer: 'canvas' }}
                             />

@@ -4,6 +4,9 @@ import MySchedule from '../components/MySchedule';
 import { getOccupancyMap } from '../services/reportService';
 import { searchChapels } from '../services/chapelService';
 import '../components/MyButtonShortAction.css';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/ActosLiturgicos-Reporte03.css";
 
 export default function Reporte03A() {
@@ -13,10 +16,15 @@ export default function Reporte03A() {
     const [occupancyData, setOccupancyData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
+    const { hasPermission } = usePermissions();
+    const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REP03);
+
     useEffect(() => {
         document.title = "MLAP | Reporte 03-Actos liturgicos";
-        loadAvailableChapels();
-    }, []);
+        if (canRead) {
+            loadAvailableChapels();
+        }
+    }, [canRead]);
 
     useEffect(() => {
         if (selectedChapel) {
@@ -42,33 +50,33 @@ export default function Reporte03A() {
         try {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth() + 1;
-            
+
             console.log(`\n=== FRONTEND: Solicitando datos ===`);
             console.log(`Capilla: ${chapelName}`);
             console.log(`Año: ${year}, Mes: ${month}`);
-            
+
             const response = await getOccupancyMap(chapelName, year, month);
-            
+
             console.log(`\n=== FRONTEND: Respuesta recibida ===`);
             console.log('Response completa:', response);
             console.log('Ocupación:', response.data.occupancy);
-            
+
             const transformedData = {};
             const occupancyArray = response.data.occupancy || [];
-            
+
             console.log(`\n=== FRONTEND: Transformando datos ===`);
             console.log(`Total de franjas horarias: ${occupancyArray.length}`);
-            
+
             occupancyArray.forEach((slot, index) => {
                 console.log(`\nFranja ${index + 1}:`, slot);
                 const timeIndex = timeSlots.findIndex(t => t.startsWith(slot.time));
                 console.log(`  Hora: ${slot.time}, TimeIndex: ${timeIndex}`);
-                
+
                 if (timeIndex === -1) {
                     console.log(`  ⚠️ Hora ${slot.time} no encontrada en timeSlots`);
                     return;
                 }
-                
+
                 transformedData[0] = transformedData[0] || {};
                 transformedData[1] = transformedData[1] || {};
                 transformedData[2] = transformedData[2] || {};
@@ -76,7 +84,7 @@ export default function Reporte03A() {
                 transformedData[4] = transformedData[4] || {};
                 transformedData[5] = transformedData[5] || {};
                 transformedData[6] = transformedData[6] || {};
-                
+
                 // Guardar el conteo de reservas (no porcentaje)
                 transformedData[0][timeIndex] = slot.monday || 0;
                 transformedData[1][timeIndex] = slot.tuesday || 0;
@@ -85,13 +93,13 @@ export default function Reporte03A() {
                 transformedData[4][timeIndex] = slot.friday || 0;
                 transformedData[5][timeIndex] = slot.saturday || 0;
                 transformedData[6][timeIndex] = slot.sunday || 0;
-                
+
                 console.log(`  Lun: ${slot.monday}, Mar: ${slot.tuesday}, Mie: ${slot.wednesday}, Jue: ${slot.thursday}, Vie: ${slot.friday}, Sab: ${slot.saturday}, Dom: ${slot.sunday}`);
             });
-            
+
             console.log(`\n=== FRONTEND: Datos transformados ===`);
             console.log('transformedData:', transformedData);
-            
+
             setOccupancyData(transformedData);
         } catch (error) {
             console.error('Error al cargar datos de ocupación:', error);
@@ -153,17 +161,21 @@ export default function Reporte03A() {
         return '#FFFFFF'; // Blanco para fondos oscuros
     };
 
+    if (!canRead) {
+        return <NoPermissionMessage />;
+    }
+
     return (
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Mapa 1: Horarios con más/menos ocupación</h2>
                 <div className='app-container'>
                     <div className="reporte03-container">
-                        
+
                         <div className="controls-row">
                             <div className="chapel-selector">
                                 <label htmlFor="chapel-select-occupancy">Capilla:</label>
-                                <select 
+                                <select
                                     id="chapel-select-occupancy"
                                     value={selectedChapel || ''}
                                     onChange={(e) => setSelectedChapel(e.target.value)}
@@ -238,11 +250,11 @@ export default function Reporte03A() {
                                         const percentage = getPercentageFromCount(reservationCount);
                                         const bgColor = getHeatmapColor(reservationCount);
                                         const textColor = getTextColor(reservationCount);
-                                        
+
                                         return (
                                             <div
                                                 className="grid-cell heatmap-cell"
-                                                style={{ 
+                                                style={{
                                                     backgroundColor: bgColor,
                                                     color: textColor
                                                 }}

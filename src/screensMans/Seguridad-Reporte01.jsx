@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Tabla from '../components/Tabla';
 import { getRoleFrequency } from '../services/reportService';
 import '../components/Tabla.css';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/Seguridad-Reporte01.css";
 
 export default function Reporte01S() {
@@ -9,23 +12,28 @@ export default function Reporte01S() {
     const [isLoading, setIsLoading] = useState(false);
     const [totalWorkers, setTotalWorkers] = useState(0);
 
+    const { hasPermission } = usePermissions();
+    const canRead = hasPermission(PERMISSIONS.SEGURIDAD_REP01);
+
     useEffect(() => {
         document.title = "MLAP | Reporte 01-Seguridad";
-        loadRoleFrequency();
-    }, []);
+        if (canRead) {
+            loadRoleFrequency();
+        }
+    }, [canRead]);
 
     const loadRoleFrequency = async () => {
         setIsLoading(true);
         try {
             const response = await getRoleFrequency();
             const roles = response.data.roles || [];
-            
+
             const transformedData = roles.map((role) => ({
                 id: role.role_id,
                 rol: role.role_name,
                 trabajadores: parseInt(role.worker_count)
             }));
-            
+
             setRolesData(transformedData);
             setTotalWorkers(response.data.total_workers);
         } catch (error) {
@@ -49,6 +57,10 @@ export default function Reporte01S() {
             accessor: (row) => row.trabajadores
         }
     ];
+
+    if (!canRead) {
+        return <NoPermissionMessage />;
+    }
 
     return (
         <>

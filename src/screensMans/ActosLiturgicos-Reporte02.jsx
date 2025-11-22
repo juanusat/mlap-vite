@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import DateInput from '../components/formsUI/DateInput';
 import { getReservationsByDateRange } from '../services/reportService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/ActosLiturgicos-Reporte02.css";
+
 
 export default function Reporte02A() {
     const [startDate, setStartDate] = useState('');
@@ -10,9 +14,16 @@ export default function Reporte02A() {
     const [chartData, setChartData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { hasPermission } = usePermissions();
+    const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REP02);
+
     useEffect(() => {
         document.title = "MLAP | Reporte 02-Actos liturgicos";
     }, []);
+
+    if (!canRead) {
+        return <NoPermissionMessage />;
+    }
 
     const loadData = async () => {
         if (!startDate || !endDate) {
@@ -140,17 +151,17 @@ export default function Reporte02A() {
             ]
         };
     };
-    
+
     return (
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Gráfico 2: Reservas por rango de fecha</h2>
                 <div className='app-container reporte02-container'>
-                    
+
                     <div className="date-filters">
                         <div className="date-filter-group">
                             <span className="date-label">Desde</span>
-                            <DateInput 
+                            <DateInput
                                 name="startDate"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
@@ -160,7 +171,7 @@ export default function Reporte02A() {
                         </div>
                         <div className="date-filter-group">
                             <span className="date-label">hasta</span>
-                            <DateInput 
+                            <DateInput
                                 name="endDate"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
@@ -168,7 +179,7 @@ export default function Reporte02A() {
                                 disabled={isLoading}
                             />
                         </div>
-                        <button 
+                        <button
                             className="load-data-btn"
                             onClick={loadData}
                             disabled={isLoading || !startDate || !endDate}
@@ -191,13 +202,13 @@ export default function Reporte02A() {
 
                     {!isLoading && chartData.length > 0 && (
                         <div className="line-chart-container">
-                            <ReactEcharts 
+                            <ReactEcharts
                                 option={getChartOption()}
                                 className="line-chart-echarts"
                             />
                         </div>
                     )}
-                    
+
                 </div>
             </div>
         </>
