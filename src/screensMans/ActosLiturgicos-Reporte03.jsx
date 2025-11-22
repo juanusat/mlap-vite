@@ -168,7 +168,7 @@ export default function Reporte03A() {
     return (
         <>
             <div className="content-module only-this">
-                <h2 className='title-screen'>Mapa 1: Horarios con más/menos ocupación</h2>
+                <h2 className='title-screen'>Mapa de calor 1: Horarios con más/menos ocupación</h2>
                 <div className='app-container'>
                     <div className="reporte03-container">
 
