@@ -259,6 +259,11 @@ export default function Reservas() {
     return date.toLocaleDateString('es-ES');
   };
 
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    return timeString.slice(0, 5);
+  };
+
   const reservationColumns = [
     { key: 'id', header: 'ID', accessor: (row) => row.id },
     { key: 'user_full_name', header: 'Usuario', accessor: (row) => row.user_full_name },
@@ -516,7 +521,7 @@ export default function Reservas() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             min="0.01"
-            max={remaining}
+            max={remaining.toFixed(2)}
             step="0.01"
             required
           />
