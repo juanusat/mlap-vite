@@ -97,8 +97,8 @@ export default function Reporte02R() {
                                     columns={columns}
                                     data={reservasCompletadasData}
                                     itemsPerPage={10}
-                                    gridColumnsLayout="1fr 1.5fr 1.5fr 120px 80px"
-                                    columnLeftAlignIndex={[1, 2]}
+                                    gridColumnsLayout="1.2fr 1.5fr 1.5fr 1fr 0.8fr"
+                                    columnLeftAlignIndex={[]}
                                 />
                             )}
                         </div>

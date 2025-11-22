@@ -45,7 +45,20 @@
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.reporte-reservas-container .grid-header {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    padding: 16px 12px;
+}
+
+.reporte-reservas-container .grid-table-cell {
+    padding: 14px 12px;
+    font-size: var(--font-size-base);
 }
 
 .reporte-reservas-container .grid-header {
