@@ -14,53 +14,55 @@ export default function ActosLiturgicos() {
   const location = useLocation();
   const isBasePath = location.pathname === '/man-actos-liturgicos';
   const { hasPermission } = usePermissions();
-  
+
   // Definición de las opciones agrupadas, incluyendo "Informes"
   const allOptions = [
-    { 
+    {
       href: 'gestionar-actos',
-      icon: <MdBookmark />, 
+      icon: <MdBookmark />,
       label: 'Gestionar actos litúrgicos',
       permission: PERMISSIONS.ACTOS_LITURGICOS_ACTOS_R
     },
-    { 
-      href: 'gestionar-requisitos', 
-      icon: <MdListAlt />, 
+    {
+      href: 'gestionar-requisitos',
+      icon: <MdListAlt />,
       label: 'Gestionar requisitos',
       permission: PERMISSIONS.ACTOS_LITURGICOS_REQ_R
     },
-    { 
-      href: 'gestionar-horarios', 
-      icon: <MdSchedule />, 
+    {
+      href: 'gestionar-horarios',
+      icon: <MdSchedule />,
       label: 'Gestionar horarios',
       permission: PERMISSIONS.ACTOS_LITURGICOS_HORA_R
     },
-    { 
+    {
       href: 'gestionar-reservas',
-      icon: <MdBook />, 
+      icon: <MdBook />,
       label: 'Gestionar reservas',
       permission: PERMISSIONS.ACTOS_LITURGICOS_RESER_R
     },
     {
-      label: 'Informes', // Nuevo nombre de la opción
-      icon: <MdBarChart />, // Icono sugerido para informes (MdBarChart)
-      href: null, // Opcional, si el padre no tiene una ruta propia
-      children: [ // Los reportes como opciones hijas
-        { 
-          href: 'reporte01-a', 
+      label: 'Informes',
+      icon: <MdBarChart />,
+      href: null,
+      children: [
+        {
+          href: 'reporte01-a',
           icon: <MdAssessment />,
-          label: 'Gráfico 01'
-          // Nota: Puedes agregar permisos individuales a los reportes si es necesario
+          label: 'Gráfico 01',
+          permission: PERMISSIONS.ACTOS_LITURGICOS_REP01
         },
-        { 
-          href: 'reporte02-a', 
+        {
+          href: 'reporte02-a',
           icon: <MdAssessment />,
-          label: 'Gráfico 02'
+          label: 'Gráfico 02',
+          permission: PERMISSIONS.ACTOS_LITURGICOS_REP02
         },
-        { 
-          href: 'reporte03-a', 
+        {
+          href: 'reporte03-a',
           icon: <MdAssessment />,
-          label: 'Mapa 01'
+          label: 'Mapa 01',
+          permission: PERMISSIONS.ACTOS_LITURGICOS_REP03
         },
       ]
     }
@@ -68,30 +70,30 @@ export default function ActosLiturgicos() {
 
   const options = useMemo(() => {
     const filterOptions = (option) => {
-        if (option.children) {
-            const allowedChildren = option.children.filter(child => 
-                !child.permission || hasPermission(child.permission)
-            );
-            
-            if (allowedChildren.length > 0) {
-                return { ...option, children: allowedChildren };
-            }
-            return null;
-        }
+      if (option.children) {
+        const allowedChildren = option.children.filter(child =>
+          !child.permission || hasPermission(child.permission)
+        );
 
-        // 2. Si es una opción simple (sin hijos)
-        if (!option.permission || hasPermission(option.permission)) {
-            return option;
+        if (allowedChildren.length > 0) {
+          return { ...option, children: allowedChildren };
         }
-
-        // 3. Omitir si no tiene permiso
         return null;
+      }
+
+      // 2. Si es una opción simple (sin hijos)
+      if (!option.permission || hasPermission(option.permission)) {
+        return option;
+      }
+
+      // 3. Omitir si no tiene permiso
+      return null;
     };
 
     // Aplica el filtro al arreglo principal
     return allOptions.map(filterOptions).filter(option => option !== null);
   }, [hasPermission]);
-  
+
   return (
     <ScreenMan title="Módulo de actos litúrgicos" options={options}>
       <Outlet />

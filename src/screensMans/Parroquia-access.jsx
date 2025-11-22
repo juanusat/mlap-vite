@@ -37,14 +37,32 @@ export default function Parroquia() {
           href: 'reporte01-p',
           icon: <MdDomainVerification />,
           label: 'Gráfico 01',
-          show: true
+          show: true,
+          permission: PERMISSIONS.PARROQUIA_REP01
         }
       ]
     },
-  ].filter(option => option.show);
+  ];
+
+  const filteredOptions = options.reduce((acc, option) => {
+    if (!option.show) return acc;
+
+    if (option.children) {
+      const allowedChildren = option.children.filter(child =>
+        (child.show !== false) && (!child.permission || hasPermission(child.permission))
+      );
+
+      if (allowedChildren.length > 0) {
+        acc.push({ ...option, children: allowedChildren });
+      }
+    } else {
+      acc.push(option);
+    }
+    return acc;
+  }, []);
 
   return (
-    <ScreenMan title="Módulo Parroquia" options={options}>
+    <ScreenMan title="Módulo Parroquia" options={filteredOptions}>
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">

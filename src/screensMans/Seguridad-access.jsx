@@ -1,6 +1,6 @@
 import React from 'react';
 import ScreenMan from '../components/ScreenMan';
-import { MdAccountBox, MdRecentActors, MdDomainVerification, MdBarChart  } from "react-icons/md";
+import { MdAccountBox, MdRecentActors, MdDomainVerification, MdBarChart } from "react-icons/md";
 import { Outlet, useLocation } from 'react-router-dom';
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
@@ -37,15 +37,33 @@ export default function Seguridad() {
           href: 'reporte01-s',
           icon: <MdDomainVerification />,
           label: 'Reporte 01',
-          show: true
+          show: true,
+          permission: PERMISSIONS.SEGURIDAD_REP01
         }
       ]
     },
 
-  ].filter(option => option.show);
+  ];
+
+  const filteredOptions = options.reduce((acc, option) => {
+    if (!option.show) return acc;
+
+    if (option.children) {
+      const allowedChildren = option.children.filter(child =>
+        (child.show !== false) && (!child.permission || hasPermission(child.permission))
+      );
+
+      if (allowedChildren.length > 0) {
+        acc.push({ ...option, children: allowedChildren });
+      }
+    } else {
+      acc.push(option);
+    }
+    return acc;
+  }, []);
 
   return (
-    <ScreenMan title="Módulo de seguridad" options={options}>
+    <ScreenMan title="Módulo de seguridad" options={filteredOptions}>
       <Outlet />
       {isBasePath && (<section className="modulo-container">
         <header className="modulo-header">

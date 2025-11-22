@@ -25,6 +25,8 @@ export default function Reservas() {
   const { hasPermission } = usePermissions();
   const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_R);
   const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_U);
+  const canCreatePayment = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_PAY_C);
+  const canReadPayment = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_PAY_R);
 
   const [reservations, setReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -144,7 +146,7 @@ export default function Reservas() {
 
   const handleAccept = async () => {
     if (!currentReservation) return;
-    
+
     try {
       setLoading(true);
       await reservationService.updateReservationStatus(currentReservation.id, 'IN_PROGRESS');
@@ -160,7 +162,7 @@ export default function Reservas() {
 
   const handleReject = async () => {
     if (!currentReservation) return;
-    
+
     try {
       setLoading(true);
       await reservationService.rejectReservation(currentReservation.id);
@@ -186,7 +188,7 @@ export default function Reservas() {
 
   const handleComplete = async () => {
     if (!currentReservation) return;
-    
+
     try {
       setLoading(true);
       await reservationService.updateReservationStatus(currentReservation.id, 'COMPLETED');
@@ -202,7 +204,7 @@ export default function Reservas() {
 
   const handleFulfill = async () => {
     if (!currentReservation) return;
-    
+
     try {
       setLoading(true);
       await reservationService.updateReservationStatus(currentReservation.id, 'FULFILLED');
@@ -218,7 +220,7 @@ export default function Reservas() {
 
   const handlePaymentSubmit = async (paymentData) => {
     if (!currentReservation) return;
-    
+
     try {
       setLoading(true);
       await reservationService.createPayment(currentReservation.id, {
@@ -259,7 +261,7 @@ export default function Reservas() {
 
   const formatTime = (timeString) => {
     if (!timeString) return '';
-    return timeString.substring(0, 5);
+    return timeString.slice(0, 5);
   };
 
   const reservationColumns = [
@@ -279,11 +281,13 @@ export default function Reservas() {
           {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
           )}
-          {canUpdate && parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) && 
-           row.status !== 'REJECTED' && row.status !== 'CANCELLED' && (
-            <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
+          {canCreatePayment && canUpdate && parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) &&
+            row.status !== 'REJECTED' && row.status !== 'CANCELLED' && (
+              <MyButtonShortAction type="pay" title="Pagar" onClick={() => handlePay(row)} />
+            )}
+          {canReadPayment && (
+            <MyButtonShortAction type="receipt" title="Ver Pagos" onClick={() => handleViewPayments(row)} />
           )}
-          <MyButtonShortAction type="receipt" title="Ver Pagos" onClick={() => handleViewPayments(row)} />
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
           )}
@@ -430,7 +434,7 @@ export default function Reservas() {
           title: 'Rechazar reserva',
           content: (
             <div>
-              <h4>¿Está seguro que desea rechazar la reserva #{currentReservation.id}?</h4> 
+              <h4>¿Está seguro que desea rechazar la reserva #{currentReservation.id}?</h4>
             </div>
           ),
           onAccept: handleReject,
@@ -440,8 +444,8 @@ export default function Reservas() {
         return {
           title: 'Registrar Pago',
           content: (
-            <PaymentForm 
-              reservation={currentReservation} 
+            <PaymentForm
+              reservation={currentReservation}
               onSubmit={handlePaymentSubmit}
             />
           ),
@@ -469,17 +473,17 @@ export default function Reservas() {
     const handleSubmit = (e) => {
       e.preventDefault();
       const paymentAmount = parseFloat(amount);
-      
+
       if (paymentAmount <= 0) {
         alert('El monto debe ser mayor a 0');
         return;
       }
-      
+
       if (paymentAmount > remaining) {
         alert(`El monto no puede exceder el saldo pendiente: $ ${remaining.toFixed(2)}`);
         return;
       }
-      
+
       onSubmit({ amount: paymentAmount });
     };
 
@@ -493,7 +497,7 @@ export default function Reservas() {
             value={`$ ${currentPrice.toFixed(2)}`}
             disabled
           />
-          
+
           <label>Monto Actual Pagado</label>
           <input
             type="text"
@@ -501,7 +505,7 @@ export default function Reservas() {
             value={`$ ${paidAmount.toFixed(2)}`}
             disabled
           />
-          
+
           <label>Saldo Pendiente</label>
           <input
             type="text"
@@ -509,7 +513,7 @@ export default function Reservas() {
             value={`$ ${remaining.toFixed(2)}`}
             disabled
           />
-          
+
           <label>Monto a Pagar</label>
           <input
             type="number"
@@ -517,7 +521,7 @@ export default function Reservas() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             min="0.01"
-            max={remaining}
+            max={remaining.toFixed(2)}
             step="0.01"
             required
           />
@@ -528,9 +532,9 @@ export default function Reservas() {
 
   return (
     <>
-      {error && <div className="error-message" style={{padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
-      {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
-      
+      {error && <div className="error-message" style={{ padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px' }}>{error}</div>}
+      {loading && <div className="loading-message" style={{ padding: '1rem', margin: '1rem', textAlign: 'center' }}>Cargando...</div>}
+
       <div className="content-module only-this">
         <h2 className='title-screen'>Gestión de Reservas</h2>
         <div className="app-container">
@@ -555,7 +559,7 @@ export default function Reservas() {
         >
           {modalProps.content}
         </Modal>
-        
+
         {showPaymentSidebar && (
           <div className="sidebar-overlay" onClick={handleClosePaymentSidebar}>
             <div className="sidebar-panel" onClick={(e) => e.stopPropagation()}>

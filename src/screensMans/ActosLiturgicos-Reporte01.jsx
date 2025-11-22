@@ -2,28 +2,36 @@ import React, { useState, useEffect } from 'react';
 import GroupedBarChart from '../components/charts/GroupedBarChart';
 import { getReservationsByChapel } from '../services/reportService';
 import { searchChapels } from '../services/chapelService';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../utils/permissions';
+import NoPermissionMessage from '../components/NoPermissionMessage';
 import "../utils/ActosLiturgicos-Reporte01.css";
-
 export default function Reporte01A() {
     const [selectedChapels, setSelectedChapels] = useState([]);
     const [reportData, setReportData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [availableChapels, setAvailableChapels] = useState([]);
     const [totals, setTotals] = useState({
-        totalBautismos: 0,
-        totalMatrimonios: 0,
-        totalConfirmaciones: 0,
         totalReservas: 0
     });
 
+    const { hasPermission } = usePermissions();
+    const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REP01);
+
     useEffect(() => {
         document.title = "MLAP | Reporte 01-Actos Litúrgicos";
-        loadAvailableChapels();
-    }, []);
+        if (canRead) {
+            loadAvailableChapels();
+        }
+    }, [canRead]);
 
     useEffect(() => {
         calculateTotals();
     }, [reportData]);
+
+    if (!canRead) {
+        return <NoPermissionMessage />;
+    }
 
     const loadAvailableChapels = async () => {
         try {
@@ -111,11 +119,11 @@ export default function Reporte01A() {
                 <h2 className='title-screen'>Gráfico 1: Reservas realizadas por capilla</h2>
                 <div className='app-container'>
                     <div className="reporte01-container">
-                        
+
                         <div className="filter-controls-ALR1">
                             <div className="chapel-selector">
                                 <label htmlFor="chapel-select">Seleccionar Capilla:</label>
-                                <select 
+                                <select
                                     id="chapel-select"
                                     onChange={(e) => addChapel(e.target.value)}
                                     value=""
@@ -140,7 +148,7 @@ export default function Reporte01A() {
                                         {selectedChapels.map(chapelName => (
                                             <li key={chapelName}>
                                                 <span>{chapelName}</span>
-                                                <button 
+                                                <button
                                                     onClick={() => removeChapel(chapelName)}
                                                     className="remove-chapel-btn"
                                                     disabled={isLoading}
@@ -169,7 +177,7 @@ export default function Reporte01A() {
                         {!isLoading && reportData.length > 0 && (
                             <div className="chart-summary-wrapper">
                                 <div className="chart-section">
-                                    <GroupedBarChart 
+                                    <GroupedBarChart
                                         data={reportData}
                                         categories={capillas}
                                     />
@@ -184,7 +192,7 @@ export default function Reporte01A() {
                                                 {item.totalReservas === 0 ? (
                                                     <div className="summary-item">
                                                         <div className="summary-content">
-                                                            <span className="summary-label" style={{fontStyle: 'italic', color: '#999'}}>Sin reservas</span>
+                                                            <span className="summary-label" style={{ fontStyle: 'italic', color: '#999' }}>Sin reservas</span>
                                                         </div>
                                                     </div>
                                                 ) : (

@@ -31,7 +31,8 @@ export default function CuentasGestionar() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [modalError, setModalError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [roleError, setRoleError] = useState('');
   const [workerRoles, setWorkerRoles] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
   const [addRoleOptions, setAddRoleOptions] = useState([]);
@@ -171,7 +172,8 @@ export default function CuentasGestionar() {
     setShowModal(false);
     setCurrentWorker(null);
     setModalType(null);
-    setModalError('');
+    setEmailError('');
+    setRoleError('');
     setFormData({ email: '', role_id: '' });
   };
 
@@ -197,19 +199,43 @@ export default function CuentasGestionar() {
   const handleSave = async () => {
     try {
       setLoading(true);
-      setModalError('');
+      setEmailError('');
+      setRoleError('');
       
       if (modalType === "invite") {
-        await parishWorkerService.inviteWorker(parishId, formData.email);
+        if (!formData.email || !formData.email.trim()) {
+          setEmailError('El correo electrónico es obligatorio');
+          setLoading(false);
+          return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email.trim())) {
+          setEmailError('El correo electrónico no es válido');
+          setLoading(false);
+          return;
+        }
+        
+        await parishWorkerService.inviteWorker(parishId, formData.email.trim());
         await loadWorkers();
         handleCloseModal();
       } else if (modalType === "addRole" && currentWorker) {
+        if (!formData.role_id || !formData.role_id.toString().trim()) {
+          setRoleError('Debe seleccionar un rol');
+          setLoading(false);
+          return;
+        }
+        
         await parishWorkerService.assignRole(currentWorker.association_id, formData.role_id);
         await loadWorkers();
         handleCloseModal();
       }
     } catch (err) {
-      setModalError(err.message || 'Error al realizar la operación');
+      if (modalType === "invite") {
+        setEmailError(err.message || 'Error al realizar la operación');
+      } else if (modalType === "addRole") {
+        setRoleError(err.message || 'Error al realizar la operación');
+      }
       console.error(err);
     } finally {
       setLoading(false);
@@ -318,7 +344,7 @@ export default function CuentasGestionar() {
       case "invite":
         return {
           title: "Invitar usuario",
-          content: <UserForm formData={formData} handleFormChange={handleFormChange} mode="invite" error={modalError} />,
+          content: <UserForm formData={formData} handleFormChange={handleFormChange} mode="invite" emailError={emailError} />,
           onAccept: handleSave,
           onCancel: handleCloseModal
         };
@@ -331,7 +357,7 @@ export default function CuentasGestionar() {
               handleFormChange={handleFormChange}
               mode="addRole"
               availableRoles={addRoleOptions}
-              error={modalError}
+              roleError={roleError}
             />
           ),
           onAccept: addRoleOptions && addRoleOptions.length ? handleSave : null,
@@ -421,7 +447,7 @@ export default function CuentasGestionar() {
   );
 }
 
-const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], error = '' }) => {
+const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], emailError = '', roleError = '' }) => {
   return (
     <div className="Inputs-add">
       {mode === "invite" && (
@@ -436,6 +462,7 @@ const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], error
             onChange={handleFormChange}
             required
           />
+          {emailError && <p className="error-message" style={{ marginTop: '5px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{emailError}</p>}
         </>
       )}
 
@@ -443,28 +470,29 @@ const UserForm = ({ formData, handleFormChange, mode, availableRoles = [], error
         <>
           <label htmlFor="role_id">Selecciona un rol:</label>
           {availableRoles.length > 0 ? (
-            <select
-              id="role_id"
-              name="role_id"
-              className="inputModal"
-              value={formData.role_id}
-              onChange={handleFormChange}
-              required
-            >
-              <option value="">Seleccione un rol</option>
-              {availableRoles.map((role) => (
-                <option key={role.id} value={role.id}>
-                  {role.name}
-                </option>
-              ))}
-            </select>
+            <>
+              <select
+                id="role_id"
+                name="role_id"
+                className="inputModal"
+                value={formData.role_id}
+                onChange={handleFormChange}
+                required
+              >
+                <option value="">Seleccione un rol</option>
+                {availableRoles.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {role.name}
+                  </option>
+                ))}
+              </select>
+              {roleError && <p className="error-message" style={{ marginTop: '5px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{roleError}</p>}
+            </>
           ) : (
             <p style={{ marginTop: '8px' }}>No hay roles disponibles para asignar.</p>
           )}
         </>
       )}
-      
-      {error && <p className="error-message" style={{ marginTop: '10px', color: 'red', fontSize: '14px' }}>{error}</p>}
     </div>
   );
 };
