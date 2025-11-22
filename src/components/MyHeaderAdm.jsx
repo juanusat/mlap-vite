@@ -8,6 +8,7 @@ import NotificationModal from './NotificationModal';
 import useLogout from '../hooks/useLogout';
 import useSession from '../hooks/useSession';
 import * as notificationService from '../services/notificationService';
+import { getUnreadCount } from '../services/notificationService';
 
 const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
@@ -18,6 +19,8 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
   const [perfilModalOpen, setPerfilModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isPollingEnabled, setIsPollingEnabled] = useState(true);
 
   const { sessionData, loading, error, refetch, changeRole, clearError } = useSession(logout);
 
@@ -25,29 +28,29 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
     try {
       console.log(`Cambiando rol a: ${rol.name} en parroquia: ${sessionData?.parish?.name}`);
       await changeRole(rol.id);
-      
+
       await refetch();
-      
+
       const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
       const sessionResp = await fetch(`${API_BASE}/api/auth/session`, {
         method: 'GET',
         credentials: 'include',
       });
-      
+
       if (sessionResp.ok) {
         const sessionResult = await sessionResp.json();
-        
+
         if (sessionResult.data?.force_logout) {
           alert(sessionResult.data.logout_reason || 'Tu sesión ha sido cerrada por el administrador.');
           logout();
           return;
         }
-        
+
         if (sessionResult.data?.permissions) {
           console.log('Permisos del rol activo:', sessionResult.data.permissions);
         }
       }
-      
+
       setPerfilModalOpen(false);
     } catch (error) {
       console.error('Error al cambiar rol:', error);
@@ -56,23 +59,23 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
 
   const handleOpenPerfilModal = async () => {
     setPerfilModalOpen(true);
-    
+
     try {
       const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
       const sessionResp = await fetch(`${API_BASE}/api/auth/session`, {
         method: 'GET',
         credentials: 'include',
       });
-      
+
       if (sessionResp.ok) {
         const sessionResult = await sessionResp.json();
-        
+
         if (sessionResult.data?.force_logout) {
           alert(sessionResult.data.logout_reason || 'Tu sesión ha sido cerrada por el administrador.');
           logout();
           return;
         }
-        
+
         if (sessionResult.data?.permissions) {
           const permisos = (sessionResult.data.is_diocese_user || sessionResult.data.is_parish_admin)
             ? ['ALL']
@@ -112,6 +115,25 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
     }
   }, [notificacionesModalOpen]);
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await getUnreadCount();
+        if (response && response.data) {
+          setUnreadCount(response.data.unread_count);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (isPollingEnabled) {
+      fetchUnreadCount();
+      const intervalId = setInterval(fetchUnreadCount, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [isPollingEnabled]);
+
   const fetchNotifications = async () => {
     try {
       setLoadingNotifications(true);
@@ -143,8 +165,8 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
         <div className="maxWCont">
           <div className="mlap-home-header-logo">
             {/* Botón hamburguesa para móvil */}
-            <button 
-              className="aside-hamburger-btn" 
+            <button
+              className="aside-hamburger-btn"
               onClick={onMenuToggle}
               aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
             >
@@ -152,8 +174,8 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
               <span className={`hamburger-line ${isMenuOpen ? 'open' : ''}`}></span>
             </button>
-            <button 
-              className="btn-nb logo-btn" 
+            <button
+              className="btn-nb logo-btn"
               onClick={() => navigate('/inicio')}
               aria-label="Ir a inicio"
             >
@@ -173,10 +195,10 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
                 <>
                   <span>{sessionData.parish.name}</span>
                   <span className="rol-actual">
-                    {sessionData.is_parish_admin 
-                      ? 'Párroco' 
-                      : sessionData.current_role 
-                        ? sessionData.current_role.name 
+                    {sessionData.is_parish_admin
+                      ? 'Párroco'
+                      : sessionData.current_role
+                        ? sessionData.current_role.name
                         : 'Sin rol seleccionado'
                     }
                   </span>
@@ -189,9 +211,35 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               role="button"
               className='btn-nb'
               aria-label="notificaciones"
-              onClick={() => setNotificacionesModalOpen(true)}
+              onClick={(e) => {
+                if (e.altKey) {
+                  setIsPollingEnabled(prev => {
+                    const newState = !prev;
+                    console.log(`Polling de notificaciones ${newState ? 'activado' : 'desactivado'}`);
+                    return newState;
+                  });
+                } else {
+                  setNotificacionesModalOpen(true);
+                }
+              }}
+              style={{ position: 'relative' }}
             >
               <MdNotificationsNone />
+              {unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '-5px',
+                  backgroundColor: 'red',
+                  color: 'white',
+                  borderRadius: '50%',
+                  padding: '2px 6px',
+                  fontSize: '10px',
+                  fontWeight: 'bold'
+                }}>
+                  {unreadCount}
+                </span>
+              )}
             </button>
             <button
               role="button"
@@ -199,9 +247,9 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
               aria-label="usuario"
               onClick={handleOpenPerfilModal}
             >
-              <img 
-                src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)} 
-                alt="Foto de perfil" 
+              <img
+                src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)}
+                alt="Foto de perfil"
                 className="perfil-foto"
               />
             </button>
@@ -246,24 +294,24 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
             ) : sessionData ? (
               <>
                 <div className="perfil-info">
-                  <img 
-                    src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)} 
-                    alt="Foto de perfil" 
+                  <img
+                    src={getProfilePhotoUrl(sessionData?.person?.profile_photo, sessionData?.person)}
+                    alt="Foto de perfil"
                     className="perfil-foto-grande"
                   />
                   <div className="perfil-datos">
                     <h3>{sessionData?.person?.full_name || 'Usuario'}</h3>
                     <div className="perfil-datos-rol">
                       <p>{sessionData?.context_type === 'DIOCESE'
-                          ? 'Diócesis' 
-                          : sessionData?.context_type === 'PARISH' && sessionData?.parish
-                            ? sessionData.parish.name
-                            : 'Modo feligrés'}</p>
+                        ? 'Diócesis'
+                        : sessionData?.context_type === 'PARISH' && sessionData?.parish
+                          ? sessionData.parish.name
+                          : 'Modo feligrés'}</p>
                       <p>Rol actual: {
                         sessionData.context_type === 'DIOCESE'
                           ? 'Administrador Diocesano'
-                          : sessionData.is_parish_admin 
-                            ? 'Párroco' 
+                          : sessionData.is_parish_admin
+                            ? 'Párroco'
                             : sessionData?.current_role?.name || 'Sin rol seleccionado'
                       }</p>
                     </div>
