@@ -200,10 +200,29 @@ export default function CuentasGestionar() {
       setModalError('');
       
       if (modalType === "invite") {
-        await parishWorkerService.inviteWorker(parishId, formData.email);
+        if (!formData.email || !formData.email.trim()) {
+          setModalError('El correo electrónico es obligatorio');
+          setLoading(false);
+          return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email.trim())) {
+          setModalError('El correo electrónico no es válido');
+          setLoading(false);
+          return;
+        }
+        
+        await parishWorkerService.inviteWorker(parishId, formData.email.trim());
         await loadWorkers();
         handleCloseModal();
       } else if (modalType === "addRole" && currentWorker) {
+        if (!formData.role_id || !formData.role_id.toString().trim()) {
+          setModalError('Debe seleccionar un rol');
+          setLoading(false);
+          return;
+        }
+        
         await parishWorkerService.assignRole(currentWorker.association_id, formData.role_id);
         await loadWorkers();
         handleCloseModal();
