@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactECharts from 'echarts-for-react';
 import { getEventsByChapel } from '../services/reportService';
 import { searchChapels } from '../services/chapelService';
 import "../utils/Parroquia-Reporte01.css";
@@ -56,7 +57,68 @@ export default function Reporte01P() {
         }
     };
 
-    const maxValue = eventData.length > 0 ? Math.max(...eventData.map(item => item.value)) : 140;
+    const getChartOption = () => {
+        return {
+            title: {
+                text: 'Eventos realizados',
+                left: 'center',
+                textStyle: {
+                    fontSize: 16,
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: (params) => {
+                    const data = params[0];
+                    return `<strong>${data.name}</strong><br/>Cantidad: ${data.value}`;
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: eventData.map(item => item.name),
+                axisLabel: {
+                    interval: 0,
+                    rotate: 30,
+                    fontSize: 12
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Cantidad de reservas',
+                nameTextStyle: {
+                    fontSize: 12
+                }
+            },
+            series: [
+                {
+                    name: 'Reservas',
+                    type: 'bar',
+                    data: eventData.map(item => ({
+                        value: item.value,
+                        itemStyle: {
+                            color: item.color
+                        }
+                    })),
+                    barMaxWidth: 60,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        fontSize: 11
+                    }
+                }
+            ]
+        };
+    };
     
     return (
         <>
@@ -93,40 +155,11 @@ export default function Reporte01P() {
 
                     {!isLoading && eventData.length > 0 && (
                         <div className="chart-container">
-                            <div className="bar-chart">
-                                <div className="chart-y-axis">
-                                    <div className="y-axis-label">{maxValue}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.857)}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.714)}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.571)}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.428)}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.285)}</div>
-                                    <div className="y-axis-label">{Math.round(maxValue * 0.142)}</div>
-                                </div>
-                                <div className="chart-content">
-                                    <div className="y-axis-title">Cantidad de reservas realizadas</div>
-                                    <div className="bars-container">
-                                        {eventData.map((item, index) => (
-                                            <div key={index} className="bar-wrapper">
-                                                <div 
-                                                    className="bar" 
-                                                    style={{
-                                                        height: `${(item.value / maxValue) * 100}%`,
-                                                        backgroundColor: item.color
-                                                    }}
-                                                >
-                                                    <div className="bar-tooltip">
-                                                        <strong>{item.name}</strong>
-                                                        <br />
-                                                        Cantidad: {item.value}
-                                                    </div>
-                                                </div>
-                                                <div className="bar-label">{item.name}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                            <ReactECharts 
+                                option={getChartOption()} 
+                                style={{ height: '500px', width: '100%' }}
+                                opts={{ renderer: 'canvas' }}
+                            />
                         </div>
                     )}
                 </div>
