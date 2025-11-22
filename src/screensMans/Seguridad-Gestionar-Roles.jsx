@@ -399,12 +399,22 @@ export default function RolesGestionar() {
     const handleSave = async () => {
         if (!sessionData?.parish?.id) return;
 
+        if (!formData.nombre || !formData.nombre.trim()) {
+            alert('El nombre del rol es obligatorio');
+            return;
+        }
+
+        if (!formData.descripcion || !formData.descripcion.trim()) {
+            alert('La descripción del rol es obligatoria');
+            return;
+        }
+
         try {
             setLoading(true);
             if (modalType === 'add') {
-                await roleService.createRole(sessionData.parish.id, formData.nombre, formData.descripcion);
+                await roleService.createRole(sessionData.parish.id, formData.nombre.trim(), formData.descripcion.trim());
             } else if (modalType === 'edit' && currentRol) {
-                await roleService.updateRole(sessionData.parish.id, currentRol.ID, formData.nombre, formData.descripcion);
+                await roleService.updateRole(sessionData.parish.id, currentRol.ID, formData.nombre.trim(), formData.descripcion.trim());
             }
             handleCloseModal();
             await loadRoles();
