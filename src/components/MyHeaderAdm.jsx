@@ -164,12 +164,12 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
             <div className="parroquia-actual">
               {loading ? (
                 <span>Cargando...</span>
-              ) : sessionData?.is_diocese_user ? (
+              ) : sessionData?.context_type === 'DIOCESE' ? (
                 <>
                   <span>Diócesis</span>
                   <span className="rol-actual">Administrador Diocesano</span>
                 </>
-              ) : sessionData?.parish ? (
+              ) : sessionData?.context_type === 'PARISH' && sessionData?.parish ? (
                 <>
                   <span>{sessionData.parish.name}</span>
                   <span className="rol-actual">
@@ -218,9 +218,9 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
 
       {perfilModalOpen && (
         <div className="modal-overlay">
-          <div className={`modal-perfil ${sessionData?.is_parish_admin || sessionData?.is_diocese_user ? 'parroco-mode' : ''}`}>
+          <div className={`modal-perfil ${sessionData?.is_parish_admin || sessionData?.context_type === 'DIOCESE' ? 'parroco-mode' : ''}`}>
             <div className="modal-perfil-header">
-              <h2>{sessionData?.is_parish_admin || sessionData?.is_diocese_user ? 'Perfil' : 'Cambiar rol'}</h2>
+              <h2>{sessionData?.is_parish_admin || sessionData?.context_type === 'DIOCESE' ? 'Perfil' : 'Cambiar rol'}</h2>
               <button
                 className="btn-nb"
                 onClick={() => {
@@ -254,11 +254,13 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
                   <div className="perfil-datos">
                     <h3>{sessionData?.person?.full_name || 'Usuario'}</h3>
                     <div className="perfil-datos-rol">
-                      <p>{sessionData?.is_diocese_user 
+                      <p>{sessionData?.context_type === 'DIOCESE'
                           ? 'Diócesis' 
-                          : sessionData?.parish?.name || 'Modo feligrés'}</p>
+                          : sessionData?.context_type === 'PARISH' && sessionData?.parish
+                            ? sessionData.parish.name
+                            : 'Modo feligrés'}</p>
                       <p>Rol actual: {
-                        sessionData.is_diocese_user
+                        sessionData.context_type === 'DIOCESE'
                           ? 'Administrador Diocesano'
                           : sessionData.is_parish_admin 
                             ? 'Párroco' 
@@ -268,10 +270,10 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
                   </div>
                 </div>
 
-                {!sessionData.is_parish_admin && !sessionData.is_diocese_user && (
+                {!sessionData.is_parish_admin && sessionData.context_type !== 'DIOCESE' && (
                   <div className="selector-rol">
                     <h4>Seleccionar rol</h4>
-                    {sessionData?.parish && sessionData?.available_roles ? (
+                    {sessionData?.context_type === 'PARISH' && sessionData?.available_roles ? (
                       <div className="lista-roles">
                         {sessionData.available_roles.map((rol) => (
                           <button
