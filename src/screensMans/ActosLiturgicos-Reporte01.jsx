@@ -112,7 +112,7 @@ export default function Reporte01A() {
                 <div className='app-container'>
                     <div className="reporte01-container">
                         
-                        <div className="filter-controls">
+                        <div className="filter-controls-ALR1">
                             <div className="chapel-selector">
                                 <label htmlFor="chapel-select">Seleccionar Capilla:</label>
                                 <select 
