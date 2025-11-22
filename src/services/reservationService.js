@@ -297,3 +297,29 @@ export const createPayment = async (reservationId, paymentData) => {
 
   return await handleResponse(response);
 };
+
+export const getReservationPaymentsForParishioner = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}/payments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const createPaymentForParishioner = async (reservationId, paymentData) => {
+  const response = await fetch(`${API_URL}/api/client/reservation/${reservationId}/payments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(paymentData),
+  });
+
+  return await handleResponse(response);
+};
+

@@ -114,9 +114,10 @@
 
 .payment-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-bottom: 0.5rem;
+  flex-direction: column;
 }
 
 .payment-amount {
