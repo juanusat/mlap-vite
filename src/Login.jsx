@@ -121,9 +121,6 @@ export default function Login() {
         
       </div>
       <hr className="mlap-login-divider" />
-      <p className="mlap-login-info">
-        Bienvenido. Este acceso está reservado únicamente para el personal de la Parroquia. Si desea solicitar un acto litúrgico o consultar información, por favor <b>diríjase a nuestro sitio web principal.</b>
-      </p>
 
       <Modal
         show={isModalVisible}
