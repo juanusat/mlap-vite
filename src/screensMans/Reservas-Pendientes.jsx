@@ -587,10 +587,7 @@ export default function ReservasPendientes() {
       </Modal>
 
       {showSidebar && currentReservation && (
-        <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`}>
-          <div className="panel-lateral-close-btn">
-            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
-          </div>
+        <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`} onClose={handleCloseSidebar}>
           <div className="sidebar-list">
             <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
@@ -616,10 +613,7 @@ export default function ReservasPendientes() {
       )}
 
       {showRequirementsSidebar && currentRequirements && (
-        <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`}>
-          <div className="panel-lateral-close-btn">
-            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseRequirementsSidebar} />
-          </div>
+        <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`} onClose={handleCloseRequirementsSidebar}>
           <div className="sidebar-list">
             <h3 className="sidebar-subtitle">Requisitos</h3>
             {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
@@ -643,10 +637,7 @@ export default function ReservasPendientes() {
       )}
 
       {showPaymentSidebar && paymentReservation && (
-        <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`}>
-          <div className="panel-lateral-close-btn">
-            <MyButtonShortAction type="close" title="Cerrar" onClick={handleClosePaymentSidebar} />
-          </div>
+        <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`} onClose={handleClosePaymentSidebar}>
           <div className="sidebar-list">
             <p><strong>Evento:</strong> {paymentReservation.event_name}</p>
             <p><strong>Total:</strong> $ {parseFloat(paymentReservation.current_price).toFixed(2)}</p>

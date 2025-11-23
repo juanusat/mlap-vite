@@ -409,16 +409,7 @@ export default function ActosLiturgicosRequisitos() {
       </div>
 
       {showPanel && (
-        <MyPanelLateralConfig>
-          <div className="panel-lateral-header">
-            <h2>Seleccionar evento</h2>
-            <MyButtonShortAction
-              type="close"
-              onClick={handleClosePanel}
-              title="Cerrar"
-            />
-          </div>
-          <br />
+        <MyPanelLateralConfig title="Seleccionar evento" onClose={handleClosePanel}>
           <div className="sidebar-search">
             <SearchBar onSearchChange={setSearchTermEvent} />
           </div>

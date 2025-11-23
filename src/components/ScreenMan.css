@@ -56,7 +56,7 @@
 }
 
 .screenman-article .panel-lateral-config {
-    padding: var(--space-xl);
+    padding: var(--space-l);
     border-inline-start-width: var(--border-width-s);
     border-inline-start-style: solid;
     border-inline-start-color: var(--color-grey-50);

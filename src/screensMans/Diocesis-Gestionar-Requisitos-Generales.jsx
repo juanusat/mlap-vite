@@ -365,17 +365,12 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
             </div>
 
             {showPanel && (
-                <>
-                    <MyPanelLateralConfig title="Seleccionar evento">
-                        <div className="panel-lateral-close-btn">
-                            <MyButtonShortAction type="close" onClick={handleClosePanel} title="Cerrar" />
-                        </div>
-                        <div className="sidebar-search">
-                            <SearchBar onSearchChange={setSearchTermEvent} />
-                        </div>
-                        <TableEventsWithClick data={filteredEvents} handleRowClickEvent={handleRowClickEvent} />
-                    </MyPanelLateralConfig>
-                </>
+                <MyPanelLateralConfig title="Seleccionar evento" onClose={handleClosePanel}>
+                    <div className="sidebar-search">
+                        <SearchBar onSearchChange={setSearchTermEvent} />
+                    </div>
+                    <TableEventsWithClick data={filteredEvents} handleRowClickEvent={handleRowClickEvent} />
+                </MyPanelLateralConfig>
             )}
         </>
     );

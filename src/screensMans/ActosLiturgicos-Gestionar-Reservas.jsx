@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
+import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
 import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
 import { usePermissions } from '../hooks/usePermissions';
@@ -559,37 +560,32 @@ export default function Reservas() {
         >
           {modalProps.content}
         </Modal>
-
-        {showPaymentSidebar && (
-          <div className="sidebar-overlay" onClick={handleClosePaymentSidebar}>
-            <div className="sidebar-panel" onClick={(e) => e.stopPropagation()}>
-              <div className="sidebar-header">
-                <h3>Historial de Pagos - Reserva #{currentReservation?.id}</h3>
-                <button onClick={handleClosePaymentSidebar}>✕</button>
-              </div>
-              <div className="sidebar-content">
-                {payments.length === 0 ? (
-                  <p>No hay pagos registrados</p>
-                ) : (
-                  <div className="payments-list">
-                    {payments.map((payment) => (
-                      <div key={payment.id} className="payment-item">
-                        <div className="payment-info">
-                          <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
-                          <span className="payment-date">{new Date(payment.payment_date).toLocaleString('es-ES')}</span>
-                        </div>
-                        {payment.registered_by_worker_name && (
-                          <div className="payment-worker">Registrado por: {payment.registered_by_worker_name}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {showPaymentSidebar && currentReservation && (
+        <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${currentReservation.id}`} onClose={handleClosePaymentSidebar}>
+          <div className="sidebar-list">
+            <h3 className="sidebar-subtitle">Pagos realizados</h3>
+            {payments.length === 0 ? (
+              <p>No hay pagos registrados</p>
+            ) : (
+              <div className="payments-list">
+                {payments.map((payment) => (
+                  <div key={payment.id} className="payment-item">
+                    <div className="payment-info">
+                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-date">{new Date(payment.payment_date).toLocaleString('es-ES')}</span>
+                    </div>
+                    {payment.registered_by_worker_name && (
+                      <div className="payment-worker">Registrado por: {payment.registered_by_worker_name}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </MyPanelLateralConfig>
+      )}
     </>
   );
 }

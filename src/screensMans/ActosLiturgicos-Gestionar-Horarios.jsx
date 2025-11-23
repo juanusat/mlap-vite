@@ -1009,16 +1009,7 @@ export default function ActosLiturgicosHorarios() {
             
             {/* Panel lateral: listado de capillas */}
             {showPanelLateral && (
-                <MyPanelLateralConfig>
-                    <div className="panel-lateral-header">
-                        <h2>Seleccionar capilla</h2>
-                        <MyButtonShortAction
-                            type="close"
-                            onClick={() => setShowPanelLateral(false)}
-                            title="Cerrar"
-                        />
-                    </div>
-                    <br />
+                <MyPanelLateralConfig title="Seleccionar capilla" onClose={() => setShowPanelLateral(false)}>
                     <div className="sidebar-search">
                         <SearchBar onSearchChange={setSearchTermCapilla} />
                     </div>
