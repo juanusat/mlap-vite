@@ -219,7 +219,7 @@ export default function ReservasReservar() {
             
             alert(response.data.confirmation_message);
             
-            navigate('/man-reservas/pendientes');
+            navigate('/man-reservas/pendientes', { replace: true });
             
         } catch (err) {
             console.error('Error al crear reserva:', err);
