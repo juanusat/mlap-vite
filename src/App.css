@@ -120,16 +120,6 @@
   border-top: var(--border-width-m) solid var(--color-a-200);
 }
 
-.mlap-login-info {
-  color: var(--color-n-400);
-  font-size: var(--font-size-base);
-  text-align: center;
-}
-
-.mlap-login-info b {
-  color: var(--color-n-800);
-}
-
 #root {
   padding: var(--space-0);
 }

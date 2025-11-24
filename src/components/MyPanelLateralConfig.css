@@ -1,45 +1,33 @@
 .panel-lateral-config {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 380px;
-  height: 100vh;
-  background-color: var(--color-n-0);
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.3s ease-out;
+  height: 100%;
+  background-color: var(--color-n-0);
 }
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.panel-lateral-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: var(--space-m);
+  border-bottom: var(--border-width-s) solid var(--color-n-1000);
+  margin-bottom: var(--space-m);
 }
 
 .panel-lateral-title {
-  padding: 20px;
-  padding-top: 60px;
   margin: 0;
   font-size: var(--font-size-l);
   font-weight: bold;
 }
 
 .panel-lateral-close-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .panel-lateral-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  overflow-x: hidden;
 }
 
 .panel-config-actions {

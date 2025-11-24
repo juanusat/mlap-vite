@@ -129,7 +129,8 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
 
     if (isPollingEnabled) {
       fetchUnreadCount();
-      const intervalId = setInterval(fetchUnreadCount, 5000);
+      const pollingInterval = parseInt(import.meta.env.VITE_NOTIFICATION_POLLING_INTERVAL) || 5000;
+      const intervalId = setInterval(fetchUnreadCount, pollingInterval);
       return () => clearInterval(intervalId);
     }
   }, [isPollingEnabled]);

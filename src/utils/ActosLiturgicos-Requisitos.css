@@ -35,27 +35,6 @@
     z-index: 1;
 }
 
-.MyPanelLateralConfig {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 350px;
-    background-color: var(--color-n-0);
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(0);
-}
-
-.MyPanelLateralConfig .title-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid var(--color-n-25);
-}
-
 /* Regla CSS para el encabezado del panel */
 .panel-lateral-header {
     display: flex;
