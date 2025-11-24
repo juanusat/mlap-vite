@@ -424,10 +424,7 @@ export default function CuentasGestionar() {
       </Modal>
 
       {showSidebar && currentWorker && (
-        <MyPanelLateralConfig title={`Roles de ${currentWorker.first_names}`}>
-          <div className="panel-lateral-close-btn">
-            <MyButtonShortAction type="close" title="Cerrar" onClick={handleCloseSidebar} />
-          </div>
+        <MyPanelLateralConfig title={`Roles de ${currentWorker.first_names}`} onClose={handleCloseSidebar}>
           <div className="sidebar-list">
             {workerRoles.map((role) => (
               <div key={role.user_role_id} className="sidebar-list-item">

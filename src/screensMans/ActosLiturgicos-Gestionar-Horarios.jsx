@@ -818,14 +818,15 @@ export default function ActosLiturgicosHorarios() {
     };
 
     return (
-        <div className="content-module only-this">
-            <h2 className='title-screen'>
-                Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex] 
-                    ? `- ${capillas[selectedCapillaIndex].nombre}` 
-                    : ''}
-            </h2>
-            {error && <div className="error-message" style={{display: 'none', padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
-            {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
+        <>
+            <div className="content-module only-this">
+                <h2 className='title-screen'>
+                    Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex] 
+                        ? `- ${capillas[selectedCapillaIndex].nombre}` 
+                        : ''}
+                </h2>
+                {error && <div className="error-message" style={{display: 'none', padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
+                {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
             
             {selectedCapillaIndex === null ? (
                 <div className="app-container">
@@ -1006,43 +1007,44 @@ export default function ActosLiturgicosHorarios() {
                     </div>
                 </div>
             )}
+        </div>
             
-            {/* Panel lateral: listado de capillas */}
-            {showPanelLateral && (
-                <MyPanelLateralConfig title="Seleccionar capilla" onClose={() => setShowPanelLateral(false)}>
-                    <div className="sidebar-search">
-                        <SearchBar onSearchChange={setSearchTermCapilla} />
-                    </div>
-                    <div className="table-container">
-                        <div className="table-body-div">
-                            {capillas
-                                .filter(cap => 
-                                    cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
-                                    (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
-                                )
-                                .map((cap, idx) => (
-                                <div
-                                    key={cap.id}
-                                    className="table-row-div event-row"
-                                    onClick={() => { 
-                                        const originalIndex = capillas.findIndex(c => c.id === cap.id);
-                                        setSelectedCapillaIndex(originalIndex); 
-                                        setShowPanelLateral(false); 
-                                    }}
-                                >
-                                    <div className="event-cell">
-                                        <span className="event-id">{cap.id}</span>
-                                        <div className="event-info-display">
-                                            <span className="event-name">{cap.nombre}</span>
-                                            <div className="event-capilla-name">{cap.direccion || ''}</div>
-                                        </div>
+        {/* Panel lateral: listado de capillas */}
+        {showPanelLateral && (
+            <MyPanelLateralConfig title="Seleccionar capilla" onClose={() => setShowPanelLateral(false)}>
+                <div className="sidebar-search">
+                    <SearchBar onSearchChange={setSearchTermCapilla} />
+                </div>
+                <div className="table-container">
+                    <div className="table-body-div">
+                        {capillas
+                            .filter(cap => 
+                                cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
+                                (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
+                            )
+                            .map((cap, idx) => (
+                            <div
+                                key={cap.id}
+                                className="table-row-div event-row"
+                                onClick={() => { 
+                                    const originalIndex = capillas.findIndex(c => c.id === cap.id);
+                                    setSelectedCapillaIndex(originalIndex); 
+                                    setShowPanelLateral(false); 
+                                }}
+                            >
+                                <div className="event-cell">
+                                    <span className="event-id">{cap.id}</span>
+                                    <div className="event-info-display">
+                                        <span className="event-name">{cap.nombre}</span>
+                                        <div className="event-capilla-name">{cap.direccion || ''}</div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
-                </MyPanelLateralConfig>
-            )}
-        </div>
+                </div>
+            </MyPanelLateralConfig>
+        )}
+        </>
     );
 }
