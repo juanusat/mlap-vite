@@ -87,7 +87,7 @@
 /* Contenedor modal de notificaciones */
 .modal-notificaciones {
   background: var(--color-n-0);
-  padding: var(--font-size-xl);
+  padding: var(--font-size-m);
   border-radius: var(--border-radius-s);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width:var(--max-width-1);
