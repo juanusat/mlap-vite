@@ -14,6 +14,7 @@ const ForgotPassword = ({ onClose }) => {
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState(1);
+    const API_BASE = import.meta.env.VITE_SERVER_BACKEND_URL || '';
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -36,18 +37,35 @@ const ForgotPassword = ({ onClose }) => {
         setIsSubmitting(true);
         setMessage('');
 
-        if (!email || !email.includes('@')) {
+        // Validar formato del correo
+        const emailRegex = /^[a-zA-Z0-9._-]{4,50}@[a-zA-Z0-9-]{2,8}\.[a-zA-Z]{2,8}(\.[a-zA-Z]{2,8})?$/;
+        if (!emailRegex.test(email.trim())) {
             setMessage('Por favor, ingresa una dirección de correo electrónico válida.');
             setIsSubmitting(false);
             return;
         }
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email.trim() }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setMessage(data?.message || 'Error al enviar el correo. Por favor, intenta de nuevo.');
+                setIsSubmitting(false);
+                return;
+            }
+
             setMessage('¡Correo enviado correctamente! Revisa tu bandeja de entrada.');
             setShowVerificationField(true);
         } catch (error) {
-            setMessage('Error al enviar el correo. Por favor, intenta de nuevo.');
+            setMessage('No se pudo conectar con el servidor. Por favor, intenta de nuevo.');
         } finally {
             setIsSubmitting(false);
         }
@@ -58,15 +76,37 @@ const ForgotPassword = ({ onClose }) => {
         setIsSubmitting(true);
         setMessage('');
 
+        // Validar que el código sea de 6 dígitos
+        if (!/^\d{6}$/.test(verificationCode.trim())) {
+            setMessage('El código debe ser de 6 dígitos.');
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            if (verificationCode === '123456') {
-                setStep(2);
-            } else {
-                setMessage('Código de verificación incorrecto. Por favor, intenta de nuevo.');
+            const response = await fetch(`${API_BASE}/api/auth/verify-reset-code`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    email: email.trim(), 
+                    code: verificationCode.trim() 
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setMessage(data?.message || 'Código de verificación incorrecto o expirado.');
+                setIsSubmitting(false);
+                return;
             }
+
+            setMessage('Código verificado correctamente.');
+            setStep(2);
         } catch (error) {
-            setMessage('Error en la verificación. Por favor, intenta de nuevo.');
+            setMessage('No se pudo conectar con el servidor. Por favor, intenta de nuevo.');
         } finally {
             setIsSubmitting(false);
         }
@@ -77,19 +117,51 @@ const ForgotPassword = ({ onClose }) => {
         setIsSubmitting(true);
         setMessage('');
 
+        // Validar que las contraseñas coincidan
         if (newPassword !== confirmPassword) {
             setMessage('Las contraseñas no coinciden.');
             setIsSubmitting(false); 
             return;
         }
 
+        // Validar longitud mínima
+        if (newPassword.length < 8) {
+            setMessage('La contraseña debe tener al menos 8 caracteres.');
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
-            setMessage('¡Contraseña restablecida correctamente!. Ahora inicia sesión...');
+            const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    email: email.trim(),
+                    code: verificationCode.trim(),
+                    newPassword,
+                    confirmPassword 
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setMessage(data?.message || 'No se pudo restablecer la contraseña. Intenta de nuevo.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            setMessage('¡Contraseña restablecida correctamente! Ahora inicia sesión...');
             setTimeout(() => {
-                navigate('/inicio');
-            }, 3000);
+                onClose();
+                navigate('/inicio', { 
+                    state: { message: 'Contraseña actualizada. Por favor, inicia sesión.' } 
+                });
+            }, 2000);
         } catch (error) {
-            setMessage('No se pudo restablecer la contraseña. Intenta de nuevo.');
+            setMessage('No se pudo conectar con el servidor. Por favor, intenta de nuevo.');
             setIsSubmitting(false);
         }
     };
@@ -129,7 +201,6 @@ const ForgotPassword = ({ onClose }) => {
 
     return (
         <div className="forgot-password-modal-content">
-            <h3 className="modal-title">¿Olvidaste tu contraseña?</h3>
             <p className="modal-description">
                 {step === 1
                     ? 'Introduce tu correo electrónico para restablecerla.'
