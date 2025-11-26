@@ -581,8 +581,13 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
             value={personas}
             onChange={(e) => setPersonas(e.target.value)}
             disabled={isView}
+            min="2"
+            max="200"
             required={!isView} // Requerir solo si no es vista y es Comunitario
           />
+          <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+            Mínimo: 2 personas, Máximo: 200 personas
+          </small>
         </div>
       )}
       {/* FIN DEL CAMPO CONDICIONAL */}
