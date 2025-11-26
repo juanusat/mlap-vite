@@ -30,6 +30,12 @@ export default function Login() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    
+    if (!email.trim() || !password.trim()) {
+      setError('Ingrese datos');
+      return;
+    }
+    
     setLoading(true);
     try {
       const resp = await apiFetch('/api/auth/login', {
