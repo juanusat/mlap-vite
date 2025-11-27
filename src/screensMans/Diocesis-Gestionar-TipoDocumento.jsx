@@ -53,7 +53,15 @@ export default function TipoDocumentoGestionar() {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Validar que solo contenga letras y espacios en los campos name y code
+    if (name === 'name' || name === 'code') {
+      // Solo permitir letras (a-z, A-Z, acentos) y espacios
+      const onlyLetters = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+      setFormData(prev => ({ ...prev, [name]: onlyLetters }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const filteredDocs = docs.filter((doc) =>
@@ -144,7 +152,7 @@ export default function TipoDocumentoGestionar() {
       } else if (modalType === 'edit' && currentDoc) {
         await documentTypeService.updateDocumentType(currentDoc.id, formData);
       }
-      
+
       await loadDocumentTypes();
       handleCloseModal();
     } catch (err) {
@@ -183,23 +191,28 @@ export default function TipoDocumentoGestionar() {
   };
 
   const columns = [
-    { key: 'id',
+    {
+      key: 'id',
       header: 'ID',
       accessor: (doc) => doc.id
     },
-    { key: 'name',
+    {
+      key: 'name',
       header: 'Nombre',
       accessor: (doc) => doc.name,
     },
-    { key: 'description',
+    {
+      key: 'description',
       header: 'Descripción',
       accessor: (doc) => doc.description,
     },
-    { key: 'active',
+    {
+      key: 'active',
       header: 'Estado',
       accessor: (doc) => <ToggleSwitch isEnabled={doc.active} onToggle={() => handleToggle(doc.id, doc.active)} />,
     },
-    { key: 'acciones',
+    {
+      key: 'acciones',
       header: 'Acciones',
       accessor: (doc) => (
         <MyGroupButtonsActions>
@@ -322,6 +335,8 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           disabled={isViewMode}
           required
         />
+      </div>
+      <div className="Inputs-add">
         <label htmlFor="description">Descripción:</label>
         <textarea
           className="inputModal"
@@ -332,6 +347,8 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           disabled={isViewMode}
           required
         />
+      </div>
+      <div className="Inputs-add">
         <label htmlFor="code">Nombre corto:</label>
         <input
           type="text"
@@ -344,6 +361,8 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           required
         />
       </div>
+
+
     </div>
   );
 };
