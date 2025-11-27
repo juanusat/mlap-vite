@@ -5,7 +5,6 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
-import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
