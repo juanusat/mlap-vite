@@ -627,7 +627,6 @@ export default function ReservasPendientes() {
       {showRequirementsSidebar && currentRequirements && (
         <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`} onClose={handleCloseRequirementsSidebar}>
           <div className="sidebar-list">
-            <h3 className="sidebar-subtitle">Requisitos</h3>
             {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
               currentRequirements.requirements.map((req, index) => (
                 <div key={index} className="sidebar-list-item requirement-item">
