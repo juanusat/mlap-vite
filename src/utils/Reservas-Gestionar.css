@@ -189,12 +189,13 @@
     margin-top: 20px;
     display: flex;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .btn-save {
     padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--color-green-btn);
+    color: var(--color-n-0);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -203,5 +204,20 @@
 }
 
 .btn-save:hover {
-    background-color: #45a049;
+    background-color: var(--color-green-btn-hover);
+}
+
+/* Wrapper para requisitos que controla el layout flex */
+.panel-requirements-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Solo sidebar-list tiene scroll, con altura limitada */
+.panel-requirements-wrapper .sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 200px);
 }

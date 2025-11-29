@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdCheckCircleOutline, MdCheckCircle } from 'react-icons/md';
 import './NotificacionSimple.css';
 
 export default function NotificacionSimple({ mensaje, body, fecha, leida = false, onMarcarLeida }) {
   const [isLeida, setIsLeida] = useState(leida);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Actualizar el estado local cuando la prop leida cambie
+  useEffect(() => {
+    setIsLeida(leida);
+  }, [leida]);
 
   const handleMarcarLeida = () => {
     if (!isLeida) {

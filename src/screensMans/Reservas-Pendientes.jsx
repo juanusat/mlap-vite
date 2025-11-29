@@ -451,12 +451,12 @@ export default function ReservasPendientes() {
     { 
       key: 'current_price', 
       header: 'Precio', 
-      accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` 
+      accessor: (row) => `S/ ${parseFloat(row.current_price || 0).toFixed(2)}` 
     },
     { 
       key: 'paid_amount', 
       header: 'Pagado', 
-      accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
+      accessor: (row) => `S/ ${parseFloat(row.paid_amount).toFixed(2)}` 
     },
     { 
       key: 'status', 
@@ -611,8 +611,8 @@ export default function ReservasPendientes() {
             )}
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
             <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
-            <p><strong>Precio del evento:</strong> $ {parseFloat(currentReservation.current_price || 0).toFixed(2)}</p>
-            <p><strong>Monto pagado:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Precio del evento:</strong> S/ {parseFloat(currentReservation.current_price || 0).toFixed(2)}</p>
+            <p><strong>Monto pagado:</strong> S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'RESERVED' ? 'Reservado' :
               currentReservation.status === 'IN_PROGRESS' ? 'En progreso' :
@@ -627,7 +627,6 @@ export default function ReservasPendientes() {
       {showRequirementsSidebar && currentRequirements && (
         <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`} onClose={handleCloseRequirementsSidebar}>
           <div className="sidebar-list">
-            <h3 className="sidebar-subtitle">Requisitos</h3>
             {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
               currentRequirements.requirements.map((req, index) => (
                 <div key={index} className="sidebar-list-item requirement-item">
@@ -652,9 +651,9 @@ export default function ReservasPendientes() {
         <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`} onClose={handleClosePaymentSidebar}>
           <div className="sidebar-list">
             <p><strong>Evento:</strong> {paymentReservation.event_name}</p>
-            <p><strong>Total:</strong> $ {parseFloat(paymentReservation.current_price).toFixed(2)}</p>
-            <p><strong>Pagado:</strong> $ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
-            <p><strong>Saldo:</strong> $ {(parseFloat(paymentReservation.current_price) - parseFloat(paymentReservation.paid_amount)).toFixed(2)}</p>
+            <p><strong>Total:</strong> S/ {parseFloat(paymentReservation.current_price).toFixed(2)}</p>
+            <p><strong>Pagado:</strong> S/ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Saldo:</strong> S/ {(parseFloat(paymentReservation.current_price) - parseFloat(paymentReservation.paid_amount)).toFixed(2)}</p>
             
             <hr className="divider-sidebar" />
             
@@ -664,7 +663,7 @@ export default function ReservasPendientes() {
                 {payments.map((payment, index) => (
                   <div key={index} className="payment-item">
                     <div className="payment-header">
-                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-amount">S/ {parseFloat(payment.amount).toFixed(2)}</span>
                       <span className="payment-date">
                         {new Date(payment.payment_date).toLocaleDateString('es-ES')}
                       </span>
