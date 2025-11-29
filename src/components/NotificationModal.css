@@ -54,3 +54,31 @@
 .sin-notificaciones p {
   margin: 0;
 }
+
+.mark-all-read-container {
+  padding: var(--space-s) var(--space-m);
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-mark-all-read {
+  background-color: var(--color-a-350);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-mark-all-read:hover {
+  background-color: var(--color-a-400);
+}
+
+.btn-mark-all-read:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+}

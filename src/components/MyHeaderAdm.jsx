@@ -160,6 +160,12 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
     }
   };
 
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev =>
+      prev.map(notif => ({ ...notif, read: true }))
+    );
+  };
+
   return (
     <>
       <header className="mlap-home-header py-1">
@@ -252,6 +258,7 @@ export default function MyHeaderAdm({ onMenuToggle, isMenuOpen }) {
         onClose={() => setNotificacionesModalOpen(false)}
         notifications={notifications}
         onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
       />
 
       {perfilModalOpen && (

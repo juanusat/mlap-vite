@@ -2,10 +2,26 @@ import React from 'react';
 import { MdClose } from "react-icons/md";
 import NotificacionSimple from './NotificacionSimple';
 import { formatNotificationDate } from '../utils/dateFormatter';
+import { markAllAsRead } from '../services/notificationService';
 import './NotificationModal.css';
 
-export default function NotificationModal({ isOpen, onClose, notifications, onMarkAsRead }) {
+export default function NotificationModal({ isOpen, onClose, notifications, onMarkAsRead, onMarkAllAsRead }) {
   if (!isOpen) return null;
+
+  const hasUnreadNotifications = notifications.some(notif => !notif.read);
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+      // Actualizar el estado del componente padre
+      if (onMarkAllAsRead) {
+        onMarkAllAsRead();
+      }
+    } catch (err) {
+      console.error('Error al marcar todas las notificaciones como leídas:', err);
+      alert('Error al marcar las notificaciones como leídas. Intenta nuevamente.');
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -20,6 +36,18 @@ export default function NotificationModal({ isOpen, onClose, notifications, onMa
             <MdClose />
           </button>
         </div>
+        
+        {hasUnreadNotifications && (
+          <div className="mark-all-read-container">
+            <button 
+              className="btn-mark-all-read"
+              onClick={handleMarkAllAsRead}
+            >
+              Marcar todas como leídas
+            </button>
+          </div>
+        )}
+        
         <div className="notificaciones-lista">
           {notifications.length > 0 ? (
             notifications.map((notif) => (
