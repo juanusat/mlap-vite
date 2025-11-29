@@ -39,9 +39,9 @@ export default function Login() {
       });
 
       const data = await resp.json();
-      
+
       console.log('Login frontend - full response:', data);
-      
+
       if (!resp.ok) {
         setError(data?.message || data?.error || 'Error al iniciar sesión');
         setLoading(false);
@@ -57,12 +57,12 @@ export default function Login() {
       console.log('Login frontend - userFullName:', userFullName);
       console.log('Login frontend - isDioceseUser:', isDioceseUser);
 
-      navigate('/comenzar', { 
-        state: { 
-          associations, 
-          userFullName, 
-          isDioceseUser 
-        } 
+      navigate('/comenzar', {
+        state: {
+          associations,
+          userFullName,
+          isDioceseUser
+        }
       });
     } catch (err) {
       setError('No se pudo conectar con el servidor');
@@ -90,13 +90,13 @@ export default function Login() {
       <form className="mlap-login-form" onSubmit={handleLoginSubmit}>
         <InputField
           type="text"
-          placeholder="user@mlap.com"
+          placeholder="correo@dominio.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <InputField
           type="password"
-          placeholder="password"
+          placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -116,9 +116,9 @@ export default function Login() {
           ¿Olvidaste tu contraseña?
         </a>
         <form className="mlap-login-form" onSubmit={handleRegisterSubmit}>
-        <SecondaryButton>Crear cuenta</SecondaryButton>
-      </form>
-        
+          <SecondaryButton>Crear cuenta</SecondaryButton>
+        </form>
+
       </div>
       <hr className="mlap-login-divider" />
 
