@@ -189,6 +189,7 @@
     margin-top: 20px;
     display: flex;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .btn-save {
@@ -204,4 +205,19 @@
 
 .btn-save:hover {
     background-color: #45a049;
+}
+
+/* Wrapper para requisitos que controla el layout flex */
+.panel-requirements-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Solo sidebar-list tiene scroll, con altura limitada */
+.panel-requirements-wrapper .sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 200px);
 }

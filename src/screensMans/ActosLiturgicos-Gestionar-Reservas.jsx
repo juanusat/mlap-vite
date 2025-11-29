@@ -617,7 +617,6 @@ export default function Reservas() {
       {showPaymentSidebar && currentReservation && (
         <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${currentReservation.id}`} onClose={handleClosePaymentSidebar}>
           <div className="sidebar-list">
-            <h3 className="sidebar-subtitle">Pagos realizados</h3>
             {payments.length === 0 ? (
               <p>No hay pagos registrados</p>
             ) : (
@@ -641,32 +640,33 @@ export default function Reservas() {
 
       {showRequirementsSidebar && currentReservation && (
         <MyPanelLateralConfig title={`Requisitos - Reserva #${currentReservation.id}`} onClose={handleCloseRequirementsSidebar}>
-          <div className="sidebar-list">
-            <h3 className="sidebar-subtitle">Lista de Requisitos</h3>
-            {requirements.length === 0 ? (
-              <p>No hay requisitos asignados</p>
-            ) : (
-              <div className="requirements-list">
-                {requirements.map((req) => (
-                  <div key={req.id} className={`requirement-item ${req.completed ? 'completed' : ''}`}>
-                    <div className="requirement-item-content">
-                      <input
-                        type="checkbox"
-                        className="requirement-checkbox"
-                        checked={req.completed}
-                        onChange={(e) => handleRequirementChange(req.id, e.target.checked)}
-                        disabled={!canUpdateRequirements}
-                      />
-                      <div>
-                        <div className="requirement-name">{req.name}</div>
-                        {req.description && <div className="requirement-description">{req.description}</div>}
+          <div className="panel-requirements-wrapper">
+            <div className="sidebar-list">
+              {requirements.length === 0 ? (
+                <p>No hay requisitos asignados</p>
+              ) : (
+                <div className="requirements-list">
+                  {requirements.map((req) => (
+                    <div key={req.id} className={`requirement-item ${req.completed ? 'completed' : ''}`}>
+                      <div className="requirement-item-content">
+                        <input
+                          type="checkbox"
+                          className="requirement-checkbox"
+                          checked={req.completed}
+                          onChange={(e) => handleRequirementChange(req.id, e.target.checked)}
+                          disabled={!canUpdateRequirements}
+                        />
+                        <div>
+                          <div className="requirement-name">{req.name}</div>
+                          {req.description && <div className="requirement-description">{req.description}</div>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
+                  ))}
+                </div>
+              )}
+            </div>
+            
             {canUpdateRequirements && requirements.length > 0 && (
               <div className="save-button-container">
                 <button
