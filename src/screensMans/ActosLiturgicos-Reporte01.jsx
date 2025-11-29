@@ -18,6 +18,20 @@ export default function Reporte01A() {
     const { hasPermission } = usePermissions();
     const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REP01);
 
+    const calculateTotals = () => {
+        let totalReservas = 0;
+        reportData.forEach(item => {
+            if (item.resumenEventos) {
+                Object.values(item.resumenEventos).forEach(val => {
+                    totalReservas += Number(val);
+                });
+            }
+        });
+        setTotals({
+            totalReservas
+        });
+    };
+
     useEffect(() => {
         document.title = "MLAP | Reporte 01-Actos Litúrgicos";
         if (canRead) {
@@ -95,20 +109,6 @@ export default function Reporte01A() {
     const removeChapel = (chapelName) => {
         setReportData(prev => prev.filter(item => item.capilla !== chapelName));
         setSelectedChapels(prev => prev.filter(name => name !== chapelName));
-    };
-
-    const calculateTotals = () => {
-        let totalReservas = 0;
-        reportData.forEach(item => {
-            if (item.resumenEventos) {
-                Object.values(item.resumenEventos).forEach(val => {
-                    totalReservas += Number(val);
-                });
-            }
-        });
-        setTotals({
-            totalReservas
-        });
     };
 
     const capillas = reportData.map(item => item.capilla);
