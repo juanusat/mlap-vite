@@ -1,6 +1,8 @@
 import React from 'react';
-import { MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdBlock, 
-  MdAddModerator, MdAccessTime , MdOutlineKeyboardArrowDown, MdOutlinePayments, MdPrint, MdOutlineReceipt } from "react-icons/md";
+import {
+  MdDelete, MdCreate, MdRemoveRedEye, MdRefresh, MdAdd, MdArrowForward, MdArrowBack, MdClose, MdKey, MdTouchApp, MdBlock,
+  MdAddModerator, MdAccessTime, MdOutlineKeyboardArrowDown, MdOutlinePayments, MdPrint, MdOutlineReceipt, MdOutlineChecklistRtl
+} from "react-icons/md";
 import './MyButtonShortAction.css';
 
 export default function MyButtonShortAction({ type, onClick, title, classNameCustom = '' }) {
@@ -36,7 +38,7 @@ export default function MyButtonShortAction({ type, onClick, title, classNameCus
     icon = <MdTouchApp />;
     className = 'btn-short-select'
   } else if (type === 'file') {
-    icon = <MdAddModerator  />;
+    icon = <MdAddModerator />;
     className = 'btn-short-file';
   } else if (type === 'block') {
     icon = <MdBlock />;
@@ -47,23 +49,26 @@ export default function MyButtonShortAction({ type, onClick, title, classNameCus
   } else if (type === 'arrowDown') {
     icon = <MdOutlineKeyboardArrowDown />;
     className = 'btn-short-arrowfold';
-  } else if (type === 'pay')  {   
-    icon = <MdOutlinePayments  />;
-    className = 'btn-short-pay'; 
-  } else if (type === 'receipt')  {
+  } else if (type === 'pay') {
+    icon = <MdOutlinePayments />;
+    className = 'btn-short-pay';
+  } else if (type === 'receipt') {
     icon = <MdOutlineReceipt />;
     className = 'btn-short-receipt';
-  } else if (type === 'print')  {
+  } else if (type === 'print') {
     icon = <MdPrint />;
     className = 'btn-short-print';
+  } else if (type === 'checklist') {
+    icon = <MdOutlineChecklistRtl />;
+    className = 'btn-short-checklist';
   } else {
     icon = null;
     className = '';
   }
   return (
-      <button className={`my-btn-short-action ${className} ${classNameCustom}`} onClick={onClick} title={title}>
-        {icon}
-      </button>
+    <button className={`my-btn-short-action ${className} ${classNameCustom}`} onClick={onClick} title={title}>
+      {icon}
+    </button>
 
   );
 }

@@ -62,6 +62,8 @@ const PERMISSIONS_STRUCTURE = {
                     { id: 'ACTOS_LITURGICOS_RESER_U', name: 'Actualizar reservas' },
                     { id: 'ACTOS_LITURGICOS_RESER_PAY_R', name: 'Leer pagos de reserva' },
                     { id: 'ACTOS_LITURGICOS_RESER_PAY_C', name: 'Registrar pago de reserva' },
+                    { id: 'ACTOS_LITURGICOS_RESER_REQ_R', name: 'Leer requisitos de una reserva' },
+                    { id: 'ACTOS_LITURGICOS_RESER_REQ_U', name: 'Actualizar requisitos de una reserva' },
                 ]
             },
         }

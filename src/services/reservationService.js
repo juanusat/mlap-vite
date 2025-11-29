@@ -2,12 +2,12 @@ const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
 const handleResponse = async (response) => {
   const data = await response.json();
-  
+
   if (!response.ok) {
     const errorMessage = data.message || data.error || 'Error en la operación';
     throw new Error(errorMessage);
   }
-  
+
   return data;
 };
 
@@ -60,7 +60,7 @@ export const createReservation = async (eventVariantId, eventDate, eventTime, be
       mention_type_id: parseInt(m.mention_type_id),
       mention_name: m.mention_name.trim()
     }));
-    
+
     if (validMentions.length > 0) {
       body.mentions = validMentions;
     }
@@ -323,3 +323,29 @@ export const createPaymentForParishioner = async (reservationId, paymentData) =>
   return await handleResponse(response);
 };
 
+export const getReservationRequirements = async (reservationId) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/requirements`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  return await handleResponse(response);
+};
+
+export const updateReservationRequirements = async (reservationId, requirements) => {
+  const response = await fetch(`${API_URL}/api/acts/reservations/${reservationId}/requirements`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      requirements,
+    }),
+  });
+
+  return await handleResponse(response);
+};

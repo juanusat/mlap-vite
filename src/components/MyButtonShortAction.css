@@ -75,14 +75,16 @@
   background-color: var(--color-b-100);
 }
 
-.btn-short-next{
+.btn-short-next {
   color: var(--color-a-600);
 }
-.btn-short-back{
+
+.btn-short-back {
   color: var(--color-a-600);
 }
-.btn-short-file{
-  color:var(--color-a-400);
+
+.btn-short-file {
+  color: var(--color-a-400);
 }
 
 .btn-short-block {
@@ -92,12 +94,23 @@
 .btn-short-time {
   color: var(--color-a-600);
 }
+
 .btn-short-pay {
   color: var(--color-green-btn-hover);
 }
+
 .btn-short-receipt {
   color: var(--color-a-600);
 }
+
 .btn-short-print {
   color: var(--color-n-800);
+}
+
+.btn-short-checklist {
+  color: var(--color-a-600);
+}
+
+.btn-short-checklist:hover {
+  background-color: var(--color-b-100);
 }
