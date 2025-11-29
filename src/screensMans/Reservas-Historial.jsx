@@ -147,7 +147,7 @@ export default function ReservasHistorial() {
     { 
       key: 'paid_amount', 
       header: 'Monto', 
-      accessor: (row) => `$ ${parseFloat(row.paid_amount).toFixed(2)}` 
+      accessor: (row) => `S/ ${parseFloat(row.paid_amount).toFixed(2)}` 
     },
     { 
       key: 'status', 
@@ -258,7 +258,7 @@ export default function ReservasHistorial() {
             <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
             <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
             <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
-            <p><strong>Monto:</strong> $ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Monto:</strong> S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
             <p><strong>Estado:</strong> {
               currentReservation.status === 'COMPLETED' ? 'Completado' :
               currentReservation.status === 'FULFILLED' ? 'Finalizado' :
@@ -299,7 +299,7 @@ export default function ReservasHistorial() {
         <MyPanelLateralConfig title={`Historial de Pagos - Reserva #${paymentReservation.id}`} onClose={handleClosePaymentSidebar}>
           <div className="sidebar-list">
             <p><strong>Evento:</strong> {paymentReservation.event_name}</p>
-            <p><strong>Total:</strong> $ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
+            <p><strong>Total:</strong> S/ {parseFloat(paymentReservation.paid_amount).toFixed(2)}</p>
             
             <hr className="divider-sidebar" />
             
@@ -309,7 +309,7 @@ export default function ReservasHistorial() {
                 {payments.map((payment, index) => (
                   <div key={index} className="payment-item">
                     <div className="payment-header">
-                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-amount">S/ {parseFloat(payment.amount).toFixed(2)}</span>
                       <span className="payment-date">
                         {new Date(payment.payment_date).toLocaleDateString('es-ES')}
                       </span>

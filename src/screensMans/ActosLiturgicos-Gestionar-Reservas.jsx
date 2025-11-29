@@ -317,8 +317,8 @@ export default function Reservas() {
     { key: 'chapel_name', header: 'Capilla', accessor: (row) => row.chapel_name },
     { key: 'event_date', header: 'Fecha', accessor: (row) => formatDate(row.event_date) },
     { key: 'event_time', header: 'Hora', accessor: (row) => formatTime(row.event_time) },
-    { key: 'current_price', header: 'Precio', accessor: (row) => `$ ${parseFloat(row.current_price || 0).toFixed(2)}` },
-    { key: 'paid_amount', header: 'Pagado', accessor: (row) => `$ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
+    { key: 'current_price', header: 'Precio', accessor: (row) => `S/ ${parseFloat(row.current_price || 0).toFixed(2)}` },
+    { key: 'paid_amount', header: 'Pagado', accessor: (row) => `S/ ${parseFloat(row.paid_amount || 0).toFixed(2)}` },
     { key: 'status', header: 'Estado', accessor: (row) => STATUS_MAP[row.status] || row.status },
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
@@ -423,14 +423,14 @@ export default function Reservas() {
               <input
                 type="text"
                 className="inputModal"
-                value={`$ ${parseFloat(currentReservation.current_price || 0).toFixed(2)}`}
+                value={`S/ ${parseFloat(currentReservation.current_price || 0).toFixed(2)}`}
                 disabled
               />
               <label>Monto Pagado</label>
               <input
                 type="text"
                 className="inputModal"
-                value={`$ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
+                value={`S/ ${parseFloat(currentReservation.paid_amount || 0).toFixed(2)}`}
                 disabled
               />
               <label>Estado</label>
@@ -533,7 +533,7 @@ export default function Reservas() {
       }
 
       if (paymentAmount > remaining) {
-        alert(`El monto no puede exceder el saldo pendiente: $ ${remaining.toFixed(2)}`);
+        alert(`El monto no puede exceder el saldo pendiente: S/ ${remaining.toFixed(2)}`);
         return;
       }
 
@@ -547,7 +547,7 @@ export default function Reservas() {
           <input
             type="text"
             className="inputModal"
-            value={`$ ${currentPrice.toFixed(2)}`}
+            value={`S/ ${currentPrice.toFixed(2)}`}
             disabled
           />
 
@@ -555,7 +555,7 @@ export default function Reservas() {
           <input
             type="text"
             className="inputModal"
-            value={`$ ${paidAmount.toFixed(2)}`}
+            value={`S/ ${paidAmount.toFixed(2)}`}
             disabled
           />
 
@@ -563,7 +563,7 @@ export default function Reservas() {
           <input
             type="text"
             className="inputModal"
-            value={`$ ${remaining.toFixed(2)}`}
+            value={`S/ ${remaining.toFixed(2)}`}
             disabled
           />
 
@@ -624,7 +624,7 @@ export default function Reservas() {
                 {payments.map((payment) => (
                   <div key={payment.id} className="payment-item">
                     <div className="payment-info">
-                      <span className="payment-amount">$ {parseFloat(payment.amount).toFixed(2)}</span>
+                      <span className="payment-amount">S/ {parseFloat(payment.amount).toFixed(2)}</span>
                       <span className="payment-date">{new Date(payment.payment_date).toLocaleString('es-ES')}</span>
                     </div>
                     {payment.registered_by_worker_name && (

@@ -54,7 +54,7 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
       newErrors.amount = 'Ingrese un monto válido';
     } else if (parseFloat(formData.amount) > parseFloat(remainingAmount)) {
-      newErrors.amount = `El monto no puede exceder $${remainingAmount}`;
+      newErrors.amount = `El monto no puede exceder S/${remainingAmount}`;
     }
 
     const cardNumberClean = formData.cardNumber.replace(/\s/g, '');
@@ -140,15 +140,15 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
             </div>
             <div className="info-row">
               <span className="info-label">Total:</span>
-              <span className="info-value">${parseFloat(reservation.current_price).toFixed(2)}</span>
+              <span className="info-value">S/{parseFloat(reservation.current_price).toFixed(2)}</span>
             </div>
             <div className="info-row">
               <span className="info-label">Pagado:</span>
-              <span className="info-value">${parseFloat(reservation.paid_amount).toFixed(2)}</span>
+              <span className="info-value">S/{parseFloat(reservation.paid_amount).toFixed(2)}</span>
             </div>
             <div className="info-row highlight">
               <span className="info-label">Saldo pendiente:</span>
-              <span className="info-value">${remainingAmount}</span>
+              <span className="info-value">S/{remainingAmount}</span>
             </div>
           </div>
 
@@ -244,7 +244,7 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
                 className="btn-submit"
                 disabled={processing}
               >
-                {processing ? 'Procesando...' : `Pagar $${formData.amount || '0.00'}`}
+                {processing ? 'Procesando...' : `Pagar S/${formData.amount || '0.00'}`}
               </button>
             </div>
           </form>
