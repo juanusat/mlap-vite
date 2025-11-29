@@ -18,7 +18,7 @@ export default function Reporte01A() {
     const { hasPermission } = usePermissions();
     const canRead = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_REP01);
 
-        const calculateTotals = () => {
+    const calculateTotals = () => {
         let totalReservas = 0;
         reportData.forEach(item => {
             if (item.resumenEventos) {

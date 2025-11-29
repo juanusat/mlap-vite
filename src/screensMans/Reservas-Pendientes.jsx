@@ -112,6 +112,9 @@ export default function ReservasPendientes() {
   const handleOpenSidebar = async (reservation) => {
     try {
       setLoading(true);
+      setShowRequirementsSidebar(false);
+      setShowPaymentSidebar(false);
+      
       const details = await getReservationDetails(reservation.id);
       setCurrentReservation(details.data);
       setShowSidebar(true);
@@ -133,6 +136,9 @@ export default function ReservasPendientes() {
   const handleOpenRequirementsSidebar = async (reservation) => {
     try {
       setLoading(true);
+      setShowSidebar(false);
+      setShowPaymentSidebar(false);
+      
       const details = await getReservationDetails(reservation.id);
       setCurrentRequirements(details.data);
       setShowRequirementsSidebar(true);
@@ -153,6 +159,10 @@ export default function ReservasPendientes() {
   const handleViewPayments = async (reservation) => {
     try {
       setLoading(true);
+      // Cerrar otros paneles antes de abrir este
+      setShowSidebar(false);
+      setShowRequirementsSidebar(false);
+      
       const response = await getReservationPaymentsForParishioner(reservation.id);
       setPayments(response.data);
       setPaymentReservation(reservation);

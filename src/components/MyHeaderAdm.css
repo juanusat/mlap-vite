@@ -59,6 +59,11 @@ button.btn-nb:hover {
     background-color: var(--color-semi-trans);
 }
 
+button.btn-nb.logo-btn {
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: 4px;
+}
+
 .btn-nb.notif-btn {
     position: relative;
 }
@@ -196,10 +201,12 @@ button.btn-nb:hover {
     object-fit: cover;
 }
 
-.perfil-datos, .perfil-datos-rol {
+.perfil-datos,
+.perfil-datos-rol {
     display: flex;
     flex-direction: column;
 }
+
 .perfil-datos {
     gap: var(--space-xxs);
 }
@@ -227,7 +234,8 @@ button.btn-nb:hover {
     color: var(--color-n-700);
 }
 
-.lista-parroquias, .lista-roles {
+.lista-parroquias,
+.lista-roles {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);

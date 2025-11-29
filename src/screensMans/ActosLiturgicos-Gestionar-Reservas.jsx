@@ -5,7 +5,6 @@ import Modal from "../components/Modal";
 import MyGroupButtonsActions from "../components/MyGroupButtonsActions";
 import MyButtonShortAction from "../components/MyButtonShortAction";
 import MyPanelLateralConfig from "../components/MyPanelLateralConfig";
-import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
 import * as reservationService from '../services/reservationService';
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../utils/permissions';
@@ -28,11 +27,8 @@ export default function Reservas() {
   const canUpdate = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_U);
   const canCreatePayment = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_PAY_C);
   const canReadPayment = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_PAY_R);
-
-  const [reservations, setReservations] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [currentReservation, setCurrentReservation] = useState(null);
+  const canReadRequirements = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_REQ_R);
+  const canUpdateRequirements = hasPermission(PERMISSIONS.ACTOS_LITURGICOS_RESER_REQ_U);
   const [modalType, setModalType] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,6 +37,12 @@ export default function Reservas() {
   const [totalPages, setTotalPages] = useState(1);
   const [payments, setPayments] = useState([]);
   const [showPaymentSidebar, setShowPaymentSidebar] = useState(false);
+  const [requirements, setRequirements] = useState([]);
+  const [showRequirementsSidebar, setShowRequirementsSidebar] = useState(false);
+  const [reservations, setReservations] = useState([]);
+  const [currentReservation, setCurrentReservation] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const loadReservations = async () => {
     try {
@@ -143,6 +145,49 @@ export default function Reservas() {
     setShowPaymentSidebar(false);
     setPayments([]);
     setCurrentReservation(null);
+  };
+
+  const handleRequirements = async (reservation) => {
+    try {
+      setLoading(true);
+      const response = await reservationService.getReservationRequirements(reservation.id);
+      setRequirements(response.data || []);
+      setCurrentReservation(reservation);
+      setShowRequirementsSidebar(true);
+    } catch (err) {
+      setError(err.message || 'Error al cargar requisitos');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseRequirementsSidebar = () => {
+    setShowRequirementsSidebar(false);
+    setRequirements([]);
+    setCurrentReservation(null);
+  };
+
+  const handleSaveRequirements = async () => {
+    if (!currentReservation) return;
+
+    try {
+      setLoading(true);
+      await reservationService.updateReservationRequirements(currentReservation.id, requirements);
+      await loadReservations(); // Recargar para asegurar consistencia si algo cambió
+      handleCloseRequirementsSidebar();
+    } catch (err) {
+      setError(err.message || 'Error al guardar requisitos');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRequirementChange = (reqId, checked) => {
+    setRequirements(prev => prev.map(req =>
+      req.id === reqId ? { ...req, completed: checked } : req
+    ));
   };
 
   const handleAccept = async () => {
@@ -288,6 +333,13 @@ export default function Reservas() {
             )}
           {canReadPayment && (
             <MyButtonShortAction type="receipt" title="Ver Pagos" onClick={() => handleViewPayments(row)} />
+          )}
+          {canReadRequirements && (
+            <MyButtonShortAction
+              type="checklist"
+              title="Requisitos"
+              onClick={() => handleRequirements(row)}
+            />
           )}
           {(row.status === 'RESERVED' || row.status === 'IN_PROGRESS' || row.status === 'COMPLETED') && (
             <MyButtonShortAction type="block" title="Bloquear" onClick={() => handleBlock(row)} />
@@ -581,6 +633,48 @@ export default function Reservas() {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        </MyPanelLateralConfig>
+      )}
+
+      {showRequirementsSidebar && currentReservation && (
+        <MyPanelLateralConfig title={`Requisitos - Reserva #${currentReservation.id}`} onClose={handleCloseRequirementsSidebar}>
+          <div className="sidebar-list">
+            <h3 className="sidebar-subtitle">Lista de Requisitos</h3>
+            {requirements.length === 0 ? (
+              <p>No hay requisitos asignados</p>
+            ) : (
+              <div className="requirements-list">
+                {requirements.map((req) => (
+                  <div key={req.id} className={`requirement-item ${req.completed ? 'completed' : ''}`}>
+                    <div className="requirement-item-content">
+                      <input
+                        type="checkbox"
+                        className="requirement-checkbox"
+                        checked={req.completed}
+                        onChange={(e) => handleRequirementChange(req.id, e.target.checked)}
+                        disabled={!canUpdateRequirements}
+                      />
+                      <div>
+                        <div className="requirement-name">{req.name}</div>
+                        {req.description && <div className="requirement-description">{req.description}</div>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {canUpdateRequirements && requirements.length > 0 && (
+              <div className="save-button-container">
+                <button
+                  className="btn-save"
+                  onClick={handleSaveRequirements}
+                >
+                  Guardar Cambios
+                </button>
               </div>
             )}
           </div>
