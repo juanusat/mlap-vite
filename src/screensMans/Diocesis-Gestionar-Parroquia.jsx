@@ -61,7 +61,7 @@ export default function Parroquia() {
         if (name === 'email') {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
             if (value && !emailRegex.test(value)) {
-                setEmailError('El correo debe tener el formato: ejemplo@dominio.com o ejemplo@dominio.com.co');
+                setEmailError('El correo no cumple formato');
             } else {
                 setEmailError('');
             }
@@ -178,7 +178,7 @@ export default function Parroquia() {
         // Validar el formato del email antes de guardar
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
         if (formData.email && !emailRegex.test(formData.email)) {
-            setEmailError('El correo debe tener el formato: ejemplo@dominio.com o ejemplo@dominio.com.co');
+            setEmailError('El correo no cumple formato');
             return;
         }
 
@@ -253,8 +253,19 @@ export default function Parroquia() {
                 return {
                     title: 'Confirmar eliminación',
                     content: currentEvent && (
-                        <div >
-                            <h4>¿Deseas eliminar la parroquia "{currentEvent.name}"?</h4>
+                        <div>
+                            <h4>¿Deseas eliminar permanentemente la parroquia "{currentEvent.name}"?</h4>
+                            <p style={{ marginTop: '15px', color: '#dc3545', fontSize: '14px', fontWeight: 'bold' }}>
+                                ⚠️ Esta acción es irreversible y eliminará:
+                            </p>
+                            <ul style={{ marginTop: '10px', color: 'var(--color-n-600)', fontSize: '14px', paddingLeft: '20px' }}>
+                                <li>La parroquia y todas sus capillas</li>
+                                <li>Todos los roles y asociaciones</li>
+                                <li>El usuario administrador de la parroquia</li>
+                            </ul>
+                            <p style={{ marginTop: '10px', color: 'var(--color-n-500)', fontSize: '13px' }}>
+                                ℹ️ Solo se pueden eliminar parroquias sin reservas activas.
+                            </p>
                         </div>
                     ),
                     onAccept: confirmDelete,

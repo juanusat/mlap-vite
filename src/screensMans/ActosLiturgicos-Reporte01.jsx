@@ -111,6 +111,7 @@ export default function Reporte01A() {
         setSelectedChapels(prev => prev.filter(name => name !== chapelName));
     };
 
+
     const capillas = reportData.map(item => item.capilla);
 
     return (

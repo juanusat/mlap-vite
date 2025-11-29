@@ -367,6 +367,8 @@ export default function ReservasPendientes() {
                   data.status === 'RESERVED' ? 'Reservado' :
                   data.status === 'IN_PROGRESS' ? 'En progreso' :
                   data.status === 'CANCELLED' ? 'Cancelado' :
+                  data.status === 'COMPLETED' ? 'Completado' :
+                  data.status === 'REJECTED' ? 'Rechazado' :
                   data.status
                 }</span>
               </div>
