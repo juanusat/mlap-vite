@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import MyButtonMediumIcon from '../components/MyButtonMediumIcon';
 import ChapelScheduleViewer from '../components/ChapelScheduleViewer';
+import MyModalGreatSize from '../components/MyModalGreatSize';
 import '../components/MyButtonMediumIcon.css';
 import './Reservas-Reservar.css';
 import { 
@@ -53,6 +54,11 @@ export default function ReservasReservar() {
     const [mentionTypes, setMentionTypes] = useState([]);
     const [mentions, setMentions] = useState([{ mention_type_id: '', mention_name: '' }]);
     const [showMentions, setShowMentions] = useState(false);
+    
+    // Estado para el modal de horarios
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [scheduleModalError, setScheduleModalError] = useState(null);
+    const [hasUserSelectedSchedule, setHasUserSelectedSchedule] = useState(false);
 
     useEffect(() => {
         document.title = "MLAP | Reservar evento";
@@ -110,6 +116,7 @@ export default function ReservasReservar() {
         setEventDate(e.target.value);
         setAvailabilityMessage('');
         setIsAvailable(null);
+        setHasUserSelectedSchedule(true);
     };
 
     const handleTimeChange = (e) => {
@@ -120,12 +127,14 @@ export default function ReservasReservar() {
         if (hours < 6 || hours > 22) {
             setAvailabilityMessage('La hora debe estar entre las 06:00 y las 22:00');
             setIsAvailable(false);
+            setHasUserSelectedSchedule(true);
             return;
         }
         
         setEventTime(selectedTime);
         setAvailabilityMessage('');
         setIsAvailable(null);
+        setHasUserSelectedSchedule(true);
     };
 
     const handleCheckAvailability = async () => {
@@ -165,14 +174,14 @@ export default function ReservasReservar() {
     };
 
     useEffect(() => {
-        if (eventDate && eventTime) {
+        if (eventDate && eventTime && hasUserSelectedSchedule) {
             const timeoutId = setTimeout(() => {
                 handleCheckAvailability();
             }, 500);
 
             return () => clearTimeout(timeoutId);
         }
-    }, [eventDate, eventTime]);
+    }, [eventDate, eventTime, hasUserSelectedSchedule]);
 
     const handleCancel = () => {
         navigate(-1);
@@ -235,12 +244,48 @@ export default function ReservasReservar() {
         }
     };
 
-    const handleScheduleCellClick = (dateStr, timeStr) => {
+    const handleScheduleCellClick = async (dateStr, timeStr) => {
         setEventDate(dateStr);
         setEventTime(timeStr);
         
         setAvailabilityMessage('');
         setIsAvailable(null);
+        setScheduleModalError(null);
+        setHasUserSelectedSchedule(true);
+        
+        // Verificar disponibilidad antes de cerrar el modal
+        try {
+            setIsChecking(true);
+            
+            const response = await checkAvailability(eventId, dateStr, timeStr);
+            
+            if (response.data.available) {
+                // Si está disponible, cerrar el modal
+                setShowScheduleModal(false);
+                setIsAvailable(true);
+                setAvailabilityMessage(response.data.reason || response.message);
+            } else {
+                // Si no está disponible, mostrar error en el modal
+                setScheduleModalError(response.data.reason || response.message || 'Horario no disponible');
+                setIsAvailable(false);
+            }
+            
+        } catch (err) {
+            console.error('Error al verificar disponibilidad:', err);
+            setScheduleModalError(err.message || 'Error al verificar disponibilidad');
+            setIsAvailable(false);
+        } finally {
+            setIsChecking(false);
+        }
+    };
+
+    const handleOpenScheduleModal = () => {
+        setShowScheduleModal(true);
+    };
+
+    const handleCloseScheduleModal = () => {
+        setShowScheduleModal(false);
+        setScheduleModalError(null);
     };
 
     if (loading) {
@@ -316,7 +361,7 @@ export default function ReservasReservar() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>Reservar evento</h2>
-                <div className='app-container-reserva'>
+                <div className='app-container'>
                     <div className="reserva-form" >
                         <div className="reserva-row">
                             <div className="reserva-label">Capilla / Parroquia</div>
@@ -447,6 +492,20 @@ export default function ReservasReservar() {
                         )}
 
                         <div className="reserva-row">
+                            <div className="reserva-label">Establecer horario:</div>
+                            <div className="reserva-value">
+                                <MyButtonMediumIcon
+                                    text="Seleccionar horario"
+                                    icon="MdCalendarToday"
+                                    onClick={handleOpenScheduleModal}
+                                />
+                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                    Haga clic para ver el calendario y seleccionar fecha y hora disponibles
+                                </small>
+                            </div>
+                        </div>
+
+                        <div className="reserva-row">
                             <div className="reserva-label">Selecciona fecha:</div>
                             <div className="reserva-value">
                                 <input 
@@ -477,7 +536,7 @@ export default function ReservasReservar() {
                             </div>
                         </div>
 
-                        {availabilityMessage && (
+                        {availabilityMessage && hasUserSelectedSchedule && (
                             <div className={`reserva-availability-message ${isAvailable ? 'available' : 'not-available'}`}>
                                 {availabilityMessage}
                             </div>
@@ -498,17 +557,29 @@ export default function ReservasReservar() {
                             />
                         </div>
                     </div>
-                    
-                    {formData?.chapel_id && formData?.parish_id && (
-                        <ChapelScheduleViewer 
-                            chapelId={formData.chapel_id} 
-                            parishId={formData.parish_id}
-                            enableCellClick={true}
-                            onCellClick={handleScheduleCellClick}
-                        />
-                    )}
                 </div>
             </div>
+
+            {/* Modal para seleccionar horario */}
+            <MyModalGreatSize 
+                open={showScheduleModal}
+                title="Seleccionar Fecha y Hora"
+                onClose={handleCloseScheduleModal}
+            >
+                {scheduleModalError && (
+                    <div className="modal-error-message">
+                        {scheduleModalError}
+                    </div>
+                )}
+                {formData?.chapel_id && formData?.parish_id && (
+                    <ChapelScheduleViewer 
+                        chapelId={formData.chapel_id} 
+                        parishId={formData.parish_id}
+                        enableCellClick={true}
+                        onCellClick={handleScheduleCellClick}
+                    />
+                )}
+            </MyModalGreatSize>
         </>
     );
 }
