@@ -163,12 +163,17 @@
 }
 
 .requirement-checkbox {
-    margin-top: 4px;
+    margin: 4px;
     cursor: pointer;
+    accent-color: var(--color-a-350);
+    width: 16px;
+    height: 16px;
 }
 
 .requirement-checkbox:disabled {
     cursor: not-allowed;
+    accent-color: var(--color-a-350);
+    opacity: 0.8;
 }
 
 .requirement-name {
