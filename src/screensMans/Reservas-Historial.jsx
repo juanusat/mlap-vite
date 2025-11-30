@@ -127,6 +127,11 @@ export default function ReservasHistorial() {
     },
     { key: 'event_name', header: 'Evento', accessor: (row) => row.event_name },
     { 
+      key: 'chapel_name', 
+      header: 'Capilla', 
+      accessor: (row) => row.chapel_name 
+    },
+    { 
       key: 'event_date', 
       header: 'Fecha', 
       accessor: (row) => new Date(row.event_date).toLocaleDateString('es-ES')
@@ -213,8 +218,8 @@ export default function ReservasHistorial() {
                   <DynamicTable
                     columns={reservationColumns}
                     data={displayedReservations}
-                    gridColumnsLayout="80px 1fr 180px 120px 100px 100px 120px 280px"
-                    columnLeftAlignIndex={[1, 2]}
+                    gridColumnsLayout="80px 1fr 180px 150px 120px 100px 100px 120px 280px"
+                    columnLeftAlignIndex={[1, 2, 3]}
                   />
                   
                   {totalPages > 1 && (
