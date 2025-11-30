@@ -7,7 +7,7 @@
 .sidebar-list-item {
     display: flex;
     justify-content: space-between;
-    font-size: var(--font-size-m);
+    font-size: var(--font-size-s);
 }
 .panel-lateral-header {
     display: flex;
