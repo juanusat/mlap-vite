@@ -1,6 +1,6 @@
 .chapel-schedule-viewer {
     flex: 1;
-    width: 100%;
+    width: auto;
     height: auto;
     max-width: 100%;
     padding: 10px;

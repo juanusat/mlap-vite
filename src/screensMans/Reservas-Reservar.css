@@ -2,17 +2,21 @@
 .app-container-reserva{
     display: flex;
     gap: 20px;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
     flex-wrap: nowrap;
     width: 100%;
+    min-height: 80vh;
+    padding: 0 20px;
 }
 
 .reserva-form {
-    flex: 0 0 40%;
-    max-width: 40%;
-    padding: 0 20px;
+    flex: 0 0 800px;
+    max-width: 800px;
+    width: 100%;
+    padding: 20px;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 .chapel-schedule-viewer {
@@ -200,4 +204,43 @@ input[type="time"] {
 .reserva-btn-aceptar svg,
 .reserva-btn-cancelar svg {
     color: var(--color-n-0) !important;
+}
+
+/* Estilos responsivos */
+@media (max-width: 1200px) {
+    .app-container-reserva {
+        padding: 0 15px;
+    }
+    
+    .reserva-form {
+        flex: 0 0 700px;
+        max-width: 700px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container-reserva {
+        padding: 0 10px;
+    }
+    
+    .reserva-form {
+        flex: 1;
+        max-width: 100%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .reserva-form {
+        padding: 10px;
+    }
+    
+    .reserva-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .reserva-actions .my-button-medium-icon {
+        width: 100%;
+    }
 }
