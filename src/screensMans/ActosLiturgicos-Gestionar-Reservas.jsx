@@ -673,7 +673,7 @@ export default function Reservas() {
                   className="btn-save"
                   onClick={handleSaveRequirements}
                 >
-                  Guardar Cambios
+                  Guardar
                 </button>
               </div>
             )}

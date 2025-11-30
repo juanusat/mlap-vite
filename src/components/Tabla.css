@@ -22,7 +22,7 @@
 
 
 .grid-header.grid-cell-acciones{
-  width: 220px;
+  width: auto;
   padding-right: 50px;
   padding-left: 50px;
 }
