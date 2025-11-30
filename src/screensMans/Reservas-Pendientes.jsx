@@ -626,23 +626,30 @@ export default function ReservasPendientes() {
 
       {showRequirementsSidebar && currentRequirements && (
         <MyPanelLateralConfig title={`Requisitos de la Reserva #${currentRequirements.id}`} onClose={handleCloseRequirementsSidebar}>
-          <div className="sidebar-list">
-            {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
-              currentRequirements.requirements.map((req, index) => (
-                <div key={index} className="sidebar-list-item requirement-item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={req.completed}
-                      disabled
-                    />
-                    <span>{req.name}</span>
-                  </label>
+          <div className="panel-requirements-wrapper">
+            <div className="sidebar-list">
+              {currentRequirements.requirements && currentRequirements.requirements.length > 0 ? (
+                <div className="requirements-list">
+                  {currentRequirements.requirements.map((req, index) => (
+                    <div key={index} className={`requirement-item ${req.completed ? 'completed' : ''}`}>
+                      <div className="requirement-item-content">
+                        <input
+                          type="checkbox"
+                          className="requirement-checkbox"
+                          checked={req.completed}
+                        />
+                        <div>
+                          <div className="requirement-name">{req.name}</div>
+                          {req.description && <div className="requirement-description">{req.description}</div>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))
-            ) : (
-              <p>No hay requisitos registrados</p>
-            )}
+              ) : (
+                <p>No hay requisitos registrados</p>
+              )}
+            </div>
           </div>
         </MyPanelLateralConfig>
       )}
