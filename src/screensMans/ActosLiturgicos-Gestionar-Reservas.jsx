@@ -401,23 +401,19 @@ export default function Reservas() {
                 disabled
               />
               {currentReservation.mentions && currentReservation.mentions.length > 0 && (
-                <>
-                  <label style={{ marginTop: '15px', fontWeight: 'bold' }}>Menciones</label>
-                  {currentReservation.mentions.map((mention, index) => (
-                    <div key={mention.id} style={{ marginBottom: '10px', paddingLeft: '10px', borderLeft: '3px solid #4CAF50' }}>
-                      <label style={{ fontSize: '0.9em', color: '#666' }}>
-                        {mention.mention_type_name}
-                      </label>
+                <div className="mentions-section">
+                  <div className="mentions-title">Menciones de la Misa</div>
+                  {currentReservation.mentions.map((mention) => (
+                    <div key={mention.id} className="mention-item">
                       <input
                         type="text"
                         className="inputModal"
-                        value={mention.mention_name}
+                        value={`${mention.mention_type_name} -- ${mention.mention_name || 'N/A'}`}
                         disabled
-                        style={{ marginTop: '5px' }}
                       />
                     </div>
                   ))}
-                </>
+                </div>
               )}
               <label>Precio del Evento</label>
               <input
@@ -666,7 +662,7 @@ export default function Reservas() {
                 </div>
               )}
             </div>
-            
+
             {canUpdateRequirements && requirements.length > 0 && (
               <div className="save-button-container">
                 <button
