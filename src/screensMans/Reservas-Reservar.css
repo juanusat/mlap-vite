@@ -206,6 +206,97 @@ input[type="time"] {
     color: var(--color-n-0) !important;
 }
 
+/* Estilos para el checkbox de menciones */
+.reserva-checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.reserva-checkbox-input {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* Estilos para la sección de menciones */
+.reserva-mentions-section {
+    margin-top: 10px;
+}
+
+.reserva-mentions-title {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.reserva-mention-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.reserva-mention-row {
+    margin-bottom: 10px;
+}
+
+.reserva-mention-label {
+    font-size: 0.9em;
+}
+
+.reserva-select-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    background-color: white;
+    color: black;
+}
+
+.reserva-mention-text-input {
+    width: 100%;
+}
+
+.reserva-btn-remove-mention {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+
+.reserva-btn-remove-mention:hover {
+    background-color: #d32f2f;
+}
+
+.reserva-btn-add-mention {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+}
+
+.reserva-btn-add-mention:hover {
+    background-color: #45a049;
+}
+
+.reserva-small-text {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.85em;
+}
+
 /* Estilos responsivos */
 @media (max-width: 1200px) {
     .app-container-reserva {

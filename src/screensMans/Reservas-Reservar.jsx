@@ -393,7 +393,7 @@ export default function ReservasReservar() {
                                     placeholder="Dejar vacío para usar tu nombre"
                                     maxLength={120}
                                 />
-                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                <small className="reserva-small-text">
                                     Opcional: Si la reserva es para otra persona, ingresa su nombre completo
                                 </small>
                             </div>
@@ -403,17 +403,12 @@ export default function ReservasReservar() {
                             <div className="reserva-row">
                                 <div className="reserva-label">¿Desea incluir una mención?</div>
                                 <div className="reserva-value">
-                                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}>
+                                    <label className="reserva-checkbox-label">
                                         <input 
                                             type="checkbox"
+                                            className="reserva-checkbox-input"
                                             checked={includeMention}
                                             onChange={(e) => setIncludeMention(e.target.checked)}
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                                marginRight: '10px',
-                                                cursor: 'pointer'
-                                            }}
                                         />
                                         <span>Sí, deseo incluir mención(es) en la Misa</span>
                                     </label>
@@ -423,19 +418,13 @@ export default function ReservasReservar() {
 
                         {includeMention && (
                             <div className="reserva-mentions-section">
-                                <div className="reserva-label" style={{marginBottom: '10px', fontWeight: 'bold'}}>
+                                <div className="reserva-mentions-title">
                                     Menciones de la Misa:
                                 </div>
                                 {mentions.map((mention, index) => (
-                                    <div key={index} className="reserva-mention-item" style={{
-                                        marginBottom: '15px', 
-                                        padding: '15px', 
-                                        border: '1px solid #ddd', 
-                                        borderRadius: '8px',
-                                        backgroundColor: '#f9f9f9'
-                                    }}>
-                                        <div className="reserva-row" style={{marginBottom: '10px'}}>
-                                            <div className="reserva-label" style={{fontSize: '0.9em'}}>
+                                    <div key={index} className="reserva-mention-item">
+                                        <div className="reserva-mention-row">
+                                            <div className="reserva-mention-label">
                                                 Tipo de mención:
                                             </div>
                                             <div className="reserva-value">
@@ -443,13 +432,6 @@ export default function ReservasReservar() {
                                                     className="reserva-select-input"
                                                     value={mention.mention_type_id}
                                                     onChange={(e) => handleMentionTypeChange(index, e.target.value)}
-                                                    style={{
-                                                        width: '100%',
-                                                        padding: '10px',
-                                                        borderRadius: '5px',
-                                                        border: '1px solid #ccc',
-                                                        fontSize: '1em'
-                                                    }}
                                                 >
                                                     <option value="">Seleccione un tipo</option>
                                                     {mentionTypes.map(type => (
@@ -460,36 +442,26 @@ export default function ReservasReservar() {
                                                 </select>
                                             </div>
                                         </div>
-                                        <div className="reserva-row">
-                                            <div className="reserva-label" style={{fontSize: '0.9em'}}>
+                                        <div className="reserva-mention-row">
+                                            <div className="reserva-mention-label">
                                                 Nombre de la persona:
                                             </div>
                                             <div className="reserva-value">
                                                 <input
                                                     type="text"
-                                                    className="reserva-text-input"
+                                                    className="reserva-text-input reserva-mention-text-input"
                                                     value={mention.mention_name}
                                                     onChange={(e) => handleMentionNameChange(index, e.target.value)}
                                                     placeholder="Ej: Juan Pérez"
                                                     maxLength={120}
-                                                    style={{width: '100%'}}
                                                 />
                                             </div>
                                         </div>
                                         {mentions.length > 1 && (
                                             <button
                                                 type="button"
+                                                className="reserva-btn-remove-mention"
                                                 onClick={() => handleRemoveMention(index)}
-                                                style={{
-                                                    marginTop: '10px',
-                                                    padding: '5px 15px',
-                                                    backgroundColor: '#f44336',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '5px',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.85em'
-                                                }}
                                             >
                                                 Eliminar mención
                                             </button>
@@ -498,17 +470,8 @@ export default function ReservasReservar() {
                                 ))}
                                 <button
                                     type="button"
+                                    className="reserva-btn-add-mention"
                                     onClick={handleAddMention}
-                                    style={{
-                                        padding: '10px 20px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        cursor: 'pointer',
-                                        fontSize: '0.95em',
-                                        marginBottom: '15px'
-                                    }}
                                 >
                                     + Agregar otra mención
                                 </button>
@@ -523,7 +486,7 @@ export default function ReservasReservar() {
                                     icon="MdCalendarToday"
                                     onClick={handleOpenScheduleModal}
                                 />
-                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                <small className="reserva-small-text">
                                     Haga clic para ver el calendario y seleccionar fecha y hora disponibles
                                 </small>
                             </div>
@@ -554,7 +517,7 @@ export default function ReservasReservar() {
                                     max="22:00"
                                     step="3600"
                                 />
-                                <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
+                                <small className="reserva-small-text">
                                     Horario disponible: 06:00 - 22:00
                                 </small>
                             </div>
