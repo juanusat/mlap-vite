@@ -54,6 +54,8 @@ export default function ReservasReservar() {
     const [mentionTypes, setMentionTypes] = useState([]);
     const [mentions, setMentions] = useState([{ mention_type_id: '', mention_name: '' }]);
     const [showMentions, setShowMentions] = useState(false);
+    const [isMassEvent, setIsMassEvent] = useState(false);
+    const [includeMention, setIncludeMention] = useState(false);
     
     // Estado para el modal de horarios
     const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -76,10 +78,10 @@ export default function ReservasReservar() {
             const response = await getReservationFormInfo(eventId);
             setFormData(response.data);
             
-            // Verificar si el evento es una Misa para mostrar menciones
+            // Verificar si el evento es una Misa para mostrar opción de menciones
             const isMass = response.data.event_name && 
                           response.data.event_name.toLowerCase().includes('misa');
-            setShowMentions(isMass);
+            setIsMassEvent(isMass);
             
             // Si es Misa, cargar los tipos de mención
             if (isMass) {
@@ -223,7 +225,7 @@ export default function ReservasReservar() {
                 eventDate, 
                 eventTime, 
                 beneficiaryName || null,
-                showMentions ? mentions : []
+                includeMention ? mentions : []
             );
             
             alert(response.data.confirmation_message);
@@ -397,7 +399,29 @@ export default function ReservasReservar() {
                             </div>
                         </div>
 
-                        {showMentions && (
+                        {isMassEvent && (
+                            <div className="reserva-row">
+                                <div className="reserva-label">¿Desea incluir una mención?</div>
+                                <div className="reserva-value">
+                                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={includeMention}
+                                            onChange={(e) => setIncludeMention(e.target.checked)}
+                                            style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                marginRight: '10px',
+                                                cursor: 'pointer'
+                                            }}
+                                        />
+                                        <span>Sí, deseo incluir mención(es) en la Misa</span>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+
+                        {includeMention && (
                             <div className="reserva-mentions-section">
                                 <div className="reserva-label" style={{marginBottom: '10px', fontWeight: 'bold'}}>
                                     Menciones de la Misa:
