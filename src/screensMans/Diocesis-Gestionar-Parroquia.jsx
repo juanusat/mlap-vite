@@ -339,7 +339,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 disabled={isViewMode}
                 required
             />
-            <label htmlFor="email">Correo:</label>
+            <label htmlFor="email">Correo del párroco:</label>
             <input
                 type="email"
                 className="inputModal"
@@ -357,7 +357,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                     ℹ️ El correo no puede ser modificado una vez creada la parroquia
                 </p>
             )}
-            <label htmlFor="username">Usuario:</label>
+            <label htmlFor="username">Usuario del párroco:</label>
             <input
                 type="text"
                 className="inputModal"

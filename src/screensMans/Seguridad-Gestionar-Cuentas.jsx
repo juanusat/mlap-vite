@@ -210,7 +210,7 @@ export default function CuentasGestionar() {
         }
         
         // Validar formato del correo: 4-50 caracteres + @ + 2-8 caracteres + . + 2-8 caracteres (+ . + 2-8 caracteres opcional)
-        const emailRegex = /^[a-zA-Z0-9._-]{4,50}@[a-zA-Z0-9-]{2,8}\.[a-zA-Z]{2,8}(\.[a-zA-Z]{2,8})?$/;
+        const emailRegex = /^[a-zA-Z0-9._-]{1,50}@[a-zA-Z0-9-]{2,8}\.[a-zA-Z]{2,8}(\.[a-zA-Z]{2,8})?$/;
         if (!emailRegex.test(formData.email.trim())) {
           setEmailError('El formato del correo no es válido');
           setLoading(false);
