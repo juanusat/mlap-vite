@@ -4,6 +4,10 @@ const handleResponse = async (response) => {
   const data = await response.json();
   
   if (!response.ok) {
+    // Priorizar el mensaje legible (message) sobre el código de error (error)
+    if (data.message) {
+      throw new Error(data.message);
+    }
     if (data.error) {
       throw new Error(data.error);
     }

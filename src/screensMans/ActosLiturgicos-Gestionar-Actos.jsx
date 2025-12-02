@@ -419,11 +419,22 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Validar que los campos de texto no estén vacíos o solo con espacios
+    if (!nombre.trim()) {
+      alert('El nombre del evento no puede estar vacío');
+      return;
+    }
+    
+    if (!descripcion.trim()) {
+      alert('La descripción no puede estar vacía');
+      return;
+    }
+    
     const normalizedPersonas = (tipo === "Privado") ? "-" : (personas || ""); 
     
     onSave({
-      nombre,
-      descripcion,
+      nombre: nombre.trim(),
+      descripcion: descripcion.trim(),
       capilla: capillaName,
       chapel_id: capillaId,
       event_id: eventId,
@@ -467,8 +478,11 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
           id="nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+          onBlur={(e) => setNombre(e.target.value.trim())}
           disabled={isView}
           required
+          pattern=".*\S+.*"
+          title="El nombre no puede estar vacío o contener solo espacios"
         />
       </div>
 
@@ -480,8 +494,11 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
           id="descripcion"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
+          onBlur={(e) => setDescripcion(e.target.value.trim())}
           disabled={isView}
           required
+          pattern=".*\S+.*"
+          title="La descripción no puede estar vacía o contener solo espacios"
         />
       </div>
 

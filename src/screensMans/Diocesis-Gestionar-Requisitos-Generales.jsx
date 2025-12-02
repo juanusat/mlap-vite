@@ -11,6 +11,11 @@ import "../utils/ActosLiturgicos-Requisitos.css";
 import * as requirementService from '../services/baseRequirementService';
 
 const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        handleFormChange({ target: { name, value: value.trim() } });
+    };
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -21,8 +26,11 @@ const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El nombre no puede estar vacío o contener solo espacios"
             />
             <label htmlFor="description">Descripción:</label>
             <textarea
@@ -31,8 +39,11 @@ const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="La descripción no puede estar vacía o contener solo espacios"
             />
         </div>
     );
@@ -71,6 +82,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
     const [modalType, setModalType] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [modalError, setModalError] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         description: ''
@@ -122,7 +134,9 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        // Solo permitir letras (a-z, A-Z, acentos) y espacios
+        const onlyLetters = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+        setFormData(prev => ({ ...prev, [name]: onlyLetters }));
     };
 
     const filteredRequirements = requirements.filter(req =>
@@ -149,6 +163,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         }
         setCurrentRequirement(null);
         setModalType('add');
+        setModalError(null);
         setFormData({ name: '', description: '' });
         setShowModal(true);
     };
@@ -157,12 +172,14 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         setShowModal(false);
         setCurrentRequirement(null);
         setModalType(null);
+        setModalError(null);
         setFormData({ name: '', description: '' });
     };
 
     const handleViewRequirement = (req) => {
         setCurrentRequirement(req);
         setModalType('view');
+        setModalError(null);
         setFormData({
             name: req.name,
             description: req.description
@@ -173,6 +190,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
     const handleEditRequirement = (req) => {
         setCurrentRequirement(req);
         setModalType('edit');
+        setModalError(null);
         setFormData({
             name: req.name,
             description: req.description
@@ -183,6 +201,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
     const handleDeleteConfirmation = (req) => {
         setCurrentRequirement(req);
         setModalType('delete');
+        setModalError(null);
         setShowModal(true);
     };
 
@@ -190,23 +209,41 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
         if (!currentRequirement || !selectedEvent) return;
 
         try {
+            setModalError(null);
             await requirementService.deleteRequirement(selectedEvent.id, currentRequirement.id);
             setRequirements(prevReqs => prevReqs.filter(r => r.id !== currentRequirement.id));
             handleCloseModal();
         } catch (err) {
-            setError(err.message);
+            setModalError(err.message);
         }
     };
 
     const handleSave = async () => {
         if (!selectedEvent) return;
 
+        // Validar que los campos no estén vacíos o solo con espacios
+        if (!formData.name || !formData.name.trim()) {
+            setModalError('El nombre no puede estar vacío');
+            return;
+        }
+        
+        if (!formData.description || !formData.description.trim()) {
+            setModalError('La descripción no puede estar vacía');
+            return;
+        }
+
         try {
+            setModalError(null);
+            const cleanData = {
+                name: formData.name.trim(),
+                description: formData.description.trim()
+            };
+
             if (modalType === 'add') {
-                const response = await requirementService.createRequirement(selectedEvent.id, formData);
+                const response = await requirementService.createRequirement(selectedEvent.id, cleanData);
                 setRequirements(prevReqs => [...prevReqs, response.data]);
             } else if (modalType === 'edit' && currentRequirement) {
-                const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, formData);
+                const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, cleanData);
                 setRequirements(prevReqs =>
                     prevReqs.map(r =>
                         r.id === currentRequirement.id ? response.data : r
@@ -215,7 +252,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
             }
             handleCloseModal();
         } catch (err) {
-            setError(err.message);
+            setModalError(err.message);
         }
     };
 
@@ -273,14 +310,24 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
             case 'view':
                 return {
                     title: 'Detalles del requisito',
-                    content: <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+                    content: (
+                        <>
+                            <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar requisito',
-                    content: <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: (
+                        <>
+                            <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -290,6 +337,7 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                     content: currentRequirement && (
                         <div>
                             <h4>¿Deseas eliminar el requisito "{currentRequirement.name}"?</h4>
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -298,7 +346,12 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
             case 'add':
                 return {
                     title: 'Añadir requisito',
-                    content: <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: (
+                        <>
+                            <RequisitoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };

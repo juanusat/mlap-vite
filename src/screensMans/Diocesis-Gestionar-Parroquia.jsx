@@ -23,6 +23,7 @@ export default function Parroquia() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -97,6 +98,7 @@ export default function Parroquia() {
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
+        setModalError(null);
         setFormData({
             id: event.id,
             name: event.name,
@@ -110,6 +112,7 @@ export default function Parroquia() {
     const handleEdit = (event) => {
         setCurrentEvent(event);
         setModalType('edit');
+        setModalError(null);
         setFormData({
             id: event.id,
             name: event.name,
@@ -123,12 +126,14 @@ export default function Parroquia() {
     const handleDeleteConfirmation = (event) => {
         setCurrentEvent(event);
         setModalType('delete');
+        setModalError(null);
         setShowModal(true);
     };
 
     const handleAddEvent = () => {
         setCurrentEvent(null);
         setModalType('add');
+        setModalError(null);
         setFormData({
             name: '',
             email: '',
@@ -143,6 +148,7 @@ export default function Parroquia() {
         setCurrentEvent(null);
         setModalType(null);
         setEmailError('');
+        setModalError(null);
         setFormData({
             name: '',
             email: '',
@@ -155,17 +161,17 @@ export default function Parroquia() {
         if (currentEvent) {
             try {
                 setLoading(true);
-                setError(null);
+                setModalError(null);
                 await parishService.deleteParish(currentEvent.id);
                 await loadParishes();
                 handleCloseModal();
             } catch (err) {
                 if (err.message.includes('403') || err.message.includes('Prohibido')) {
-                    setError('No tienes permisos para eliminar parroquias.');
+                    setModalError('No tienes permisos para eliminar parroquias.');
                 } else if (err.message.includes('401') || err.message.includes('autorizado')) {
-                    setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                    setModalError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
                 } else {
-                    setError(err.message);
+                    setModalError(err.message);
                 }
                 console.error('Error al eliminar:', err);
             } finally {
@@ -175,32 +181,52 @@ export default function Parroquia() {
     };
 
     const handleSave = async () => {
+        // Validar que los campos no estén vacíos o solo con espacios
+        if (!formData.name || !formData.name.trim()) {
+            setModalError('El nombre no puede estar vacío');
+            return;
+        }
+        
+        if (!formData.username || !formData.username.trim()) {
+            setModalError('El usuario no puede estar vacío');
+            return;
+        }
+
         // Validar el formato del email antes de guardar
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[[^\s@]+)?$/;
         if (formData.email && !emailRegex.test(formData.email)) {
             setEmailError('El correo no cumple formato');
+            setModalError('El correo no cumple formato');
             return;
         }
 
         try {
             setLoading(true);
-            setError(null);
+            setModalError(null);
+            setEmailError('');
             
+            const cleanData = {
+                name: formData.name.trim(),
+                email: formData.email,
+                username: formData.username.trim(),
+                password: formData.password
+            };
+
             if (modalType === 'add') {
-                await parishService.createParish(formData);
+                await parishService.createParish(cleanData);
             } else if (modalType === 'edit' && currentEvent) {
-                await parishService.updateParish(currentEvent.id, formData);
+                await parishService.updateParish(currentEvent.id, cleanData);
             }
             
             await loadParishes();
             handleCloseModal();
         } catch (err) {
             if (err.message.includes('403') || err.message.includes('Prohibido')) {
-                setError('No tienes permisos para realizar esta operación.');
+                setModalError('No tienes permisos para realizar esta operación.');
             } else if (err.message.includes('401') || err.message.includes('autorizado')) {
-                setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                setModalError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
             } else {
-                setError(err.message);
+                setModalError(err.message);
             }
             console.error('Error al guardar:', err);
         } finally {
@@ -238,14 +264,24 @@ export default function Parroquia() {
             case 'view':
                 return {
                     title: 'Detalles de la parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} emailError={emailError} />,
+                    content: (
+                        <>
+                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} emailError={emailError} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />,
+                    content: (
+                        <>
+                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -256,7 +292,7 @@ export default function Parroquia() {
                         <div>
                             <h4>¿Deseas eliminar permanentemente la parroquia "{currentEvent.name}"?</h4>
                             <p style={{ marginTop: '15px', color: '#dc3545', fontSize: '14px', fontWeight: 'bold' }}>
-                                ⚠️ Esta acción es irreversible y eliminará:
+                                 Esta acción es irreversible y eliminará:
                             </p>
                             <ul style={{ marginTop: '10px', color: 'var(--color-n-600)', fontSize: '14px', paddingLeft: '20px' }}>
                                 <li>La parroquia y todas sus capillas</li>
@@ -264,8 +300,9 @@ export default function Parroquia() {
                                 <li>El usuario administrador de la parroquia</li>
                             </ul>
                             <p style={{ marginTop: '10px', color: 'var(--color-n-500)', fontSize: '13px' }}>
-                                ℹ️ Solo se pueden eliminar parroquias sin reservas activas.
+                                Solo se pueden eliminar parroquias sin reservas activas.
                             </p>
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -274,7 +311,12 @@ export default function Parroquia() {
             case 'add':
                 return {
                     title: 'Añadir parroquia',
-                    content: <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />,
+                    content: (
+                        <>
+                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -326,6 +368,13 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
     // Determina si es modo edición (cuando existe formData.id)
     const isEditMode = formData.id && !isViewMode;
 
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        if (name === 'name' || name === 'username') {
+            handleFormChange({ target: { name, value: value.trim() } });
+        }
+    };
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -336,8 +385,11 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 name="name"
                 value={formData.name}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El nombre no puede estar vacío o contener solo espacios"
             />
             <label htmlFor="email">Correo del párroco:</label>
             <input
@@ -365,8 +417,11 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 name="username"
                 value={formData.username}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El usuario no puede estar vacío o contener solo espacios"
             />
             {!isViewMode && (
                 <>
