@@ -317,8 +317,6 @@
   gap: 8px;
 }
 
-
-
 .time-range{
   display: flex;
   gap: 10px;
@@ -336,7 +334,7 @@
     color: var(--color-n-800);
 }
 .inputTime{
-  width: 50%;
+    width: 185px;
 } 
 
 .my-button-medium-icon.horarios-btn{
