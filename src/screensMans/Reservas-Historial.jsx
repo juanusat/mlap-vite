@@ -259,25 +259,66 @@ export default function ReservasHistorial() {
       {showSidebar && currentReservation && (
         <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`} onClose={handleCloseSidebar}>
           <div className="sidebar-list">
-            <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
-            <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
-            <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
-            <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
-            <p><strong>Monto:</strong> S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
-            <p><strong>Estado:</strong> {
-              currentReservation.status === 'COMPLETED' ? 'Completado' :
-              currentReservation.status === 'FULFILLED' ? 'Finalizado' :
-              currentReservation.status === 'CANCELLED' ? 'Cancelado' :
-              currentReservation.status === 'REJECTED' ? 'Rechazado' :
-              currentReservation.status
-            }</p>
-            <p><strong>Pago:</strong> {currentReservation.payment_status}</p>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Beneficiario:</span>
+              <span className="detail-value">{currentReservation.beneficiary_full_name}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Evento:</span>
+              <span className="detail-value">{currentReservation.event_variant_name}</span>
+            </div>
             {currentReservation.chapel && (
               <>
-                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
-                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
+                <div className="reservation-detail-item">
+                  <span className="detail-label">Capilla:</span>
+                  <span className="detail-value">{currentReservation.chapel.name}</span>
+                </div>
+                <div className="reservation-detail-item">
+                  <span className="detail-label">Parroquia:</span>
+                  <span className="detail-value">{currentReservation.chapel.parish_name}</span>
+                </div>
               </>
             )}
+            <div className="reservation-detail-item">
+              <span className="detail-label">Fecha:</span>
+              <span className="detail-value">{new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Hora:</span>
+              <span className="detail-value">{currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Monto:</span>
+              <span className="detail-value">S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Estado:</span>
+              <span className="detail-value">{
+                currentReservation.status === 'COMPLETED' ? 'Completado' :
+                currentReservation.status === 'FULFILLED' ? 'Finalizado' :
+                currentReservation.status === 'CANCELLED' ? 'Cancelado' :
+                currentReservation.status === 'REJECTED' ? 'Rechazado' :
+                currentReservation.status
+              }</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Pago:</span>
+              <span className="detail-value">{currentReservation.payment_status}</span>
+            </div>
+            
+            {currentReservation.mentions && currentReservation.mentions.length > 0 && (
+              <>
+                <hr className="divider-sidebar" />
+                <h3 className="sidebar-subtitle">Menciones</h3>
+                {currentReservation.mentions.map((mention, index) => (
+                  <div key={index} className="reservation-detail-item">
+                    <span className="detail-label">{mention.mention_type_name}:</span>
+                    <span className="detail-value">{mention.mention_name}</span>
+                  </div>
+                ))}
+              </>
+            )}
+            
             <hr className="divider-sidebar" />
             <h3 className="sidebar-subtitle">Requisitos</h3>
             {currentReservation.requirements && currentReservation.requirements.length > 0 ? (

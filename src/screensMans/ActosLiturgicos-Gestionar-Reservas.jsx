@@ -401,19 +401,16 @@ export default function Reservas() {
                 disabled
               />
               {currentReservation.mentions && currentReservation.mentions.length > 0 && (
-                <div className="mentions-section">
-                  <div className="mentions-title">Menciones de la Misa</div>
-                  {currentReservation.mentions.map((mention) => (
-                    <div key={mention.id} className="mention-item">
-                      <input
-                        type="text"
-                        className="inputModal"
-                        value={`${mention.mention_type_name} -- ${mention.mention_name || 'N/A'}`}
-                        disabled
-                      />
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <label>Menciones</label>
+                  <textarea
+                    className="inputModal"
+                    value={currentReservation.mentions.map(m => `${m.mention_type_name}: ${m.mention_name || 'N/A'}`).join('\n')}
+                    disabled
+                    rows={currentReservation.mentions.length + 1}
+                    style={{ resize: 'vertical' }}
+                  />
+                </>
               )}
               <label>Precio del Evento</label>
               <input
