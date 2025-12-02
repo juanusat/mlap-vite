@@ -218,6 +218,18 @@ export default function ReservasReservar() {
             return;
         }
 
+        // Validar menciones si están incluidas
+        if (includeMention) {
+            const invalidMentions = mentions.filter(
+                m => !m.mention_type_id || !m.mention_name || m.mention_name.trim() === ''
+            );
+            
+            if (invalidMentions.length > 0) {
+                alert('Por favor, complete todos los campos de las menciones o elimine las menciones vacías');
+                return;
+            }
+        }
+
         try {
             setIsCreating(true);
             const response = await createReservation(

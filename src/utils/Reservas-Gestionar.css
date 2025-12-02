@@ -258,10 +258,4 @@
     text-align: right;
     word-break: break-word;
     flex: 1;
-}/* Estilos para las menciones en el modal */
-
-.mention-item {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
 }

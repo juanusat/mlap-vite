@@ -650,6 +650,19 @@ export default function ReservasPendientes() {
               <span className="detail-label">Pago:</span>
               <span className="detail-value">{currentReservation.payment_status}</span>
             </div>
+            
+            {currentReservation.mentions && currentReservation.mentions.length > 0 && (
+              <>
+                <hr className="divider-sidebar" />
+                <h3 className="sidebar-subtitle">Menciones</h3>
+                {currentReservation.mentions.map((mention, index) => (
+                  <div key={index} className="reservation-detail-item">
+                    <span className="detail-label">{mention.mention_type_name}:</span>
+                    <span className="detail-value">{mention.mention_name}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </MyPanelLateralConfig>
       )}
