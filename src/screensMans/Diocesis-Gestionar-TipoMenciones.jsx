@@ -53,7 +53,15 @@ export default function TipoMencionesGestionar() {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Validar que solo contenga letras y espacios en los campos name y code
+    if (name === 'name' || name === 'code') {
+      // Solo permitir letras (a-z, A-Z, acentos) y espacios
+      const onlyLetters = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+      setFormData(prev => ({ ...prev, [name]: onlyLetters }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const filteredMentions = mentions.filter((mention) =>
@@ -138,12 +146,12 @@ export default function TipoMencionesGestionar() {
     if (!formData.name || !formData.name.trim()) {
       setModalError('El nombre no puede estar vacío');
       return;
-    } 
+    }
     if (!formData.description || !formData.description.trim()) {
       setModalError('La descripción no puede estar vacía');
       return;
     }
-    
+
     if (!formData.code || !formData.code.trim()) {
       setModalError('El código no puede estar vacío');
       return;
@@ -152,7 +160,7 @@ export default function TipoMencionesGestionar() {
     try {
       setLoading(true);
       setModalError(null);
-      
+
       const cleanData = {
         name: formData.name.trim(),
         description: formData.description ? formData.description.trim() : '',
@@ -164,7 +172,7 @@ export default function TipoMencionesGestionar() {
       } else if (modalType === 'edit' && currentMention) {
         await mentionTypeService.updateMentionType(currentMention.id, cleanData);
       }
-      
+
       await loadMentionTypes();
       handleCloseModal();
     } catch (err) {
@@ -202,23 +210,28 @@ export default function TipoMencionesGestionar() {
   };
 
   const columns = [
-    { key: 'id',
+    {
+      key: 'id',
       header: 'ID',
       accessor: (mention) => mention.id
     },
-    { key: 'name',
+    {
+      key: 'name',
       header: 'Nombre',
       accessor: (mention) => mention.name,
     },
-    { key: 'description',
+    {
+      key: 'description',
       header: 'Descripción',
       accessor: (mention) => mention.description || '-',
     },
-    { key: 'active',
+    {
+      key: 'active',
       header: 'Estado',
       accessor: (mention) => <ToggleSwitch isEnabled={mention.active} onToggle={() => handleToggle(mention.id, mention.active)} />,
     },
-    { key: 'acciones',
+    {
+      key: 'acciones',
       header: 'Acciones',
       accessor: (mention) => (
         <MyGroupButtonsActions>
