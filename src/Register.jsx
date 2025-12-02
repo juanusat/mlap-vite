@@ -60,11 +60,22 @@ export default function Register() {
     setFormData(prevData => ({ ...prevData, [name]: value }));
 
     if (name === 'confirmarContrasena' || name === 'password') {
-      if (name === 'password' && value !== formData.confirmarContrasena && formData.confirmarContrasena !== '') {
+      // Validar longitud mínima
+      if (name === 'password' && value.length > 0 && value.length < 8) {
+        setPasswordError('La contraseña debe tener al menos 8 caracteres.');
+      }
+      // Validar coincidencia
+      else if (name === 'password' && value !== formData.confirmarContrasena && formData.confirmarContrasena !== '') {
         setPasswordError('Las contraseñas no coinciden.');
       } else if (name === 'confirmarContrasena' && value !== formData.password) {
-        setPasswordError('Las contraseñas no coinciden.');
-      } else {
+        if (formData.password.length < 8) {
+          setPasswordError('La contraseña debe tener al menos 8 caracteres.');
+        } else {
+          setPasswordError('Las contraseñas no coinciden.');
+        }
+      } else if (name === 'password' && value === formData.confirmarContrasena && value.length >= 8) {
+        setPasswordError('');
+      } else if (name === 'confirmarContrasena' && value === formData.password && formData.password.length >= 8) {
         setPasswordError('');
       }
     }
@@ -74,6 +85,12 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setPasswordError('');
+
+    // Validar longitud mínima de contraseña
+    if (formData.password.length < 8) {
+      setPasswordError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
 
     if (formData.password !== formData.confirmarContrasena) {
       setPasswordError('Las contraseñas no coinciden. Por favor, verifícalas.');
@@ -219,6 +236,8 @@ export default function Register() {
           value={formData.password}
           onChange={handleInputChange}
           required
+          minLength={8}
+          title="La contraseña debe tener al menos 8 caracteres"
         />
         
         <InputField
@@ -228,6 +247,8 @@ export default function Register() {
           value={formData.confirmarContrasena}
           onChange={handleInputChange}
           required
+          minLength={8}
+          title="La contraseña debe tener al menos 8 caracteres"
         />
         
         {passwordError && (
