@@ -30,6 +30,7 @@ export default function ActosLiturgicosRequisitos() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
 
   const [eventVariants, setEventVariants] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
@@ -101,14 +102,13 @@ export default function ActosLiturgicosRequisitos() {
 
   const handleAddRequirement = () => {
     if (!canCreate) {
-      alert("No tienes permisos para crear requisitos.");
       return;
     }
     if (!selectedEventVariant) {
-      alert("Por favor, selecciona un evento primero.");
       return;
     }
     setCurrentRequirement(null);
+    setModalError(null);
     setModalType("add");
     setShowModal(true);
   };
@@ -117,38 +117,38 @@ export default function ActosLiturgicosRequisitos() {
     setShowModal(false);
     setCurrentRequirement(null);
     setModalType(null);
+    setModalError(null);
   };
 
   const handleViewRequirement = (req) => {
     setCurrentRequirement(req);
+    setModalError(null);
     setModalType("view");
     setShowModal(true);
   };
 
   const handleEditRequirement = (req) => {
     if (!canUpdate) {
-      alert("No tienes permisos para editar requisitos.");
       return;
     }
     if (!req.is_editable) {
-      alert("Los requisitos base no se pueden editar.");
       return;
     }
     setCurrentRequirement(req);
+    setModalError(null);
     setModalType("edit");
     setShowModal(true);
   };
 
   const handleDeleteConfirmation = (req) => {
     if (!canDelete) {
-      alert("No tienes permisos para eliminar requisitos.");
       return;
     }
     if (!req.is_editable) {
-      alert("Los requisitos base no se pueden eliminar.");
       return;
     }
     setCurrentRequirement(req);
+    setModalError(null);
     setModalType("delete");
     setShowModal(true);
   };
@@ -161,7 +161,7 @@ export default function ActosLiturgicosRequisitos() {
         handleCloseModal();
       } catch (err) {
         console.error("Error al eliminar requisito:", err);
-        alert("Error al eliminar: " + err.message);
+        setModalError(err.message);
       }
     }
   };
@@ -184,7 +184,7 @@ export default function ActosLiturgicosRequisitos() {
       handleCloseModal();
     } catch (err) {
       console.error("Error al guardar requisito:", err);
-      alert("Error al guardar: " + err.message);
+      setModalError(err.message);
     }
   };
 
@@ -195,12 +195,10 @@ export default function ActosLiturgicosRequisitos() {
 
   const handleToggle = async (requirementId, currentActive) => {
     if (!canUpdateStatus) {
-      alert("No tienes permisos para cambiar el estado de requisitos.");
       return;
     }
     const requirement = requirements.find(r => r.id === requirementId);
     if (!requirement || !requirement.is_editable) {
-      alert("Solo se puede cambiar el estado de requisitos adicionales.");
       return;
     }
 
@@ -209,7 +207,6 @@ export default function ActosLiturgicosRequisitos() {
       await loadRequirements();
     } catch (err) {
       console.error("Error al actualizar estado:", err);
-      alert("Error al actualizar estado: " + err.message);
     }
   };
 
@@ -224,11 +221,15 @@ export default function ActosLiturgicosRequisitos() {
         return {
           title: "Detalles del Requisito",
           content: (
-            <RequisitoForm
-              onSave={handleSave}
-              req={currentRequirement}
-              mode="view"
-            />
+            <>
+              <RequisitoForm
+                onSave={handleSave}
+                setModalError={setModalError}
+                req={currentRequirement}
+                mode="view"
+              />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
           ),
           onAccept: handleCloseModal,
           onCancel: handleCloseModal,
@@ -237,11 +238,15 @@ export default function ActosLiturgicosRequisitos() {
         return {
           title: "Editar requisito",
           content: (
-            <RequisitoForm
-              onSave={handleSave}
-              req={currentRequirement}
-              mode="edit"
-            />
+            <>
+              <RequisitoForm
+                onSave={handleSave}
+                setModalError={setModalError}
+                req={currentRequirement}
+                mode="edit"
+              />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
           ),
           onAccept: () =>
             document.getElementById("requisito-form").requestSubmit(),
@@ -250,14 +255,24 @@ export default function ActosLiturgicosRequisitos() {
       case "delete":
         return {
           title: "Confirmar eliminación",
-          content: <h4>¿Estás seguro que quieres eliminar este requisito?</h4>,
+          content: (
+            <>
+              <h4>¿Estás seguro que quieres eliminar este requisito?</h4>
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
+          ),
           onAccept: confirmDelete,
           onCancel: handleCloseModal,
         };
       case "add":
         return {
           title: "Añadir requisito",
-          content: <RequisitoForm onSave={handleSave} mode="add" />,
+          content: (
+            <>
+              <RequisitoForm onSave={handleSave} setModalError={setModalError} mode="add" />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
+          ),
           onAccept: () =>
             document.getElementById("requisito-form").requestSubmit(),
           onCancel: handleCloseModal,
@@ -420,7 +435,7 @@ export default function ActosLiturgicosRequisitos() {
   );
 }
 
-function RequisitoForm({ onSave, req = {}, mode = "add" }) {
+function RequisitoForm({ onSave, setModalError, req = {}, mode = "add" }) {
 
   const [nombre, setNombre] = useState(req.name || "");
   const [descripcion, setDescripcion] = useState(req.description || "");
@@ -428,17 +443,21 @@ function RequisitoForm({ onSave, req = {}, mode = "add" }) {
 
   const isViewMode = mode === "view";
 
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'nombre') {
+      const onlyLetters = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+      setNombre(onlyLetters);
+    } else if (name === 'descripcion') {
+      setDescripcion(value);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isViewMode) {
-      // Validar que los campos no estén vacíos o solo con espacios
-      if (!nombre.trim()) {
-        alert('El nombre del requisito no puede estar vacío');
-        return;
-      }
-      
-      if (!descripcion.trim()) {
-        alert('La descripción no puede estar vacía');
+      if (!nombre.trim() || !descripcion.trim()) {
+        setModalError('Por favor, complete todos los campos');
         return;
       }
       
@@ -454,20 +473,22 @@ function RequisitoForm({ onSave, req = {}, mode = "add" }) {
           type="text"
           className="inputModal"
           id="nombre"
+          name="nombre"
           value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          onChange={handleFormChange}
           onBlur={(e) => setNombre(e.target.value.trim())}
           disabled={isViewMode}
           required
           pattern=".*\S+.*"
-          title="El nombre no puede estar vacío o contener solo espacios"
+          title="El nombre no puede estar vacío o contener solo espacios. Solo se permiten letras"
         />
         <label htmlFor="descripcion">Descripción</label>
         <textarea
           className="inputModal"
           id="descripcion"
+          name="descripcion"
           value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
+          onChange={handleFormChange}
           onBlur={(e) => setDescripcion(e.target.value.trim())}
           disabled={isViewMode}
           required

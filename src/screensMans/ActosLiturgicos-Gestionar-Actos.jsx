@@ -26,6 +26,7 @@ export default function EventosLiturgicos() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
   const [eventsOptions, setEventsOptions] = useState([]);
   const [chapelsOptions, setChapelsOptions] = useState([]);
 
@@ -157,7 +158,7 @@ export default function EventosLiturgicos() {
         )
       );
     } catch (err) {
-      alert("Error al cambiar el estado: " + err.message);
+      setError(err.message);
     }
   };
 
@@ -166,6 +167,7 @@ export default function EventosLiturgicos() {
   const openModal = (type, event = null) => {
     setModalType(type);
     setCurrentEvent(event);
+    setModalError(null);
     setShowModal(true);
   };
 
@@ -173,6 +175,7 @@ export default function EventosLiturgicos() {
     setShowModal(false);
     setCurrentEvent(null);
     setModalType(null);
+    setModalError(null);
   };
 
   const confirmDelete = async () => {
@@ -184,7 +187,7 @@ export default function EventosLiturgicos() {
         );
         handleCloseModal();
       } catch (err) {
-        alert("Error al eliminar: " + err.message);
+        setModalError(err.message);
       }
     }
   };
@@ -199,15 +202,11 @@ export default function EventosLiturgicos() {
           chapel_id: eventData.chapel_id,
           event_type: eventData.tipo === "Privado" ? "PRIVATE" : "COMUNITY",
           current_price: parseFloat(eventData.monto) || 0,
+          duration_minutes: parseInt(eventData.duracion)
         };
         
         if (eventData.tipo === "Comunitario" && eventData.personas) {
           variantData.max_capacity = parseInt(eventData.personas);
-        }
-
-        // Solo agregar duration_minutes si se proporciona un valor
-        if (eventData.duracion && eventData.duracion !== '') {
-          variantData.duration_minutes = parseInt(eventData.duracion);
         }
 
         await eventVariantService.createEventVariant(variantData);
@@ -220,15 +219,11 @@ export default function EventosLiturgicos() {
           chapel_id: eventData.chapel_id,
           event_type: eventData.tipo === "Privado" ? "PRIVATE" : "COMUNITY",
           current_price: parseFloat(eventData.monto) || 0,
+          duration_minutes: parseInt(eventData.duracion)
         };
         
         if (eventData.tipo === "Comunitario" && eventData.personas) {
           variantData.max_capacity = parseInt(eventData.personas);
-        }
-
-        // Solo agregar duration_minutes si se proporciona un valor
-        if (eventData.duracion && eventData.duracion !== '') {
-          variantData.duration_minutes = parseInt(eventData.duracion);
         }
 
         await eventVariantService.updateEventVariant(currentEvent.id, variantData);
@@ -236,7 +231,7 @@ export default function EventosLiturgicos() {
       }
       handleCloseModal();
     } catch (err) {
-      alert("Error al guardar: " + err.message);
+      setModalError(err.message);
     }
   };
 
@@ -246,13 +241,17 @@ export default function EventosLiturgicos() {
         return {
           title: "Detalles del evento",
           content: (
-            <EventForm
-              mode="view"
-              initialData={currentEvent}
-              onSave={handleSave}
-              eventsOptions={eventsOptions}
-              chapelsOptions={chapelsOptions}
-            />
+            <>
+              <EventForm
+                mode="view"
+                initialData={currentEvent}
+                onSave={handleSave}
+                setModalError={setModalError}
+                eventsOptions={eventsOptions}
+                chapelsOptions={chapelsOptions}
+              />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
           ),
           onAccept: handleCloseModal,
           onCancel: handleCloseModal,
@@ -261,12 +260,16 @@ export default function EventosLiturgicos() {
         return {
           title: "Añadir evento",
           content: (
-            <EventForm
-              mode="add"
-              onSave={handleSave}
-              eventsOptions={eventsOptions}
-              chapelsOptions={chapelsOptions}
-            />
+            <>
+              <EventForm
+                mode="add"
+                onSave={handleSave}
+                setModalError={setModalError}
+                eventsOptions={eventsOptions}
+                chapelsOptions={chapelsOptions}
+              />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
           ),
           onAccept: () => document.getElementById("event-form")?.requestSubmit(),
           onCancel: handleCloseModal,
@@ -275,13 +278,17 @@ export default function EventosLiturgicos() {
         return {
           title: "Editar evento",
           content: (
-            <EventForm
-              mode="edit"
-              initialData={currentEvent}
-              onSave={handleSave}
-              eventsOptions={eventsOptions}
-              chapelsOptions={chapelsOptions}
-            />
+            <>
+              <EventForm
+                mode="edit"
+                initialData={currentEvent}
+                onSave={handleSave}
+                setModalError={setModalError}
+                eventsOptions={eventsOptions}
+                chapelsOptions={chapelsOptions}
+              />
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
           ),
           onAccept: () => document.getElementById("event-form")?.requestSubmit(),
           onCancel: handleCloseModal,
@@ -289,7 +296,12 @@ export default function EventosLiturgicos() {
       case "delete":
         return {
           title: "Confirmar eliminación",
-          content: <h4>¿Estás seguro que quieres eliminar este evento?</h4>,
+          content: (
+            <>
+              <h4>¿Estás seguro que quieres eliminar este evento?</h4>
+              {modalError && <div className="error-message">{modalError}</div>}
+            </>
+          ),
           onAccept: confirmDelete,
           onCancel: handleCloseModal,
         };
@@ -384,7 +396,7 @@ export default function EventosLiturgicos() {
  * - onSave: función(eventData)
  * - eventsOptions, chapelsOptions: listas auxiliares
  */
-function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapelsOptions = [] }) {
+function EventForm({ mode, initialData = {}, onSave, setModalError, eventsOptions = [], chapelsOptions = [] }) {
   const isView = mode === "view";
   
   const [nombre, setNombre] = useState(initialData.nombre || "");
@@ -421,12 +433,22 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
     
     // Validar que los campos de texto no estén vacíos o solo con espacios
     if (!nombre.trim()) {
-      alert('El nombre del evento no puede estar vacío');
+      setModalError('El nombre del evento no puede estar vacío');
       return;
     }
     
     if (!descripcion.trim()) {
-      alert('La descripción no puede estar vacía');
+      setModalError('La descripción no puede estar vacía');
+      return;
+    }
+
+    if (!monto || parseFloat(monto) < 0) {
+      setModalError('Debe ingresar un monto válido');
+      return;
+    }
+
+    if (!duracion || parseInt(duracion) < 1) {
+      setModalError('Debe ingresar una duración válida en minutos');
       return;
     }
     
@@ -515,6 +537,7 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
           min="0"
           step="0.01"
           required
+          title="Debe ingresar un monto válido"
         />
       </div>
 
@@ -530,11 +553,9 @@ function EventForm({ mode, initialData = {}, onSave, eventsOptions = [], chapels
           disabled={isView}
           min="1"
           step="1"
-          placeholder="60 (por defecto)"
+          required
+          title="Debe ingresar una duración válida en minutos"
         />
-        <small style={{display: 'block', marginTop: '5px', color: '#666', fontSize: '0.85em'}}>
-          Opcional: Si no se especifica, se usará 60 minutos por defecto
-        </small>
       </div>
 
       {/* Capilla */}

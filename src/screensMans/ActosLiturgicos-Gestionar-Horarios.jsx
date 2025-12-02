@@ -34,17 +34,17 @@ function ExcepcionesSection({
         const now = new Date();
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
         const msUntilMidnight = tomorrow.getTime() - now.getTime();
-        
+
         const timeout = setTimeout(() => {
             forceUpdate({}); // Forzar re-render
             // Configurar intervalo diario
             const interval = setInterval(() => {
                 forceUpdate({});
             }, 24 * 60 * 60 * 1000); // 24 horas
-            
+
             return () => clearInterval(interval);
         }, msUntilMidnight);
-        
+
         return () => clearTimeout(timeout);
     }, []);
 
@@ -150,7 +150,7 @@ function ExcepcionesSection({
 }
 
 export default function ActosLiturgicosHorarios() {
-      React.useEffect(() => {
+    React.useEffect(() => {
         document.title = "MLAP | Gestionar Horarios";
         loadCapillas();
     }, []);
@@ -204,9 +204,9 @@ export default function ActosLiturgicosHorarios() {
 
     // Franja horaria desde 06:00 hasta 22:00 (última franja 21:00 - 22:00)
     const timeSlots = [
-        '6:00 - 7:00','7:00 - 8:00','8:00 - 9:00','9:00 - 10:00','10:00 - 11:00','11:00 - 12:00',
-        '12:00 - 13:00','13:00 - 14:00','14:00 - 15:00','15:00 - 16:00','16:00 - 17:00','17:00 - 18:00',
-        '18:00 - 19:00','19:00 - 20:00','20:00 - 21:00','21:00 - 22:00'
+        '6:00 - 7:00', '7:00 - 8:00', '8:00 - 9:00', '9:00 - 10:00', '10:00 - 11:00', '11:00 - 12:00',
+        '12:00 - 13:00', '13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00', '16:00 - 17:00', '17:00 - 18:00',
+        '18:00 - 19:00', '19:00 - 20:00', '20:00 - 21:00', '21:00 - 22:00'
     ];
 
     // Configuración de la grilla horaria
@@ -238,7 +238,7 @@ export default function ActosLiturgicosHorarios() {
     };
 
     const weekDates = getWeekDates(currentWeekStart);
-    
+
     // Capillas - se cargarán desde el backend
     const [capillas, setCapillas] = useState([]);
 
@@ -268,15 +268,15 @@ export default function ActosLiturgicosHorarios() {
     // Cargar horarios de una capilla específica
     const loadSchedulesForChapel = async (chapelId) => {
         if (!chapelId) return;
-        
+
         try {
             setLoading(true);
             const parishIdTemp = 1; // El backend lo valida del JWT
-            
+
             // Cargar horarios generales
             const generalResponse = await scheduleService.listGeneralSchedules(parishIdTemp, chapelId);
             const generalSchedules = generalResponse.data || [];
-            
+
             // Convertir horarios generales a intervalos guardados
             const savedIntervalsData = {};
             generalSchedules.forEach(schedule => {
@@ -284,7 +284,7 @@ export default function ActosLiturgicosHorarios() {
                 if (!savedIntervalsData[dayKey]) {
                     savedIntervalsData[dayKey] = [];
                 }
-                
+
                 const startHour = parseInt(schedule.start_time.split(':')[0]);
                 const endHour = parseInt(schedule.end_time.split(':')[0]);
                 const startRow = startHour - SLOT_START_HOUR;
@@ -296,18 +296,18 @@ export default function ActosLiturgicosHorarios() {
                     }
                 }
             });
-            
+
             setSavedIntervals(savedIntervalsData);
             setSelectedIntervals(JSON.parse(JSON.stringify(savedIntervalsData)));
-            
+
             // Cargar excepciones de disponibilidad
             const dispResponse = await scheduleService.listSpecificSchedules(
                 parishIdTemp, chapelId, 1, 100, { exception_type: 'OPEN' }
             );
             const dispExceptions = (dispResponse.data || []).map(ex => {
                 const fechaFormateada = formatDateFromDB(ex.date);
-                const horaFormateada = ex.start_time && ex.end_time 
-                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                const horaFormateada = ex.start_time && ex.end_time
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`
                     : '';
                 return {
                     id: ex.id,
@@ -319,15 +319,15 @@ export default function ActosLiturgicosHorarios() {
                 };
             });
             setExceptionsDisponibilidad(dispExceptions);
-            
+
             // Cargar excepciones de no disponibilidad
             const noDispResponse = await scheduleService.listSpecificSchedules(
                 parishIdTemp, chapelId, 1, 100, { exception_type: 'CLOSED' }
             );
             const noDispExceptions = (noDispResponse.data || []).map(ex => {
                 const fechaFormateada = formatDateFromDB(ex.date);
-                const horaFormateada = ex.start_time && ex.end_time 
-                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}` 
+                const horaFormateada = ex.start_time && ex.end_time
+                    ? `${ex.start_time.substring(0, 5)} - ${ex.end_time.substring(0, 5)}`
                     : '';
                 return {
                     id: ex.id,
@@ -339,7 +339,7 @@ export default function ActosLiturgicosHorarios() {
                 };
             });
             setExceptionsNoDisponibilidad(noDispExceptions);
-            
+
         } catch (err) {
             setError(err.message || 'Error al cargar los horarios');
         } finally {
@@ -355,7 +355,7 @@ export default function ActosLiturgicosHorarios() {
             const year = dateStr.getFullYear();
             return `${day}/${month}/${year}`;
         }
-        
+
         // Si es string, asumimos formato YYYY-MM-DD
         const [year, month, day] = dateStr.split('T')[0].split('-');
         return `${day}/${month}/${year}`;
@@ -451,14 +451,14 @@ export default function ActosLiturgicosHorarios() {
         if (!window.confirm('¿Estás seguro de que quieres eliminar esta excepción?')) {
             return;
         }
-        
+
         try {
             setLoading(true);
             const parishIdTemp = 1;
             const chapelId = capillas[selectedCapillaIndex]?.id;
-            
+
             await scheduleService.deleteSpecificSchedule(parishIdTemp, chapelId, exception.id);
-            
+
             // Recargar excepciones
             await loadSchedulesForChapel(chapelId);
         } catch (err) {
@@ -484,45 +484,30 @@ export default function ActosLiturgicosHorarios() {
         // Validaciones antes de enviar
         if (modalAction !== 'delete') {
             // Validar que todos los campos estén completos
-            if (!fecha || fecha.trim() === '') {
-                setModalError('La fecha es obligatoria.');
-                return;
-            }
-
-            if (!horaInicio || horaInicio.trim() === '') {
-                setModalError('La hora de inicio es obligatoria.');
-                return;
-            }
-
-            if (!horaFin || horaFin.trim() === '') {
-                setModalError('La hora de fin es obligatoria.');
-                return;
-            }
-
-            if (!motivo || motivo.trim() === '') {
-                setModalError('El motivo es obligatorio.');
+            if (!fecha || !fecha.trim() || !horaInicio || !horaInicio.trim() || !horaFin || !horaFin.trim() || !motivo || !motivo.trim()) {
+                setModalError('Por favor, complete todos los campos');
                 return;
             }
 
             // Fecha válida
             if (!validateDateFormat(fecha)) {
-                setModalError('Fecha inválida. Usa el formato dd/MM/YY o dd/MM/YYYY.');
+                setModalError('Formato de fecha inválido.');
                 return;
             }
 
             // Horas válidas
             if (!validateTimeFormat(horaInicio) || !validateTimeFormat(horaFin)) {
-                setModalError('Formato de hora inválido. Usa HH:00 (ej: 10:00, 20:00).');
+                setModalError('Formato de hora inválido o horario fuera de rango.');
                 return;
             }
 
             const startHour = parseInt(horaInicio.split(':')[0]);
             const endHour = parseInt(horaFin.split(':')[0]);
-            if (!(startHour < endHour)) {
+            if (startHour >= endHour) {
                 setModalError('La hora de inicio debe ser menor a la hora de fin.');
                 return;
             }
-            if (startHour < SLOT_START_HOUR || endHour > SLOT_START_HOUR + SLOT_COUNT) {
+            if (startHour < SLOT_START_HOUR || startHour >= SLOT_START_HOUR + SLOT_COUNT || endHour <= SLOT_START_HOUR || endHour > SLOT_START_HOUR + SLOT_COUNT) {
                 setModalError(`Las horas deben estar entre ${SLOT_START_HOUR}:00 y ${SLOT_START_HOUR + SLOT_COUNT}:00`);
                 return;
             }
@@ -532,7 +517,7 @@ export default function ActosLiturgicosHorarios() {
             setLoading(true);
             const parishIdTemp = 1;
             const chapelId = capillas[selectedCapillaIndex]?.id;
-            
+
             const scheduleData = {
                 date: formatDateToDB(fecha),
                 start_time: horaInicio,
@@ -540,7 +525,7 @@ export default function ActosLiturgicosHorarios() {
                 exception_type: modalType === 'disponibilidad' ? 'OPEN' : 'CLOSED',
                 reason: motivo
             };
-            
+
             if (modalAction === 'add') {
                 await scheduleService.createSpecificSchedule(parishIdTemp, chapelId, scheduleData);
             } else if (modalAction === 'edit') {
@@ -551,7 +536,7 @@ export default function ActosLiturgicosHorarios() {
                     scheduleData
                 );
             }
-            
+
             // Recargar excepciones
             await loadSchedulesForChapel(chapelId);
             handleCancelModal();
@@ -581,36 +566,36 @@ export default function ActosLiturgicosHorarios() {
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
         const allExceptions = [...exceptionsNoDisponibilidad, ...exceptionsDisponibilidad];
-        
+
         // Debug logs
         if (rowIndex === 0 && colIndex === 0 && allExceptions.length > 0) {
             if (allExceptions.length > 0) {
             }
         }
-        
+
         return allExceptions.some(exception => {
             // Comparar fecha
             if (exception.fecha !== dateStr) return false;
-            
+
             // Si no tiene horario definido, no se puede comparar con celdas específicas
             if (!exception.startTime || !exception.endTime) return false;
-            
+
             // Parsear tiempos
             const [slotStart, slotEnd] = timeSlot.split(' - ');
-            
+
             const parseTime = (timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 return hours * 60 + minutes;
             };
-            
+
             const exceptionStart = parseTime(exception.startTime);
             const exceptionEnd = parseTime(exception.endTime);
             const slotStartMin = parseTime(slotStart);
             const slotEndMin = parseTime(slotEnd);
-            
+
             // Verificar si hay solapamiento
             const overlaps = (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
-            
+
             if (overlaps && rowIndex === 0 && colIndex === 0) {
                 console.log('  ✅ OVERLAP FOUND:', {
                     exceptionStart,
@@ -619,7 +604,7 @@ export default function ActosLiturgicosHorarios() {
                     slotEndMin
                 });
             }
-            
+
             return overlaps;
         });
     };
@@ -628,42 +613,42 @@ export default function ActosLiturgicosHorarios() {
         const currentDate = weekDates[colIndex];
         const dateStr = formatDate(currentDate);
         const timeSlot = timeSlots[rowIndex];
-        
+
         const parseTime = (timeStr) => {
             const [hours, minutes] = timeStr.split(':').map(Number);
             return hours * 60 + minutes;
         };
-        
+
         const [slotStart, slotEnd] = timeSlot.split(' - ');
         const slotStartMin = parseTime(slotStart);
         const slotEndMin = parseTime(slotEnd);
-        
+
         // Verificar disponibilidad (OPEN)
         const hasDisponibilidadException = exceptionsDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
             if (!exception.startTime || !exception.endTime) return false;
-            
+
             const exceptionStart = parseTime(exception.startTime);
             const exceptionEnd = parseTime(exception.endTime);
-            
+
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
-        
+
         if (hasDisponibilidadException) return 'disponibilidad';
-        
+
         // Verificar no disponibilidad (CLOSED)
         const hasNoDisponibilidadException = exceptionsNoDisponibilidad.some(exception => {
             if (exception.fecha !== dateStr) return false;
             if (!exception.startTime || !exception.endTime) return false;
-            
+
             const exceptionStart = parseTime(exception.startTime);
             const exceptionEnd = parseTime(exception.endTime);
-            
+
             return (exceptionStart < slotEndMin && exceptionEnd > slotStartMin);
         });
-        
+
         if (hasNoDisponibilidadException) return 'noDisponibilidad';
-        
+
         return null;
     };
 
@@ -761,18 +746,18 @@ export default function ActosLiturgicosHorarios() {
             setLoading(true);
             const parishIdTemp = 1;
             const chapelId = capillas[selectedCapillaIndex]?.id;
-            
+
             // Convertir selectedIntervals a formato de API
             const schedules = [];
             Object.keys(selectedIntervals).forEach(dayKey => {
                 const dayOfWeek = parseInt(dayKey);
                 const intervals = selectedIntervals[dayKey];
-                
+
                 // Agrupar filas consecutivas en intervalos
                 const sortedRows = [...new Set(intervals)].sort((a, b) => a - b);
                 let currentStart = null;
                 let currentEnd = null;
-                
+
                 sortedRows.forEach((row, index) => {
                     if (currentStart === null) {
                         currentStart = row;
@@ -788,13 +773,13 @@ export default function ActosLiturgicosHorarios() {
                             start_time: `${startHour.toString().padStart(2, '0')}:00:00`,
                             end_time: `${endHour.toString().padStart(2, '0')}:00:00`
                         });
-                        
+
                         // Iniciar nuevo intervalo
                         currentStart = row;
                         currentEnd = row;
                     }
                 });
-                
+
                 // Guardar último intervalo
                 if (currentStart !== null) {
                     const startHour = parseInt(currentStart) + SLOT_START_HOUR;
@@ -806,7 +791,7 @@ export default function ActosLiturgicosHorarios() {
                     });
                 }
             });
-            
+
             await scheduleService.bulkUpdateGeneralSchedules(parishIdTemp, chapelId, schedules);
             setSavedIntervals(JSON.parse(JSON.stringify(selectedIntervals)));
             setIsEditing(false);
@@ -821,129 +806,129 @@ export default function ActosLiturgicosHorarios() {
         <>
             <div className="content-module only-this">
                 <h2 className='title-screen'>
-                    Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex] 
-                        ? `- ${capillas[selectedCapillaIndex].nombre}` 
+                    Gestionar horario {selectedCapillaIndex !== null && capillas[selectedCapillaIndex]
+                        ? `- ${capillas[selectedCapillaIndex].nombre}`
                         : ''}
                 </h2>
-                {error && <div className="error-message" style={{display: 'none', padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px'}}>{error}</div>}
-                {loading && <div className="loading-message" style={{padding: '1rem', margin: '1rem', textAlign: 'center'}}>Cargando...</div>}
-            
-            {selectedCapillaIndex === null ? (
-                <div className="app-container">
-                    <div style={{textAlign: 'center', padding: '3rem', fontSize: '1.2rem', color: '#666'}}>
-                        <p>Por favor, selecciona una capilla para gestionar sus horarios.</p>
-                        <br />
-                        <MyButtonMediumIcon
-                            icon="MdOutlineTouchApp"
-                            text="Seleccionar Capilla"
-                            onClick={() => setShowPanelLateral(true)}
-                            classNameExtra="horarios-btn"
-                        />
-                    </div>
-                </div>
-            ) : (
-            <div className='app-container'>
-                    <div className="horarios-container">
-                        <div className="week-navigation">
-                            <MyButtonShortAction
-                                type="back"
-                                title="Semana anterior"
-                                onClick={() => navigateWeek(-1)}
-                            />
-                            <span className="week-info">
-                                Semana del {formatDate(weekDates[0])} al {formatDate(weekDates[6])}
-                            </span>
-                            <MyButtonShortAction
-                                type="next"
-                                title="Semana siguiente"
-                                onClick={() => navigateWeek(1)}
+                {error && <div className="error-message" style={{ display: 'none', padding: '1rem', margin: '1rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px' }}>{error}</div>}
+                {loading && <div className="loading-message" style={{ padding: '1rem', margin: '1rem', textAlign: 'center' }}>Cargando...</div>}
+
+                {selectedCapillaIndex === null ? (
+                    <div className="app-container">
+                        <div style={{ textAlign: 'center', padding: '3rem', fontSize: '1.2rem', color: '#666' }}>
+                            <p>Por favor, selecciona una capilla para gestionar sus horarios.</p>
+                            <br />
+                            <MyButtonMediumIcon
+                                icon="MdOutlineTouchApp"
+                                text="Seleccionar Capilla"
+                                onClick={() => setShowPanelLateral(true)}
+                                classNameExtra="horarios-btn"
                             />
                         </div>
-
-                        <div className="horarios-controls">
-                            <div className="horarios-edit-control">
-                                <MyButtonMediumIcon
-                                    icon="MdCreate"
-                                    text={isEditing ? "Finalizar edición" : "Editar"}
-                                    onClick={() => {
-                                        if (capillas.length === 0 || !capillas[selectedCapillaIndex]) {
-                                            alert('Por favor, selecciona una capilla primero.');
-                                            return;
-                                        }
-                                        toggleEditing();
-                                    }}
-                                    classNameExtra="horarios-btn"
+                    </div>
+                ) : (
+                    <div className='app-container'>
+                        <div className="horarios-container">
+                            <div className="week-navigation">
+                                <MyButtonShortAction
+                                    type="back"
+                                    title="Semana anterior"
+                                    onClick={() => navigateWeek(-1)}
+                                />
+                                <span className="week-info">
+                                    Semana del {formatDate(weekDates[0])} al {formatDate(weekDates[6])}
+                                </span>
+                                <MyButtonShortAction
+                                    type="next"
+                                    title="Semana siguiente"
+                                    onClick={() => navigateWeek(1)}
                                 />
                             </div>
 
-                           
-                            <div className='Leyenda'>
-                                <div className='color-hnormal'></div>
-                                <span>Normal: </span>
-                                <div className='color-hdisponible'></div>
-                                <span>Ex. Disponible: </span>
-                                <div className='color-hno-disponible'></div>
-                                <span>Ex. No Disponible: </span>
-                            </div>
-
-                             <div className="capillas-button-container">
-                                <MyButtonMediumIcon
-                                    icon="MdOutlineTouchApp"
-                                    text="Capillas"
-                                    onClick={() => setShowPanelLateral(prev => !prev)}
-                                    classNameExtra="horarios-btn"
-                                />
-                            </div>
-
-                            {isEditing && (
-                                <div className="horarios-actions">
+                            <div className="horarios-controls">
+                                <div className="horarios-edit-control">
                                     <MyButtonMediumIcon
-                                        icon="MdClose"
-                                        text="Cancelar"
-                                        onClick={handleDiscard}
-                                        classNameExtra="horarios-btn"
-                                    />
-                                    <MyButtonMediumIcon
-                                        icon="MdOutlineSaveAs"
-                                        text="Guardar"
-                                        onClick={handleSave}
+                                        icon="MdCreate"
+                                        text={isEditing ? "Finalizar edición" : "Editar"}
+                                        onClick={() => {
+                                            if (capillas.length === 0 || !capillas[selectedCapillaIndex]) {
+                                                alert('Por favor, selecciona una capilla primero.');
+                                                return;
+                                            }
+                                            toggleEditing();
+                                        }}
                                         classNameExtra="horarios-btn"
                                     />
                                 </div>
-                            )}
-                        </div>
 
-                        <MySchedule
-                            timeSlots={timeSlots}
-                            daysOfWeek={daysOfWeek}
-                            weekDates={weekDates}
-                            showDates={true}
-                            mode="schedule"
-                            renderCell={(rowIndex, colIndex) => {
-                                const isSelected = isCellInInterval(rowIndex, colIndex);
-                                const hasException = hasExceptionForCell(rowIndex, colIndex);
-                                const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
-                                
-                                return (
-                                    <div
-                                        className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
-                                        data-row={rowIndex}
-                                        data-col={colIndex}
-                                        onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
-                                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                        onMouseUp={() => handleCellMouseUp(rowIndex)}
-                                        onClick={() => handleCellClick(rowIndex, colIndex)}
-                                    >
-                                        {isSelected && !hasException && (
-                                            <div className="interval-marker"></div>
-                                        )}
-                                        {hasException && (
-                                            <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
-                                        )}
+
+                                <div className='Leyenda'>
+                                    <div className='color-hnormal'></div>
+                                    <span>Normal: </span>
+                                    <div className='color-hdisponible'></div>
+                                    <span>Ex. Disponible: </span>
+                                    <div className='color-hno-disponible'></div>
+                                    <span>Ex. No Disponible: </span>
+                                </div>
+
+                                <div className="capillas-button-container">
+                                    <MyButtonMediumIcon
+                                        icon="MdOutlineTouchApp"
+                                        text="Capillas"
+                                        onClick={() => setShowPanelLateral(prev => !prev)}
+                                        classNameExtra="horarios-btn"
+                                    />
+                                </div>
+
+                                {isEditing && (
+                                    <div className="horarios-actions">
+                                        <MyButtonMediumIcon
+                                            icon="MdClose"
+                                            text="Cancelar"
+                                            onClick={handleDiscard}
+                                            classNameExtra="horarios-btn"
+                                        />
+                                        <MyButtonMediumIcon
+                                            icon="MdOutlineSaveAs"
+                                            text="Guardar"
+                                            onClick={handleSave}
+                                            classNameExtra="horarios-btn"
+                                        />
                                     </div>
-                                );
-                            }}
-                        />
+                                )}
+                            </div>
+
+                            <MySchedule
+                                timeSlots={timeSlots}
+                                daysOfWeek={daysOfWeek}
+                                weekDates={weekDates}
+                                showDates={true}
+                                mode="schedule"
+                                renderCell={(rowIndex, colIndex) => {
+                                    const isSelected = isCellInInterval(rowIndex, colIndex);
+                                    const hasException = hasExceptionForCell(rowIndex, colIndex);
+                                    const exceptionType = getExceptionTypeForCell(rowIndex, colIndex);
+
+                                    return (
+                                        <div
+                                            className={`grid-cell day-cell ${isSelected ? 'selected' : ''} ${hasException ? 'exception' : ''} ${exceptionType === 'disponibilidad' ? 'exception-disponibilidad' : ''} ${exceptionType === 'noDisponibilidad' ? 'exception-no-disponibilidad' : ''} ${isEditing ? 'editable' : ''}`}
+                                            data-row={rowIndex}
+                                            data-col={colIndex}
+                                            onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
+                                            onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                            onMouseUp={() => handleCellMouseUp(rowIndex)}
+                                            onClick={() => handleCellClick(rowIndex, colIndex)}
+                                        >
+                                            {isSelected && !hasException && (
+                                                <div className="interval-marker"></div>
+                                            )}
+                                            {hasException && (
+                                                <div className={`exception-marker ${exceptionType === 'disponibilidad' ? 'exception-marker-disponibilidad' : 'exception-marker-no-disponibilidad'}`}></div>
+                                            )}
+                                        </div>
+                                    );
+                                }}
+                            />
 
                             <div className="exceptions-container">
                                 <ExcepcionesSection
@@ -986,65 +971,93 @@ export default function ActosLiturgicosHorarios() {
                                 ) : (
                                     <form className='form-modal-horarios'>
                                         <div className="Inputs-add">
-                                            <label htmlFor="fecha">Fecha <span style={{color: 'red'}}>*</span></label>
-                                            <input type="text" className="inputModal" id="fecha" value={fecha} onChange={e => setFecha(e.target.value.replace(/[^0-9/]/g, ''))} placeholder="dd/MM/YYYY" required />
-                                            <label>Hora <span style={{color: 'red'}}>*</span></label>
+                                            <label htmlFor="fecha">Fecha <span style={{ color: 'red' }}>*</span></label>
+                                            <input
+                                                className="inputModal"
+                                                id="fecha"
+                                                value={fecha}
+                                                onChange={e => setFecha(e.target.value.replace(/[^0-9/]/g, ''))}
+                                                onBlur={e => setFecha(e.target.value.trim())}
+                                                placeholder="dd/MM/YYYY"
+                                                required
+                                                pattern=".*\S+.*"
+                                                title="La fecha no puede estar vacía o contener solo espacios"
+                                            />
+                                            <label>Hora <span style={{ color: 'red' }}>*</span></label>
                                             <div className="time-range">
-                                                <input type="text" className="inputTime" value={horaInicio} onChange={e => { setHoraInicio(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
-                                                <input type="text" className="inputTime" value={horaFin} onChange={e => { setHoraFin(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }} placeholder="HH:MM" required />
+                                                <input
+                                                    className="inputTime"
+                                                    value={horaInicio}
+                                                    onChange={e => { setHoraInicio(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }}
+                                                    onBlur={e => setHoraInicio(e.target.value.trim())}
+                                                    placeholder="HH:MM"
+                                                    required
+                                                    pattern=".*\S+.*"
+                                                    title="La hora de inicio no puede estar vacía"
+                                                />
+                                                <input
+                                                    className="inputTime"
+                                                    value={horaFin}
+                                                    onChange={e => { setHoraFin(e.target.value.replace(/[^0-9:]/g, '')); setModalError(''); }}
+                                                    onBlur={e => setHoraFin(e.target.value.trim())}
+                                                    placeholder="HH:MM"
+                                                    required
+                                                    pattern=".*\S+.*"
+                                                    title="La hora de fin no puede estar vacía"
+                                                />
                                             </div>
+                                            <label htmlFor="motivo">Motivo <span style={{ color: 'red' }}>*</span></label>
+                                            <textarea className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} onBlur={e => setMotivo(e.target.value.trim())} placeholder="Ingrese motivo" required pattern=".*\S+.*" title="El motivo no puede estar vacío o contener solo espacios" />
                                             {modalError && (
                                                 <p className="error-message" style={{ width: '100%', boxSizing: 'border-box', marginTop: '8px', color: 'red' }}>
                                                     {modalError}
                                                 </p>
                                             )}
-                                            <label htmlFor="motivo">Motivo <span style={{color: 'red'}}>*</span></label>
-                                            <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} onBlur={e => setMotivo(e.target.value.trim())} placeholder="Ingrese motivo" required pattern=".*\S+.*" title="El motivo no puede estar vacío o contener solo espacios" />
                                         </div>
                                     </form>
                                 )}
                             </Modal>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
-            
-        {/* Panel lateral: listado de capillas */}
-        {showPanelLateral && (
-            <MyPanelLateralConfig title="Seleccionar capilla" onClose={() => setShowPanelLateral(false)}>
-                <div className="sidebar-search">
-                    <SearchBar onSearchChange={setSearchTermCapilla} />
-                </div>
-                <div className="table-container">
-                    <div className="table-body-div">
-                        {capillas
-                            .filter(cap => 
-                                cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
-                                (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
-                            )
-                            .map((cap, idx) => (
-                            <div
-                                key={cap.id}
-                                className="table-row-div event-row"
-                                onClick={() => { 
-                                    const originalIndex = capillas.findIndex(c => c.id === cap.id);
-                                    setSelectedCapillaIndex(originalIndex); 
-                                    setShowPanelLateral(false); 
-                                }}
-                            >
-                                <div className="event-cell">
-                                    <span className="event-id">{cap.id}</span>
-                                    <div className="event-info-display">
-                                        <span className="event-name">{cap.nombre}</span>
-                                        <div className="event-capilla-name">{cap.direccion || ''}</div>
+                )}
+            </div>
+
+            {/* Panel lateral: listado de capillas */}
+            {showPanelLateral && (
+                <MyPanelLateralConfig title="Seleccionar capilla" onClose={() => setShowPanelLateral(false)}>
+                    <div className="sidebar-search">
+                        <SearchBar onSearchChange={setSearchTermCapilla} />
+                    </div>
+                    <div className="table-container">
+                        <div className="table-body-div">
+                            {capillas
+                                .filter(cap =>
+                                    cap.nombre.toLowerCase().includes(searchTermCapilla.toLowerCase()) ||
+                                    (cap.direccion && cap.direccion.toLowerCase().includes(searchTermCapilla.toLowerCase()))
+                                )
+                                .map((cap, idx) => (
+                                    <div
+                                        key={cap.id}
+                                        className="table-row-div event-row"
+                                        onClick={() => {
+                                            const originalIndex = capillas.findIndex(c => c.id === cap.id);
+                                            setSelectedCapillaIndex(originalIndex);
+                                            setShowPanelLateral(false);
+                                        }}
+                                    >
+                                        <div className="event-cell">
+                                            <span className="event-id">{cap.id}</span>
+                                            <div className="event-info-display">
+                                                <span className="event-name">{cap.nombre}</span>
+                                                <div className="event-capilla-name">{cap.direccion || ''}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                ))}
+                        </div>
                     </div>
-                </div>
-            </MyPanelLateralConfig>
-        )}
+                </MyPanelLateralConfig>
+            )}
         </>
     );
 }
