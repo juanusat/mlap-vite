@@ -23,8 +23,11 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
     let formattedValue = value;
 
     if (name === 'cardNumber') {
-      formattedValue = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-      if (formattedValue.replace(/\s/g, '').length > 16) return;
+      // Solo permitir números
+      const numbersOnly = value.replace(/[^\d]/g, '');
+      if (numbersOnly.length > 16) return;
+      // Formatear con espacios cada 4 dígitos
+      formattedValue = numbersOnly.replace(/(\d{4})/g, '$1 ').trim();
     } else if (name === 'expiryDate') {
       formattedValue = value.replace(/\D/g, '');
       if (formattedValue.length >= 2) {
@@ -34,8 +37,29 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
     } else if (name === 'cvv') {
       formattedValue = value.replace(/\D/g, '').substring(0, 3);
     } else if (name === 'amount') {
+      // Solo permitir números, punto decimal y máximo 2 decimales
       formattedValue = value.replace(/[^\d.]/g, '');
+      
+      // No permitir más de un punto decimal
       if ((formattedValue.match(/\./g) || []).length > 1) return;
+      
+      // Limitar a 2 decimales
+      const parts = formattedValue.split('.');
+      if (parts[1] && parts[1].length > 2) {
+        formattedValue = parts[0] + '.' + parts[1].substring(0, 2);
+      }
+      
+      // Validar que no exceda el saldo pendiente
+      if (formattedValue && parseFloat(formattedValue) > parseFloat(remainingAmount)) {
+        formattedValue = remainingAmount;
+      }
+    } else if (name === 'cardHolder') {
+      // Solo permitir letras, espacios y algunos caracteres especiales del nombre
+      const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$/;
+      if (!namePattern.test(value)) {
+        return; // No permitir caracteres que no sean letras o espacios
+      }
+      formattedValue = value.toUpperCase(); // Convertir a mayúsculas
     }
 
     setFormData(prev => ({
@@ -55,15 +79,27 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
       newErrors.amount = 'Ingrese un monto válido';
     } else if (parseFloat(formData.amount) > parseFloat(remainingAmount)) {
       newErrors.amount = `El monto no puede exceder S/${remainingAmount}`;
+    } else {
+      // Validar formato de decimales
+      const parts = formData.amount.split('.');
+      if (parts[1] && parts[1].length > 2) {
+        newErrors.amount = 'Solo se permiten 2 decimales';
+      }
+      // Validar que el monto tenga al menos 0.01
+      if (parseFloat(formData.amount) < 0.01) {
+        newErrors.amount = 'El monto mínimo es S/0.01';
+      }
     }
 
     const cardNumberClean = formData.cardNumber.replace(/\s/g, '');
-    if (!cardNumberClean || cardNumberClean.length !== 16) {
-      newErrors.cardNumber = 'Número de tarjeta inválido';
+    if (!cardNumberClean || cardNumberClean.length !== 16 || !/^\d+$/.test(cardNumberClean)) {
+      newErrors.cardNumber = 'Número de tarjeta debe tener 16 dígitos';
     }
 
     if (!formData.cardHolder || formData.cardHolder.trim().length < 3) {
-      newErrors.cardHolder = 'Nombre del titular requerido';
+      newErrors.cardHolder = 'Nombre del titular requerido (mínimo 3 caracteres)';
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(formData.cardHolder.trim())) {
+      newErrors.cardHolder = 'El nombre solo debe contener letras y espacios';
     }
 
     if (!formData.expiryDate || formData.expiryDate.length !== 5) {
