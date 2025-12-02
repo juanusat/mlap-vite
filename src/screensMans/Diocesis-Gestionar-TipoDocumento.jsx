@@ -143,14 +143,37 @@ export default function TipoDocumentoGestionar() {
   };
 
   const handleSave = async () => {
+    // Validar que los campos no estén vacíos o solo con espacios
+    if (!formData.name || !formData.name.trim()) {
+      setModalError('El nombre no puede estar vacío');
+      return;
+    }
+    
+    if (!formData.description || !formData.description.trim()) {
+      setModalError('La descripción no puede estar vacía');
+      return;
+    }
+    
+    if (!formData.code || !formData.code.trim()) {
+      setModalError('El código no puede estar vacío');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
       setModalError(null);
+
+      const cleanData = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        code: formData.code.trim()
+      };
+
       if (modalType === 'add') {
-        await documentTypeService.createDocumentType(formData);
+        await documentTypeService.createDocumentType(cleanData);
       } else if (modalType === 'edit' && currentDoc) {
-        await documentTypeService.updateDocumentType(currentDoc.id, formData);
+        await documentTypeService.updateDocumentType(currentDoc.id, cleanData);
       }
 
       await loadDocumentTypes();
@@ -321,6 +344,11 @@ export default function TipoDocumentoGestionar() {
 }
 
 const DocForm = ({ formData, handleFormChange, isViewMode }) => {
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    handleFormChange({ target: { name, value: value.trim() } });
+  };
+
   return (
     <div>
       <div className="Inputs-add">
@@ -332,8 +360,11 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           name="name"
           value={formData.name}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           required
+          pattern=".*\S+.*"
+          title="El nombre no puede estar vacío o contener solo espacios"
         />
       </div>
       <div className="Inputs-add">
@@ -344,8 +375,11 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           name="description"
           value={formData.description}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           required
+          pattern=".*\S+.*"
+          title="La descripción no puede estar vacía o contener solo espacios"
         />
       </div>
       <div className="Inputs-add">
@@ -357,8 +391,11 @@ const DocForm = ({ formData, handleFormChange, isViewMode }) => {
           name="code"
           value={formData.code}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           required
+          pattern=".*\S+.*"
+          title="El código no puede estar vacío o contener solo espacios"
         />
       </div>
 

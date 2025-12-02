@@ -11,6 +11,11 @@ import "../utils/ActosLiturgicos-Requisitos.css";
 import * as requirementService from '../services/baseRequirementService';
 
 const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        handleFormChange({ target: { name, value: value.trim() } });
+    };
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -21,8 +26,11 @@ const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El nombre no puede estar vacío o contener solo espacios"
             />
             <label htmlFor="description">Descripción:</label>
             <textarea
@@ -31,8 +39,11 @@ const RequisitoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="La descripción no puede estar vacía o contener solo espacios"
             />
         </div>
     );
@@ -201,11 +212,28 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
     const handleSave = async () => {
         if (!selectedEvent) return;
 
+        // Validar que los campos no estén vacíos o solo con espacios
+        if (!formData.name || !formData.name.trim()) {
+            setError('El nombre no puede estar vacío');
+            return;
+        }
+        
+        if (!formData.description || !formData.description.trim()) {
+            setError('La descripción no puede estar vacía');
+            return;
+        }
+
         try {
+            const cleanData = {
+                name: formData.name.trim(),
+                description: formData.description.trim()
+            };
+
             if (modalType === 'add') {
-                const response = await requirementService.createRequirement(selectedEvent.id, formData);
+                const response = await requirementService.createRequirement(selectedEvent.id, cleanData);
                 setRequirements(prevReqs => [...prevReqs, response.data]);
             } else if (modalType === 'edit' && currentRequirement) {
+                const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, cleanData);
                 const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, formData);
                 setRequirements(prevReqs =>
                     prevReqs.map(r =>

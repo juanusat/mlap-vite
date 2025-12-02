@@ -131,14 +131,31 @@ export default function TipoMencionesGestionar() {
   };
 
   const handleSave = async () => {
+    // Validar que los campos obligatorios no estén vacíos o solo con espacios
+    if (!formData.name || !formData.name.trim()) {
+      setError('El nombre no puede estar vacío');
+      return;
+    }
+    
+    if (!formData.code || !formData.code.trim()) {
+      setError('El código no puede estar vacío');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
       
+      const cleanData = {
+        name: formData.name.trim(),
+        description: formData.description ? formData.description.trim() : '',
+        code: formData.code.trim()
+      };
+
       if (modalType === 'add') {
-        await mentionTypeService.createMentionType(formData);
+        await mentionTypeService.createMentionType(cleanData);
       } else if (modalType === 'edit' && currentMention) {
-        await mentionTypeService.updateMentionType(currentMention.id, formData);
+        await mentionTypeService.updateMentionType(currentMention.id, cleanData);
       }
       
       await loadMentionTypes();
@@ -288,6 +305,11 @@ export default function TipoMencionesGestionar() {
 }
 
 const MentionForm = ({ formData, handleFormChange, isViewMode }) => {
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    handleFormChange({ target: { name, value: value.trim() } });
+  };
+
   return (
     <div>
       <div className="Inputs-add">
@@ -299,9 +321,12 @@ const MentionForm = ({ formData, handleFormChange, isViewMode }) => {
           name="name"
           value={formData.name}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           placeholder="Ej: Difunto, Salud, Agradecimiento"
           required
+          pattern=".*\S+.*"
+          title="El nombre no puede estar vacío o contener solo espacios"
         />
         <label htmlFor="description">Descripción:</label>
         <textarea
@@ -310,6 +335,7 @@ const MentionForm = ({ formData, handleFormChange, isViewMode }) => {
           name="description"
           value={formData.description}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           placeholder="Descripción del tipo de mención (opcional)"
         />
@@ -321,10 +347,13 @@ const MentionForm = ({ formData, handleFormChange, isViewMode }) => {
           name="code"
           value={formData.code}
           onChange={handleFormChange}
+          onBlur={handleBlur}
           disabled={isViewMode}
           placeholder="Ej: DIF, SAL, AGR"
           maxLength={10}
           required
+          pattern=".*\S+.*"
+          title="El código no puede estar vacío o contener solo espacios"
         />
       </div>
     </div>

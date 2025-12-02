@@ -175,8 +175,19 @@ export default function Parroquia() {
     };
 
     const handleSave = async () => {
+        // Validar que los campos no estén vacíos o solo con espacios
+        if (!formData.name || !formData.name.trim()) {
+            setError('El nombre no puede estar vacío');
+            return;
+        }
+        
+        if (!formData.username || !formData.username.trim()) {
+            setError('El usuario no puede estar vacío');
+            return;
+        }
+
         // Validar el formato del email antes de guardar
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[[^\s@]+)?$/;
         if (formData.email && !emailRegex.test(formData.email)) {
             setEmailError('El correo no cumple formato');
             return;
@@ -186,9 +197,17 @@ export default function Parroquia() {
             setLoading(true);
             setError(null);
             
+            const cleanData = {
+                name: formData.name.trim(),
+                email: formData.email,
+                username: formData.username.trim(),
+                password: formData.password
+            };
+
             if (modalType === 'add') {
-                await parishService.createParish(formData);
+                await parishService.createParish(cleanData);
             } else if (modalType === 'edit' && currentEvent) {
+                await parishService.updateParish(currentEvent.id, cleanData);
                 await parishService.updateParish(currentEvent.id, formData);
             }
             
@@ -326,6 +345,13 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
     // Determina si es modo edición (cuando existe formData.id)
     const isEditMode = formData.id && !isViewMode;
 
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        if (name === 'name' || name === 'username') {
+            handleFormChange({ target: { name, value: value.trim() } });
+        }
+    };
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -336,8 +362,11 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 name="name"
                 value={formData.name}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El nombre no puede estar vacío o contener solo espacios"
             />
             <label htmlFor="email">Correo del párroco:</label>
             <input
@@ -365,8 +394,11 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                 name="username"
                 value={formData.username}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El usuario no puede estar vacío o contener solo espacios"
             />
             {!isViewMode && (
                 <>

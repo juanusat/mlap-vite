@@ -11,6 +11,11 @@ import * as eventService from '../services/eventService';
 
 // Componente reutilizable para los formularios de eventos
 const EventoForm = ({ formData, handleFormChange, isViewMode }) => {
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        handleFormChange({ target: { name, value: value.trim() } });
+    };
+
     return (
         <div className="Inputs-add">
             <label htmlFor="name">Nombre:</label>
@@ -21,8 +26,11 @@ const EventoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="El nombre no puede estar vacío o contener solo espacios"
             />
             <label htmlFor="description">Descripción:</label>
             <textarea
@@ -31,8 +39,11 @@ const EventoForm = ({ formData, handleFormChange, isViewMode }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleFormChange}
+                onBlur={handleBlur}
                 disabled={isViewMode}
                 required
+                pattern=".*\S+.*"
+                title="La descripción no puede estar vacía o contener solo espacios"
             />
         </div>
     );
@@ -173,12 +184,28 @@ export default function DiocesisEventosLiturgicos() {
     };
 
     const handleSave = async () => {
+        // Validar que los campos no estén vacíos o solo con espacios
+        if (!formData.name || !formData.name.trim()) {
+            setError('El nombre no puede estar vacío');
+            return;
+        }
+        
+        if (!formData.description || !formData.description.trim()) {
+            setError('La descripción no puede estar vacía');
+            return;
+        }
+
         try {
+            const cleanData = {
+                name: formData.name.trim(),
+                description: formData.description.trim()
+            };
+
             if (modalType === 'add') {
-                const response = await eventService.createEvent(formData);
+                const response = await eventService.createEvent(cleanData);
                 setEvents(prevEvents => [...prevEvents, response.data]);
             } else if (modalType === 'edit' && currentEvent) {
-                const response = await eventService.updateEvent(currentEvent.id, formData);
+                const response = await eventService.updateEvent(currentEvent.id, cleanData);
                 setEvents(prevEvents =>
                     prevEvents.map(e =>
                         e.id === currentEvent.id ? response.data : e
