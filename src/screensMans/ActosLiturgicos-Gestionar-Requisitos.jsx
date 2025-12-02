@@ -431,7 +431,18 @@ function RequisitoForm({ onSave, req = {}, mode = "add" }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isViewMode) {
-      onSave({ nombre, descripcion, estado });
+      // Validar que los campos no estén vacíos o solo con espacios
+      if (!nombre.trim()) {
+        alert('El nombre del requisito no puede estar vacío');
+        return;
+      }
+      
+      if (!descripcion.trim()) {
+        alert('La descripción no puede estar vacía');
+        return;
+      }
+      
+      onSave({ nombre: nombre.trim(), descripcion: descripcion.trim(), estado });
     }
   };
 
@@ -445,8 +456,11 @@ function RequisitoForm({ onSave, req = {}, mode = "add" }) {
           id="nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+          onBlur={(e) => setNombre(e.target.value.trim())}
           disabled={isViewMode}
           required
+          pattern=".*\S+.*"
+          title="El nombre no puede estar vacío o contener solo espacios"
         />
         <label htmlFor="descripcion">Descripción</label>
         <textarea
@@ -454,8 +468,11 @@ function RequisitoForm({ onSave, req = {}, mode = "add" }) {
           id="descripcion"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
+          onBlur={(e) => setDescripcion(e.target.value.trim())}
           disabled={isViewMode}
           required
+          pattern=".*\S+.*"
+          title="La descripción no puede estar vacía o contener solo espacios"
         />
       </div>
     </form>

@@ -999,7 +999,7 @@ export default function ActosLiturgicosHorarios() {
                                                 </p>
                                             )}
                                             <label htmlFor="motivo">Motivo <span style={{color: 'red'}}>*</span></label>
-                                            <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ingrese motivo" required />
+                                            <textarea type="textarea" className="inputModal" id="motivo" value={motivo} onChange={e => setMotivo(e.target.value)} onBlur={e => setMotivo(e.target.value.trim())} placeholder="Ingrese motivo" required pattern=".*\S+.*" title="El motivo no puede estar vacío o contener solo espacios" />
                                         </div>
                                     </form>
                                 )}
