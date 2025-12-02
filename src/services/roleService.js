@@ -47,7 +47,8 @@ export const createRole = async (parishId, name, description) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
   }
 
   const result = await response.json();
@@ -82,7 +83,8 @@ export const updateRole = async (parishId, roleId, name, description) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
   }
 
   const result = await response.json();
@@ -100,7 +102,8 @@ export const updateRoleStatus = async (parishId, roleId, active) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
   }
 
   const result = await response.json();
@@ -117,7 +120,8 @@ export const deleteRole = async (parishId, roleId) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
   }
 
   const result = await response.json();

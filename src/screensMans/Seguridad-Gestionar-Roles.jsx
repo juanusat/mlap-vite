@@ -148,7 +148,7 @@ const getAllPermissionIds = () => {
 };
 
 // --------------------- FORMULARIO ---------------------
-const RoleForm = ({ formData, handleFormChange, isViewMode, nombreError = '', descripcionError = '' }) => {
+const RoleForm = ({ formData, handleFormChange, isViewMode, nombreError = '', descripcionError = '', formError = '' }) => {
     return (
         <div>
             <div className="Inputs-add">
@@ -175,6 +175,11 @@ const RoleForm = ({ formData, handleFormChange, isViewMode, nombreError = '', de
                     required
                 />
                 {descripcionError && <p className="error-message" style={{ marginTop: '5px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{descripcionError}</p>}
+                {formError && (
+                    <div className="error-message" style={{ marginTop: '15px', padding: '10px', backgroundColor: '#fff2f2', border: '1px solid #ffcdd2', borderRadius: '4px', color: 'red', fontSize: '14px' }}>
+                        {formError}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -203,6 +208,7 @@ export default function RolesGestionar() {
 
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
+    const [formError, setFormError] = useState('');
 
     const [permissionsForm, setPermissionsForm] = useState({});
     const [availablePermissions, setAvailablePermissions] = useState([]);
@@ -417,6 +423,7 @@ export default function RolesGestionar() {
         setFormData({ nombre: '', descripcion: '' });
         setNombreError('');
         setDescripcionError('');
+        setFormError('');
         setPermissionsForm({});
         setCollapsedModules({});
     };
@@ -427,6 +434,7 @@ export default function RolesGestionar() {
 
         setNombreError('');
         setDescripcionError('');
+        setFormError('');
 
         let hasError = false;
 
@@ -453,7 +461,7 @@ export default function RolesGestionar() {
             await loadRoles();
         } catch (error) {
             console.error('Error al guardar rol:', error);
-            alert('Error al guardar rol: ' + error.message);
+            setFormError(error.message);
         } finally {
             setLoading(false);
         }
@@ -566,14 +574,14 @@ export default function RolesGestionar() {
             case 'edit':
                 return {
                     title: 'Editar rol',
-                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} nombreError={nombreError} descripcionError={descripcionError} />,
+                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} nombreError={nombreError} descripcionError={descripcionError} formError={formError} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
             case 'add':
                 return {
                     title: 'Añadir rol',
-                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} nombreError={nombreError} descripcionError={descripcionError} />,
+                    content: <RoleForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} nombreError={nombreError} descripcionError={descripcionError} formError={formError} />,
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
