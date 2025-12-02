@@ -234,7 +234,6 @@ export default function DiocesisRequisitosGestionarSoloBarra() {
                 setRequirements(prevReqs => [...prevReqs, response.data]);
             } else if (modalType === 'edit' && currentRequirement) {
                 const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, cleanData);
-                const response = await requirementService.updateRequirement(selectedEvent.id, currentRequirement.id, formData);
                 setRequirements(prevReqs =>
                     prevReqs.map(r =>
                         r.id === currentRequirement.id ? response.data : r
