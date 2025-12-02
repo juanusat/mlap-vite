@@ -154,14 +154,8 @@ export default function PaymentModal({ isOpen, onClose, reservation, onPaymentSu
     }
   };
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div className="payment-modal-overlay" onClick={handleOverlayClick}>
+    <div className="payment-modal-overlay">
       <div className="payment-modal-container">
         <div className="payment-modal-header">
           <h2>Procesar Pago</h2>
