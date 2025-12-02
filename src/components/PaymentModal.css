@@ -108,7 +108,7 @@
 }
 
 .form-group input.error {
-  border-color: #ef4444;
+  border-color: var(--color-error-600);
 }
 
 .form-group input.error:focus {
@@ -116,7 +116,7 @@
 }
 
 .error-message {
-  color: #ef4444;
+  color: var(--color-error-600);
   font-size: 0.85rem;
   margin-top: 4px;
 }
@@ -141,31 +141,31 @@
   gap: 12px;
   margin-top: 8px;
   padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-n-0);
 }
 
 .payment-modal-footer button {
   padding: 10px 24px;
   border-radius: 6px;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: var(--font-size-s);
   cursor: pointer;
   transition: all 0.2s;
   border: none;
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-error-600);
+  color: var(--color-n-0);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--color-error-700);
 }
 
 .btn-submit {
   background: var(--color-a-600);
-  color: white;
+  color: var(--color-n-0);
 }
 
 .btn-submit:hover:not(:disabled) {

@@ -7,6 +7,17 @@
     margin-right: -16px;
 }
 
+/* Estilo específico para textarea en formulario de capillas */
+.chapel-form-scrollable textarea.inputModal {
+    height: 100px !important;
+    min-height: 100px;
+    max-height: 150px;
+    resize: vertical;
+    padding: 10px 15px;
+    line-height: 1.4;
+    font-family: inherit;
+}
+
 /* Scrollbar personalizada */
 .chapel-form-scrollable::-webkit-scrollbar {
     width: 6px;

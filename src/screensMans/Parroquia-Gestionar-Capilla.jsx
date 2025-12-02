@@ -28,6 +28,7 @@ export default function GestionCapillas() {
   const [modalType, setModalType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
 
   const canRead = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_R);
   const canCreate = isParishAdmin || hasPermission(PERMISSIONS.PARROQUIA_CAPILLA_C);
@@ -89,6 +90,7 @@ export default function GestionCapillas() {
     
     setModalType(type);
     setCurrentChapel(chapel);
+    setModalError(null); // Limpiar errores del modal anterior
     setShowModal(true);
   };
 
@@ -96,19 +98,21 @@ export default function GestionCapillas() {
     setShowModal(false);
     setCurrentChapel(null);
     setModalType(null);
+    setModalError(null); // Limpiar errores del modal
   };
 
   const confirmDelete = async () => {
     if (currentChapel) {
       try {
         setLoading(true);
-        setError(null);
+        setModalError(null);
         await chapelService.deleteChapel(currentChapel.id);
         await loadChapels();
         handleCloseModal();
       } catch (err) {
-        setError(err.message || 'Error al eliminar la capilla');
         console.error('Error al eliminar:', err);
+        // Mostrar error dentro del modal
+        setModalError(err.message || 'Error al eliminar la capilla');
       } finally {
         setLoading(false);
       }
@@ -118,7 +122,7 @@ export default function GestionCapillas() {
   const handleSave = async (chapelData) => {
     try {
       setLoading(true);
-      setError(null);
+      setModalError(null);
 
       if (modalType === 'add') {
         await chapelService.createChapel(chapelData);
@@ -129,8 +133,9 @@ export default function GestionCapillas() {
       await loadChapels();
       handleCloseModal();
     } catch (err) {
-      setError(err.message || 'Error al guardar la capilla');
       console.error('Error al guardar:', err);
+      // Mostrar error dentro del modal
+      setModalError(err.message || 'Error al guardar la capilla');
     } finally {
       setLoading(false);
     }
@@ -189,6 +194,7 @@ export default function GestionCapillas() {
               mode={modalType}
               initialData={currentChapel}
               onSave={handleSave}
+              error={modalError}
             />
           ),
           onAccept:
@@ -202,7 +208,16 @@ export default function GestionCapillas() {
       case 'delete':
         return {
           title: 'Confirmar eliminación',
-          content: <h4>¿Estás seguro que quieres eliminar esta capilla?</h4>,
+          content: (
+            <>
+              <h4>¿Estás seguro que quieres eliminar esta capilla?</h4>
+              {modalError && (
+                <div className="error-message" style={{ marginTop: '15px', padding: '10px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c33' }}>
+                  {modalError}
+                </div>
+              )}
+            </>
+          ),
           onAccept: confirmDelete,
           onCancel: handleCloseModal
         };
@@ -250,7 +265,7 @@ export default function GestionCapillas() {
   );
 }
 
-function ChapelForm({ mode, initialData, onSave }) {
+function ChapelForm({ mode, initialData, onSave, error }) {
   const [name, setName] = useState(initialData?.name || '');
   const [address, setAddress] = useState(initialData?.address || '');
   const [coordinates, setCoordinates] = useState(initialData?.coordinates || '');
@@ -306,12 +321,18 @@ function ChapelForm({ mode, initialData, onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (mode !== 'view') {
+      // Validar que el nombre solo contenga letras, espacios y algunos caracteres especiales
+      const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-\.\,]+$/;
+      if (!namePattern.test(name.trim())) {
+        return; // Evitar envío si el nombre contiene números
+      }
+      
       const chapelData = {
-        name,
-        address,
+        name: name.trim(),
+        address: address.trim(),
         coordinates,
         phone,
-        email
+        email: email.trim()
       };
       
       // Pasar el archivo completo, no solo el nombre
@@ -331,13 +352,25 @@ function ChapelForm({ mode, initialData, onSave }) {
   return (
     <>
       <form id="chapel-form" onSubmit={handleSubmit}>
+        {error && (
+          <div className="error-message" style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c33' }}>
+            {error}
+          </div>
+        )}
         <div className="Inputs-add chapel-form-scrollable">
         <label>Nombre de la capilla</label>
         <input
           type="text"
           className="inputModal"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={e => {
+            const value = e.target.value;
+            // Solo permitir letras, espacios y algunos caracteres especiales (no números)
+            const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-\.\,]*$/;
+            if (namePattern.test(value)) {
+              setName(value);
+            }
+          }}
           disabled={disabled}
           required
         />
