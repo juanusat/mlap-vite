@@ -4,10 +4,9 @@ const handleResponse = async (response) => {
   const data = await response.json();
   
   if (!response.ok) {
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    throw new Error('Error en la operación');
+    // Priorizar el mensaje legible (message) sobre el código de error (error)
+    const errorMessage = data.message || data.error || 'Error en la operación';
+    throw new Error(errorMessage);
   }
   
   return data;

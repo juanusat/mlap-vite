@@ -69,6 +69,7 @@ export default function DiocesisEventosLiturgicos() {
     const [modalType, setModalType] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [modalError, setModalError] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -99,7 +100,9 @@ export default function DiocesisEventosLiturgicos() {
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        // Solo permitir letras (a-z, A-Z, acentos) y espacios
+        const onlyLetters = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+        setFormData(prev => ({ ...prev, [name]: onlyLetters }));
     };
 
     const filteredEvents = events.filter((event) =>
@@ -128,6 +131,7 @@ export default function DiocesisEventosLiturgicos() {
     const handleView = (event) => {
         setCurrentEvent(event);
         setModalType('view');
+        setModalError(null);
         setFormData({
             name: event.name,
             description: event.description
@@ -138,6 +142,7 @@ export default function DiocesisEventosLiturgicos() {
     const handleEdit = (event) => {
         setCurrentEvent(event);
         setModalType('edit');
+        setModalError(null);
         setFormData({
             name: event.name,
             description: event.description
@@ -148,12 +153,14 @@ export default function DiocesisEventosLiturgicos() {
     const handleDeleteConfirmation = (event) => {
         setCurrentEvent(event);
         setModalType('delete');
+        setModalError(null);
         setShowModal(true);
     };
 
     const handleAddEvent = () => {
         setCurrentEvent(null);
         setModalType('add');
+        setModalError(null);
         setFormData({
             name: '',
             description: ''
@@ -165,6 +172,7 @@ export default function DiocesisEventosLiturgicos() {
         setShowModal(false);
         setCurrentEvent(null);
         setModalType(null);
+        setModalError(null);
         setFormData({
             name: '',
             description: ''
@@ -175,27 +183,29 @@ export default function DiocesisEventosLiturgicos() {
         if (!currentEvent) return;
 
         try {
+            setModalError(null);
             await eventService.deleteEvent(currentEvent.id);
             setEvents(prevEvents => prevEvents.filter(e => e.id !== currentEvent.id));
             handleCloseModal();
         } catch (err) {
-            setError(err.message);
+            setModalError(err.message);
         }
     };
 
     const handleSave = async () => {
         // Validar que los campos no estén vacíos o solo con espacios
         if (!formData.name || !formData.name.trim()) {
-            setError('El nombre no puede estar vacío');
+            setModalError('El nombre no puede estar vacío');
             return;
         }
         
         if (!formData.description || !formData.description.trim()) {
-            setError('La descripción no puede estar vacía');
+            setModalError('La descripción no puede estar vacía');
             return;
         }
 
         try {
+            setModalError(null);
             const cleanData = {
                 name: formData.name.trim(),
                 description: formData.description.trim()
@@ -214,7 +224,7 @@ export default function DiocesisEventosLiturgicos() {
             }
             handleCloseModal();
         } catch (err) {
-            setError(err.message);
+            setModalError(err.message);
         }
     };
 
@@ -248,14 +258,24 @@ export default function DiocesisEventosLiturgicos() {
             case 'view':
                 return {
                     title: 'Detalles del evento',
-                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />,
+                    content: (
+                        <>
+                            <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={true} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleCloseModal,
                     onCancel: handleCloseModal
                 };
             case 'edit':
                 return {
                     title: 'Editar evento',
-                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: (
+                        <>
+                            <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
@@ -263,8 +283,9 @@ export default function DiocesisEventosLiturgicos() {
                 return {
                     title: 'Confirmar eliminación',
                     content: currentEvent && (
-                        <div >
+                        <div>
                             <h4>¿Deseas eliminar el evento "{currentEvent.name}"?</h4>
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
                         </div>
                     ),
                     onAccept: confirmDelete,
@@ -273,7 +294,12 @@ export default function DiocesisEventosLiturgicos() {
             case 'add':
                 return {
                     title: 'Añadir evento',
-                    content: <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />,
+                    content: (
+                        <>
+                            <EventoForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} />
+                            {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
+                        </>
+                    ),
                     onAccept: handleSave,
                     onCancel: handleCloseModal
                 };
