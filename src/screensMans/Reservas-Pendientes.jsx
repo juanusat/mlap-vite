@@ -601,25 +601,55 @@ export default function ReservasPendientes() {
       {showSidebar && currentReservation && (
         <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`} onClose={handleCloseSidebar}>
           <div className="sidebar-list">
-            <p><strong>Beneficiario:</strong> {currentReservation.beneficiary_full_name}</p>
-            <p><strong>Evento:</strong> {currentReservation.event_variant_name}</p>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Beneficiario:</span>
+              <span className="detail-value">{currentReservation.beneficiary_full_name}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Evento:</span>
+              <span className="detail-value">{currentReservation.event_variant_name}</span>
+            </div>
             {currentReservation.chapel && (
               <>
-                <p><strong>Capilla:</strong> {currentReservation.chapel.name}</p>
-                <p><strong>Parroquia:</strong> {currentReservation.chapel.parish_name}</p>
+                <div className="reservation-detail-item">
+                  <span className="detail-label">Capilla:</span>
+                  <span className="detail-value">{currentReservation.chapel.name}</span>
+                </div>
+                <div className="reservation-detail-item">
+                  <span className="detail-label">Parroquia:</span>
+                  <span className="detail-value">{currentReservation.chapel.parish_name}</span>
+                </div>
               </>
             )}
-            <p><strong>Fecha:</strong> {new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</p>
-            <p><strong>Hora:</strong> {currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</p>
-            <p><strong>Precio del evento:</strong> S/ {parseFloat(currentReservation.current_price || 0).toFixed(2)}</p>
-            <p><strong>Monto pagado:</strong> S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</p>
-            <p><strong>Estado:</strong> {
-              currentReservation.status === 'RESERVED' ? 'Reservado' :
-              currentReservation.status === 'IN_PROGRESS' ? 'En progreso' :
-              currentReservation.status === 'CANCELLED' ? 'Cancelado' :
-              currentReservation.status
-            }</p>
-            <p><strong>Pago:</strong> {currentReservation.payment_status}</p>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Fecha:</span>
+              <span className="detail-value">{new Date(currentReservation.event_date).toLocaleDateString('es-ES')}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Hora:</span>
+              <span className="detail-value">{currentReservation.event_time ? currentReservation.event_time.substring(0, 5) : 'No disponible'}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Precio del evento:</span>
+              <span className="detail-value">S/ {parseFloat(currentReservation.current_price || 0).toFixed(2)}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Monto pagado:</span>
+              <span className="detail-value">S/ {parseFloat(currentReservation.paid_amount).toFixed(2)}</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Estado:</span>
+              <span className="detail-value">{
+                currentReservation.status === 'RESERVED' ? 'Reservado' :
+                currentReservation.status === 'IN_PROGRESS' ? 'En progreso' :
+                currentReservation.status === 'CANCELLED' ? 'Cancelado' :
+                currentReservation.status
+              }</span>
+            </div>
+            <div className="reservation-detail-item">
+              <span className="detail-label">Pago:</span>
+              <span className="detail-value">{currentReservation.payment_status}</span>
+            </div>
           </div>
         </MyPanelLateralConfig>
       )}
