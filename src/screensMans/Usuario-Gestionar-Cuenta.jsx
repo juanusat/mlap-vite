@@ -90,6 +90,24 @@ const GestionCuenta = () => {
             return;
         }
 
+        // Validar que nombres y apellidos no contengan números
+        const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+        
+        if (!namePattern.test(tempUserInfo.nombres.trim())) {
+            setError("Los nombres solo deben contener letras y espacios");
+            return;
+        }
+        
+        if (!namePattern.test(tempUserInfo.apellidoPaterno.trim())) {
+            setError("El apellido paterno solo debe contener letras y espacios");
+            return;
+        }
+        
+        if (tempUserInfo.apellidoMaterno && tempUserInfo.apellidoMaterno.trim() && !namePattern.test(tempUserInfo.apellidoMaterno.trim())) {
+            setError("El apellido materno solo debe contener letras y espacios");
+            return;
+        }
+
         try {
             setLoading(true);
             setError("");
@@ -177,6 +195,15 @@ const GestionCuenta = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
+        // Validar campos de nombres y apellidos en tiempo real
+        if (name === 'nombres' || name === 'apellidoPaterno' || name === 'apellidoMaterno') {
+            const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$/;
+            if (!namePattern.test(value)) {
+                return; // No permitir la entrada si contiene números o caracteres especiales
+            }
+        }
+        
         setTempUserInfo(prevInfo => ({
             ...prevInfo,
             [name]: value
