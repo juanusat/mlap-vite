@@ -240,6 +240,11 @@
     gap: 15px;
 }
 
+.sidebar-list.detail-reserva {
+    overflow: auto;
+    max-height: calc(100vh - 200px);
+}
+
 .reservation-detail-item:last-child {
     border-bottom: none;
 }

@@ -81,6 +81,8 @@ export default function ReservasHistorial() {
   const handleOpenSidebar = async (reservation) => {
     try {
       setLoading(true);
+      setShowPaymentSidebar(false);
+      
       const details = await getReservationDetails(reservation.id);
       setCurrentReservation(details.data);
       setShowSidebar(true);
@@ -100,6 +102,8 @@ export default function ReservasHistorial() {
   const handleViewPayments = async (reservation) => {
     try {
       setLoading(true);
+      setShowSidebar(false);
+      
       const response = await getReservationPaymentsForParishioner(reservation.id);
       setPayments(response.data);
       setPaymentReservation(reservation);
@@ -258,7 +262,7 @@ export default function ReservasHistorial() {
       </div>
       {showSidebar && currentReservation && (
         <MyPanelLateralConfig title={`Detalles de la Reserva #${currentReservation.id}`} onClose={handleCloseSidebar}>
-          <div className="sidebar-list">
+          <div className="sidebar-list detail-reserva">
             <div className="reservation-detail-item">
               <span className="detail-label">Beneficiario:</span>
               <span className="detail-value">{currentReservation.beneficiary_full_name}</span>

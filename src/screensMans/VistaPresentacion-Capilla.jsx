@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ScreenMan from "../components/ScreenMan";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import MyMapContainer from '../components/MyMapContainer';
+import { MdAccountBalance } from "react-icons/md";
 import { getChapelProfile } from "../services/publicChurchService";
 import "../utils/VistaPresentacion-Capilla.css";
 import "../utils/Estilos-Generales-1.css";
@@ -9,7 +10,7 @@ import "../utils/Estilos-Generales-1.css";
 const API_URL = import.meta.env.VITE_SERVER_BACKEND_URL;
 
 const options = [
-    { href: "/capilla", label: "Bienvenida" }
+    { href: "/capilla", icon: <MdAccountBalance  />, label: "Bienvenida" }
 ];
 
 const getImageUrl = (filename) => {
