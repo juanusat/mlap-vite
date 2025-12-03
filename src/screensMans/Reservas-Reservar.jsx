@@ -393,6 +393,12 @@ export default function ReservasReservar() {
                                 {formData.duration_minutes} minutos
                             </div>
                         </div>
+                        <div className="reserva-row">
+                            <div className="reserva-label">Precio</div>
+                            <div className="reserva-value">
+                                S/. {formData.price}
+                            </div>
+                        </div>
 
                         <div className="reserva-row">
                             <div className="reserva-label">Nombre del beneficiario:</div>
