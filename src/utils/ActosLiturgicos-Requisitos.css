@@ -98,7 +98,6 @@
 .event-name{
     font-weight: 500;
     color: var(--color-n-900);
-    font-size: var(--font-size-m);
 }
 .event-capilla-name {
     font-size: var(--font-size-s);

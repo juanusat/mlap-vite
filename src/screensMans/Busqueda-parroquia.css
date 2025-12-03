@@ -250,8 +250,8 @@
 
 .parish-basic-info p {
   margin: 0.5rem 0;
-  font-size: var(--font-size-base);
-  line-height: 1.4;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 .parish-basic-info strong {
@@ -260,6 +260,10 @@
 }
 
 /* Eventos litúrgicos */
+.parish-events {
+  margin-top: 1.5rem;
+}
+
 .parish-events h4 {
   margin: 0 0 0.75rem 0;
   color: var(--color-n-700);
@@ -275,22 +279,27 @@
 
 .event-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--space-s) var(--space-m);
+  font-weight: 200;
   background-color: var(--color-n-0);
-  border: var(--border-width-s) solid var(--color-n-200);
-  border-radius: var(--border-radius-s);
-  cursor: pointer;
   transition: all 0.2s;
   width: var(--width-estandar);
   color: var(--color-n-900);
+}
+.event-item::before {
+  margin-right: 4px;
+  content: '';
+  display: inline-block;
+  border-color: transparent;
+  border-left-color: var(--color-n-900);
+  border-style: solid;
+  border-width: 6px 8px;
 }
 
 .event-name {
   font-weight: 500;
   color: var(--color-n-700);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
 }
 
 /* Acciones de la parroquia */
