@@ -58,7 +58,7 @@
     font-size: 13px;
     padding: 8px 10px;
     width: auto;
-    max-width: none;
+    min-width: fit-content;
 }
 
 .chapel-btn-select-location {
