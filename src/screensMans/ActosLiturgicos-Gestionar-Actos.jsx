@@ -442,8 +442,8 @@ function EventForm({ mode, initialData = {}, onSave, setModalError, eventsOption
       return;
     }
 
-    if (!monto || parseFloat(monto) < 0) {
-      setModalError('Debe ingresar un monto válido');
+    if (!monto || parseFloat(monto) <= 0) {
+      setModalError('El monto debe ser mayor a 0');
       return;
     }
 
@@ -534,10 +534,10 @@ function EventForm({ mode, initialData = {}, onSave, setModalError, eventsOption
           value={monto}
           onChange={(e) => setMonto(e.target.value)}
           disabled={isView}
-          min="0"
+          min="0.01"
           step="0.01"
           required
-          title="Debe ingresar un monto válido"
+          title="El monto debe ser mayor a 0"
         />
       </div>
 
