@@ -324,7 +324,7 @@ export default function Reservas() {
       key: 'acciones', header: 'Acciones', accessor: (row) => (
         <MyGroupButtonsActions>
           <MyButtonShortAction type="view" title="Ver" onClick={() => handleView(row)} />
-          {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && (
+          {canUpdate && row.status !== 'FULFILLED' && row.status !== 'REJECTED' && row.status !== 'CANCELLED' && (
             <MyButtonShortAction type="edit" title="Editar" onClick={() => handleEdit(row)} />
           )}
           {canCreatePayment && canUpdate && parseFloat(row.paid_amount || 0) < parseFloat(row.current_price || 0) &&
