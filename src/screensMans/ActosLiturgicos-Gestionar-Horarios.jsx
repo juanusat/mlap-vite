@@ -500,6 +500,19 @@ export default function ActosLiturgicosHorarios() {
                 return;
             }
 
+            const [day, month, year] = fecha.split('/');
+            const fullYear = year.length === 2 ? '20' + year : year;
+            const selectedDate = new Date(parseInt(fullYear), parseInt(month) - 1, parseInt(day));
+            selectedDate.setHours(0, 0, 0, 0);
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                setModalError('La fecha no puede ser anterior a hoy.');
+                return;
+            }
+
             // Horas válidas
             if (!validateTimeFormat(horaInicio) || !validateTimeFormat(horaFin)) {
                 setModalError('Formato de hora inválido o horario fuera de rango.');
