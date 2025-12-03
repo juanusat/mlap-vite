@@ -470,7 +470,7 @@ function MapModalPortal({ showMapModal, handleCloseMapModal, handleConfirmLocati
       title="Seleccionar Ubicación de la Capilla"
       onClose={handleCloseMapModal}
     >
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <MyMapSelector
             onMapClick={handleMapClick}
