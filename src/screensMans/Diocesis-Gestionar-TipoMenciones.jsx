@@ -373,7 +373,7 @@ const MentionForm = ({ formData, handleFormChange, isViewMode }) => {
           onChange={handleFormChange}
           onBlur={handleBlur}
           disabled={isViewMode}
-          placeholder="Descripción del tipo de mención (opcional)"
+          placeholder="Descripción del tipo de mención"
         />
         <label htmlFor="code">Código corto:</label>
         <input
