@@ -278,9 +278,14 @@ export default function ActosLiturgicosHorarios() {
             const generalSchedules = generalResponse.data || [];
 
             // Convertir horarios generales a intervalos guardados
+            // day_of_week en BD: 0=Domingo, 1=Lunes, ..., 6=Sábado
+            // Índice de columna: 0=Lunes, 1=Martes, ..., 6=Domingo
             const savedIntervalsData = {};
             generalSchedules.forEach(schedule => {
-                const dayKey = schedule.day_of_week;
+                // Convertir day_of_week de BD a índice de columna
+                // BD: 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+                // Columna: 0=Lun, 1=Mar, 2=Mie, 3=Jue, 4=Vie, 5=Sab, 6=Dom
+                const dayKey = schedule.day_of_week === 0 ? 6 : schedule.day_of_week - 1;
                 if (!savedIntervalsData[dayKey]) {
                     savedIntervalsData[dayKey] = [];
                 }
@@ -750,7 +755,11 @@ export default function ActosLiturgicosHorarios() {
             // Convertir selectedIntervals a formato de API
             const schedules = [];
             Object.keys(selectedIntervals).forEach(dayKey => {
-                const dayOfWeek = parseInt(dayKey);
+                // Convertir índice de columna a day_of_week de BD
+                // Columna: 0=Lun, 1=Mar, 2=Mie, 3=Jue, 4=Vie, 5=Sab, 6=Dom
+                // BD: 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+                const colIndex = parseInt(dayKey);
+                const dayOfWeek = colIndex === 6 ? 0 : colIndex + 1;
                 const intervals = selectedIntervals[dayKey];
 
                 // Agrupar filas consecutivas en intervalos
