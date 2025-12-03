@@ -33,6 +33,7 @@ export default function Parroquia() {
   });
 
   const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const loadParishes = async () => {
     try {
@@ -65,6 +66,34 @@ export default function Parroquia() {
                 setEmailError('El correo no cumple formato');
             } else {
                 setEmailError('');
+            }
+        }
+        // Validar la clave
+        if (name === 'password') {
+            const rgxMay = /[A-Z]/;
+            const rgxMin = /[a-z]/;
+            const rgxSyb = /[\$%&/\(\)_\-\.\[\]]/;
+
+            const rgxNum = /[0-9]/;
+            const rgxLon = /.{8}/;
+            if (value && !rgxMay.test(value) && !rgxMin.test(value) && !rgxSyb.test(value) && !rgxNum.test(value) && !rgxLon.test(value)) {
+                if (!rgxMay.test(value)) {
+                    setPasswordError('La clave debe contener al menos una letra mayúscula.');
+                }
+                if (!rgxMin.test(value)) {
+                    setPasswordError('La clave debe contener al menos una letra minúscula.');
+                }
+                if (!rgxSyb.test(value)) {
+                    setPasswordError('La clave debe contener al menos un símbolo especial.');
+                }
+                if (!rgxNum.test(value)) {
+                    setPasswordError('La clave debe contener al menos un número.');
+                }
+                if (!rgxLon.test(value)) {
+                    setPasswordError('La clave debe tener al menos 8 caracteres.');
+                }
+            } else {
+                setPasswordError('');
             }
         }
     };
@@ -148,6 +177,7 @@ export default function Parroquia() {
         setCurrentEvent(null);
         setModalType(null);
         setEmailError('');
+        setPasswordError('');
         setModalError(null);
         setFormData({
             name: '',
@@ -204,6 +234,7 @@ export default function Parroquia() {
             setLoading(true);
             setModalError(null);
             setEmailError('');
+            
             
             const cleanData = {
                 name: formData.name.trim(),
@@ -278,7 +309,7 @@ export default function Parroquia() {
                     title: 'Editar parroquia',
                     content: (
                         <>
-                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />
+                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} passwordError={passwordError} />
                             {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
                         </>
                     ),
@@ -313,7 +344,7 @@ export default function Parroquia() {
                     title: 'Añadir parroquia',
                     content: (
                         <>
-                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} />
+                            <ParroquiaForm formData={formData} handleFormChange={handleFormChange} isViewMode={false} emailError={emailError} passwordError={passwordError} />
                             {modalError && <div className="error-message" style={{ marginTop: 8 }}>{modalError}</div>}
                         </>
                     ),
@@ -364,7 +395,7 @@ export default function Parroquia() {
 }
 
 // Componente reutilizable para los formularios de la parroquia
-const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) => {
+const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError, passwordError }) => {
     // Determina si es modo edición (cuando existe formData.id)
     const isEditMode = formData.id && !isViewMode;
 
@@ -436,6 +467,7 @@ const ParroquiaForm = ({ formData, handleFormChange, isViewMode, emailError }) =
                         required={!formData.id}
                         placeholder={formData.id ? 'Dejar vacío para no cambiar' : 'Ingrese la contraseña'}
                     />
+                    {passwordError && <p className="error-message" style={{ marginTop: '-10px', marginBottom: '10px', color: 'red', fontSize: '14px' }}>{passwordError}</p>}
                 </>
             )}
         </div>
