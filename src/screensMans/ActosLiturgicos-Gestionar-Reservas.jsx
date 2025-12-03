@@ -232,37 +232,9 @@ export default function Reservas() {
     setCurrentReservation(null);
   };
 
-  const handleComplete = async () => {
-    if (!currentReservation) return;
-
-    try {
-      setLoading(true);
-      await reservationService.updateReservationStatus(currentReservation.id, 'COMPLETED');
-      await loadReservations();
-      handleCloseModal();
-    } catch (err) {
-      setError(err.message || 'Error al completar la reserva');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFulfill = async () => {
-    if (!currentReservation) return;
-
-    try {
-      setLoading(true);
-      await reservationService.updateReservationStatus(currentReservation.id, 'FULFILLED');
-      await loadReservations();
-      handleCloseModal();
-    } catch (err) {
-      setError(err.message || 'Error al marcar como cumplido');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Los estados COMPLETED y FULFILLED se actualizan automáticamente mediante triggers de BD:
+  // - COMPLETED: cuando todos los requisitos están completados
+  // - FULFILLED: cuando la fecha/hora del evento ha pasado
 
   const handlePaymentSubmit = async (paymentData) => {
     if (!currentReservation) return;
@@ -453,25 +425,40 @@ export default function Reservas() {
           };
         } else if (currentReservation.status === 'IN_PROGRESS') {
           return {
-            title: 'Completar reserva',
+            title: 'Reserva en Progreso',
             content: (
               <div>
-                <h4>¿Desea completar la reserva #{currentReservation.id}?</h4>
+                <p>Esta reserva está en progreso.</p>
+                <p>Complete todos los requisitos para que pase automáticamente a estado <strong>COMPLETADO</strong>.</p>
+                <p>Una vez completado el evento, el estado cambiará automáticamente a <strong>CUMPLIDO</strong>.</p>
               </div>
             ),
-            onAccept: handleComplete,
-            onCancel: handleCloseModal
+            onAccept: handleCloseModal,
+            onCancel: null
           };
         } else if (currentReservation.status === 'COMPLETED') {
           return {
-            title: 'Reserva cumplida',
+            title: 'Reserva Completada',
             content: (
               <div>
-                <h4>¿Desea marcar como cumplida la reserva #{currentReservation.id}?</h4>
+                <p>Esta reserva está completada (todos los requisitos cumplidos).</p>
+                <p>El estado cambiará automáticamente a <strong>CUMPLIDO</strong> cuando la fecha/hora del evento haya pasado.</p>
               </div>
             ),
-            onAccept: handleFulfill,
-            onCancel: handleCloseModal
+            onAccept: handleCloseModal,
+            onCancel: null
+          };
+        } else {
+          return {
+            title: 'Información',
+            content: (
+              <div>
+                <p>Esta reserva está en estado: <strong>{STATUS_MAP[currentReservation.status]}</strong></p>
+                <p>No se pueden realizar cambios manuales.</p>
+              </div>
+            ),
+            onAccept: handleCloseModal,
+            onCancel: null
           };
         }
         break;
