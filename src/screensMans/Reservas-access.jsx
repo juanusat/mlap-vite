@@ -13,9 +13,9 @@ export default function Reservas() {
   const isBasePath = location.pathname === '/man-reservas';
 
   const options = [
+    { href: 'reservar', icon: <MdPendingActions />, label: 'Reservar evento' },
     { href: 'pendientes', icon: <MdPendingActions />, label: 'Reservas pendientes' },
     { href: 'historial', icon: <MdHistory />, label: 'Historial de reservas' },
-    { href: 'reservar', icon: <MdPendingActions />, label: 'Reservar evento' },
     {
       label: 'Informes',
       icon: <MdBarChart />,
