@@ -267,7 +267,14 @@ export default function CuentasGestionar() {
       const response = await parishWorkerService.listWorkerRoles(currentWorker.association_id, 1, 50);
       setWorkerRoles(response.data.active_roles || []);
     } catch (err) {
-      setError(err.message || 'Error al revocar el rol');
+      let errorMessage = err.message || 'Error al revocar el rol';
+      
+      // Manejar error específico de rol ya revocado
+      if (errorMessage.includes('uk_user_role_active')) {
+        errorMessage = 'Este rol ya fue revocado anteriormente. Por favor, actualice la página para ver los cambios.';
+      }
+      
+      setError(errorMessage);
       console.error(err);
     } finally {
       setLoading(false);
