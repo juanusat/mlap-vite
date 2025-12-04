@@ -473,6 +473,7 @@ export default function ReservasPendientes() {
     {
       key: 'acciones', header: 'Acciones', accessor: (row) => {
         const hasPendingBalance = parseFloat(row.paid_amount) < parseFloat(row.current_price);
+        const isApproved = row.status === 'IN_PROGRESS';
         
         return (
           <MyGroupButtonsActions>
@@ -491,7 +492,7 @@ export default function ReservasPendientes() {
               title="Ver pagos"
               onClick={() => handleViewPayments(row)}
             />
-            {hasPendingBalance && (
+            {hasPendingBalance && isApproved && (
               <MyButtonShortAction
                 type="pay"
                 title="Realizar pago"
